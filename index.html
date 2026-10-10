@@ -1049,11 +1049,18 @@
       <div class="agency-filter-bar">
         <button class="filter-btn active" data-filter-type="all" data-filter-val="all">ALL FLEET</button>
         <button class="filter-btn" data-filter-type="preset" data-filter-val="starlink">STARLINK</button>
+        <button class="filter-btn" data-filter-type="preset" data-filter-val="gnss">GNSS</button>
         <button class="filter-btn" data-filter-type="preset" data-filter-val="stations">STATIONS</button>
         <button class="filter-btn" data-filter-type="preset" data-filter-val="telescopes">TELESCOPES</button>
+        <button class="filter-btn" data-filter-type="preset" data-filter-val="defense">DEFENSE</button>
+        <button class="filter-btn" data-filter-type="preset" data-filter-val="weather">WEATHER</button>
+        <button class="filter-btn" data-filter-type="preset" data-filter-val="deepspace">DEEP SPACE</button>
+        <button class="filter-btn" data-filter-type="preset" data-filter-val="debris">DEBRIS</button>
         <button class="filter-btn" data-filter-type="agency" data-filter-val="ISRO">ISRO</button>
         <button class="filter-btn" data-filter-type="agency" data-filter-val="NASA">NASA</button>
         <button class="filter-btn" data-filter-type="agency" data-filter-val="ESA">ESA</button>
+        <button class="filter-btn" data-filter-type="agency" data-filter-val="CNSA">CNSA</button>
+        <button class="filter-btn" data-filter-type="agency" data-filter-val="SpaceX">SPACEX</button>
       </div>
 
       <div class="globe-controls-floating">
@@ -1962,18 +1969,19 @@
     function updateFleetCounts() {
       let leo = 0, meo = 0, geo = 0, lunar = 0, deep = 0;
       SATELLITE_CATALOG.forEach(s => {
-        if (s.isDeepSpace) deep++;
-        else if (s.isLunar) lunar++;
-        else if ((s.alt || 0) >= 30000) geo++;
-        else if ((s.alt || 0) >= 2000) meo++;
+        if (s.isDeepSpace || s.regime === 'Deep_Space') deep++;
+        else if (s.isLunar || s.regime === 'Lunar') lunar++;
+        else if (s.regime === 'GEO' || (s.alt || 0) >= 30000) geo++;
+        else if (s.regime === 'MEO' || (s.alt || 0) >= 2000) meo++;
         else leo++;
       });
-      document.getElementById('fleetCountBadge').textContent = SATELLITE_CATALOG.length;
-      document.getElementById('countLEO').textContent = leo;
-      document.getElementById('countMEO').textContent = meo;
-      document.getElementById('countGEO').textContent = geo;
-      document.getElementById('countLunar').textContent = lunar;
-      document.getElementById('countDeep').textContent = deep;
+      const badge = document.getElementById('fleetCountBadge');
+      if (badge) badge.textContent = SATELLITE_CATALOG.length;
+      const elLeo = document.getElementById('countLEO'); if (elLeo) elLeo.textContent = leo;
+      const elMeo = document.getElementById('countMEO'); if (elMeo) elMeo.textContent = meo;
+      const elGeo = document.getElementById('countGEO'); if (elGeo) elGeo.textContent = geo;
+      const elLunar = document.getElementById('countLunar'); if (elLunar) elLunar.textContent = lunar;
+      const elDeep = document.getElementById('countDeep'); if (elDeep) elDeep.textContent = deep;
     }
 
     function rebuildOrbitLines() {
@@ -1989,10 +1997,22 @@
       }
 
       const now = new Date();
-      SATELLITE_CATALOG.forEach(sat => {
+      const filteredList = (typeof getFilteredCatalog === 'function') ? getFilteredCatalog() : SATELLITE_CATALOG;
+      
+      const drawnSats = new Set();
+      if (selectedSat && selectedSat.satrec) {
+        drawnSats.add(selectedSat);
+      }
+      for (let s of filteredList) {
+        if (drawnSats.size >= 35) break;
+        if (s.satrec) drawnSats.add(s);
+      }
+
+      drawnSats.forEach(sat => {
         if (!sat.satrec) return;
         const pts = [];
-        const step = (95 * 60 * 1000) / 96;
+        const periodMin = sat.periodMin || ((sat.alt || 500) > 20000 ? (sat.alt > 35000 ? 1436 : 720) : 95);
+        const step = (periodMin * 60 * 1000) / 96;
         let maxDist = -1, minDist = 999999;
         let apogeePt = null, perigeePt = null;
         let ascNodePt = null;
@@ -2016,9 +2036,9 @@
         }
         if (pts.length > 2) {
           const geo = new THREE.BufferGeometry().setFromPoints(pts);
-          const isSel = selectedSat && selectedSat.id === sat.id;
+          const isSel = selectedSat && (selectedSat.id === sat.id || (selectedSat.norad && selectedSat.norad === sat.norad));
           const mat = new THREE.LineBasicMaterial({
-            color: sat.color,
+            color: sat.color || 0x00f0ff,
             transparent: true,
             opacity: isSel ? 0.95 : 0.25,
             depthTest: true,
@@ -2344,12 +2364,20 @@
           if (currentFilterVal === 'starlink' && sat.family !== 'starlink') return false;
           if (currentFilterVal === 'stations' && sat.family !== 'stations') return false;
           if (currentFilterVal === 'telescopes' && sat.family !== 'telescopes') return false;
+          if (currentFilterVal === 'gnss' && sat.family !== 'gnss' && sat.family !== 'navic' && sat.family !== 'navigation') return false;
+          if (currentFilterVal === 'defense' && sat.family !== 'defense' && sat.family !== 'recon') return false;
+          if (currentFilterVal === 'weather' && sat.family !== 'weather' && sat.family !== 'nasa_earth' && sat.family !== 'esa') return false;
+          if (currentFilterVal === 'deepspace' && !sat.isDeepSpace && !sat.isLunar && sat.family !== 'deepspace' && sat.family !== 'lunar') return false;
+          if (currentFilterVal === 'debris' && sat.family !== 'debris' && sat.family !== 'decay' && sat.status !== 'DEBRIS' && sat.status !== 'DECAYING' && sat.status !== 'DERELICT') return false;
         } else if (currentFilterType === 'agency') {
-          if (sat.agency !== currentFilterVal) return false;
+          if (!sat.agency || !sat.agency.toUpperCase().includes(currentFilterVal.toUpperCase())) return false;
         }
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
-          return sat.name.toLowerCase().includes(q) || sat.agency.toLowerCase().includes(q) || (sat.norad && sat.norad.includes(q));
+          return (sat.name && sat.name.toLowerCase().includes(q)) ||
+                 (sat.agency && sat.agency.toLowerCase().includes(q)) ||
+                 (sat.norad && String(sat.norad).includes(q)) ||
+                 (sat.scienceTarget && sat.scienceTarget.toLowerCase().includes(q));
         }
         return true;
       });
@@ -2683,7 +2711,7 @@
       });
     }
 
-    function injectDiscoveredSatellites(discoveredList) {
+    function injectDiscoveredSatellites(discoveredList, shouldSelectNew = false) {
       if (!discoveredList || !discoveredList.length) return;
       let count = 0;
       discoveredList.forEach(sat => {
@@ -2696,38 +2724,49 @@
           const period = sat.periodMin || 95.0;
           const meanMotion = (1440.0 / period).toFixed(8);
           const isGeo = (sat.regime === 'GEO' || alt >= 30000);
-          const isDeep = (sat.regime === 'Deep_Space' || alt >= 500000);
-          const isLunar = (sat.family === 'lunar' || (alt >= 100000 && !isDeep));
+          const isDeep = (sat.isDeepSpace || sat.regime === 'Deep_Space' || alt >= 500000);
+          const isLunar = (sat.isLunar || sat.family === 'lunar' || sat.regime === 'Lunar' || (alt >= 100000 && !isDeep));
 
           const noradStr = String(noradId).padStart(5, '0');
           const incStr = inc.toFixed(4).padStart(8, ' ');
-          const tle1 = `1 ${noradStr}U 24001A   24095.50000000  .00001000  00000-0  10000-3 0  9991`;
-          const tle2 = `2 ${noradStr} ${incStr} 120.5000 0001500  85.0000 275.0000 ${meanMotion}00001`;
+          const tle1 = sat.tleLine1 || `1 ${noradStr}U 24001A   24095.50000000  .00001000  00000-0  10000-3 0  9991`;
+          const tle2 = sat.tleLine2 || `2 ${noradStr} ${incStr} 120.5000 0001500  85.0000 275.0000 ${meanMotion}00001`;
 
           let col = 0x00f0ff;
-          if (sat.agency && sat.agency.includes('ISRO')) col = 0xff8800;
+          if (sat.family === 'starlink') col = 0xffffff;
+          else if (sat.agency && sat.agency.includes('ISRO')) col = 0xff8800;
           else if (sat.agency && sat.agency.includes('ESA')) col = 0x00ff66;
           else if (sat.agency && sat.agency.includes('SpaceX')) col = 0xffffff;
           else if (sat.agency && sat.agency.includes('CNSA')) col = 0xff3344;
+          else if (sat.agency && sat.agency.includes('JAXA')) col = 0x00e5ff;
+          else if (sat.family === 'gnss' || sat.family === 'navigation' || sat.family === 'navic') col = 0x00f0ff;
+          else if (sat.family === 'defense' || sat.family === 'recon') col = 0xffb703;
+          else if (sat.family === 'debris' || sat.family === 'decay' || sat.status === 'DECAYING' || sat.status === 'DEBRIS') col = 0xff003c;
           else if (isDeep) col = 0xbf5af2;
+          else if (isLunar) col = 0xe2f1ff;
 
           const newEntry = {
             id: 'sat-' + noradId,
             name: sat.name,
             agency: sat.agency || 'INTL',
             family: sat.family || (isGeo ? 'weather' : (sat.agency && sat.agency.toLowerCase().includes('isro') ? 'isro' : 'recon')),
-            familyName: sat.agency + ' ' + (sat.regime || 'Orbital'),
+            familyName: (sat.agency || 'INTL') + ' ' + (sat.regime || 'Orbital'),
             orbitClass: `${sat.regime || 'LEO'} (${Math.round(alt)} km)`,
+            regime: sat.regime || (isDeep ? 'Deep_Space' : (isLunar ? 'Lunar' : (isGeo ? 'GEO' : (alt >= 2000 ? 'MEO' : 'LEO')))),
             norad: String(noradId),
             color: col,
             scienceTarget: sat.scienceTarget || 'Orbital Reconnaissance & Sensor Surveillance',
             alt: alt,
             vel: vel,
+            periodMin: period,
             tleLine1: tle1,
             tleLine2: tle2,
             isDeepSpace: isDeep,
             isLunar: isLunar,
-            spacePos: isDeep ? new THREE.Vector3((Math.random()-0.5)*120, (Math.random()-0.5)*40, (Math.random()-0.5)*120) : null
+            status: sat.status || 'OPERATIONAL',
+            sensorSwathKm: sat.sensorSwathKm || 300,
+            covertRating: sat.covertRating || 'STANDARD // MONITORED',
+            spacePos: isDeep ? new THREE.Vector3((Math.random()-0.5)*120, (Math.random()-0.5)*40, (Math.random()-0.5)*120) : (isLunar ? new THREE.Vector3(26 + (Math.random()-0.5)*2, (Math.random()-0.5)*2, 2.5 + (Math.random()-0.5)*2) : null)
           };
 
           try {
@@ -2745,9 +2784,41 @@
         updateFleetCounts();
         renderFleetTree();
         rebuildOrbitLines();
-        selectedSat = SATELLITE_CATALOG[SATELLITE_CATALOG.length - 1];
-        renderFleetTree();
+        if (shouldSelectNew) {
+          selectedSat = SATELLITE_CATALOG[SATELLITE_CATALOG.length - 1];
+          renderFleetTree();
+        }
       }
+    }
+
+    function loadMasterFleet() {
+      fetch('/api/catalog?limit=1000')
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.satellites && data.satellites.length > 0) {
+            injectDiscoveredSatellites(data.satellites, false);
+            try {
+              const urlParams = new URLSearchParams(window.location.search);
+              const trackTarget = urlParams.get('track') || urlParams.get('norad') || urlParams.get('id');
+              if (trackTarget) {
+                const targetSat = SATELLITE_CATALOG.find(s => 
+                  (s.norad && String(s.norad).toLowerCase() === trackTarget.toLowerCase()) ||
+                  (s.id && String(s.id).toLowerCase() === trackTarget.toLowerCase()) ||
+                  (s.name && s.name.toLowerCase().includes(trackTarget.toLowerCase()))
+                );
+                if (targetSat) {
+                  selectedSat = targetSat;
+                  renderFleetTree();
+                  rebuildOrbitLines();
+                  updateDossier();
+                }
+              }
+            } catch (err) {}
+          }
+        })
+        .catch(err => {
+          console.warn('[GODS_EYE] Local fallback buffer active:', err);
+        });
     }
 
     function triggerAutoDiscovery() {
@@ -3053,6 +3124,7 @@
 
     window.addEventListener('load', () => {
       init3dGlobe();
+      loadMasterFleet();
       initScrambleListeners();
       animate();
 

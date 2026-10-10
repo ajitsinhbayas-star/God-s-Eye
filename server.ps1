@@ -513,7 +513,9 @@ while ($listener.IsListening) {
             }
 
             $totalCount = $filtered.Count
-            $limit = if (-not [string]::IsNullOrWhiteSpace($limitStr)) { [int]$limitStr } else { 100 }
+            $limit = if (-not [string]::IsNullOrWhiteSpace($limitStr)) {
+                if ($limitStr -eq "all" -or $limitStr -eq "0") { 10000 } else { [int]$limitStr }
+            } else { 1000 }
             $offset = if (-not [string]::IsNullOrWhiteSpace($offsetStr)) { [int]$offsetStr } else { 0 }
 
             $sliced = @()
