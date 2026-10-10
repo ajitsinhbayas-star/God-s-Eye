@@ -1,0 +1,8 @@
+# Logs & Crash Dumps
+*.log
+chrome_debug.log
+edge_*_test.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
