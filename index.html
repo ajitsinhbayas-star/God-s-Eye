@@ -1190,6 +1190,30 @@
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
       transform: translateY(-1px);
     }
+    .bg-slate-950\/75, .bg-slate-950-75 { background-color: rgba(2, 6, 23, 0.75); }
+    .bg-slate-950\/70, .bg-slate-950-70 { background-color: rgba(2, 6, 23, 0.7); }
+    .bg-cyan-950\/70, .bg-cyan-950-70 { background-color: rgba(8, 51, 68, 0.7); }
+    .border-cyan-500\/20, .border-cyan-500-20 { border-color: rgba(6, 182, 212, 0.2); }
+    .border-cyan-500\/30, .border-cyan-500-30 { border-color: rgba(6, 182, 212, 0.3); }
+    .bg-cyan-500\/10, .bg-cyan-500-10 { background-color: rgba(6, 182, 212, 0.1); }
+    .border-slate-800\/80, .border-slate-800-80 { border-color: rgba(30, 41, 59, 0.8); }
+    .bg-amber-500\/10, .bg-amber-500-10 { background-color: rgba(245, 158, 11, 0.1); }
+    .border-amber-500\/20, .border-amber-500-20 { border-color: rgba(245, 158, 11, 0.2); }
+    .hover\:border-amber-500\/40:hover { border-color: rgba(245, 158, 11, 0.4); }
+    .bg-indigo-500\/10, .bg-indigo-500-10 { background-color: rgba(99, 102, 241, 0.1); }
+    .border-indigo-500\/20, .border-indigo-500-20 { border-color: rgba(99, 102, 241, 0.2); }
+    .text-teal-400 { color: #2dd4bf; }
+    .text-teal-300 { color: #5eead4; }
+    .hover\:text-teal-300:hover { color: #5eead4; }
+    .hover\:text-amber-300:hover { color: #fde047; }
+    .hover\:text-indigo-300:hover { color: #a5b4fc; }
+    .hover\:text-cyan-300:hover { color: #67e8f9; }
+    .hover\:text-white:hover { color: #ffffff; }
+    .hover\:underline:hover { text-decoration: underline; }
+    .hover\:border-slate-700:hover { border-color: #334155; }
+    .stream-hub-dialog .tab-pane { display: grid !important; }
+    .stream-hub-dialog .tab-pane.hidden { display: none !important; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -1582,525 +1606,215 @@
 
   <!-- LIVE SATELLITE TRACKING & HEAVENS-ABOVE COSMIC RADAR HUB MODAL -->
   <div id="streamHubModal" class="stream-hub-modal-overlay">
-    <div class="stream-hub-dialog max-w-6xl mx-auto my-8 p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-100 font-sans" style="background: rgba(7, 11, 25, 0.82) !important; backdrop-filter: blur(20px); border: 1px solid rgba(56, 189, 248, 0.25) !important;">
+    <div class="stream-hub-dialog max-w-6xl mx-auto my-8 p-6 rounded-2xl bg-slate-950/75 backdrop-blur-xl border border-cyan-500/20 shadow-[0_0_40px_-10px_rgba(6,182,212,0.15)] text-slate-100 font-sans" style="background: rgba(7, 11, 25, 0.85) !important; backdrop-filter: blur(20px); border: 1px solid rgba(56, 189, 248, 0.25) !important;">
       <button id="btnCloseStreamHubModal" class="stream-hub-close-btn" title="Close Cosmic Radar Hub">&times;</button>
       
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-800 gap-4" style="padding-right:40px; border-color: rgba(56, 189, 248, 0.2);">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-800/80 gap-4" style="padding-right:40px;">
         <div>
-          <div class="flex items-center gap-2.5">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" style="box-shadow: 0 0 8px #00ff66;"></span>
-            <h2 class="text-xl font-bold tracking-tight text-white" style="letter-spacing:1px;">HEAVENS-ABOVE // ASTRONOMICAL RADAR &amp; LIVE ISS STREAM</h2>
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
+            <h2 class="text-xl font-bold tracking-tight text-white font-mono">Orbital Radar &amp; Deep Space Observatory</h2>
           </div>
-          <p class="text-xs text-slate-400 mt-1 font-mono">
-            Hollow-Space Deep Mission Telemetry &bull; Heavens-Above Orbit Engine &bull; N2YO &amp; OrbTrack Synchronization
-          </p>
+          <p class="text-xs text-slate-400 mt-1 font-mono">Real-time Earth orbits, celestial ephemeris &amp; deep-space probes via Heavens-Above, N2YO &amp; OrbTrack</p>
         </div>
-        <div class="flex items-center gap-2">
-          <a href="https://www.heavens-above.com/" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-cyan-400 font-mono text-xs font-semibold hover:bg-cyan-500/20 transition" style="background:rgba(56, 189, 248, 0.12); border:1px solid rgba(56, 189, 248, 0.3); text-decoration:none;">
-            <span>HEAVENS-ABOVE PORTAL</span>
+        
+        <!-- Quick Hub Badges -->
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-medium hover:bg-amber-500/20 transition" style="text-decoration:none;">
+            <span>Deep Space Probes</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
-          <a href="https://www.n2yo.com/space-station/" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-emerald-400 font-mono text-xs font-semibold hover:bg-emerald-500/20 transition" style="background:rgba(0, 255, 102, 0.12); border:1px solid rgba(0, 255, 102, 0.3); text-decoration:none;">
-            <span>N2YO RADAR</span>
+          <a href="https://www.heavens-above.com/skychart2.aspx" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-medium hover:bg-indigo-500/20 transition" style="text-decoration:none;">
+            <span>Celestial Sky Chart</span>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           </a>
         </div>
       </div>
 
-      <!-- Top Section: Embedded Live NASA Stream & ISS Telemetry Box -->
-      <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        <!-- 1. Embedded Live NASA Earth Stream -->
-        <div class="lg:col-span-2 overflow-hidden rounded-xl bg-black border shadow-inner aspect-video relative" style="border-color: rgba(56, 189, 248, 0.25);">
+      <!-- Live Stream & Telemetry HUD -->
+      <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        
+        <!-- NASA ISS Earth Stream -->
+        <div class="lg:col-span-2 overflow-hidden rounded-xl bg-black border border-cyan-500/20 shadow-inner aspect-video relative">
           <iframe 
             class="w-full h-full border-0" 
             src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1&mute=1" 
-            title="Official NASA ISS Live Earth Stream"
+            title="Official NASA ISS Live Stream"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
           </iframe>
-          <div class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded bg-black/80 backdrop-blur border border-rose-500/40 text-[10px] font-semibold text-rose-400 flex items-center gap-1.5 font-mono">
+          <div class="absolute top-2 left-2 px-2.5 py-1 rounded bg-black/80 backdrop-blur border border-cyan-500/30 text-[10px] font-semibold text-rose-400 flex items-center gap-1.5 font-mono">
             <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-            LIVE NASA STREAM FROM ORBIT
+            LIVE FROM ORBIT (ISS)
           </div>
         </div>
 
-        <!-- 2. Live Coordinates & Telemetry Box -->
-        <div class="p-4 rounded-xl border flex flex-col justify-between gap-3 h-full" style="background: rgba(11, 20, 42, 0.65); border-color: rgba(56, 189, 248, 0.25);">
+        <!-- Live Telemetry Card -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between gap-4 h-full shadow-lg font-mono">
           <div>
-            <div class="flex items-center justify-between pb-2 border-b" style="border-color: rgba(56, 189, 248, 0.2);">
-              <div class="flex items-center gap-2">
-                <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#00f0ff; box-shadow:0 0 6px #00f0ff;"></span>
-                <span class="text-xs font-bold text-white font-mono">ISS TELEMETRY // #25544</span>
-              </div>
-              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30 font-mono">LEO &bull; 51.6&deg; INC</span>
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+              <span class="text-xs font-semibold text-white">ISS Telemetry (NORAD #25544)</span>
+              <span class="text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">Active LEO</span>
             </div>
             
-            <div class="grid grid-cols-2 gap-2.5 mt-3 text-xs font-mono">
-              <div class="p-2 rounded bg-black/50 border border-slate-800">
+            <div class="grid grid-cols-2 gap-3 mt-4 text-xs font-mono">
+              <div class="p-2.5 rounded bg-slate-950/70 border border-slate-800">
                 <span class="text-slate-400 block text-[10px] uppercase">Latitude</span>
                 <span id="iss-lat" class="text-emerald-400 font-bold text-sm">Syncing...</span>
               </div>
-              <div class="p-2 rounded bg-black/50 border border-slate-800">
+              <div class="p-2.5 rounded bg-slate-950/70 border border-slate-800">
                 <span class="text-slate-400 block text-[10px] uppercase">Longitude</span>
                 <span id="iss-lng" class="text-emerald-400 font-bold text-sm">Syncing...</span>
               </div>
-              <div class="p-2 rounded bg-black/50 border border-slate-800">
+              <div class="p-2.5 rounded bg-slate-950/70 border border-slate-800">
                 <span class="text-slate-400 block text-[10px] uppercase">Altitude</span>
                 <span id="iss-alt" class="text-cyan-400 font-bold text-sm">~420 km</span>
               </div>
-              <div class="p-2 rounded bg-black/50 border border-slate-800">
-                <span class="text-slate-400 block text-[10px] uppercase">Orbital Speed</span>
+              <div class="p-2.5 rounded bg-slate-950/70 border border-slate-800">
+                <span class="text-slate-400 block text-[10px] uppercase">Velocity</span>
                 <span id="iss-vel" class="text-cyan-400 font-bold text-sm">~27,600 km/h</span>
-              </div>
-            </div>
-
-            <!-- Ephemeris Quick Stats -->
-            <div class="mt-2.5 p-2 rounded bg-black/40 border border-slate-800/80 text-[10px] font-mono text-slate-300 flex flex-col gap-1">
-              <div class="flex justify-between">
-                <span class="text-slate-400">Orbital Period:</span>
-                <strong class="text-white">~92.9 Minutes</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Daily Revolutions:</span>
-                <strong class="text-white">~15.5 Orbits/Day</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Visual Magnitude:</span>
-                <strong class="text-emerald-400">Up to -3.8 (Brightest)</strong>
               </div>
             </div>
           </div>
 
-          <div class="pt-2 flex flex-col gap-2">
+          <div class="flex flex-col gap-2">
             <button id="btnTrackIssFromHub" class="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-emerald-900/30 transition flex items-center justify-center gap-1.5 cursor-pointer font-mono" style="border:1px solid rgba(0,255,102,0.4);">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              🎯 INTERCEPT &amp; LOCK ON 3D GLOBE
+              ðŸŽ¯ INTERCEPT &amp; LOCK ON 3D GLOBE
             </button>
-            <div class="flex gap-2">
-              <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544" target="_blank" rel="noopener noreferrer" class="cosmic-hud-pill flex-1 justify-center" style="font-size:0.6rem;">
-                HA PASS SUMMARY &rarr;
-              </a>
-              <a href="https://www.n2yo.com/satellite/?s=25544" target="_blank" rel="noopener noreferrer" class="cosmic-hud-pill flex-1 justify-center" style="font-size:0.6rem;">
-                N2YO 10-DAY PASSES &rarr;
-              </a>
+            <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-[11px] text-slate-400">
+              <span>Refresh: <b class="text-slate-300">5s live poll</b></span>
+              <a href="https://www.orbtrack.org/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Ground Radar &rarr;</a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Heavens-Above & Cosmic Radar Multi-Source Matrix -->
-      <div class="mt-7 pt-5 border-t" style="border-color: rgba(56, 189, 248, 0.2);">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-            <h3 class="text-sm font-bold text-white tracking-wide uppercase font-mono">
-              HEAVENS-ABOVE INTEGRATION MATRIX &bull; MULTI-SOURCE RADARS
-            </h3>
+      <!-- Category Navigation Tabs -->
+      <div class="flex items-center gap-2 mt-8 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-mono">
+        <button onclick="switchTab('deepspace')" id="tab-deepspace" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 transition cursor-pointer">ðŸŒŒ Deep Space &amp; Probes</button>
+        <button onclick="switchTab('astronomy')" id="tab-astronomy" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ”­ Astronomy &amp; Comets</button>
+        <button onclick="switchTab('satellites')" id="tab-satellites" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ›°ï¸ Satellite Passes &amp; Ham Radio</button>
+        <button onclick="switchTab('catalogs')" id="tab-catalogs" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ“¡ N2YO Catalogs &amp; Launches</button>
+      </div>
+
+      <!-- Tab Content Panes -->
+      <div class="mt-4 font-mono">
+
+        <!-- 1. Deep Space Missions & Interplanetary Probes -->
+        <div id="content-deepspace" class="tab-pane grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-amber-500/20 hover:border-amber-500/40 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-semibold text-white">Solar System Escape Probes</h4>
+                <span class="text-[10px] bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20">Interstellar</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Live distances (AU &amp; km), current constellations, and velocity for Voyager 1, Voyager 2, Pioneer 10, Pioneer 11, and New Horizons.</p>
+            </div>
+            <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-amber-400 hover:text-amber-300 font-medium mt-3 inline-flex items-center gap-1" style="text-decoration:none;">Track Deep Space Fleet &rarr;</a>
           </div>
-          <span class="text-[10px] text-cyan-400/80 font-mono tracking-wider">ASTRONOMICAL &bull; DEEP SPACE &bull; ORBIT TRACKING</span>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Near-Earth Asteroids (NEOs)</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Orbital diagrams, brightness magnitudes, and approach distances for asteroids crossing Earth's vicinity.</p>
+            </div>
+            <a href="https://www.heavens-above.com/Asteroids.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium mt-3" style="text-decoration:none;">Check Asteroid Ephemeris &rarr;</a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Active Comets Tracker</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Magnitudes, tail visibility, and coordinates for periodic and newly discovered comets entering the inner solar system.</p>
+            </div>
+            <a href="https://www.heavens-above.com/Comets.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium mt-3" style="text-decoration:none;">Browse Active Comets &rarr;</a>
+          </div>
         </div>
 
-        <!-- 4 Multi-Source Navigation Tabs -->
-        <div class="flex border-b text-xs gap-4 font-mono font-medium overflow-x-auto pb-1" style="border-color: rgba(56, 189, 248, 0.2);">
-          <button onclick="switchTab('deepspace')" id="tab-deepspace" class="pb-2 border-b-2 border-cyan-400 text-white transition cursor-pointer whitespace-nowrap">
-            🌌 01. DEEP SPACE &amp; PROBES
-          </button>
-          <button onclick="switchTab('sky')" id="tab-sky" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition cursor-pointer whitespace-nowrap">
-            🔭 02. SKY &amp; ASTRONOMY
-          </button>
-          <button onclick="switchTab('satorbits')" id="tab-satorbits" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition cursor-pointer whitespace-nowrap">
-            🛰️ 03. SATELLITE ORBITS
-          </button>
-          <button onclick="switchTab('radars')" id="tab-radars" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition cursor-pointer whitespace-nowrap">
-            📡 04. N2YO &amp; ORBTRACK RADARS
-          </button>
+        <!-- 2. Astronomy, Ephemeris & Sky Tools -->
+        <div id="content-astronomy" class="tab-pane hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Interactive Sky Dome Chart</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Overhead celestial map displaying constellations, bright stars, and visible satellites for your local horizon.</p>
+            </div>
+            <a href="https://www.heavens-above.com/skychart2.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium mt-3" style="text-decoration:none;">Launch Sky Chart &rarr;</a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Planets Almanac &amp; Rise/Set</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Positions, elongation, visual magnitude, and rising/setting times for Mercury, Venus, Mars, Jupiter, and Saturn.</p>
+            </div>
+            <a href="https://www.heavens-above.com/planets.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium mt-3" style="text-decoration:none;">View Planetary Almanac &rarr;</a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Sun &amp; Moon Phases</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Exact lunar illumination %, moon phase calendar, and twilight/dawn calculations.</p>
+            </div>
+            <a href="https://www.heavens-above.com/moon.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium mt-3" style="text-decoration:none;">Check Moon Ephemeris &rarr;</a>
+          </div>
         </div>
 
-        <!-- Tab Contents Container -->
-        <div class="mt-4">
-
-          <!-- TAB 1: DEEP SPACE MISSIONS & INTERPLANETARY PROBES -->
-          <div id="content-deepspace" class="stream-subtab-pane grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <!-- Voyager 1 -->
-            <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">VOYAGER 1</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">INTERSTELLAR</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Distance: <strong class="text-emerald-400">~163.2 AU (24.41 Billion km)</strong></div>
-                <div class="text-[10px] text-slate-400 mt-1 font-mono">Constellation: <strong class="text-slate-200">Ophiuchus</strong> &bull; Speed: <strong class="text-slate-200">~16.9 km/s</strong></div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Most distant human object. Escaping solar system into interstellar space with plasma wave telemetry.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Escape Trajectory on Heavens-Above</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Voyager 2 -->
-            <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">VOYAGER 2</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">INTERSTELLAR</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Distance: <strong class="text-emerald-400">~136.5 AU (20.42 Billion km)</strong></div>
-                <div class="text-[10px] text-slate-400 mt-1 font-mono">Constellation: <strong class="text-slate-200">Pavo / Telescopium</strong> &bull; Speed: <strong class="text-slate-200">~15.3 km/s</strong></div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Traversed heliopause into local interstellar cloud. Operational cosmic ray instruments.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Escape Trajectory on Heavens-Above</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Pioneer 10 & 11 -->
-            <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-amber-400 font-mono">PIONEER 10 &amp; 11</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">PASSIVE ESCAPE</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Pioneer 10: <strong class="text-emerald-400">~135.1 AU</strong> (Heading: Taurus / Aldebaran)</div>
-                <div class="text-[11px] text-white mt-1 font-mono">Pioneer 11: <strong class="text-emerald-400">~113.4 AU</strong> (Heading: Scutum)</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Historic outer solar system explorers on hyperbolic escape orbits carrying gold-anodized plaques.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>View Trajectories on Heavens-Above</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- New Horizons -->
-            <a href="https://www.heavens-above.com/Spacecraft.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">NEW HORIZONS</span>
-                  <span class="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/30 font-mono">KUIPER BELT</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Distance: <strong class="text-emerald-400">~58.4 AU (8.73 Billion km)</strong></div>
-                <div class="text-[10px] text-slate-400 mt-1 font-mono">Constellation: <strong class="text-slate-200">Sagittarius</strong> &bull; Speed: <strong class="text-slate-200">~13.7 km/s</strong></div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Pluto &amp; Arrokoth flyby probe cruising through Kuiper Belt towards interstellar space.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Spacecraft Tracking on Heavens-Above</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- James Webb Space Telescope (JWST) -->
-            <a href="https://www.heavens-above.com/SelectSatellites.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-amber-400 font-mono">JAMES WEBB (JWST)</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">SUN-EARTH L2</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Location: <strong class="text-emerald-400">~1.5 Million km from Earth</strong></div>
-                <div class="text-[10px] text-slate-400 mt-1 font-mono">Orbit: <strong class="text-slate-200">Lagrange Point 2 Halo Orbit</strong></div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Infrared deep-space observatory capturing the first galaxies formed after the Big Bang.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Lagrange Ephemeris on Heavens-Above</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Moon & Interplanetary Orbiters -->
-            <a href="https://www.heavens-above.com/moon.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">LUNAR &amp; INTERPLANETARY FLEET</span>
-                  <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">CISLUNAR</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Targets: <strong class="text-slate-200">LRO, Chandrayaan, Parker Solar, Juice</strong></div>
-                <div class="text-[10px] text-slate-400 mt-1 font-mono">Lunar Distance: <strong class="text-emerald-400">~384,400 km</strong></div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Continuous tracking of moon orbiters, solar perihelion probes, and Jovian interplanetary cruise trajectories.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Moon Ephemeris &amp; Orbiters</span> <span>&rarr;</span>
-              </div>
-            </a>
+        <!-- 3. Satellite Passes & Ham Radio -->
+        <div id="content-satellites" class="tab-pane hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">All Visible Satellite Passes</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Daily passes of all bright objects visible with the naked eye or binoculars from your location.</p>
+            </div>
+            <a href="https://www.heavens-above.com/AllSats.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-teal-400 hover:text-teal-300 font-medium mt-3" style="text-decoration:none;">Daily Pass Schedule &rarr;</a>
           </div>
 
-          <!-- TAB 2: ASTRONOMY & SKY OBSERVATIONS -->
-          <div id="content-sky" class="stream-subtab-pane hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <!-- Interactive Sky Chart -->
-            <a href="https://www.heavens-above.com/skychart2.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">CELESTIAL SKY CHART</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">INTERACTIVE</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Interactive Whole-Sky Dome View</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Real-time sky dome planisphere with constellation boundaries, stellar magnitudes to mag +6, and planetary positions for any horizon.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Open Sky Chart (/skychart2.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Planets Summary & Ephemeris -->
-            <a href="https://www.heavens-above.com/planets.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-amber-400 font-mono">SOLAR SYSTEM PLANETS</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">EPHEMERIS</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Mercury &bull; Venus &bull; Mars &bull; Jupiter &bull; Saturn</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Daily coordinates, elongation from Sun, magnitude, constellation, and rise/set/transit times across all 8 major planets.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Planets Ephemeris (/planets.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Sun & Moon Ephemeris -->
-            <a href="https://www.heavens-above.com/sun.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-yellow-400 font-mono">SUN &amp; MOON EPHEMERIS</span>
-                  <span class="text-[9px] bg-yellow-500/20 text-yellow-300 px-1.5 py-0.5 rounded border border-yellow-500/30 font-mono">SOLAR/LUNAR</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Rise/Set Times &bull; Twilight &bull; Moon Phases</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Civil, nautical and astronomical twilight calculations, lunar illumination %, age of Moon, and next eclipse dates.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Sun (/sun.aspx) &amp; Moon (/moon.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Comets -->
-            <a href="https://www.heavens-above.com/Comets.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">BRIGHT &amp; VISIBLE COMETS</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">PERIODIC/HYPERBOLIC</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">C/2023 A3 &bull; 12P/Pons-Brooks &bull; Encke</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Live predicted brightness, perihelion coordinates, tail orientation, orbital eccentricity, and finding charts.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Active Comets Table (/Comets.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Asteroids & Near-Earth Objects -->
-            <a href="https://www.heavens-above.com/Asteroids.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-rose-400 font-mono">ASTEROIDS &amp; NEOS</span>
-                  <span class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/30 font-mono">CLOSE APPROACH</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Ceres &bull; Vesta &bull; 99942 Apophis &bull; Bennu</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Main belt minor planets and Near-Earth Objects (NEOs). Ephemeris, visual magnitude, and closest approach distance.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Asteroids Directory (/Asteroids.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- All Visible Satellites Daily Pass Summary -->
-            <a href="https://www.heavens-above.com/AllSats.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-emerald-400 font-mono">ALL BRIGHT SATELLITES</span>
-                  <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">10-DAY PASSES</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Comprehensive Twilight Pass Table</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Full pass predictions for all naked-eye and binocular satellites brighter than magnitude 4.5 sorted chronologically.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>10-Day Visible Passes (/AllSats.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Amateur Ham Radio Satellites</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Operating frequencies, mode transponders, Doppler shifts, and pass elevations for ham radio operators.</p>
+            </div>
+            <a href="https://www.heavens-above.com/AmateurSats.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-teal-400 hover:text-teal-300 font-medium mt-3" style="text-decoration:none;">Ham Satellite Frequencies &rarr;</a>
           </div>
 
-          <!-- TAB 3: SATELLITE & ORBIT TRACKING -->
-          <div id="content-satorbits" class="stream-subtab-pane hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <!-- ISS Pass Summary -->
-            <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-emerald-400 font-mono">ISS PASS SUMMARY</span>
-                  <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">NORAD #25544</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">International Space Station Passes</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">High-precision visibility windows, pass altitude, compass azimuth, start/max/end time, and visual magnitude up to -3.8.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>PassSummary.aspx?satid=25544</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Tiangong Pass Summary -->
-            <a href="https://www.heavens-above.com/PassSummary.aspx?satid=48274" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-emerald-400 font-mono">TIANGONG CSS PASSES</span>
-                  <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">NORAD #48274</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Chinese Space Station Passes</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Visual pass schedule for the Tiangong orbital station. Core Tianhe module, Wentian, and Mengtian science labs.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>PassSummary.aspx?satid=48274</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Starlink 3D Dynamic Constellation -->
-            <a href="https://www.heavens-above.com/Starlink.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">STARLINK 3D CONSTELLATION</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">3D GLOBE ENGINE</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Interactive Starlink Shells &amp; Trains</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Interactive 3D dynamic globe showing all operational Starlink satellites, newly launched orbital trains, and ground tracks.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Starlink 3D Tracker (/Starlink.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Amateur Ham Radio Satellites -->
-            <a href="https://www.heavens-above.com/AmateurSats.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-amber-400 font-mono">AMATEUR HAM RADIO SATS</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">RF &bull; DOPPLER</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Frequencies &bull; Uplink/Downlink &bull; Doppler</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Radio amateur satellite pass tables with FM voice repeater frequencies, beacon modes, and real-time Doppler shift compensations.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Amateur Radio Tracker (/AmateurSats.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Geostationary Orbit Satellites -->
-            <a href="https://www.heavens-above.com/geostats.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">GEOSTATIONARY SATELLITES</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">GEO CLARKE BELT</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">~35,786 km Orbital Belt Positions</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Full catalogue of geostationary comms &amp; weather satellites mapped by sub-satellite longitude along the equatorial belt.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>GEO Belt Tracker (/geostats.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- Rocket Bodies & Space Debris -->
-            <a href="https://www.heavens-above.com/SelectSatellites.aspx" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-rose-400 font-mono">ROCKET BODIES &amp; DEBRIS</span>
-                  <span class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/30 font-mono">SELECTABLE CATALOG</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Envisat &bull; Spent Boosters &bull; Fragments</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Track dead payloads, tumbling rocket bodies (Falcon 9 second stages, SL-16), and major orbital debris fragments.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Custom Catalog (/SelectSatellites.aspx)</span> <span>&rarr;</span>
-              </div>
-            </a>
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Starlink 3D Orbital Trains</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">3D orbital visualization of SpaceX constellation strings and next pass predictions.</p>
+            </div>
+            <a href="https://www.heavens-above.com/Starlink.aspx" target="_blank" rel="noopener noreferrer" class="text-xs text-teal-400 hover:text-teal-300 font-medium mt-3" style="text-decoration:none;">Track Starlink Planes &rarr;</a>
           </div>
-
-          <!-- TAB 4: N2YO & ORBTRACK RADARS -->
-          <div id="content-radars" class="stream-subtab-pane hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <!-- N2YO Space Station & Full Radar -->
-            <a href="https://www.n2yo.com/space-station/" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-emerald-400 font-mono">N2YO ORBITAL RADAR</span>
-                  <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">LIVE ENGINE</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Full Interactive Radar &amp; Telemetry</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Live satellite horizon azimuth/elevation radar sweeps, 3D trajectory visualization, and real-time SGP4 pass predictions.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>N2YO Space Station Radar</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- OrbTrack 3D Web Tracker -->
-            <a href="https://orbtrack.org/" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">ORBTRACK 3D TRACKER</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">WEB 3D GL</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Interactive Multi-Target Orbit Platform</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Browser-based 3D satellite visualization platform with ground track footprint cones, amateur radio frequencies, and sensor passes.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>Open OrbTrack (orbtrack.org)</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- N2YO Starlink Megaconstellation -->
-            <a href="https://www.n2yo.com/satellites/?c=52" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">N2YO STARLINK FLEET</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">MEGACONSTELLATION</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">All Active SpaceX Starlink Orbiters</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Global listing and real-time pass forecasts for all operational Starlink satellites in low Earth orbit.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>N2YO Category #52</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- N2YO Brightest Satellites -->
-            <a href="https://www.n2yo.com/satellites/?c=1" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-amber-400 font-mono">N2YO BRIGHTEST SATS</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">VISUAL MAG</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">Hubble &bull; Tiangong &bull; Envisat &bull; BlueWalker</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Top high-reflectivity targets easily visible to the unaided eye during dusk and dawn passes.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>N2YO Visual Pass List</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- N2YO Space Debris & Rocket Bodies -->
-            <a href="https://www.n2yo.com/satellites/?c=debris" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-rose-400 font-mono">N2YO DEBRIS RADAR</span>
-                  <span class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/30 font-mono">COLLISION MONITOR</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">NORAD Tracked Debris &amp; Fragments</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Real-time coordinates and decay orbits for mission fragments, mission-related debris, and spent rocket stages.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>N2YO Debris Tracker</span> <span>&rarr;</span>
-              </div>
-            </a>
-
-            <!-- N2YO Weather & Earth Observation -->
-            <a href="https://www.n2yo.com/satellites/?c=3" target="_blank" rel="noopener noreferrer" class="cosmic-card">
-              <div>
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-cyan-400 font-mono">EARTH OBSERVATION RADAR</span>
-                  <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono">WEATHER / MET</span>
-                </div>
-                <div class="text-[11px] text-white mt-1.5 font-mono">NOAA &bull; GOES &bull; Meteosat &bull; Sentinel</div>
-                <p class="text-[10px] text-slate-400 mt-1.5 leading-snug">Geostationary and polar-orbiting meteorological satellites providing real-time Earth atmospheric imagery.</p>
-              </div>
-              <div class="text-[10px] text-cyan-400 mt-3 pt-2 border-t border-slate-800 font-mono flex items-center justify-between">
-                <span>N2YO Weather Fleet</span> <span>&rarr;</span>
-              </div>
-            </a>
-          </div>
-
         </div>
+
+        <!-- 4. Catalogs & Real-time Launches (N2YO & OrbTrack) -->
+        <div id="content-catalogs" class="tab-pane hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">OrbTrack 5-Day Forecast</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">CelesTrak-powered orbital line-of-sight analysis and solar day/night illumination models.</p>
+            </div>
+            <a href="https://www.orbtrack.org/" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium mt-3" style="text-decoration:none;">Open OrbTrack &rarr;</a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">Latest Orbital Launches</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Newly cataloged NORAD objects and fresh orbital element sets published by N2YO.</p>
+            </div>
+            <a href="https://www.n2yo.com/satellites/?c=latest-launches" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium mt-3" style="text-decoration:none;">Latest Launches &rarr;</a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between">
+            <div>
+              <h4 class="text-sm font-semibold text-white">National Agencies (ISRO / NASA / ESA)</h4>
+              <p class="text-xs text-slate-400 mt-2 font-sans">Explore active and decommissioned satellites filtered by nation of ownership.</p>
+            </div>
+            <a href="https://www.n2yo.com/satellites/?c=&t=country" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium mt-3" style="text-decoration:none;">Filter by Country &rarr;</a>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -2201,7 +1915,7 @@
     document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.sidebar-tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sidebar-card .tab-pane').forEach(p => p.classList.remove('active'));
         const target = e.currentTarget;
         target.classList.add('active');
         const tabId = target.getAttribute('data-tab');
@@ -4061,13 +3775,14 @@
     }
 
     function switchTab(tabId) {
-      ['deepspace', 'sky', 'satorbits', 'radars', 'popular', 'launches', 'countries'].forEach(id => {
+      const tabs = ['deepspace', 'astronomy', 'satellites', 'catalogs'];
+      tabs.forEach(id => {
         const content = document.getElementById(`content-${id}`);
         const tab = document.getElementById(`tab-${id}`);
         if (content) content.classList.add('hidden');
         if (tab) {
-          tab.classList.remove('border-cyan-400', 'border-emerald-400', 'text-white');
-          tab.classList.add('border-transparent', 'text-slate-400');
+          tab.classList.remove('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
+          tab.classList.add('text-slate-400');
         }
       });
 
@@ -4075,8 +3790,8 @@
       const activeTab = document.getElementById(`tab-${tabId}`);
       if (activeContent) activeContent.classList.remove('hidden');
       if (activeTab) {
-        activeTab.classList.remove('border-transparent', 'text-slate-400');
-        activeTab.classList.add('border-cyan-400', 'text-white');
+        activeTab.classList.remove('text-slate-400');
+        activeTab.classList.add('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
       }
       try { playTone(720, 'sine', 0.04); } catch (e) {}
     }
