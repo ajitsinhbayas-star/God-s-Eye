@@ -351,24 +351,39 @@
     </div>
   </aside>
 
-  <!-- Bottom Floating NASA ISS Live Video Stream -->
-  <div id="video-panel" class="absolute bottom-4 right-3 z-30 w-72 sm:w-88 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
-    <div class="flex items-center justify-between p-2 bg-slate-950/80 border-b border-slate-800">
-      <div class="flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-        <span class="text-[10px] font-bold text-white uppercase tracking-wider">NASA ISS Live Orbit Camera</span>
+  <!-- Enhanced ISS Live Video HUD Container -->
+  <div id="video-panel" class="absolute bottom-4 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
+    <!-- Stream Header & Controls -->
+    <div class="flex items-center justify-between p-2.5 bg-slate-950/85 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span id="iss-signal-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-white uppercase tracking-wider font-mono">ISS Live Stream</span>
+        <span id="iss-signal-status" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono">ONLINE</span>
       </div>
-      <button onclick="toggleVideoPanel()" class="text-slate-400 hover:text-white text-xs px-2 py-0.5 rounded">✕</button>
+      
+      <!-- Cam Switcher Dropdown & Close Button -->
+      <div class="flex items-center gap-1.5">
+        <select id="iss-feed-select" onchange="ISSStream.switchFeed(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono cursor-pointer">
+          <option value="0">Cam 1: Earth Views (HD)</option>
+          <option value="1">Cam 2: NASA TV / Operations</option>
+          <option value="2">Cam 3: Sen 4K Earth Orbit</option>
+        </select>
+        <button onclick="toggleVideoPanel()" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded">✕</button>
+      </div>
     </div>
-    <div class="aspect-video bg-black relative">
-      <iframe 
-        id="iss-video-frame"
-        class="w-full h-full border-0" 
-        src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1&mute=1" 
-        title="Official NASA ISS Live Stream"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-      </iframe>
+
+    <!-- Video Player Viewport -->
+    <div class="aspect-video bg-black relative flex items-center justify-center">
+      <div id="iss-player-mount" class="w-full h-full"></div>
+
+      <!-- Loss of Signal (LOS) / Night Overlay -->
+      <div id="iss-los-overlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
+        <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping mb-2"></span>
+        <p class="text-xs font-bold text-white font-mono uppercase tracking-wider">Temporary Loss of Signal (LOS)</p>
+        <p class="text-[10px] text-slate-400 mt-1 max-w-[240px]">
+          The ISS is either in orbital night (Earth shadow) or switching TDRS tracking satellites. Transmission resumes shortly.
+        </p>
+      </div>
     </div>
   </div>
 
@@ -383,6 +398,157 @@
 
   <!-- JavaScript Engine -->
   <script>
+    /**
+     * ISS Live Stream Controller
+     * Features:
+     * - Multi-source fallback (NASA Earth views, NASA TV, Sen 4K Orbit)
+     * - Automatic Error 150/101 detection & auto-switching to live backup
+     * - Telemetry-aware Loss of Signal (LOS) / Orbital Night overlay
+     */
+    const ISSStream = (function () {
+      // Verified Live ISS Stream Feeds (with automatic failover)
+      const FEEDS = [
+        {
+          id: "SD0dlqX9xzo", // NASA ISS Live High-Definition Earth Views
+          title: "Cam 1: Live HD Earth Views",
+          type: "video"
+        },
+        {
+          id: "21X5lGlDOfg", // NASA TV Official Broadcast / EVA Operations
+          title: "Cam 2: NASA TV & Ops",
+          type: "video"
+        },
+        {
+          id: "k204D5g3z30", // Sen Live 4K Ultra HD Earth View from ISS
+          title: "Cam 3: Sen 4K Orbit",
+          type: "video"
+        }
+      ];
+
+      let activeIndex = 0;
+      let ytPlayer = null;
+      let isApiReady = false;
+
+      // 1. Asynchronously Load the Official YouTube IFrame Player API
+      function init() {
+        if (!window.YT) {
+          const tag = document.createElement("script");
+          tag.src = "https://www.youtube.com/iframe_api";
+          const firstScriptTag = document.getElementsByTagName("script")[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+          window.onYouTubeIframeAPIReady = () => {
+            isApiReady = true;
+            mountPlayer(FEEDS[activeIndex].id);
+          };
+        } else {
+          mountPlayer(FEEDS[activeIndex].id);
+        }
+      }
+
+      // 2. Mount and Configure the Responsive Embedded Player
+      function mountPlayer(videoId) {
+        if (ytPlayer) {
+          ytPlayer.loadVideoById(videoId);
+          return;
+        }
+
+        ytPlayer = new YT.Player("iss-player-mount", {
+          videoId: videoId,
+          playerVars: {
+            autoplay: 1,
+            mute: 1, // Muted by default to satisfy browser autoplay policies
+            controls: 1,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1
+          },
+          events: {
+            onReady: (event) => {
+              event.target.playVideo();
+              setSignalStatus(true);
+            },
+            onError: (event) => {
+              console.warn(`ISS Stream Feed [${activeIndex}] failed with error code:`, event.data);
+              handleStreamError();
+            },
+            onStateChange: (event) => {
+              if (event.data === YT.PlayerState.PLAYING) {
+                setSignalStatus(true);
+              }
+            }
+          }
+        });
+      }
+
+      // 3. Auto-Failover to the Next Camera if a Stream Goes Offline
+      function handleStreamError() {
+        setSignalStatus(false);
+        activeIndex = (activeIndex + 1) % FEEDS.length;
+        console.log(`Switching to backup ISS feed [${activeIndex}]: ${FEEDS[activeIndex].title}`);
+
+        const select = document.getElementById("iss-feed-select");
+        if (select) select.value = activeIndex;
+
+        if (ytPlayer && ytPlayer.loadVideoById) {
+          ytPlayer.loadVideoById(FEEDS[activeIndex].id);
+        }
+      }
+
+      // 4. Manual Feed Switching
+      function switchFeed(index) {
+        activeIndex = parseInt(index, 10);
+        if (ytPlayer && ytPlayer.loadVideoById) {
+          ytPlayer.loadVideoById(FEEDS[activeIndex].id);
+          setSignalStatus(true);
+        }
+      }
+
+      // 5. Signal & LOS Status Indicator
+      function setSignalStatus(isLive, isLOS = false) {
+        const indicator = document.getElementById("iss-signal-indicator");
+        const label = document.getElementById("iss-signal-status");
+        const overlay = document.getElementById("iss-los-overlay");
+
+        if (!indicator || !label) return;
+
+        if (isLOS) {
+          indicator.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
+          label.className = "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono";
+          label.innerText = "LOS (NIGHT)";
+          if (overlay) overlay.classList.remove("hidden");
+        } else if (isLive) {
+          indicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+          label.className = "text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono";
+          label.innerText = "ONLINE";
+          if (overlay) overlay.classList.add("hidden");
+        } else {
+          indicator.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+          label.className = "text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.2 rounded font-mono";
+          label.innerText = "OFFLINE";
+        }
+      }
+
+      // 6. Connect to Telemetry Data (Triggers LOS Overlay when in Night Shadow)
+      function updateWithTelemetry(visibilityStatus) {
+        if (visibilityStatus === "eclipsed" || visibilityStatus === "night") {
+          setSignalStatus(false, true);
+        } else if (visibilityStatus === "daylight") {
+          setSignalStatus(true, false);
+        }
+      }
+
+      // Initialize on script execution
+      init();
+
+      return {
+        switchFeed,
+        updateWithTelemetry,
+        setSignalStatus
+      };
+    })();
+    window.ISSStream = ISSStream;
+
     // --- 1. SATELLITE CATALOG WITH TRUE ORBITAL INCLINATION & RAAN ---
     const FLEET = {
       iss: {
@@ -1162,6 +1328,11 @@
             document.getElementById('tele-alt').innerText = `${Math.round(data.altitude)} km`;
             document.getElementById('tele-vel').innerText = `${Math.round(data.velocity).toLocaleString()} km/h`;
             document.getElementById('tele-shadow').innerText = data.visibility === 'daylight' ? 'Sunlight (Day)' : 'Eclipsed (Night)';
+
+            // Update stream status automatically
+            if (window.ISSStream) {
+              ISSStream.updateWithTelemetry(data.visibility);
+            }
 
             // Compute Direction (Ascending vs Descending Node)
             const isAscending = prevLat !== null ? (lat >= prevLat) : true;
