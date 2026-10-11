@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOD'S EYE // ORBITAL - Bot-Injected Space Tracking HUD</title>
+  <title>GOD'S EYE // ORBITAL - Solar System, Real Earth Radar & Bot Swarm HUD</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN -->
@@ -42,14 +42,13 @@
       background-size: 28px 28px;
     }
 
-    /* Terminal Styling */
     .bot-terminal {
       background: rgba(2, 6, 18, 0.95);
       border: 1px solid rgba(56, 189, 248, 0.25);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
-    /* Panel Slide Transitions */
+    /* Panel Transitions */
     .panel-slide-left {
       transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
       will-change: transform, opacity;
@@ -73,7 +72,7 @@
 </head>
 <body class="bg-[#02050e] text-slate-100 font-sans h-screen w-screen overflow-hidden select-none">
 
-  <!-- 3D Three.js WebGL Viewport -->
+  <!-- 3D Three.js WebGL Container -->
   <div id="globe-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
 
   <!-- Ambient Radar Graticule Overlay -->
@@ -87,30 +86,30 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL BOT COMMAND HUD</h1>
+          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // REAL SPACE SOLAR SYSTEM & BOT RADAR</h1>
           <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">🤖 4 BOTS ACTIVE</span>
         </div>
-        <p class="text-[10px] text-slate-400">GOD’S EYE // ORBITAL • CREATED BY MR SINGH • Autonomous Telemetry Harvesters • CelesTrak • Heavens-Above • N2YO</p>
+        <p class="text-[10px] text-slate-400">GOD’S EYE // ORBITAL • CREATED BY MR SINGH • Heliocentric Planetary Physics • Earth Geopolitical Map • Telemetry Swarm</p>
       </div>
     </div>
 
     <!-- Active Target Badge -->
     <div class="hidden sm:flex items-center gap-4 px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Target</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Tracking</span>
         <span id="target-name" class="text-cyan-400 font-bold">ISS (ZARYA)</span>
       </div>
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Domain</span>
-        <span id="target-frame" class="text-indigo-400 font-bold">Earth LEO Orbit</span>
+        <span id="target-frame" class="text-indigo-400 font-bold">Earth LEO</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Trajectory</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Trajectory / Info</span>
         <span id="target-orbit" class="text-emerald-400 font-bold">51.6° Inclination</span>
       </div>
     </div>
 
-    <!-- Navigation Quick Actions -->
+    <!-- Quick Navigation Actions -->
     <div class="flex items-center gap-2">
       <a href="catalog.html" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1.5 no-underline">
         <span>Master Catalog ↗</span>
@@ -120,13 +119,13 @@
         <span class="hidden md:inline">NASA Live</span> Feed
       </button>
       <button onclick="switchCategory('bots'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 text-xs font-medium transition flex items-center gap-1.5">
-        <span>🤖 Bot Hub</span>
+        <span>🤖 Bots</span>
         <span id="hud-bot-count" class="text-[10px] bg-emerald-500/20 px-1 rounded font-mono">4</span>
       </button>
-      <button onclick="setFocusTo('earth')" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1">
+      <button onclick="setFocusTo('earth')" title="Focus on Earth" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>🌍 Earth</span>
       </button>
-      <button onclick="setFocusTo('sun')" class="px-2.5 py-1.5 rounded-lg bg-amber-950/70 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
+      <button onclick="setFocusTo('sun')" title="View Entire Solar System" class="px-2.5 py-1.5 rounded-lg bg-amber-950/70 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>☀️ Solar View</span>
       </button>
       <button onclick="toggleHUDPanels()" title="Toggle Panels (Shortcut: M)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
@@ -144,13 +143,13 @@
     <span class="text-xs group-hover:translate-x-0.5 transition-transform">❯</span>
   </button>
 
-  <!-- Left Side: Interactive Catalogs & Autonomous Ingestion Bots -->
+  <!-- Left Side: Interactive Catalogs & Planets -->
   <aside id="catalog-panel" class="panel-slide-left absolute top-20 left-3 bottom-4 w-92 max-w-[calc(100vw-1.5rem)] z-20 flex flex-col rounded-2xl hud-glass pointer-events-auto">
     <div class="flex items-center justify-between p-3 border-b border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
         <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Mission Database</span>
-        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">0 Injected</span>
+        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">Live</span>
       </div>
       <button onclick="minimizeCatalog()" title="Minimize Catalog Panel" class="p-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs border border-slate-700 transition flex items-center gap-1">
         <span>Minimize</span>
@@ -162,7 +161,7 @@
     <div class="p-2 border-b border-slate-800/80 bg-slate-950/60">
       <input 
         id="search-input" 
-        oninput="filterSatelliteList()" 
+        oninput="filterUnifiedCatalog()" 
         type="text" 
         placeholder="Search satellite, planet, country, or bot..." 
         class="w-full px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-500/60"
@@ -181,7 +180,7 @@
     <!-- Scrollable Catalog Content -->
     <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2 text-xs">
       
-      <!-- Panel 1: Earth Orbiting Satellites (Bot-Injected) -->
+      <!-- Panel 1: Earth Orbiting Satellites -->
       <div id="panel-satellites" class="cat-panel space-y-1.5">
         <div class="flex justify-between items-center mb-1 text-[10px] text-slate-400 font-mono">
           <span>Click any satellite to track in 3D:</span>
@@ -193,11 +192,8 @@
       <!-- Panel 2: Ingestion Bot Swarm Hub & Terminal -->
       <div id="panel-bots" class="cat-panel hidden space-y-3">
         <div class="text-[10px] text-slate-400 font-mono">Autonomous bots harvesting data & injecting 3D orbits:</div>
-        
-        <!-- Bot Cards -->
         <div id="bot-cards-container" class="space-y-2 font-mono text-[11px]"></div>
 
-        <!-- Live Terminal Stream -->
         <div class="mt-3">
           <div class="flex items-center justify-between pb-1 text-[10px] font-mono text-slate-400">
             <span>LIVE BOT TELEMETRY LOGS</span>
@@ -543,6 +539,19 @@
         velocity: 27400,
         period: "94.6 min",
         color: 0xfbbf24
+      },
+      starlink: {
+        name: "Starlink-3142",
+        norad: "49000",
+        orbitType: "LEO (53.2° Inc)",
+        radius: 2.18,
+        inclination: 53.2 * (Math.PI / 180),
+        raan: 110.0 * (Math.PI / 180),
+        speed: 0.0086,
+        altitude: 550,
+        velocity: 27300,
+        period: "95.6 min",
+        color: 0xc084fc
       }
     };
 
@@ -606,7 +615,6 @@
     const starMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.07 });
     scene.add(new THREE.Points(starGeo, starMat));
 
-    // Master Clickable Raycast Hitbox Array
     const clickableMeshes = [];
 
     // --- 3. THE SUN AT CENTER ---
@@ -615,18 +623,17 @@
     const sunMesh = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sunMesh);
 
-    // Sun Clickable Hitbox
+    const coronaGeo = new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius + 0.45, 32, 32);
+    const coronaMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.35 });
+    sunMesh.add(new THREE.Mesh(coronaGeo, coronaMat));
+
     const sunHit = new THREE.Mesh(
-      new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius * 1.3, 12, 12),
+      new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius * 1.2, 12, 12),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     );
     sunHit.userData = { targetKey: 'sun' };
     sunMesh.add(sunHit);
     clickableMeshes.push(sunHit);
-
-    const coronaGeo = new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius + 0.45, 32, 32);
-    const coronaMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.35 });
-    sunMesh.add(new THREE.Mesh(coronaGeo, coronaMat));
 
     const sunLight = new THREE.PointLight(0xffffff, 2.8, 600);
     sunLight.position.set(0, 0, 0);
@@ -649,7 +656,7 @@
       return ring;
     }
 
-    // --- 4. PROCEDURAL EARTH TEXTURE (REAL CONTINENTS, LABELS & BORDERS) ---
+    // --- 4. PROCEDURAL EARTH TEXTURE ---
     function generateDetailedEarthCanvas() {
       const canvas = document.createElement('canvas');
       canvas.width = 2048;
@@ -699,14 +706,12 @@
         ctx.stroke();
       }
 
-      // Africa
       drawLandmass([
         [-17, 15], [-5, 36], [10, 37], [28, 31], [33, 27], [43, 12], [51, 11],
         [44, 4], [40, -4], [35, -24], [20, -35], [17, -33], [12, -15], [8, 4],
         [-13, 9], [-17, 15]
       ], '#27432b');
 
-      // Eurasia
       drawLandmass([
         [-9, 38], [-9, 43], [2, 44], [9, 54], [15, 55], [25, 71], [60, 68],
         [80, 73], [110, 75], [140, 72], [170, 66], [160, 52], [140, 48],
@@ -715,36 +720,30 @@
         [28, 41], [15, 41], [5, 43], [-5, 36], [-9, 38]
       ], '#25462f');
 
-      // North America
       drawLandmass([
         [-168, 65], [-140, 70], [-95, 74], [-75, 62], [-60, 50], [-65, 44],
         [-75, 35], [-81, 25], [-88, 30], [-97, 26], [-97, 19], [-105, 23],
         [-115, 30], [-124, 40], [-125, 49], [-140, 58], [-160, 55], [-168, 65]
       ], '#294833');
 
-      // South America
       drawLandmass([
         [-80, 9], [-60, 11], [-50, -1], [-35, -6], [-38, -14], [-43, -23],
         [-53, -34], [-65, -55], [-75, -50], [-73, -40], [-76, -18], [-80, -2],
         [-80, 9]
       ], '#1e3f28');
 
-      // Australia
       drawLandmass([
         [113, -26], [120, -20], [131, -12], [143, -11], [153, -28], [150, -37],
         [138, -35], [125, -33], [115, -34], [113, -26]
       ], '#3b3821');
 
-      // Greenland
       drawLandmass([
         [-52, 60], [-25, 70], [-18, 77], [-35, 83], [-58, 76], [-52, 60]
       ], '#e2e8f0', '#38bdf8');
 
-      // Antarctica
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, canvas.height * 0.88, canvas.width, canvas.height * 0.12);
 
-      // Continent labels
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 22px monospace';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
@@ -766,7 +765,6 @@
         ctx.fillText(txt, lx - 30, ly);
       });
 
-      // Graticule Lines
       ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 64) {
@@ -782,7 +780,6 @@
         ctx.stroke();
       }
 
-      // Equator
       ctx.strokeStyle = 'rgba(6, 182, 212, 0.55)';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -834,9 +831,8 @@
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     earthAxialGroup.add(earthMesh);
 
-    // Earth Clickable Hitbox
     const earthHit = new THREE.Mesh(
-      new THREE.SphereGeometry(earthRadius * 1.3, 12, 12),
+      new THREE.SphereGeometry(earthRadius * 1.05, 16, 16),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     );
     earthHit.userData = { targetKey: 'earth' };
@@ -866,6 +862,19 @@
     moonOrbitRing.rotation.x = 5.14 * (Math.PI / 180);
     earthSystem.add(moonOrbitRing);
 
+    // Moon Orbit Line
+    const moonPathSegs = 64;
+    const moonPathGeo = new THREE.BufferGeometry();
+    const moonPathPos = new Float32Array((moonPathSegs + 1) * 3);
+    for (let i = 0; i <= moonPathSegs; i++) {
+      const a = (i / moonPathSegs) * Math.PI * 2;
+      moonPathPos[i * 3] = Math.cos(a) * CELESTIAL_BODIES.moon.dist;
+      moonPathPos[i * 3 + 1] = 0;
+      moonPathPos[i * 3 + 2] = Math.sin(a) * CELESTIAL_BODIES.moon.dist;
+    }
+    moonPathGeo.setAttribute('position', new THREE.BufferAttribute(moonPathPos, 3));
+    moonOrbitRing.add(new THREE.Line(moonPathGeo, new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 })));
+
     const moonMesh = new THREE.Mesh(
       new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius, 24, 24),
       new THREE.MeshLambertMaterial({ color: 0xcccccc })
@@ -873,9 +882,8 @@
     moonMesh.position.x = CELESTIAL_BODIES.moon.dist;
     moonOrbitRing.add(moonMesh);
 
-    // Moon Clickable Hitbox
     const moonHit = new THREE.Mesh(
-      new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius * 2.0, 12, 12),
+      new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius * 1.5, 8, 8),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
     );
     moonHit.userData = { targetKey: 'moon' };
@@ -895,16 +903,16 @@
     earthMesh.add(footprintMesh);
 
     function latLngToEarthVector(lat, lng, radius) {
-      const phi = lat * (Math.PI / 180);
-      const theta = (lng + 180) * (Math.PI / 180);
+      const latRad = lat * (Math.PI / 180);
+      const lngRad = lng * (Math.PI / 180);
       return new THREE.Vector3(
-        -radius * Math.cos(phi) * Math.cos(theta),
-        radius * Math.sin(phi),
-        radius * Math.cos(phi) * Math.sin(theta)
+        radius * Math.cos(latRad) * Math.cos(lngRad),
+        radius * Math.sin(latRad),
+        -radius * Math.cos(latRad) * Math.sin(lngRad)
       );
     }
 
-    // 3D Country Markers on Earth
+    // 3D Country Markers
     Object.keys(COUNTRIES).forEach(k => {
       const c = COUNTRIES[k];
       const pos = latLngToEarthVector(c.lat, c.lng, earthRadius * 1.008);
@@ -917,7 +925,7 @@
       earthMesh.add(pinMesh);
 
       const hit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.22, 8, 8),
+        new THREE.SphereGeometry(0.25, 8, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
       );
       hit.userData = { countryKey: k };
@@ -997,7 +1005,7 @@
       pGroup.add(probeMesh);
 
       const hit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.8, 8, 8),
+        new THREE.SphereGeometry(1.5, 8, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
       );
       hit.userData = { targetKey: k };
@@ -1005,10 +1013,10 @@
       clickableMeshes.push(hit);
 
       scene.add(pGroup);
-      deepSpaceSystems[k] = { group: pGroup, mesh: probeMesh, data: pData };
+      deepSpaceSystems[k] = { group: pGroup, mesh: probeMesh, data: pData, currentAngle: pData.angle };
     });
 
-    // --- 7. DYNAMIC SATELLITE 3D BUILDER (CALLED BY BOTS) ---
+    // --- 7. SATELLITE 3D BUILDER ---
     const satelliteMeshMap = {};
 
     function buildSatelliteOrbit(key, data) {
@@ -1129,7 +1137,6 @@
         line.innerHTML = `<span class="text-slate-500">[${time}]</span> <span class="text-cyan-400">[${botId}]</span> ${msg}`;
         term.appendChild(line);
 
-        // Keep terminal light (last 45 lines)
         if (term.children.length > 45) {
           term.removeChild(term.children[0]);
         }
@@ -1162,7 +1169,6 @@
         });
       }
 
-      // Bot 1: Harvest and Inject CelesTrak / Local Fleet Satellites
       async function runCelesTrakBot() {
         const bot = BOTS[0];
         if (!bot.active) return;
@@ -1170,12 +1176,12 @@
         logTerminal(bot.id, "Querying CelesTrak active visual orbit fleet...");
         try {
           const res = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=JSON");
-          if (!res.ok) throw new Error("CelesTrak direct stream unavailable, switching to local cache");
+          if (!res.ok) throw new Error("CelesTrak rate-limited or offline");
           const data = await res.json();
 
           if (Array.isArray(data) && data.length > 0) {
             let injectedCount = 0;
-            data.slice(0, 30).forEach(sat => {
+            data.slice(0, 25).forEach(sat => {
               const norad = String(sat.NORAD_CAT_ID);
               const key = "norad_" + norad;
 
@@ -1260,7 +1266,6 @@
         }
       }
 
-      // Bot 2: Poll Real-time Telemetry (N2YO / wheretheiss.at)
       async function runN2YOBot() {
         const bot = BOTS[1];
         if (!bot.active) return;
@@ -1284,7 +1289,7 @@
               const pktEl = document.getElementById("bot-pkt-1");
               if (pktEl) pktEl.innerText = bot.packets;
 
-              if (bot.packets % 4 === 0) {
+              if (bot.packets % 5 === 0) {
                 logTerminal(bot.id, `ISS Live Telemetry synced: ${d.latitude.toFixed(2)}° Lat, ${d.longitude.toFixed(2)}° Lng, ${Math.round(d.altitude)} km`);
               }
             }
@@ -1292,7 +1297,6 @@
         }
       }
 
-      // Bot 3: Heavens-Above Pass & Radio Predictor Bot
       function runHeavensAboveBot() {
         const bot = BOTS[2];
         if (!bot.active) return;
@@ -1301,11 +1305,10 @@
         if (pktEl) pktEl.innerText = bot.packets;
 
         if (bot.packets % 6 === 0) {
-          logTerminal(bot.id, "Computed upcoming naked-eye pass: ISS (Mag -3.4, 68° Max Elevation).");
+          logTerminal(bot.id, "Computed upcoming visible pass: ISS (Mag -3.4, 68° Max Elevation).");
         }
       }
 
-      // Bot 4: Deep Space Scout Bot
       function runDeepSpaceBot() {
         const bot = BOTS[3];
         if (!bot.active) return;
@@ -1314,7 +1317,7 @@
         if (pktEl) pktEl.innerText = bot.packets;
 
         if (bot.packets % 8 === 0) {
-          logTerminal(bot.id, "Voyager 1 telemetry: ~163.2 AU distance. Comm roundtrip: 45h 12m.");
+          logTerminal(bot.id, "Voyager 1 telemetry: ~163.2 AU distance. DSN comm latency: 45h 12m.");
         }
       }
 
@@ -1382,9 +1385,14 @@
       const t = document.getElementById(`tab-${cat}`);
       if (p) p.classList.remove('hidden');
       if (t) t.className = 'cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40';
+
+      if (cat === 'bots') {
+        const term = document.getElementById("bot-terminal-logs");
+        if (term) term.scrollTop = term.scrollHeight;
+      }
     }
 
-    // Set Target Focus (Supports Earth Satellites, Planets, and Deep Space)
+    // TARGET SELECTION & CAMERA INTERPOLATION
     function setFocusTo(key) {
       activeTargetKey = key;
 
@@ -1404,12 +1412,6 @@
 
         nadirLineMat.color.setHex(sat.color);
         footprintMat.color.setHex(sat.color);
-
-        if (key !== 'iss') {
-          document.getElementById('tele-alt').innerText = `${sat.altitude.toLocaleString()} km`;
-          document.getElementById('tele-vel').innerText = `${sat.velocity.toLocaleString()} km/h`;
-          document.getElementById('tele-period').innerText = sat.period;
-        }
 
         minimizeBothPanels();
       } else if (CELESTIAL_BODIES[key]) {
@@ -1482,7 +1484,7 @@
       Object.keys(COUNTRIES).forEach(k => {
         const c = COUNTRIES[k];
         const card = document.createElement('div');
-        card.className = "p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-cyan-400 cursor-pointer transition flex justify-between items-center";
+        card.className = "country-item p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-cyan-400 cursor-pointer transition flex justify-between items-center";
         card.onclick = () => selectCountry(k);
         card.innerHTML = `
           <div>
@@ -1500,7 +1502,7 @@
         if (k.startsWith('voyager') || k === 'newhorizons') return;
         const b = CELESTIAL_BODIES[k];
         const card = document.createElement('div');
-        card.className = "p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-amber-400 cursor-pointer transition flex justify-between items-center";
+        card.className = "planet-item p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-amber-400 cursor-pointer transition flex justify-between items-center";
         card.onclick = () => setFocusTo(k);
         card.innerHTML = `
           <div>
@@ -1518,15 +1520,10 @@
 
     renderCatalogs();
 
-    function filterSatelliteList() {
+    // Unified Search Across All Catalogs
+    function filterUnifiedCatalog() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
-      document.querySelectorAll('.sat-item').forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
-      });
-      document.querySelectorAll('#country-list-container > div').forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
-      });
-      document.querySelectorAll('#planets-list-container > div').forEach(el => {
+      document.querySelectorAll('.sat-item, .country-item, .planet-item').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
       });
     }
@@ -1561,7 +1558,7 @@
       prevMouse = { x: e.clientX, y: e.clientY };
     });
 
-    // 1-CLICK RAYCASTING TRACKS SATELLITES, PLANETS & COUNTRIES
+    // 1-Click Raycasting on Satellite, Planet, or Country
     window.addEventListener('mouseup', e => {
       if (e.target.closest('aside, header, #video-panel, button, input')) return;
       isDragging = false;
@@ -1596,14 +1593,14 @@
     // Initialize Bot Swarm
     BotSwarm.init();
 
-    // --- 12. MASTER ANIMATION LOOP ---
+    // --- 12. MASTER ANIMATION & RENDER LOOP ---
     let solarClock = 0;
 
     function animate() {
       requestAnimationFrame(animate);
       solarClock += 1;
 
-      // 1. Planetary Heliocentric Motion
+      // 1. Heliocentric Orbits
       const earthAngle = solarClock * CELESTIAL_BODIES.earth.speed;
       earthSystem.position.x = Math.cos(earthAngle) * CELESTIAL_BODIES.earth.dist;
       earthSystem.position.z = Math.sin(earthAngle) * CELESTIAL_BODIES.earth.dist;
@@ -1623,7 +1620,19 @@
         pObj.mesh.rotation.y += 0.002;
       });
 
-      // 2. Satellite Orbits around Earth
+      // Animate Deep Space Escape Probes
+      Object.keys(deepSpaceSystems).forEach(dk => {
+        const dObj = deepSpaceSystems[dk];
+        dObj.currentAngle += dObj.data.speed * 0.1;
+        dObj.mesh.position.x = Math.cos(dObj.currentAngle) * dObj.data.dist;
+        dObj.mesh.position.z = Math.sin(dObj.currentAngle) * dObj.data.dist;
+      });
+
+      // 2. Earth Satellites Keplerian Motion & Dynamic Telemetry
+      const isSat = !!(SATELLITES[activeTargetKey] && satelliteMeshMap[activeTargetKey]);
+      nadirLine.visible = isSat;
+      footprintMesh.visible = isSat;
+
       Object.keys(satelliteMeshMap).forEach(k => {
         const item = satelliteMeshMap[k];
         item.angle += item.data.speed;
@@ -1634,27 +1643,38 @@
           const s = 1 + Math.sin(Date.now() * 0.006) * 0.2;
           item.crosshair.scale.set(s, s, s);
         }
+
+        // Live telemetry calculation for active non-ISS satellite
+        if (k === activeTargetKey && activeTargetKey !== 'iss') {
+          const inc = item.data.inclination;
+          const lat = Math.asin(Math.sin(inc) * Math.sin(item.angle)) * (180 / Math.PI);
+          const isAsc = Math.cos(item.angle) >= 0;
+
+          document.getElementById('tele-lat').innerText = `${lat.toFixed(2)}°`;
+          document.getElementById('tele-alt').innerText = `${item.data.altitude} km`;
+          document.getElementById('tele-vel').innerText = `${item.data.velocity.toLocaleString()} km/h`;
+          document.getElementById('tele-direction').innerText = isAsc ? `${((inc * 180) / Math.PI).toFixed(1)}° NE (Asc)` : `${((180 - (inc * 180) / Math.PI)).toFixed(1)}° SE (Desc)`;
+          document.getElementById('tele-period').innerText = item.data.period;
+        }
       });
 
       // 3. Nadir Laser & Footprint Coordinate Transformation
-      if (SATELLITES[activeTargetKey]) {
+      if (isSat) {
         const activeSat = satelliteMeshMap[activeTargetKey];
-        if (activeSat) {
-          const satWorldPos = new THREE.Vector3();
-          activeSat.satMesh.getWorldPosition(satWorldPos);
+        const satWorldPos = new THREE.Vector3();
+        activeSat.satMesh.getWorldPosition(satWorldPos);
 
-          const satInAxial = earthAxialGroup.worldToLocal(satWorldPos.clone());
-          const groundInAxial = satInAxial.clone().normalize().multiplyScalar(earthRadius);
+        const satInAxial = earthAxialGroup.worldToLocal(satWorldPos.clone());
+        const groundInAxial = satInAxial.clone().normalize().multiplyScalar(earthRadius);
 
-          const posAttr = nadirLine.geometry.attributes.position;
-          posAttr.setXYZ(0, satInAxial.x, satInAxial.y, satInAxial.z);
-          posAttr.setXYZ(1, groundInAxial.x, groundInAxial.y, groundInAxial.z);
-          posAttr.needsUpdate = true;
+        const posAttr = nadirLine.geometry.attributes.position;
+        posAttr.setXYZ(0, satInAxial.x, satInAxial.y, satInAxial.z);
+        posAttr.setXYZ(1, groundInAxial.x, groundInAxial.y, groundInAxial.z);
+        posAttr.needsUpdate = true;
 
-          const groundInEarth = earthMesh.worldToLocal(satWorldPos.clone()).normalize().multiplyScalar(earthRadius * 1.002);
-          footprintMesh.position.copy(groundInEarth);
-          footprintMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), groundInEarth.clone().normalize());
-        }
+        const groundInEarth = earthMesh.worldToLocal(satWorldPos.clone()).normalize().multiplyScalar(earthRadius * 1.002);
+        footprintMesh.position.copy(groundInEarth);
+        footprintMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), groundInEarth.clone().normalize());
       }
 
       // 4. Smooth Camera Focus Tracking
