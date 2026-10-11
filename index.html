@@ -559,7 +559,7 @@
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
     }
 
-    .tab-pane {
+    .sidebar-tab-pane {
       display: none;
       flex-direction: column;
       gap: 6px;
@@ -568,7 +568,7 @@
       overflow: hidden;
     }
 
-    .tab-pane.active {
+    .sidebar-tab-pane.active {
       display: flex;
     }
 
@@ -1214,6 +1214,7 @@
     .stream-hub-dialog .tab-pane { display: grid !important; }
     .stream-hub-dialog .tab-pane.hidden { display: none !important; }
     .hidden { display: none !important; }
+    .shadow-\[0_0_12px_rgba\(6\,182\,212\,0\.2\)\] { box-shadow: 0 0 12px rgba(6, 182, 212, 0.2); }
   </style>
 </head>
 <body>
@@ -1381,7 +1382,7 @@
       </div>
 
       <!-- TAB 1: FLEET & DOSSIER -->
-      <div class="tab-pane active" id="tabPaneFleet">
+      <div class="sidebar-tab-pane active" id="tabPaneFleet">
         <input type="text" id="satSearchInput" class="search-box" placeholder="&#x1F50D; SCAN INTEL: SWOT, ISS, NavIC, Starlink..." />
         <div class="tree-catalog-container" id="treeCatalogContainer"></div>
 
@@ -1403,7 +1404,7 @@
       </div>
 
       <!-- TAB 2: BOTS ORCHESTRATION -->
-      <div class="tab-pane" id="tabPaneBots">
+      <div class="sidebar-tab-pane" id="tabPaneBots">
         <!-- KPI METRICS STRIP -->
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; font-family:var(--font-mono); margin-bottom:2px;">
           <div style="background:#030814; border:1px solid var(--border); padding:4px; text-align:center;"><div style="font-size:0.55rem; color:var(--text-muted);">BOTS</div><strong id="kpiBotsCount" style="color:var(--neon-cyan); font-size:0.85rem;">13/13</strong></div>
@@ -1434,7 +1435,7 @@
       </div>
 
       <!-- TAB 3: AUDIT & DIFFERENTIAL STREAM -->
-      <div class="tab-pane" id="tabPaneAudit">
+      <div class="sidebar-tab-pane" id="tabPaneAudit">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-family:var(--font-mono); font-size:0.68rem; color:var(--neon-cyan); font-weight:700;">MASTER AUDIT LOG &amp; DELTAS</span>
           <span style="font-family:var(--font-mono); font-size:0.58rem; color:var(--neon-green);" id="hackTerminalStatus">● LIVE STREAMING</span>
@@ -1462,7 +1463,7 @@
       </div>
 
       <!-- TAB 4: LIVE ISS VIDEO & ORBITAL RADAR STREAM -->
-      <div class="tab-pane" id="tabPaneStream">
+      <div class="sidebar-tab-pane" id="tabPaneStream">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
           <div style="display:flex; align-items:center; gap:6px;">
             <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#00ff66; box-shadow:0 0 8px #00ff66; animation:pulse 2s infinite;"></span>
@@ -1551,7 +1552,7 @@
       </div>
 
       <!-- TAB 5: INFO & DIRECTIVES TAB -->
-      <div class="tab-pane" id="tabPaneInfo">
+      <div class="sidebar-tab-pane" id="tabPaneInfo">
         <div class="info-pane-scroll">
           <div class="directive-card">
             <h3 class="scramble" data-text="MASTER TELEMETRY & AUDIT EXPORTS">MASTER TELEMETRY &amp; AUDIT EXPORTS</h3>
@@ -1915,7 +1916,7 @@
     document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.sidebar-tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.sidebar-card .tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sidebar-tab-pane').forEach(p => p.classList.remove('active'));
         const target = e.currentTarget;
         target.classList.add('active');
         const tabId = target.getAttribute('data-tab');
@@ -3726,72 +3727,81 @@
     // =========================================================================
     // 14. LIVE SATELLITE TRACKING & VIDEO STREAM HUB LOGIC
     // =========================================================================
-    function setTelemetryText(id, val) {
-      const el = document.getElementById(id);
-      if (el) el.innerText = val;
-    }
-
+    // 5-Second Real-Time ISS Telemetry Loop
     async function updateOrbitalTelemetry() {
       try {
-        const response = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
-        if (!response.ok) throw new Error('Status ' + response.status);
-        const data = await response.json();
-        const latStr = `${data.latitude.toFixed(4)}°`;
-        const lngStr = `${data.longitude.toFixed(4)}°`;
+        const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const lat = document.getElementById('iss-lat');
+        const lng = document.getElementById('iss-lng');
+        const alt = document.getElementById('iss-alt');
+        const vel = document.getElementById('iss-vel');
+
+        const latStr = `${data.latitude.toFixed(2)}°`;
+        const lngStr = `${data.longitude.toFixed(2)}°`;
         const altStr = `${Math.round(data.altitude)} km`;
         const velStr = `${Math.round(data.velocity).toLocaleString()} km/h`;
 
-        setTelemetryText('iss-lat', latStr);
-        setTelemetryText('iss-lng', lngStr);
-        setTelemetryText('iss-alt', altStr);
-        setTelemetryText('iss-vel', velStr);
+        if (lat) lat.innerText = latStr;
+        if (lng) lng.innerText = lngStr;
+        if (alt) alt.innerText = altStr;
+        if (vel) vel.innerText = velStr;
 
-        setTelemetryText('sidebar-iss-lat', latStr);
-        setTelemetryText('sidebar-iss-lng', lngStr);
-        setTelemetryText('sidebar-iss-alt', altStr);
-        setTelemetryText('sidebar-iss-vel', velStr);
-      } catch (error) {
+        const sLat = document.getElementById('sidebar-iss-lat');
+        const sLng = document.getElementById('sidebar-iss-lng');
+        const sAlt = document.getElementById('sidebar-iss-alt');
+        const sVel = document.getElementById('sidebar-iss-vel');
+        if (sLat) sLat.innerText = latStr;
+        if (sLng) sLng.innerText = lngStr;
+        if (sAlt) sAlt.innerText = altStr;
+        if (sVel) sVel.innerText = velStr;
+      } catch (err) {
+        console.warn('Orbital telemetry update skipped:', err);
         // Local SGP4 Fallback: compute from active catalog if available
         if (typeof SATELLITE_CATALOG !== 'undefined' && SATELLITE_CATALOG.length > 0) {
           const iss = SATELLITE_CATALOG.find(s => (s.norad && String(s.norad) === '25544') || (s.name && (s.name.includes('ISS') || s.name.includes('SPACE STATION'))));
           if (iss && iss.lat !== undefined) {
-            const latStr = `${iss.lat.toFixed(4)}°`;
-            const lngStr = `${iss.lng.toFixed(4)}°`;
+            const latStr = `${iss.lat.toFixed(2)}°`;
+            const lngStr = `${iss.lng.toFixed(2)}°`;
             const altStr = `${Math.round(iss.alt || 420)} km`;
             const velStr = `${Math.round(iss.velocity || 27600).toLocaleString()} km/h`;
-
-            setTelemetryText('iss-lat', latStr);
-            setTelemetryText('iss-lng', lngStr);
-            setTelemetryText('iss-alt', altStr);
-            setTelemetryText('iss-vel', velStr);
-
-            setTelemetryText('sidebar-iss-lat', latStr);
-            setTelemetryText('sidebar-iss-lng', lngStr);
-            setTelemetryText('sidebar-iss-alt', altStr);
-            setTelemetryText('sidebar-iss-vel', velStr);
+            const lat = document.getElementById('iss-lat');
+            const lng = document.getElementById('iss-lng');
+            const alt = document.getElementById('iss-alt');
+            const vel = document.getElementById('iss-vel');
+            if (lat) lat.innerText = latStr;
+            if (lng) lng.innerText = lngStr;
+            if (alt) alt.innerText = altStr;
+            if (vel) vel.innerText = velStr;
+            const sLat = document.getElementById('sidebar-iss-lat');
+            const sLng = document.getElementById('sidebar-iss-lng');
+            const sAlt = document.getElementById('sidebar-iss-alt');
+            const sVel = document.getElementById('sidebar-iss-vel');
+            if (sLat) sLat.innerText = latStr;
+            if (sLng) sLng.innerText = lngStr;
+            if (sAlt) sAlt.innerText = altStr;
+            if (sVel) sVel.innerText = velStr;
           }
         }
       }
     }
+    window.updateOrbitalTelemetry = updateOrbitalTelemetry;
 
+    // Tab Switcher
     function switchTab(tabId) {
-      const tabs = ['deepspace', 'astronomy', 'satellites', 'catalogs'];
-      tabs.forEach(id => {
-        const content = document.getElementById(`content-${id}`);
-        const tab = document.getElementById(`tab-${id}`);
-        if (content) content.classList.add('hidden');
-        if (tab) {
-          tab.classList.remove('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
-          tab.classList.add('text-slate-400');
-        }
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition';
       });
 
       const activeContent = document.getElementById(`content-${tabId}`);
-      const activeTab = document.getElementById(`tab-${tabId}`);
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+
       if (activeContent) activeContent.classList.remove('hidden');
-      if (activeTab) {
-        activeTab.classList.remove('text-slate-400');
-        activeTab.classList.add('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn px-3.5 py-1.5 rounded-lg font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 transition shadow-[0_0_12px_rgba(6,182,212,0.2)]';
       }
       try { playTone(720, 'sine', 0.04); } catch (e) {}
     }

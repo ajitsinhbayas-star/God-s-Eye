@@ -923,6 +923,7 @@
     .stream-hub-dialog .tab-pane { display: grid !important; }
     .stream-hub-dialog .tab-pane.hidden { display: none !important; }
     .hidden { display: none !important; }
+    .shadow-\[0_0_12px_rgba\(6\,182\,212\,0\.2\)\] { box-shadow: 0 0 12px rgba(6, 182, 212, 0.2); }
   </style>
 </head>
 <body>
@@ -1718,46 +1719,54 @@
       if (el) el.innerText = val;
     }
 
+    // 5-Second Real-Time ISS Telemetry Loop
     async function updateOrbitalTelemetry() {
       try {
-        const response = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
-        if (!response.ok) throw new Error('Status ' + response.status);
-        const data = await response.json();
-        setTelemetryText('iss-lat', `${data.latitude.toFixed(4)}°`);
-        setTelemetryText('iss-lng', `${data.longitude.toFixed(4)}°`);
-        setTelemetryText('iss-alt', `${Math.round(data.altitude)} km`);
-        setTelemetryText('iss-vel', `${Math.round(data.velocity).toLocaleString()} km/h`);
-      } catch (error) {
+        const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const lat = document.getElementById('iss-lat');
+        const lng = document.getElementById('iss-lng');
+        const alt = document.getElementById('iss-alt');
+        const vel = document.getElementById('iss-vel');
+
+        if (lat) lat.innerText = `${data.latitude.toFixed(2)}°`;
+        if (lng) lng.innerText = `${data.longitude.toFixed(2)}°`;
+        if (alt) alt.innerText = `${Math.round(data.altitude)} km`;
+        if (vel) vel.innerText = `${Math.round(data.velocity).toLocaleString()} km/h`;
+      } catch (err) {
+        console.warn('Orbital telemetry update skipped:', err);
         if (window.ALL_SATELLITES && window.ALL_SATELLITES.length > 0) {
           const iss = window.ALL_SATELLITES.find(s => s.norad === '25544' || (s.name && s.name.includes('ISS')));
           if (iss && iss.lat !== undefined) {
-            setTelemetryText('iss-lat', `${iss.lat.toFixed(4)}°`);
-            setTelemetryText('iss-lng', `${iss.lng.toFixed(4)}°`);
-            setTelemetryText('iss-alt', `${Math.round(iss.alt || 420)} km`);
-            setTelemetryText('iss-vel', `${Math.round(iss.velocity || 27600).toLocaleString()} km/h`);
+            const lat = document.getElementById('iss-lat');
+            const lng = document.getElementById('iss-lng');
+            const alt = document.getElementById('iss-alt');
+            const vel = document.getElementById('iss-vel');
+            if (lat) lat.innerText = `${iss.lat.toFixed(2)}°`;
+            if (lng) lng.innerText = `${iss.lng.toFixed(2)}°`;
+            if (alt) alt.innerText = `${Math.round(iss.alt || 420)} km`;
+            if (vel) vel.innerText = `${Math.round(iss.velocity || 27600).toLocaleString()} km/h`;
           }
         }
       }
     }
+    window.updateOrbitalTelemetry = updateOrbitalTelemetry;
 
+    // Tab Switcher
     function switchTab(tabId) {
-      const tabs = ['deepspace', 'astronomy', 'satellites', 'catalogs'];
-      tabs.forEach(id => {
-        const content = document.getElementById(`content-${id}`);
-        const tab = document.getElementById(`tab-${id}`);
-        if (content) content.classList.add('hidden');
-        if (tab) {
-          tab.classList.remove('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
-          tab.classList.add('text-slate-400');
-        }
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition';
       });
 
       const activeContent = document.getElementById(`content-${tabId}`);
-      const activeTab = document.getElementById(`tab-${tabId}`);
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+
       if (activeContent) activeContent.classList.remove('hidden');
-      if (activeTab) {
-        activeTab.classList.remove('text-slate-400');
-        activeTab.classList.add('bg-cyan-950/70', 'text-cyan-300', 'border', 'border-cyan-500/30');
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn px-3.5 py-1.5 rounded-lg font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 transition shadow-[0_0_12px_rgba(6,182,212,0.2)]';
       }
       playBeep(720, 'sine', 0.04);
     }
