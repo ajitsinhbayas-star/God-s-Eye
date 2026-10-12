@@ -78,7 +78,7 @@ powershell -ExecutionPolicy Bypass -File .\run-intel-bots.ps1 -PollIntervalSec 3
 - **3D Tactical Command Viewport**: Open `http://localhost:8080/` in your browser.
 - **Dedicated Fleet Catalog Terminal**: Open `http://localhost:8080/catalog.html`.
 
-### 4. Modern Web Tooling & Cloud Deployment (Vite / Vercel)
+### 4. Modern Web Tooling & Cloud Deployment (Vite / Vercel / Netlify)
 - **Vite Dev Server (Port 3000)**:
   ```bash
   npm install
@@ -91,6 +91,8 @@ powershell -ExecutionPolicy Bypass -File .\run-intel-bots.ps1 -PollIntervalSec 3
   ```
 - **Vercel Cloud Deployment**:
   Deploy with one click or via `vercel deploy`. Configured with zero-CORS reverse-proxy rewrites for CelesTrak ephemeris (`/api/celestrak/(.*)`), static catalog fallback (`/api/catalog`), and hardened HTTP security headers in `vercel.json`.
+- **Netlify Cloud Deployment**:
+  Deploy via Netlify CLI (`netlify deploy`) or Git integration. Fully pre-configured in `netlify.toml` with edge reverse-proxying (`/api/celestrak/*` -> `https://celestrak.org/:splat`), static catalog routing (`/api/catalog` -> `/fleet-catalog.json`), zero-cache index header, and security policies.
 
 ---
 
