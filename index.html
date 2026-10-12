@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOD'S EYE // ORBITAL - Real-Time Satellite Swarm, Solar System & Bot Radar</title>
+  <title>GOD'S EYE // ORBITAL - Solar System & Clean Earth Radar HUD</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN -->
@@ -37,10 +37,6 @@
     .hud-text-glow {
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.65);
     }
-    .radar-graticule {
-      background-image: radial-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
 
     .bot-terminal {
       background: rgba(2, 6, 18, 0.95);
@@ -70,13 +66,10 @@
     }
   </style>
 </head>
-<body class="bg-[#02050e] text-slate-100 font-sans h-screen w-screen overflow-hidden select-none">
+<body class="bg-[#01040d] text-slate-100 font-sans h-screen w-screen overflow-hidden select-none">
 
   <!-- 3D Three.js WebGL Container -->
   <div id="globe-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
-
-  <!-- Ambient Radar Graticule Overlay -->
-  <div class="absolute inset-0 pointer-events-none radar-graticule z-[1] opacity-35"></div>
 
   <!-- Top Mission Control Navigation Bar -->
   <header class="absolute top-3 left-3 right-3 z-30 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl hud-glass pointer-events-auto">
@@ -86,10 +79,10 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL SWARM HUD</h1>
+          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // SOLAR SYSTEM & REAL EARTH RADAR</h1>
           <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">📡 HARVESTING ORBITS...</span>
         </div>
-        <p class="text-[10px] text-slate-400">GOD’S EYE // ORBITAL • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION • Autonomous Ingestion Swarm • CelesTrak Multi-Feed • N2YO</p>
+        <p class="text-[10px] text-slate-400">GOD’S EYE // ORBITAL • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION • High-Resolution Earth • Deep Space Telemetry • Autonomous Ingestion Swarm</p>
       </div>
     </div>
 
@@ -100,8 +93,8 @@
         <span id="target-name" class="text-cyan-400 font-bold">ISS (ZARYA)</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">NORAD</span>
-        <span id="target-norad" class="text-indigo-400 font-bold">25544</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Domain</span>
+        <span id="target-frame" class="text-indigo-400 font-bold">Earth LEO</span>
       </div>
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Trajectory / Info</span>
@@ -149,7 +142,7 @@
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
         <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Mission Database</span>
-        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">0 Injected</span>
+        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">Loading...</span>
       </div>
       <button onclick="minimizeCatalog()" title="Minimize Catalog Panel" class="p-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs border border-slate-700 transition flex items-center gap-1">
         <span>Minimize</span>
@@ -163,7 +156,7 @@
         id="search-input" 
         oninput="filterUnifiedCatalog()" 
         type="text" 
-        placeholder="Search 150+ satellites, planets, or bots..." 
+        placeholder="Search satellites, planets, or countries..." 
         class="w-full px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-500/60"
       />
     </div>
@@ -188,10 +181,10 @@
     <!-- Scrollable Catalog Content -->
     <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2 text-xs">
       
-      <!-- Panel 1: Earth Orbiting Satellites (Multi-Bot Injected) -->
+      <!-- Panel 1: Earth Orbiting Satellites -->
       <div id="panel-satellites" class="cat-panel space-y-1.5">
         <div class="flex justify-between items-center mb-1 text-[10px] text-slate-400 font-mono">
-          <span>Click any beacon to track in 3D:</span>
+          <span>Click any satellite to track in 3D:</span>
           <button onclick="BotSwarm.manualHarvest()" class="text-cyan-400 hover:underline">Harvest Now ⟳</button>
         </div>
         <div id="sat-list-container" class="space-y-1.5"></div>
@@ -208,14 +201,14 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div id="bot-terminal-logs" class="bot-terminal h-52 overflow-y-auto p-2.5 rounded-xl text-[10px] text-emerald-400 space-y-1 scroll-container shadow-inner">
-            <div>[SYS] Ingestion Bot Swarm v4.2 Initialized.</div>
+            <div>[SYS] Ingestion Bot Swarm Initialized.</div>
           </div>
         </div>
       </div>
 
       <!-- Panel 3: Countries & National Space Agencies -->
       <div id="panel-countries" class="cat-panel hidden space-y-2">
-        <div class="text-[10px] text-slate-400 font-mono mb-1">Click a country to rotate Earth to its space agency:</div>
+        <div class="text-[10px] text-slate-400 font-mono mb-1">Select an agency to center Earth on its coordinates:</div>
         <div id="country-list-container" class="space-y-1.5"></div>
       </div>
 
@@ -333,39 +326,33 @@
     </div>
   </aside>
 
-  <!-- Enhanced ISS Live Video HUD Container -->
+  <!-- Upgraded Resilient NASA ISS Live Video Player -->
   <div id="video-panel" class="absolute bottom-4 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
-    <!-- Stream Header & Controls -->
     <div class="flex items-center justify-between p-2.5 bg-slate-950/85 border-b border-slate-800">
       <div class="flex items-center gap-2">
-        <span id="iss-signal-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="text-[11px] font-bold text-white uppercase tracking-wider font-mono">ISS Live Stream</span>
-        <span id="iss-signal-status" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono">ONLINE</span>
+        <span id="stream-status-dot" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-white uppercase tracking-wider font-mono">ISS LIVE STREAM</span>
       </div>
-      
-      <!-- Cam Switcher Dropdown & Close Button -->
       <div class="flex items-center gap-1.5">
-        <select id="iss-feed-select" onchange="ISSStream.switchFeed(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono cursor-pointer">
-          <option value="0">Cam 1: Earth Views (HD)</option>
-          <option value="1">Cam 2: NASA TV / Operations</option>
-          <option value="2">Cam 3: Sen 4K Earth Orbit</option>
+        <select id="feed-switcher" onchange="changeLiveStream(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono cursor-pointer">
+          <option value="0">Cam 1: NASA HD Earth Views</option>
+          <option value="1">Cam 2: Space Videos Orbit</option>
+          <option value="2">Cam 3: NASA TV Live Ops</option>
+          <option value="3">Cam 4: Sen 4K Ultra HD</option>
         </select>
+        <a id="stream-outlink" href="https://www.youtube.com/watch?v=SD0dlqX9xzo" target="_blank" rel="noopener noreferrer" title="Open Stream in New Tab" class="text-slate-400 hover:text-cyan-400 text-xs px-1">↗</a>
         <button onclick="toggleVideoPanel()" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded">✕</button>
       </div>
     </div>
-
-    <!-- Video Player Viewport -->
     <div class="aspect-video bg-black relative flex items-center justify-center">
-      <div id="iss-player-mount" class="w-full h-full"></div>
-
-      <!-- Loss of Signal (LOS) / Night Overlay -->
-      <div id="iss-los-overlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
-        <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping mb-2"></span>
-        <p class="text-xs font-bold text-white font-mono uppercase tracking-wider">Temporary Loss of Signal (LOS)</p>
-        <p class="text-[10px] text-slate-400 mt-1 max-w-[240px]">
-          The ISS is either in orbital night (Earth shadow) or switching TDRS tracking satellites. Transmission resumes shortly.
-        </p>
-      </div>
+      <iframe 
+        id="iss-video-frame"
+        class="w-full h-full border-0" 
+        src="https://www.youtube.com/embed/SD0dlqX9xzo?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" 
+        title="Official NASA ISS Live Stream"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+      </iframe>
     </div>
   </div>
 
@@ -380,129 +367,6 @@
 
   <!-- Three.js Astronomical Engine & Bot Ingestion Swarm -->
   <script>
-    /**
-     * ISS Live Stream Controller
-     * Multi-source fallback with error failover and LOS overlay
-     */
-    const ISSStream = (function () {
-      const FEEDS = [
-        { id: "SD0dlqX9xzo", title: "Cam 1: Live HD Earth Views", type: "video" },
-        { id: "21X5lGlDOfg", title: "Cam 2: NASA TV & Ops", type: "video" },
-        { id: "k204D5g3z30", title: "Cam 3: Sen 4K Orbit", type: "video" }
-      ];
-
-      let activeIndex = 0;
-      let ytPlayer = null;
-
-      function init() {
-        if (!window.YT) {
-          const tag = document.createElement("script");
-          tag.src = "https://www.youtube.com/iframe_api";
-          const firstScriptTag = document.getElementsByTagName("script")[0];
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-          window.onYouTubeIframeAPIReady = () => {
-            mountPlayer(FEEDS[activeIndex].id);
-          };
-        } else {
-          mountPlayer(FEEDS[activeIndex].id);
-        }
-      }
-
-      function mountPlayer(videoId) {
-        const mount = document.getElementById("iss-player-mount");
-        if (!mount) return;
-        mount.innerHTML = `<div id="yt-embed-node" class="w-full h-full"></div>`;
-
-        ytPlayer = new YT.Player("yt-embed-node", {
-          videoId: videoId,
-          playerVars: {
-            autoplay: 1,
-            mute: 1,
-            playsinline: 1,
-            controls: 1,
-            modestbranding: 1,
-            rel: 0
-          },
-          events: {
-            onReady: (e) => {
-              e.target.playVideo();
-              updateSignalStatus(true);
-            },
-            onError: () => {
-              handleStreamFailover();
-            }
-          }
-        });
-      }
-
-      function switchFeed(index) {
-        activeIndex = parseInt(index, 10);
-        if (ytPlayer && typeof ytPlayer.loadVideoById === "function") {
-          ytPlayer.loadVideoById(FEEDS[activeIndex].id);
-          updateSignalStatus(true);
-        } else {
-          mountPlayer(FEEDS[activeIndex].id);
-        }
-      }
-
-      function handleStreamFailover() {
-        updateSignalStatus(false);
-        activeIndex = (activeIndex + 1) % FEEDS.length;
-        const sel = document.getElementById("iss-feed-select");
-        if (sel) sel.value = String(activeIndex);
-        setTimeout(() => {
-          if (ytPlayer && typeof ytPlayer.loadVideoById === "function") {
-            ytPlayer.loadVideoById(FEEDS[activeIndex].id);
-          }
-        }, 1500);
-      }
-
-      function updateSignalStatus(isOnline) {
-        const ind = document.getElementById("iss-signal-indicator");
-        const status = document.getElementById("iss-signal-status");
-        if (!ind || !status) return;
-
-        if (isOnline) {
-          ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-          status.innerText = "ONLINE";
-          status.className = "text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono";
-        } else {
-          ind.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
-          status.innerText = "FAILOVER";
-          status.className = "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono";
-        }
-      }
-
-      function updateWithTelemetry(visibility) {
-        const losOverlay = document.getElementById("iss-los-overlay");
-        const sigStatus = document.getElementById("iss-signal-status");
-        const sigInd = document.getElementById("iss-signal-indicator");
-
-        if (visibility === "daylight") {
-          if (losOverlay) losOverlay.classList.add("hidden");
-          if (sigStatus) {
-            sigStatus.innerText = "ONLINE";
-            sigStatus.className = "text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono";
-          }
-          if (sigInd) sigInd.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-        } else {
-          if (losOverlay) losOverlay.classList.remove("hidden");
-          if (sigStatus) {
-            sigStatus.innerText = "NIGHT/LOS";
-            sigStatus.className = "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono";
-          }
-          if (sigInd) sigInd.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
-        }
-      }
-
-      return {
-        init,
-        switchFeed,
-        updateWithTelemetry
-      };
-    })();
-
     // --- 1. SATELLITE CATALOG & SOLAR SYSTEM FOUNDATION ---
     const SATELLITES = {
       iss: {
@@ -564,7 +428,7 @@
     };
 
     const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfffbeb, speed: 0, desc: "Center of the Solar System" },
+      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfbbf24, speed: 0, desc: "Center of the Solar System" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x94a3b8, speed: 0.004, desc: "0.39 AU • Innermost Rocky Planet" },
       venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, speed: 0.0022, desc: "0.72 AU • Thick Atmosphere" },
       earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, speed: 0.0014, desc: "1.00 AU • Home World • 23.44° Axial Tilt" },
@@ -597,7 +461,7 @@
     // --- 2. THREE.JS SCENE SETUP ---
     const container = document.getElementById("globe-container");
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x02050e, 0.012);
+    scene.fog = new THREE.FogExp2(0x01040d, 0.012);
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2500);
     const cameraTarget = new THREE.Vector3(0, 0, 0);
@@ -610,7 +474,7 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.28);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.32);
     scene.add(ambientLight);
 
     // Deep Space Starfield
@@ -665,17 +529,18 @@
       return ring;
     }
 
-    // --- 4. PROCEDURAL EARTH TEXTURE ---
-    function generateDetailedEarthCanvas() {
+    // --- 4. CLEAN PHOTOREALISTIC PROCEDURAL EARTH (NO DOTS / NO HARSH MESH LINES) ---
+    function generateCleanEarthCanvas() {
       const canvas = document.createElement('canvas');
       canvas.width = 2048;
       canvas.height = 1024;
       const ctx = canvas.getContext('2d');
 
+      // 1. Deep Oceanic Gradient (No Noise)
       const oceanGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      oceanGrad.addColorStop(0, '#020d24');
-      oceanGrad.addColorStop(0.5, '#051838');
-      oceanGrad.addColorStop(1, '#020d24');
+      oceanGrad.addColorStop(0, '#020b1e');
+      oceanGrad.addColorStop(0.5, '#041836');
+      oceanGrad.addColorStop(1, '#020b1e');
       ctx.fillStyle = oceanGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -685,10 +550,11 @@
         return [x, y];
       }
 
-      function drawLandmass(coords, landColor = '#1f3d28', shelfColor = '#0e556e') {
+      function drawLandmass(coords, landColor = '#1f3d28', shelfColor = '#0a4254') {
         if (!coords.length) return;
+        // Soft continental shelf glow
         ctx.strokeStyle = shelfColor;
-        ctx.lineWidth = 12;
+        ctx.lineWidth = 14;
         ctx.lineJoin = 'round';
         ctx.beginPath();
         let [sx, sy] = toXY(coords[0][0], coords[0][1]);
@@ -700,6 +566,7 @@
         ctx.closePath();
         ctx.stroke();
 
+        // Main Landmass Fill
         ctx.fillStyle = landColor;
         ctx.beginPath();
         ctx.moveTo(sx, sy);
@@ -709,18 +576,16 @@
         }
         ctx.closePath();
         ctx.fill();
-
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
       }
 
+      // Africa (Natural Terrain)
       drawLandmass([
         [-17, 15], [-5, 36], [10, 37], [28, 31], [33, 27], [43, 12], [51, 11],
         [44, 4], [40, -4], [35, -24], [20, -35], [17, -33], [12, -15], [8, 4],
         [-13, 9], [-17, 15]
       ], '#27432b');
 
+      // Eurasia (Europe + India + Asia)
       drawLandmass([
         [-9, 38], [-9, 43], [2, 44], [9, 54], [15, 55], [25, 71], [60, 68],
         [80, 73], [110, 75], [140, 72], [170, 66], [160, 52], [140, 48],
@@ -729,77 +594,39 @@
         [28, 41], [15, 41], [5, 43], [-5, 36], [-9, 38]
       ], '#25462f');
 
+      // North America
       drawLandmass([
         [-168, 65], [-140, 70], [-95, 74], [-75, 62], [-60, 50], [-65, 44],
         [-75, 35], [-81, 25], [-88, 30], [-97, 26], [-97, 19], [-105, 23],
         [-115, 30], [-124, 40], [-125, 49], [-140, 58], [-160, 55], [-168, 65]
       ], '#294833');
 
+      // South America
       drawLandmass([
         [-80, 9], [-60, 11], [-50, -1], [-35, -6], [-38, -14], [-43, -23],
         [-53, -34], [-65, -55], [-75, -50], [-73, -40], [-76, -18], [-80, -2],
         [-80, 9]
       ], '#1e3f28');
 
+      // Australia
       drawLandmass([
         [113, -26], [120, -20], [131, -12], [143, -11], [153, -28], [150, -37],
         [138, -35], [125, -33], [115, -34], [113, -26]
       ], '#3b3821');
 
+      // Greenland & Arctic Ice
       drawLandmass([
         [-52, 60], [-25, 70], [-18, 77], [-35, 83], [-58, 76], [-52, 60]
-      ], '#e2e8f0', '#38bdf8');
+      ], '#e2e8f0', '#0ea5e9');
 
+      // Antarctica (Pristine Polar Ice)
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, canvas.height * 0.88, canvas.width, canvas.height * 0.12);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 22px monospace';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 6;
-
-      const mapLabels = [
-        ["INDIA", 78.9, 20.5],
-        ["USA", -98.0, 38.0],
-        ["EUROPE", 15.0, 50.0],
-        ["CHINA", 104.0, 35.0],
-        ["RUSSIA", 95.0, 60.0],
-        ["AUSTRALIA", 133.0, -25.0],
-        ["BRAZIL", -51.0, -14.0],
-        ["JAPAN", 138.0, 36.0]
-      ];
-
-      mapLabels.forEach(([txt, lng, lat]) => {
-        const [lx, ly] = toXY(lng, lat);
-        ctx.fillText(txt, lx - 30, ly);
-      });
-
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < canvas.width; x += 64) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 64) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      ctx.strokeStyle = 'rgba(6, 182, 212, 0.55)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height / 2);
-      ctx.lineTo(canvas.width, canvas.height / 2);
-      ctx.stroke();
 
       return new THREE.CanvasTexture(canvas);
     }
 
-    function generateCloudsTexture() {
+    function generateRealisticCloudsTexture() {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
       canvas.height = 512;
@@ -807,11 +634,11 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
 
-      for (let i = 0; i < 260; i++) {
+      for (let i = 0; i < 220; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const rx = 20 + Math.random() * 60;
-        const ry = 6 + Math.random() * 18;
+        const rx = 25 + Math.random() * 65;
+        const ry = 8 + Math.random() * 20;
         ctx.beginPath();
         ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -819,7 +646,7 @@
       return new THREE.CanvasTexture(canvas);
     }
 
-    // --- 5. EARTH SYSTEM SETUP ---
+    // --- 5. CLEAN EARTH ASSEMBLY ---
     createOrbitRing(CELESTIAL_BODIES.earth.dist, 0x0284c7);
 
     const earthSystem = new THREE.Group();
@@ -833,13 +660,14 @@
     const earthRadius = CELESTIAL_BODIES.earth.radius;
     const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMat = new THREE.MeshPhongMaterial({
-      map: generateDetailedEarthCanvas(),
+      map: generateCleanEarthCanvas(),
       shininess: 25,
       specular: new THREE.Color(0x0e7490)
     });
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     earthAxialGroup.add(earthMesh);
 
+    // Click target for Earth
     const earthHit = new THREE.Mesh(
       new THREE.SphereGeometry(earthRadius * 1.05, 16, 16),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
@@ -848,25 +676,27 @@
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
+    // Realistic Clouds Layer
     const cloudsGeo = new THREE.SphereGeometry(earthRadius + 0.03, 64, 64);
     const cloudsMat = new THREE.MeshBasicMaterial({
-      map: generateCloudsTexture(),
+      map: generateRealisticCloudsTexture(),
       transparent: true,
       opacity: 0.65
     });
     const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
     earthAxialGroup.add(cloudsMesh);
 
-    const atmosGeo = new THREE.SphereGeometry(earthRadius + 0.06, 64, 64);
+    // Clean Atmospheric Rayleigh Rim Halo (Soft Glow, No Wireframe Dots)
+    const atmosGeo = new THREE.SphereGeometry(earthRadius + 0.05, 64, 64);
     const atmosMat = new THREE.MeshBasicMaterial({
-      color: 0x06b6d4,
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.16,
-      wireframe: true
+      opacity: 0.15,
+      side: THREE.BackSide
     });
     earthAxialGroup.add(new THREE.Mesh(atmosGeo, atmosMat));
 
-    // Moon
+    // The Moon in Earth Orbit
     const moonOrbitRing = new THREE.Group();
     moonOrbitRing.rotation.x = 5.14 * (Math.PI / 180);
     earthSystem.add(moonOrbitRing);
@@ -898,7 +728,7 @@
     moonMesh.add(moonHit);
     clickableMeshes.push(moonHit);
 
-    // Laser & Footprint
+    // Laser & Footprint for Active Satellite
     const nadirLineGeo = new THREE.BufferGeometry();
     nadirLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0]), 3));
     const nadirLineMat = new THREE.LineBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 });
@@ -909,37 +739,6 @@
     const footprintMat = new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
     const footprintMesh = new THREE.Mesh(footprintGeo, footprintMat);
     earthMesh.add(footprintMesh);
-
-    function latLngToEarthVector(lat, lng, radius) {
-      const latRad = lat * (Math.PI / 180);
-      const lngRad = lng * (Math.PI / 180);
-      return new THREE.Vector3(
-        radius * Math.cos(latRad) * Math.cos(lngRad),
-        radius * Math.sin(latRad),
-        -radius * Math.cos(latRad) * Math.sin(lngRad)
-      );
-    }
-
-    // 3D Country Markers
-    Object.keys(COUNTRIES).forEach(k => {
-      const c = COUNTRIES[k];
-      const pos = latLngToEarthVector(c.lat, c.lng, earthRadius * 1.008);
-
-      const pinMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.045, 12, 12),
-        new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
-      );
-      pinMesh.position.copy(pos);
-      earthMesh.add(pinMesh);
-
-      const hit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.25, 8, 8),
-        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
-      );
-      hit.userData = { countryKey: k };
-      pinMesh.add(hit);
-      clickableMeshes.push(hit);
-    });
 
     // --- 6. PLANETARY SOLAR SYSTEM SETUP ---
     const planetMeshes = {};
@@ -1024,7 +823,7 @@
       deepSpaceSystems[k] = { group: pGroup, mesh: probeMesh, data: pData, currentAngle: pData.angle };
     });
 
-    // --- 7. SATELLITE 3D BUILDER (SCALABLE TO HUNDREDS) ---
+    // --- 7. SATELLITE 3D BUILDER ---
     const satelliteMeshMap = {};
 
     function buildSatelliteOrbit(key, data) {
@@ -1038,7 +837,6 @@
       incGroup.rotation.x = data.inclination;
       raanGroup.add(incGroup);
 
-      // Trajectory Ring (Only rendered active or for prominent targets to keep 60 FPS)
       const segs = 96;
       const ringGeo = new THREE.BufferGeometry();
       const pos = new Float32Array((segs + 1) * 3);
@@ -1057,16 +855,14 @@
       const orbitRing = new THREE.Line(ringGeo, ringMat);
       incGroup.add(orbitRing);
 
-      // Compact Glowing Beacon
       const satMesh = new THREE.Mesh(
         new THREE.SphereGeometry(0.045, 8, 8),
         new THREE.MeshBasicMaterial({ color: data.color })
       );
       incGroup.add(satMesh);
 
-      // Raycast Hitbox
       const hitMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.3, 6, 6),
+        new THREE.SphereGeometry(0.32, 6, 6),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
       );
       hitMesh.userData = { targetKey: key };
@@ -1100,41 +896,37 @@
         {
           id: "BOT-CELES-01",
           name: "CelesTrak Visual Fleet Harvester",
-          source: "CelesTrak (Visual Bright / 100+)",
-          role: "Harvests bright visual satellite ephemeris & computes orbital geometry",
+          source: "CelesTrak (Visual Fleet)",
+          role: "Harvests visual satellites & computes Keplerian elements",
           status: "ONLINE",
           packets: 0,
-          ping: "38ms",
           active: true
         },
         {
           id: "BOT-CELES-02",
-          name: "Space Stations & Constellation Ingestion",
+          name: "Space Stations & Constellations",
           source: "CelesTrak (Stations & Starlink)",
-          role: "Ingests crewed orbital laboratories, Starlink batches & cubesats",
+          role: "Ingests crewed orbital laboratories & communications clusters",
           status: "ONLINE",
           packets: 0,
-          ping: "45ms",
           active: true
         },
         {
           id: "BOT-WEATHER-03",
           name: "Weather & Earth Observation Fleet",
           source: "NOAA / METEOR / Sentinel / ISRO",
-          role: "Tracks Sun-Synchronous weather, atmospheric & cartographic satellites",
+          role: "Tracks Sun-Synchronous weather & cartographic spacecraft",
           status: "ONLINE",
           packets: 0,
-          ping: "52ms",
           active: true
         },
         {
           id: "BOT-N2YO-04",
           name: "N2YO Real-time Telemetry Sentinel",
           source: "Live Telemetry Feed (wheretheiss.at)",
-          role: "Streams real-time sub-satellite coordinates, velocity & footprint vector",
+          role: "Streams real-time sub-satellite coordinates, velocity & footprint",
           status: "ONLINE",
           packets: 0,
-          ping: "26ms",
           active: true
         }
       ];
@@ -1179,7 +971,6 @@
         });
       }
 
-      // Generate realistic auxiliary satellite batches if CelesTrak endpoint is rate-limited or offline
       function generateAuxiliarySatellites(category, count, startNorad, incBase, altBase, colorHex, subtype) {
         let added = 0;
         for (let i = 1; i <= count; i++) {
@@ -1215,10 +1006,9 @@
         return added;
       }
 
-      // Ingest live JSON feeds from CelesTrak without slice limitations
       async function ingestCelesTrakFeed(url, subtype, colorHex, botIndex, batchName) {
         const bot = BOTS[botIndex];
-        logTerminal(bot.id, `Connecting to CelesTrak feed [${batchName}]...`);
+        logTerminal(bot.id, `Harvesting CelesTrak feed [${batchName}]...`);
         try {
           const res = await fetch(url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1267,16 +1057,14 @@
             return true;
           }
         } catch (e) {
-          logTerminal(bot.id, `Live feed connection timeout for ${batchName}. Engaging autonomous telemetry generator.`);
+          logTerminal(bot.id, `CelesTrak rate-limited for ${batchName}. Engaging fallback generator.`);
           return false;
         }
         return false;
       }
 
-      // Master Ingestion Pipeline
       async function runHarvesterFleet() {
-        // Feed 1: Bright Visual Satellites (100+ Satellites)
-        const visSuccess = await ingestCelesTrakFeed(
+        await ingestCelesTrakFeed(
           "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=JSON",
           "science",
           0x38bdf8,
@@ -1284,8 +1072,7 @@
           "Visual Fleet"
         );
 
-        // Feed 2: Active Space Stations
-        const statSuccess = await ingestCelesTrakFeed(
+        await ingestCelesTrakFeed(
           "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=JSON",
           "stations",
           0x10b981,
@@ -1293,8 +1080,7 @@
           "Space Stations"
         );
 
-        // Feed 3: Weather Satellites
-        const weaSuccess = await ingestCelesTrakFeed(
+        await ingestCelesTrakFeed(
           "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=JSON",
           "weather",
           0xfbbf24,
@@ -1302,43 +1088,6 @@
           "Weather & Earth Obs"
         );
 
-        // Fallback to local catalog if external feeds failed or returned limited results
-        if (!visSuccess && !statSuccess) {
-          try {
-            const locRes = await fetch("/api/catalog");
-            if (locRes.ok) {
-              const locData = await locRes.json();
-              const items = Array.isArray(locData) ? locData : (locData.satellites || []);
-              items.forEach(sat => {
-                const norad = String(sat.norad || sat.NORAD_CAT_ID || Math.floor(Math.random() * 50000 + 10000));
-                const key = "norad_" + norad;
-                if (!SATELLITES[key]) {
-                  const inc = parseFloat(sat.inclination || sat.INCLINATION) || 51.6;
-                  const alt = parseInt(sat.altitude) || 500;
-                  const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
-                  SATELLITES[key] = {
-                    name: sat.name || sat.OBJECT_NAME || `SAT-${norad}`,
-                    norad: norad,
-                    orbitType: `${inc.toFixed(1)}° Inc • ${alt} km`,
-                    radius: rad3D,
-                    inclination: inc * (Math.PI / 180),
-                    raan: (Math.random() * 360) * (Math.PI / 180),
-                    speed: 0.007 + Math.random() * 0.003,
-                    altitude: alt,
-                    velocity: parseInt(sat.velocity) || 27500,
-                    period: sat.period || "94.5 min",
-                    color: 0x38bdf8,
-                    subtype: sat.subtype || "science"
-                  };
-                  buildSatelliteOrbit(key, SATELLITES[key]);
-                }
-              });
-              logTerminal("BOT-CELES-01", `Loaded ${items.length} orbital vectors via local cache.`);
-            }
-          } catch (e) {}
-        }
-
-        // If network restricted or offline, autonomously inject rich real-world batches to guarantee 150+ satellites
         if (Object.keys(SATELLITES).length < 50) {
           logTerminal("BOT-SWARM", "Synthesizing full satellite fleet with real NORAD catalog parameters...");
           generateAuxiliarySatellites("STARLINK", 60, 52000, 53.2, 550, 0xc084fc, "constellation");
@@ -1348,14 +1097,11 @@
         }
 
         const totalSats = Object.keys(SATELLITES).length;
-        const countBadge = document.getElementById("sat-count-badge");
-        if (countBadge) countBadge.innerText = `${totalSats} Active`;
-        const swarmBadge = document.getElementById("bot-swarm-badge");
-        if (swarmBadge) swarmBadge.innerText = `📡 ${totalSats} SATELLITES TRACKED`;
+        document.getElementById("sat-count-badge").innerText = `${totalSats} Active`;
+        document.getElementById("bot-swarm-badge").innerText = `📡 ${totalSats} SATELLITES TRACKED`;
         renderCatalogs();
       }
 
-      // N2YO Real-time Telemetry Loop
       async function runN2YOBot() {
         const bot = BOTS[3];
         if (!bot.active) return;
@@ -1370,10 +1116,6 @@
               document.getElementById("tele-alt").innerText = `${Math.round(d.altitude)} km`;
               document.getElementById("tele-vel").innerText = `${Math.round(d.velocity).toLocaleString()} km/h`;
               document.getElementById("tele-shadow").innerText = d.visibility === "daylight" ? "Sunlight (Day)" : "Eclipsed (Night)";
-
-              if (window.ISSStream) {
-                ISSStream.updateWithTelemetry(d.visibility);
-              }
 
               bot.packets++;
               const pktEl = document.getElementById("bot-pkt-3");
@@ -1399,7 +1141,27 @@
       };
     })();
 
-    // --- 9. UI DRAWER CONTROLLERS & MINIMIZE / EXPAND ---
+    // --- 9. VIDEO STREAM SWITCHER (RESILIENT & MULTI-FEED) ---
+    const STREAM_FEEDS = [
+      { id: "SD0dlqX9xzo", title: "NASA HD Earth Views", url: "https://www.youtube.com/watch?v=SD0dlqX9xzo" },
+      { id: "DDU-r6sDXdA", title: "Space Videos Earth Orbit", url: "https://www.youtube.com/watch?v=DDU-r6sDXdA" },
+      { id: "21X5lGlDOfg", title: "NASA TV Live Operations", url: "https://www.youtube.com/watch?v=21X5lGlDOfg" },
+      { id: "k204D5g3z30", title: "Sen 4K Ultra HD Orbit", url: "https://www.youtube.com/watch?v=k204D5g3z30" }
+    ];
+
+    function changeLiveStream(idx) {
+      const feed = STREAM_FEEDS[parseInt(idx, 10)] || STREAM_FEEDS[0];
+      const frame = document.getElementById("iss-video-frame");
+      const outlink = document.getElementById("stream-outlink");
+      if (frame) {
+        frame.src = `https://www.youtube.com/embed/${feed.id}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`;
+      }
+      if (outlink) {
+        outlink.href = feed.url;
+      }
+    }
+
+    // --- 10. UI DRAWER CONTROLLERS & MINIMIZE / EXPAND ---
     function minimizeCatalog() {
       document.getElementById('catalog-panel').classList.add('is-minimized');
       document.getElementById('btn-expand-catalog').classList.remove('hidden');
@@ -1472,7 +1234,6 @@
       filterUnifiedCatalog();
     }
 
-    // TARGET SELECTION & CAMERA INTERPOLATION
     function setFocusTo(key) {
       activeTargetKey = key;
 
@@ -1544,7 +1305,7 @@
       setFocusTo('iss');
     }
 
-    // --- 10. CATALOG POPULATOR ---
+    // --- 11. CATALOG POPULATOR ---
     function renderCatalogs() {
       const satCont = document.getElementById('sat-list-container');
       if (!satCont) return;
@@ -1628,7 +1389,7 @@
       });
     }
 
-    // --- 11. SCROLL & TOUCH ISOLATION ---
+    // --- 12. SCROLL & TOUCH ISOLATION ---
     document.querySelectorAll('#catalog-panel, #telemetry-panel, #video-panel').forEach(p => {
       p.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
       p.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
@@ -1641,7 +1402,7 @@
     const mouseVec = new THREE.Vector2();
 
     window.addEventListener('mousedown', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select')) return;
+      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
       isDragging = true;
       prevMouse = { x: e.clientX, y: e.clientY };
       startClick = { x: e.clientX, y: e.clientY };
@@ -1658,9 +1419,8 @@
       prevMouse = { x: e.clientX, y: e.clientY };
     });
 
-    // 1-Click Raycasting on Satellite, Planet, or Country
     window.addEventListener('mouseup', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select')) return;
+      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
       isDragging = false;
       if (Math.hypot(e.clientX - startClick.x, e.clientY - startClick.y) < 6) {
         mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -1680,7 +1440,7 @@
     });
 
     window.addEventListener('wheel', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select')) return;
+      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
       cameraDistance = Math.max(3.2, Math.min(180.0, cameraDistance + e.deltaY * 0.015));
     }, { passive: true });
 
@@ -1690,11 +1450,10 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Launch Systems
-    ISSStream.init();
+    // Launch Bot Ingestion Swarm
     BotSwarm.init();
 
-    // --- 12. MASTER ANIMATION LOOP ---
+    // --- 13. MASTER ANIMATION LOOP ---
     let solarClock = 0;
 
     function animate() {
@@ -1721,7 +1480,7 @@
         pObj.mesh.rotation.y += 0.002;
       });
 
-      // Animate Deep Space Escape Probes
+      // Animate Deep Space Probes
       Object.keys(deepSpaceSystems).forEach(dk => {
         const dObj = deepSpaceSystems[dk];
         dObj.currentAngle += dObj.data.speed * 0.1;
@@ -1745,7 +1504,6 @@
           item.crosshair.scale.set(s, s, s);
         }
 
-        // Live telemetry calculation for active target
         if (k === activeTargetKey && activeTargetKey !== 'iss') {
           const inc = item.data.inclination;
           const lat = Math.asin(Math.sin(inc) * Math.sin(item.angle)) * (180 / Math.PI);
