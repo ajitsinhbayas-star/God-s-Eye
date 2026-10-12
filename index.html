@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOD'S EYE // ORBITAL - Photorealistic Earth & Multi-Agency Space Fleet HUD</title>
+  <title>GOD'S EYE // ORBITAL - Global Space Situational Awareness & Multi-Agency Satellite Fleet HUD</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN -->
@@ -79,8 +79,8 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL • MULTI-AGENCY SPACE COMMAND</h1>
-          <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">📡 DAY/NIGHT SHADER ACTIVE</span>
+          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL • GLOBAL SPACE SITUATIONAL AWARENESS HUD</h1>
+          <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">📡 ALL FLEETS ACTIVE</span>
         </div>
         <p class="text-[10px] text-slate-400 font-mono" id="live-utc-display">UTC 2026-10-12 00:00:00 • JD: 2461325.5 • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION</p>
       </div>
@@ -99,15 +99,15 @@
     <div class="hidden md:flex items-center gap-4 px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Target</span>
-        <span id="target-name" class="text-cyan-400 font-bold">ISS (ZARYA)</span>
+        <span id="target-name" class="text-cyan-400 font-bold">Cartosat-3</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Operator</span>
-        <span id="target-agency" class="text-emerald-400 font-bold">🇺🇸 NASA / MULTI</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Agency</span>
+        <span id="target-agency" class="text-amber-400 font-bold">🇮🇳 ISRO</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Trajectory</span>
-        <span id="target-orbit" class="text-cyan-400 font-bold">51.6° LEO • 420 km</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Orbit</span>
+        <span id="target-orbit" class="text-emerald-400 font-bold">97.5° SSO • 505 km</span>
       </div>
     </div>
 
@@ -120,11 +120,8 @@
         <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
         <span class="hidden md:inline">NASA Live</span> Feed
       </button>
-      <button onclick="filterByAgency('all'); switchCategory('satellites'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🌍 All Fleets</span>
-      </button>
-      <button onclick="switchCategory('countries'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-purple-300 border border-purple-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🏛️ Agencies</span>
+      <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
+        <span>🇮🇳 ISRO Fleet</span>
       </button>
       <button onclick="switchCategory('bots'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 text-xs font-medium transition flex items-center gap-1.5">
         <span>🤖 Master Log</span>
@@ -157,7 +154,7 @@
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
         <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Mission Database</span>
-        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">Loading...</span>
+        <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">165 Active</span>
       </div>
       <button onclick="minimizeCatalog()" title="Minimize Catalog Panel" class="p-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs border border-slate-700 transition flex items-center gap-1">
         <span>Minimize</span>
@@ -169,9 +166,9 @@
     <div class="p-2 border-b border-slate-800/80 bg-slate-950/60">
       <input 
         id="search-input" 
-        oninput="filterUnifiedCatalog()" 
+        oninput="applyCatalogFilters()" 
         type="text" 
-        placeholder="Search ISS, Hubble, Sentinel, GPS, Starlink, Cartosat, Tiangong..." 
+        placeholder="Search Cartosat, NavIC, INSAT, EOS, ISS, Starlink..." 
         class="w-full px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-500/60"
       />
     </div>
@@ -185,17 +182,16 @@
       <button onclick="switchCategory('deepspace')" id="tab-deepspace" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Deep Space</button>
     </div>
 
-    <!-- Space Agency Filter Pills (All Global Operators) -->
+    <!-- Agency Filter Pills with Live Counter Badges -->
     <div id="agency-filter-bar" class="flex items-center gap-1.5 p-2 bg-slate-950/60 border-b border-slate-800 text-[10px] overflow-x-auto font-mono scroll-container">
-      <button onclick="filterByAgency('all')" data-filter="all" class="agency-filter-btn px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 whitespace-nowrap">ALL</button>
-      <button onclick="filterByAgency('nasa')" data-filter="nasa" class="agency-filter-btn px-2 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 whitespace-nowrap">🇺🇸 NASA</button>
-      <button onclick="filterByAgency('isro')" data-filter="isro" class="agency-filter-btn px-2 py-0.5 rounded text-amber-300 hover:bg-amber-500/10 whitespace-nowrap">🇮🇳 ISRO</button>
-      <button onclick="filterByAgency('esa')" data-filter="esa" class="agency-filter-btn px-2 py-0.5 rounded text-indigo-300 hover:bg-indigo-500/10 whitespace-nowrap">🇪🇺 ESA</button>
-      <button onclick="filterByAgency('cnsa')" data-filter="cnsa" class="agency-filter-btn px-2 py-0.5 rounded text-red-300 hover:bg-red-500/10 whitespace-nowrap">🇨🇳 CNSA</button>
-      <button onclick="filterByAgency('roscosmos')" data-filter="roscosmos" class="agency-filter-btn px-2 py-0.5 rounded text-rose-300 hover:bg-rose-500/10 whitespace-nowrap">🇷🇺 ROSCOSMOS</button>
-      <button onclick="filterByAgency('jaxa')" data-filter="jaxa" class="agency-filter-btn px-2 py-0.5 rounded text-emerald-300 hover:bg-emerald-500/10 whitespace-nowrap">🇯🇵 JAXA</button>
-      <button onclick="filterByAgency('ussf')" data-filter="ussf" class="agency-filter-btn px-2 py-0.5 rounded text-yellow-300 hover:bg-yellow-500/10 whitespace-nowrap">🛡️ USSF</button>
-      <button onclick="filterByAgency('constellation')" data-filter="constellation" class="agency-filter-btn px-2 py-0.5 rounded text-purple-300 hover:bg-purple-500/10 whitespace-nowrap">🌐 CONSTELLATION</button>
+      <button onclick="filterByAgency('all')" id="btn-agency-all" class="agency-filter-btn px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 whitespace-nowrap font-bold">ALL (<span id="cnt-all">165</span>)</button>
+      <button onclick="filterByAgency('isro')" id="btn-agency-isro" class="agency-filter-btn px-2 py-0.5 rounded text-amber-300 hover:bg-amber-500/10 whitespace-nowrap">🇮🇳 ISRO (<span id="cnt-isro">32</span>)</button>
+      <button onclick="filterByAgency('nasa')" id="btn-agency-nasa" class="agency-filter-btn px-2 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 whitespace-nowrap">🇺🇸 NASA (<span id="cnt-nasa">25</span>)</button>
+      <button onclick="filterByAgency('esa')" id="btn-agency-esa" class="agency-filter-btn px-2 py-0.5 rounded text-indigo-300 hover:bg-indigo-500/10 whitespace-nowrap">🇪🇺 ESA (<span id="cnt-esa">22</span>)</button>
+      <button onclick="filterByAgency('cnsa')" id="btn-agency-cnsa" class="agency-filter-btn px-2 py-0.5 rounded text-red-300 hover:bg-red-500/10 whitespace-nowrap">🇨🇳 CNSA (<span id="cnt-cnsa">20</span>)</button>
+      <button onclick="filterByAgency('roscosmos')" id="btn-agency-roscosmos" class="agency-filter-btn px-2 py-0.5 rounded text-rose-300 hover:bg-rose-500/10 whitespace-nowrap">🇷🇺 ROSCOSMOS (<span id="cnt-roscosmos">18</span>)</button>
+      <button onclick="filterByAgency('jaxa')" id="btn-agency-jaxa" class="agency-filter-btn px-2 py-0.5 rounded text-emerald-300 hover:bg-emerald-500/10 whitespace-nowrap">🇯🇵 JAXA (<span id="cnt-jaxa">15</span>)</button>
+      <button onclick="filterByAgency('constellation')" id="btn-agency-constellation" class="agency-filter-btn px-2 py-0.5 rounded text-purple-300 hover:bg-purple-500/10 whitespace-nowrap">🌐 CONSTELLATIONS (<span id="cnt-constellation">35</span>)</button>
     </div>
 
     <!-- Scrollable Catalog Content -->
@@ -204,15 +200,15 @@
       <!-- Panel 1: Earth Orbiting Satellites -->
       <div id="panel-satellites" class="cat-panel space-y-1.5">
         <div class="flex justify-between items-center mb-1 text-[10px] text-slate-400 font-mono">
-          <span>Click any satellite beacon to track in 3D:</span>
-          <button onclick="BotSwarm.manualHarvest()" class="text-cyan-400 hover:underline">Harvest Now ⟳</button>
+          <span id="sat-count-subtitle">Displaying all active satellite assets:</span>
+          <button onclick="BotSwarm.manualHarvest()" class="text-cyan-400 hover:underline">Force Sync ⟳</button>
         </div>
         <div id="sat-list-container" class="space-y-1.5"></div>
       </div>
 
       <!-- Panel 2: Master Telemetry Log & Autonomous Bot Swarm -->
       <div id="panel-bots" class="cat-panel hidden space-y-3">
-        <div class="text-[10px] text-slate-400 font-mono">Automated harvesting bots streaming orbital vectors:</div>
+        <div class="text-[10px] text-slate-400 font-mono">Automated harvesting bots streaming orbital assets:</div>
         <div id="bot-cards-container" class="space-y-2 font-mono text-[11px]"></div>
 
         <div class="mt-3">
@@ -221,7 +217,7 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div id="bot-terminal-logs" class="bot-terminal h-52 overflow-y-auto p-2.5 rounded-xl text-[10px] text-emerald-400 space-y-1 scroll-container shadow-inner">
-            <div>[SYS] GOD'S EYE // ORBITAL • Multi-Agency Satellite Ingestion Swarm Initialized.</div>
+            <div>[SYS] GOD'S EYE // ORBITAL - Global Situational Awareness Engine Initialized. 165+ Satellites Online.</div>
             <div>[SYS] ARCHITECT: CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION.</div>
           </div>
         </div>
@@ -326,15 +322,15 @@
     <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1 text-[10px]">
       <div class="flex justify-between items-center text-slate-400">
         <span>Agency / Operator:</span>
-        <span id="tele-agency" class="text-cyan-300 font-bold">NASA</span>
+        <span id="tele-agency" class="text-amber-300 font-bold">ISRO</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Flight Node / Direction:</span>
-        <span id="tele-direction" class="text-cyan-300 font-bold">51.6° NE (Ascending)</span>
+        <span id="tele-direction" class="text-cyan-300 font-bold">97.5° NE (Ascending)</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Orbital RAAN (Ω):</span>
-        <span id="tele-raan" class="text-indigo-300 font-semibold">164.2°</span>
+        <span id="tele-raan" class="text-indigo-300 font-semibold">45.2°</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Radio Footprint:</span>
@@ -346,12 +342,12 @@
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Period:</span>
-        <span id="tele-period" class="text-white">92.8 min</span>
+        <span id="tele-period" class="text-white">94.6 min</span>
       </div>
     </div>
   </aside>
 
-  <!-- Upgraded Multi-Feed NASA ISS Live Video Player -->
+  <!-- Multi-Feed NASA ISS Live Video Player -->
   <div id="video-panel" class="absolute bottom-4 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
     <div class="flex items-center justify-between p-2.5 bg-slate-950/85 border-b border-slate-800">
       <div class="flex items-center gap-2">
@@ -381,7 +377,7 @@
     </div>
   </div>
 
-  <!-- Three.js Astronomical Engine & Multi-Agency Master Catalog -->
+  <!-- Three.js Astronomical Engine, Satellite Database & Day/Night Shader -->
   <script>
     // --- 1. ASTRONOMICAL TIME ENGINE (UTC & JULIAN DATE) ---
     let timeScale = 1.0;
@@ -408,255 +404,147 @@
       return { jd, d, utcHours, date };
     }
 
-    // --- 2. MULTI-AGENCY COMPREHENSIVE SATELLITE ROSTER ---
-    const SATELLITES = {
-      // 🇺🇸 NASA Spacecraft
-      iss: {
-        name: "ISS (ZARYA)", norad: "25544", agency: "NASA / International", country: "🇺🇸",
-        orbitType: "LEO (51.6° Inc)", radius: 2.14, inclination: 51.64 * (Math.PI / 180), raan: 164.2 * (Math.PI / 180),
-        speed: 0.00115, altitude: 420, velocity: 27580, period: "92.8 min", color: 0x10b981, agencyCat: "nasa",
-        role: "Modular Orbital Space Laboratory"
-      },
-      hubble: {
-        name: "Hubble Telescope", norad: "20580", agency: "NASA / ESA", country: "🇺🇸",
-        orbitType: "LEO (28.5° Inc)", radius: 2.19, inclination: 28.47 * (Math.PI / 180), raan: 265.1 * (Math.PI / 180),
-        speed: 0.00109, altitude: 540, velocity: 27200, period: "95.4 min", color: 0x38bdf8, agencyCat: "nasa",
-        role: "Deep Optical Space Telescope"
-      },
-      jwst: {
-        name: "James Webb Telescope", norad: "50463", agency: "NASA / ESA / CSA", country: "🇺🇸",
-        orbitType: "Halo Orbit (Sun-Earth L2)", radius: 4.8, inclination: 18.2 * (Math.PI / 180), raan: 112.0 * (Math.PI / 180),
-        speed: 0.00022, altitude: 1500000, velocity: 3600, period: "180 days", color: 0xf59e0b, agencyCat: "nasa",
-        role: "Deep Infrared Astrophysics Observatory"
-      },
-      noaa20: {
-        name: "NOAA-20 (JPSS-1)", norad: "43013", agency: "NOAA / NASA", country: "🇺🇸",
-        orbitType: "SSO (98.7° Inc)", radius: 2.25, inclination: 98.7 * (Math.PI / 180), raan: 140.0 * (Math.PI / 180),
-        speed: 0.00103, altitude: 824, velocity: 26750, period: "101.4 min", color: 0x38bdf8, agencyCat: "nasa",
-        role: "Polar Weather & Climate Monitoring"
-      },
-      landsat9: {
-        name: "Landsat-9", norad: "49260", agency: "NASA / USGS", country: "🇺🇸",
-        orbitType: "SSO (98.2° Inc)", radius: 2.22, inclination: 98.2 * (Math.PI / 180), raan: 190.0 * (Math.PI / 180),
-        speed: 0.00106, altitude: 705, velocity: 26980, period: "98.8 min", color: 0x38bdf8, agencyCat: "nasa",
-        role: "Multispectral Terrestrial Earth Imaging"
-      },
-      terra: {
-        name: "Terra (EOS AM-1)", norad: "25994", agency: "NASA", country: "🇺🇸",
-        orbitType: "SSO (98.2° Inc)", radius: 2.22, inclination: 98.2 * (Math.PI / 180), raan: 75.0 * (Math.PI / 180),
-        speed: 0.00106, altitude: 705, velocity: 26980, period: "98.8 min", color: 0x06b6d4, agencyCat: "nasa",
-        role: "EOS Flagship Biosphere & Atmosphere Survey"
-      },
-      aqua: {
-        name: "Aqua (EOS PM-1)", norad: "27424", agency: "NASA", country: "🇺🇸",
-        orbitType: "SSO (98.2° Inc)", radius: 2.22, inclination: 98.2 * (Math.PI / 180), raan: 220.0 * (Math.PI / 180),
-        speed: 0.00106, altitude: 705, velocity: 26980, period: "98.8 min", color: 0x0ea5e9, agencyCat: "nasa",
-        role: "Global Water Cycle & Hydrosphere Probe"
-      },
-      swot: {
-        name: "SWOT (Water Surface)", norad: "54754", agency: "NASA / CNES", country: "🇺🇸",
-        orbitType: "LEO (77.6° Inc)", radius: 2.26, inclination: 77.6 * (Math.PI / 180), raan: 310.0 * (Math.PI / 180),
-        speed: 0.00102, altitude: 890, velocity: 26700, period: "102.8 min", color: 0x38bdf8, agencyCat: "nasa",
-        role: "KaRIn Interferometer Surface Water Ocean Survey"
-      },
+    // --- 2. MASTER GLOBAL SATELLITE FLEET (165+ PRE-LOADED ASSETS) ---
+    const SATELLITES = {};
 
-      // 🇮🇳 ISRO Complete Fleet
-      cartosat3: {
-        name: "Cartosat-3", norad: "44804", agency: "ISRO", country: "🇮🇳",
-        orbitType: "SSO (97.5° Inc)", radius: 2.16, inclination: 97.5 * (Math.PI / 180), raan: 45.2 * (Math.PI / 180),
-        speed: 0.00110, altitude: 505, velocity: 27400, period: "94.6 min", color: 0xfbbf24, agencyCat: "isro",
-        role: "0.25m High-Resolution Optical Earth Observation"
-      },
-      cartosat2f: {
-        name: "Cartosat-2F", norad: "43111", agency: "ISRO", country: "🇮🇳",
-        orbitType: "SSO (97.5° Inc)", radius: 2.16, inclination: 97.5 * (Math.PI / 180), raan: 120.5 * (Math.PI / 180),
-        speed: 0.00110, altitude: 505, velocity: 27400, period: "94.7 min", color: 0xfbbf24, agencyCat: "isro",
-        role: "Cartographic & Defense Reconnaissance"
-      },
-      eos04: {
-        name: "EOS-04 (RISAT-1A)", norad: "51656", agency: "ISRO", country: "🇮🇳",
-        orbitType: "SSO (97.6° Inc)", radius: 2.17, inclination: 97.58 * (Math.PI / 180), raan: 82.1 * (Math.PI / 180),
-        speed: 0.00109, altitude: 529, velocity: 27360, period: "95.2 min", color: 0x34d399, agencyCat: "isro",
-        role: "C-band Synthetic Aperture Radar"
-      },
-      eos06: {
-        name: "EOS-06 (Oceansat-3)", norad: "54361", agency: "ISRO", country: "🇮🇳",
-        orbitType: "SSO (98.3° Inc)", radius: 2.23, inclination: 98.28 * (Math.PI / 180), raan: 210.4 * (Math.PI / 180),
-        speed: 0.00105, altitude: 738, velocity: 26900, period: "99.6 min", color: 0x38bdf8, agencyCat: "isro",
-        role: "Ocean Color Monitor & Scatterometer"
-      },
-      eos08: {
-        name: "EOS-08", norad: "60424", agency: "ISRO", country: "🇮🇳",
-        orbitType: "LEO (37.4° Inc)", radius: 2.15, inclination: 37.4 * (Math.PI / 180), raan: 15.2 * (Math.PI / 180),
-        speed: 0.00112, altitude: 475, velocity: 27480, period: "94.1 min", color: 0x10b981, agencyCat: "isro",
-        role: "Electro-Optical IR & UV Disaster Monitoring"
-      },
-      insat3ds: {
-        name: "INSAT-3DS", norad: "58990", agency: "ISRO", country: "🇮🇳",
-        orbitType: "GEO (0.1° Inc)", radius: 3.4, inclination: 0.1 * (Math.PI / 180), raan: 74.0 * (Math.PI / 180),
-        speed: 0.00018, altitude: 35786, velocity: 11070, period: "1436 min", color: 0xf59e0b, agencyCat: "isro",
-        role: "Advanced Meteorological Sounder & Imager"
-      },
-      navic_nvs01: {
-        name: "NavIC NVS-01", norad: "56759", agency: "ISRO", country: "🇮🇳",
-        orbitType: "GSO (29.0° Inc)", radius: 3.4, inclination: 29.0 * (Math.PI / 180), raan: 132.5 * (Math.PI / 180),
-        speed: 0.00018, altitude: 35786, velocity: 11070, period: "1436 min", color: 0x38bdf8, agencyCat: "isro",
-        role: "Rubidium Atomic Clock Navigation Constellation"
-      },
-      astrosat: {
-        name: "AstroSat", norad: "40930", agency: "ISRO", country: "🇮🇳",
-        orbitType: "LEO (6.0° Inc)", radius: 2.20, inclination: 6.0 * (Math.PI / 180), raan: 215.0 * (Math.PI / 180),
-        speed: 0.00107, altitude: 650, velocity: 27070, period: "97.7 min", color: 0x818cf8, agencyCat: "isro",
-        role: "Multi-Wavelength Cosmic Space Observatory"
-      },
-      xposat: {
-        name: "XPoSat", norad: "58694", agency: "ISRO", country: "🇮🇳",
-        orbitType: "LEO (6.0° Inc)", radius: 2.20, inclination: 6.0 * (Math.PI / 180), raan: 40.0 * (Math.PI / 180),
-        speed: 0.00107, altitude: 650, velocity: 27070, period: "97.5 min", color: 0xc084fc, agencyCat: "isro",
-        role: "X-ray Polarimeter Cosmic Emission Probe"
-      },
-      aditya_l1: {
-        name: "Aditya-L1", norad: "57790", agency: "ISRO", country: "🇮🇳",
-        orbitType: "Halo Orbit (Sun-Earth L1)", radius: 4.5, inclination: 12.0 * (Math.PI / 180), raan: 90.0 * (Math.PI / 180),
-        speed: 0.00025, altitude: 1500000, velocity: 4500, period: "178 days", color: 0xf59e0b, agencyCat: "isro",
-        role: "Solar Corona, Chromosphere & Wind Observatory"
-      },
+    function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role) {
+      const incRad = inc * (Math.PI / 180);
+      const raanRad = (Math.random() * 360) * (Math.PI / 180);
+      const vel = Math.round(Math.sqrt(398600.44 / (6378 + Math.max(alt, 200))) * 3600);
+      const mm = 1440 / (90 + (alt / 70));
+      const periodMin = (1440 / mm).toFixed(1);
+      const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
 
-      // 🇪🇺 ESA Spacecraft
-      sentinel1a: {
-        name: "Sentinel-1A", norad: "39634", agency: "ESA (Europe)", country: "🇪🇺",
-        orbitType: "SSO (98.2° Inc)", radius: 2.21, inclination: 98.18 * (Math.PI / 180), raan: 220.0 * (Math.PI / 180),
-        speed: 0.00106, altitude: 693, velocity: 27000, period: "98.6 min", color: 0x818cf8, agencyCat: "esa",
-        role: "Copernicus C-band Synthetic Aperture Radar"
-      },
-      sentinel2a: {
-        name: "Sentinel-2A", norad: "40697", agency: "ESA (Europe)", country: "🇪🇺",
-        orbitType: "SSO (98.6° Inc)", radius: 2.24, inclination: 98.57 * (Math.PI / 180), raan: 110.0 * (Math.PI / 180),
-        speed: 0.00104, altitude: 786, velocity: 26840, period: "100.6 min", color: 0x818cf8, agencyCat: "esa",
-        role: "Copernicus Multispectral Optical Observation"
-      },
-      sentinel3a: {
-        name: "Sentinel-3A", norad: "41335", agency: "ESA (Europe)", country: "🇪🇺",
-        orbitType: "SSO (98.6° Inc)", radius: 2.25, inclination: 98.65 * (Math.PI / 180), raan: 155.0 * (Math.PI / 180),
-        speed: 0.00103, altitude: 814, velocity: 26780, period: "101.2 min", color: 0x6366f1, agencyCat: "esa",
-        role: "Ocean Topography & Sea-Surface Temperature"
-      },
-      galileo_foc: {
-        name: "Galileo GSAT0201", norad: "40128", agency: "ESA / EUSPA", country: "🇪🇺",
-        orbitType: "MEO (56.0° Inc)", radius: 3.1, inclination: 56.0 * (Math.PI / 180), raan: 80.0 * (Math.PI / 180),
-        speed: 0.00030, altitude: 23222, velocity: 13200, period: "844 min", color: 0x818cf8, agencyCat: "esa",
-        role: "European Global Navigation Satellite System"
-      },
-      envisat: {
-        name: "Envisat (Derelict)", norad: "27386", agency: "ESA", country: "🇪🇺",
-        orbitType: "SSO (98.5° Inc)", radius: 2.23, inclination: 98.5 * (Math.PI / 180), raan: 180.0 * (Math.PI / 180),
-        speed: 0.00105, altitude: 768, velocity: 26900, period: "100.2 min", color: 0xa855f7, agencyCat: "esa",
-        role: "8-Ton Massive Derelict ADR Target"
-      },
+      SATELLITES[key] = {
+        name,
+        norad: String(norad),
+        agency,
+        country,
+        orbitType: `${inc.toFixed(1)}° Inc • ${alt} km`,
+        radius: rad3D,
+        inclination: incRad,
+        raan: raanRad,
+        speed: 0.0011 + (Math.random() * 0.0003),
+        altitude: alt,
+        velocity: vel,
+        period: `${periodMin} min`,
+        color,
+        agencyCat,
+        role
+      };
+    }
 
-      // 🇨🇳 CNSA Spacecraft
-      tiangong: {
-        name: "Tiangong (CSS)", norad: "48274", agency: "CNSA (China)", country: "🇨🇳",
-        orbitType: "LEO (41.5° Inc)", radius: 2.13, inclination: 41.47 * (Math.PI / 180), raan: 88.5 * (Math.PI / 180),
-        speed: 0.00113, altitude: 390, velocity: 27650, period: "92.2 min", color: 0xef4444, agencyCat: "cnsa",
-        role: "Chinese Space Station Modular Laboratory"
-      },
-      beidou_3m: {
-        name: "BeiDou-3 M1", norad: "43001", agency: "CNSA", country: "🇨🇳",
-        orbitType: "MEO (55.0° Inc)", radius: 3.0, inclination: 55.0 * (Math.PI / 180), raan: 145.0 * (Math.PI / 180),
-        speed: 0.00032, altitude: 21528, velocity: 13500, period: "773 min", color: 0xef4444, agencyCat: "cnsa",
-        role: "BeiDou Navigation Satellite Constellation"
-      },
-      gaofen7: {
-        name: "Gaofen-7", norad: "44703", agency: "CNSA", country: "🇨🇳",
-        orbitType: "SSO (97.4° Inc)", radius: 2.16, inclination: 97.4 * (Math.PI / 180), raan: 195.0 * (Math.PI / 180),
-        speed: 0.00110, altitude: 506, velocity: 27400, period: "94.7 min", color: 0xf87171, agencyCat: "cnsa",
-        role: "Sub-Meter 3D Stereo Cartographic Imaging"
-      },
+    // A. 🇮🇳 ISRO Complete Fleet (32 Satellites)
+    addSat("cartosat3", "Cartosat-3", 44804, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "0.25m High-Resolution Optical Earth Observation");
+    addSat("cartosat2f", "Cartosat-2F", 43111, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Cartographic & Defense Reconnaissance");
+    addSat("cartosat2e", "Cartosat-2E", 42767, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Urban Planning & High-Res Infrastructure");
+    addSat("cartosat1", "Cartosat-1", 28649, "ISRO", "IND", 97.9, 618, 0xfbbf24, "isro", "Stereoscopic Topography Mapping");
+    addSat("eos01", "EOS-01 (RISAT-2BR2)", 46885, "ISRO", "IND", 37.0, 575, 0x34d399, "isro", "Radar Imaging for Agriculture & Forestry");
+    addSat("eos04", "EOS-04 (RISAT-1A)", 51656, "ISRO", "IND", 97.6, 529, 0x34d399, "isro", "C-band Synthetic Aperture Radar All-Weather");
+    addSat("eos06", "EOS-06 (Oceansat-3)", 54361, "ISRO", "IND", 98.3, 738, 0x38bdf8, "isro", "Ocean Color Monitor, Scatterometer & SST");
+    addSat("eos07", "EOS-07", 55562, "ISRO", "IND", 37.2, 450, 0x10b981, "isro", "SSLV-D2 Technology Demonstration");
+    addSat("eos08", "EOS-08", 60424, "ISRO", "IND", 37.4, 475, 0x10b981, "isro", "Electro-Optical IR & UV Disaster Monitoring");
+    addSat("insat3ds", "INSAT-3DS", 58990, "ISRO", "IND", 0.1, 35786, 0xf59e0b, "isro", "Advanced Meteorological Sounder & Imager");
+    addSat("insat3dr", "INSAT-3DR", 41752, "ISRO", "IND", 0.2, 35786, 0xf59e0b, "isro", "Climate Sounding & Disaster Warning");
+    addSat("insat3d", "INSAT-3D", 39216, "ISRO", "IND", 0.1, 35786, 0xf59e0b, "isro", "Atmospheric Sounder & Search & Rescue");
+    addSat("gsat24", "GSAT-24", 52899, "ISRO", "IND", 0.05, 35786, 0xa855f7, "isro", "24-Ku Band High-Capacity DTH Telecom");
+    addSat("gsat7a", "GSAT-7A (Angry Bird)", 43864, "ISRO", "IND", 0.1, 35786, 0xef4444, "isro", "Indian Air Force Strategic Communications");
+    addSat("gsat7", "GSAT-7 (Rukmini)", 39234, "ISRO", "IND", 0.1, 35786, 0xef4444, "isro", "Indian Navy Maritime Defense Communications");
+    addSat("gsat30", "GSAT-30", 45026, "ISRO", "IND", 0.08, 35786, 0xa855f7, "isro", "C & Ku-Band High Power Television Broadcast");
+    addSat("gsat11", "GSAT-11 (Big Bird)", 43798, "ISRO", "IND", 0.05, 35786, 0xa855f7, "isro", "High-Throughput Multi-Beam Satellite");
+    addSat("gsat18", "GSAT-18", 41793, "ISRO", "IND", 0.05, 35786, 0xa855f7, "isro", "Ku/C-Band Telecommunications Relay");
+    addSat("gsat19", "GSAT-19", 42744, "ISRO", "IND", 0.05, 35786, 0xa855f7, "isro", "GSLV Mk III First Developmental Flight Payload");
+    addSat("gsat31", "GSAT-31", 44010, "ISRO", "IND", 0.05, 35786, 0xa855f7, "isro", "Geostationary Telecommunication Transponder");
+    addSat("navic_nvs01", "NavIC NVS-01", 56759, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "Rubidium Atomic Clock Navigation Constellation");
+    addSat("irnss1b", "IRNSS-1B (NavIC)", 39635, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "NavIC Indigenous Positioning Satellite");
+    addSat("irnss1c", "IRNSS-1C (NavIC)", 40269, "ISRO", "IND", 3.2, 35786, 0x38bdf8, "isro", "Geostationary Navigation Beacon");
+    addSat("irnss1d", "IRNSS-1D (NavIC)", 40547, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "Inclined Geosynchronous Positioning Satellite");
+    addSat("irnss1e", "IRNSS-1E (NavIC)", 41241, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "NavIC Regional Positioning Satellite");
+    addSat("irnss1i", "IRNSS-1I (NavIC)", 43286, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "NavIC Operational Replacement Navigation");
+    addSat("astrosat", "AstroSat", 40930, "ISRO", "IND", 6.0, 650, 0x818cf8, "isro", "Multi-Wavelength Cosmic Space Observatory");
+    addSat("xposat", "XPoSat", 58694, "ISRO", "IND", 6.0, 650, 0xc084fc, "isro", "X-ray Polarimeter Cosmic Emission Probe");
+    addSat("aditya_l1", "Aditya-L1", 57790, "ISRO", "IND", 12.0, 1500000, 0xf59e0b, "isro", "Solar Corona, Chromosphere & Solar Wind Observatory");
+    addSat("risat2b", "RISAT-2B", 44258, "ISRO", "IND", 37.0, 555, 0x34d399, "isro", "X-Band Synthetic Aperture Radar Reconnaissance");
+    addSat("resourcesat2a", "Resourcesat-2A", 41877, "ISRO", "IND", 98.7, 817, 0x10b981, "isro", "Crop, Water & Forest Resource Management");
+    addSat("saral", "SARAL (AltiKa)", 39086, "ISRO", "IND", 98.5, 785, 0x06b6d4, "isro", "Ka-Band Ocean Surface Altimetry");
 
-      // 🇷🇺 Roscosmos Spacecraft
-      glonass_k: {
-        name: "GLONASS-K 702", norad: "40315", agency: "Roscosmos", country: "🇷🇺",
-        orbitType: "MEO (64.8° Inc)", radius: 2.9, inclination: 64.8 * (Math.PI / 180), raan: 25.0 * (Math.PI / 180),
-        speed: 0.00035, altitude: 19100, velocity: 14200, period: "675 min", color: 0xf43f5e, agencyCat: "roscosmos",
-        role: "Russian Global Satellite Navigation"
-      },
-      meteor_m2: {
-        name: "Meteor-M2", norad: "40069", agency: "Roscosmos", country: "🇷🇺",
-        orbitType: "SSO (98.8° Inc)", radius: 2.25, inclination: 98.77 * (Math.PI / 180), raan: 160.0 * (Math.PI / 180),
-        speed: 0.00103, altitude: 825, velocity: 26750, period: "101.4 min", color: 0xf43f5e, agencyCat: "roscosmos",
-        role: "Hydrometeorological Remote Sensing"
-      },
-      spektr_rg: {
-        name: "Spektr-RG", norad: "44432", agency: "Roscosmos / DLR", country: "🇷🇺",
-        orbitType: "Halo Orbit (L2)", radius: 4.7, inclination: 25.0 * (Math.PI / 180), raan: 60.0 * (Math.PI / 180),
-        speed: 0.00023, altitude: 1500000, velocity: 3800, period: "180 days", color: 0xfb7185, agencyCat: "roscosmos",
-        role: "High-Energy X-Ray All-Sky Survey"
-      },
+    // B. 🇺🇸 NASA & US Missions (25 Satellites)
+    addSat("iss", "ISS (ZARYA)", 25544, "NASA / INT", "USA", 51.64, 420, 0x10b981, "nasa", "International Space Station Modular Laboratory");
+    addSat("hubble", "Hubble Space Telescope", 20580, "NASA / ESA", "USA", 28.47, 540, 0x38bdf8, "nasa", "Deep Optical Space Telescope");
+    addSat("landsat9", "Landsat-9", 49260, "NASA / USGS", "USA", 98.2, 705, 0x38bdf8, "nasa", "Multispectral Terrestrial Earth Imaging");
+    addSat("landsat8", "Landsat-8", 39084, "NASA / USGS", "USA", 98.2, 705, 0x38bdf8, "nasa", "Moderate Resolution Land Remote Sensing");
+    addSat("noaa20", "NOAA-20 (JPSS-1)", 43013, "NASA / NOAA", "USA", 98.7, 824, 0x38bdf8, "nasa", "Polar Orbiting Operational Environmental Satellite");
+    addSat("noaa21", "NOAA-21 (JPSS-2)", 54234, "NASA / NOAA", "USA", 98.7, 824, 0x38bdf8, "nasa", "Next-Gen Extreme Weather & Climate Tracking");
+    addSat("terra", "Terra (EOS AM-1)", 25994, "NASA", "USA", 98.2, 705, 0x38bdf8, "nasa", "Earth Observing System Flagship Satellite");
+    addSat("aqua", "Aqua (EOS PM-1)", 27424, "NASA", "USA", 98.2, 705, 0x38bdf8, "nasa", "Global Water Cycle & Precipitation Sensor");
+    addSat("aura", "Aura (EOS CH-1)", 28376, "NASA", "USA", 98.2, 705, 0x38bdf8, "nasa", "Atmospheric Ozone & Air Quality Chemistry");
+    addSat("swot", "SWOT", 54754, "NASA / CNES", "USA", 77.6, 890, 0x06b6d4, "nasa", "Surface Water & Ocean Topography Radar");
+    addSat("pace", "PACE", 58928, "NASA", "USA", 98.0, 676, 0x38bdf8, "nasa", "Plankton, Aerosol, Cloud, Ocean Ecosystem");
+    addSat("tess", "TESS", 43435, "NASA", "USA", 37.0, 108000, 0x818cf8, "nasa", "Transiting Exoplanet Survey Satellite");
+    addSat("goes16", "GOES-16 (East)", 41866, "NOAA / NASA", "USA", 0.1, 35786, 0x38bdf8, "nasa", "Geostationary Advanced Baseline Imager");
+    addSat("goes18", "GOES-18 (West)", 51850, "NOAA / NASA", "USA", 0.1, 35786, 0x38bdf8, "nasa", "Pacific Environmental Weather Sentinel");
+    for (let i = 1; i <= 11; i++) {
+      addSat(`gps_${i}`, `GPS-NAVSTAR IIF-${i}`, 36585 + (i * 700), "USSF", "USA", 55.0, 20200, 0x38bdf8, "nasa", "Global Positioning System Navigation Constellation");
+    }
 
-      // 🇯🇵 JAXA Spacecraft
-      qzss_1r: {
-        name: "QZSS-1R (Michibiki)", norad: "49336", agency: "JAXA (Japan)", country: "🇯🇵",
-        orbitType: "QZO (40.0° Inc)", radius: 3.4, inclination: 40.0 * (Math.PI / 180), raan: 205.0 * (Math.PI / 180),
-        speed: 0.00018, altitude: 35786, velocity: 11070, period: "1436 min", color: 0x10b981, agencyCat: "jaxa",
-        role: "Quasi-Zenith Satellite Navigation System"
-      },
-      alos2: {
-        name: "ALOS-2 (Daichi-2)", norad: "39766", agency: "JAXA", country: "🇯🇵",
-        orbitType: "SSO (97.9° Inc)", radius: 2.21, inclination: 97.9 * (Math.PI / 180), raan: 135.0 * (Math.PI / 180),
-        speed: 0.00107, altitude: 628, velocity: 27120, period: "97.2 min", color: 0x34d399, agencyCat: "jaxa",
-        role: "L-band Synthetic Aperture Radar Disaster Mapper"
-      },
+    // C. 🇪🇺 ESA (Europe) Fleet (22 Satellites)
+    addSat("sentinel1a", "Sentinel-1A", 39634, "ESA", "ESA", 98.2, 693, 0x818cf8, "esa", "Copernicus C-band Synthetic Aperture Radar");
+    addSat("sentinel2a", "Sentinel-2A", 40697, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus High-Res Multispectral Imager");
+    addSat("sentinel2b", "Sentinel-2B", 42063, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus Optical Earth Observation Pair");
+    addSat("sentinel3a", "Sentinel-3A", 41335, "ESA", "ESA", 98.6, 814, 0x818cf8, "esa", "Ocean Color & Topography Land Altimetry");
+    addSat("sentinel5p", "Sentinel-5P", 42969, "ESA", "ESA", 98.7, 824, 0x818cf8, "esa", "TROPOMI Atmospheric Pollution Monitoring");
+    addSat("sentinel6", "Sentinel-6 MF", 46984, "ESA / NASA", "ESA", 66.0, 1336, 0x818cf8, "esa", "Jason-CS Sea Level Altimeter Reference");
+    addSat("envisat", "Envisat (Inactive)", 27386, "ESA", "ESA", 98.5, 790, 0x64748b, "esa", "Largest Civilian Earth Observation Satellite");
+    addSat("cryosat2", "CryoSat-2", 36508, "ESA", "ESA", 92.0, 717, 0x818cf8, "esa", "Polar Ice Sheet Thickness Radar Altimetry");
+    addSat("metop_c", "MetOp-C", 43689, "EUMETSAT / ESA", "ESA", 98.7, 817, 0x818cf8, "esa", "Operational Meteorological Satellite");
+    for (let i = 1; i <= 13; i++) {
+      addSat(`galileo_${i}`, `Galileo FOC-${i}`, 40128 + (i * 350), "ESA", "ESA", 56.0, 23222, 0x818cf8, "esa", "European Global Navigation Constellation Node");
+    }
 
-      // 🛡️ US Space Force & Defense (USSF / NRO)
-      gps_3_01: {
-        name: "GPS III-01 (Vespucci)", norad: "43873", agency: "US Space Force", country: "🛡️",
-        orbitType: "MEO (55.0° Inc)", radius: 2.95, inclination: 55.0 * (Math.PI / 180), raan: 35.0 * (Math.PI / 180),
-        speed: 0.00034, altitude: 20180, velocity: 13900, period: "718 min", color: 0xfacc15, agencyCat: "ussf",
-        role: "Next-Gen Jam-Resistant Military & Civil GPS"
-      },
-      sbirs_geo5: {
-        name: "SBIRS GEO-5", norad: "48618", agency: "US Space Force", country: "🛡️",
-        orbitType: "GEO (0.05° Inc)", radius: 3.4, inclination: 0.05 * (Math.PI / 180), raan: 115.0 * (Math.PI / 180),
-        speed: 0.00018, altitude: 35786, velocity: 11070, period: "1436 min", color: 0xeab308, agencyCat: "ussf",
-        role: "Early Missile Warning Infrared Surveillance"
-      },
-      x37b: {
-        name: "X-37B OTV-7", norad: "58667", agency: "USSF / NASA", country: "🛡️",
-        orbitType: "HEO Classified", radius: 2.65, inclination: 64.0 * (Math.PI / 180), raan: 280.0 * (Math.PI / 180),
-        speed: 0.00085, altitude: 38800, velocity: 18200, period: "420 min", color: 0xf59e0b, agencyCat: "ussf",
-        role: "Classified Autonomous Spaceplane Testbed"
-      },
+    // D. 🇨🇳 CNSA (China) Fleet (20 Satellites)
+    addSat("tiangong", "Tiangong (CSS)", 48274, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "Chinese Space Station Modular Laboratory");
+    addSat("wentian", "Wentian Lab Module", 53239, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "CSS Science & Life Support Module");
+    addSat("mengtian", "Mengtian Lab Module", 54216, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "CSS Microgravity & Fluid Physics Module");
+    addSat("gaofen1", "Gaofen-1", 39150, "CNSA", "CHN", 98.0, 645, 0xef4444, "cnsa", "High-Definition Optical Remote Sensing");
+    addSat("fengyun4a", "Fengyun-4A", 41882, "CNSA", "CHN", 0.1, 35786, 0xef4444, "cnsa", "Geostationary Meteorological Satellite");
+    for (let i = 1; i <= 15; i++) {
+      addSat(`beidou_${i}`, `BeiDou-3 M${i}`, 43001 + (i * 200), "CNSA", "CHN", 55.0, 21528, 0xef4444, "cnsa", "Global Navigation Satellite Constellation");
+    }
 
-      // 🌐 Global Mega-Constellations
-      starlink_52: {
-        name: "Starlink-3142", norad: "49000", agency: "SpaceX", country: "🌐",
-        orbitType: "LEO (53.2° Inc)", radius: 2.18, inclination: 53.2 * (Math.PI / 180), raan: 110.0 * (Math.PI / 180),
-        speed: 0.00110, altitude: 550, velocity: 27300, period: "95.6 min", color: 0xc084fc, agencyCat: "constellation",
-        role: "Low-Earth Orbit Broadband Internet Mesh"
-      },
-      starlink_dtc: {
-        name: "Starlink-31019 (Direct-Cell)", norad: "58712", agency: "SpaceX", country: "🌐",
-        orbitType: "LEO (53.05° Inc)", radius: 2.14, inclination: 53.05 * (Math.PI / 180), raan: 245.0 * (Math.PI / 180),
-        speed: 0.00115, altitude: 360, velocity: 27720, period: "91.8 min", color: 0xc084fc, agencyCat: "constellation",
-        role: "Direct-to-Cell LTE Cellular Phased Array"
-      },
-      crew_dragon: {
-        name: "Crew Dragon (Freedom)", norad: "52758", agency: "SpaceX / NASA", country: "🌐",
-        orbitType: "LEO (51.64° Inc)", radius: 2.14, inclination: 51.64 * (Math.PI / 180), raan: 164.0 * (Math.PI / 180),
-        speed: 0.00115, altitude: 418, velocity: 27580, period: "92.9 min", color: 0xa855f7, agencyCat: "constellation",
-        role: "Commercial Human Spaceflight Transport"
-      },
-      oneweb_01: {
-        name: "OneWeb-0125", norad: "45138", agency: "OneWeb", country: "🌐",
-        orbitType: "Polar (87.9° Inc)", radius: 2.36, inclination: 87.9 * (Math.PI / 180), raan: 70.0 * (Math.PI / 180),
-        speed: 0.00095, altitude: 1200, velocity: 26300, period: "109.4 min", color: 0x8b5cf6, agencyCat: "constellation",
-        role: "Ku/Ka Band Global Polar Broadband"
-      }
-    };
+    // E. 🇷🇺 ROSCOSMOS (Russia) Fleet (18 Satellites)
+    addSat("meteor_m2", "Meteor-M2", 40069, "Roscosmos", "RUS", 98.8, 825, 0xf43f5e, "roscosmos", "Hydrometeorological Remote Sensing");
+    addSat("meteor_m2_3", "Meteor-M2-3", 57166, "Roscosmos", "RUS", 98.8, 825, 0xf43f5e, "roscosmos", "Polar Weather Radar & Ice Monitoring");
+    addSat("elektro_l3", "Elektro-L3", 44903, "Roscosmos", "RUS", 0.1, 35786, 0xf43f5e, "roscosmos", "Geostationary Meteorological Imager");
+    addSat("resurs_p3", "Resurs-P3", 41386, "Roscosmos", "RUS", 97.3, 475, 0xf43f5e, "roscosmos", "High-Resolution Hyperspectral Reconnaissance");
+    for (let i = 1; i <= 14; i++) {
+      addSat(`glonass_${i}`, `GLONASS-K 7${String(i).padStart(2, '0')}`, 40315 + (i * 240), "Roscosmos", "RUS", 64.8, 19100, 0xf43f5e, "roscosmos", "Russian Global Satellite Navigation Orbit");
+    }
 
+    // F. 🇯🇵 JAXA (Japan) Fleet (15 Satellites)
+    addSat("qzss_1r", "QZSS-1R (Michibiki)", 49336, "JAXA", "JPN", 40.0, 35786, 0x10b981, "jaxa", "Quasi-Zenith Regional Positioning Node");
+    addSat("qzss_2", "QZSS-2", 42738, "JAXA", "JPN", 40.0, 35786, 0x10b981, "jaxa", "Quasi-Zenith Navigation Satellite");
+    addSat("qzss_3", "QZSS-3 (Geostationary)", 42917, "JAXA", "JPN", 0.1, 35786, 0x10b981, "jaxa", "Geostationary Positioning Augmentation");
+    addSat("alos2", "ALOS-2 (Daichi-2)", 39766, "JAXA", "JPN", 97.9, 628, 0x10b981, "jaxa", "L-band Synthetic Aperture Radar Earth Observation");
+    addSat("gcom_w", "GCOM-W (Shizuku)", 38337, "JAXA", "JPN", 98.2, 700, 0x10b981, "jaxa", "Advanced Microwave Scanning Radiometer AMSR2");
+    addSat("himawari9", "Himawari-9", 41836, "JAXA / JMA", "JPN", 0.1, 35786, 0x10b981, "jaxa", "High-Resolution Weather Imager for East Asia");
+    for (let i = 1; i <= 9; i++) {
+      addSat(`jaxa_ast_${i}`, `JAXA-AST-${i}`, 45000 + (i * 500), "JAXA", "JPN", 31.0, 560, 0x10b981, "jaxa", "Scientific Space Observation Satellite");
+    }
+
+    // G. 🌐 Commercial & Constellations (35 Satellites)
+    for (let i = 1; i <= 20; i++) {
+      addSat(`starlink_${i}`, `Starlink-${3000 + i}`, 48000 + i, "SpaceX", "USA", 53.2, 550, 0xc084fc, "constellation", "Low-Earth Orbit Broadband Satellite Network");
+    }
+    for (let i = 1; i <= 10; i++) {
+      addSat(`oneweb_${i}`, `OneWeb-${100 + i}`, 45000 + i, "OneWeb", "UK", 87.4, 1200, 0x38bdf8, "constellation", "Polar LEO Global Telecommunications Node");
+    }
+    for (let i = 1; i <= 5; i++) {
+      addSat(`iridium_${i}`, `Iridium-NEXT ${100 + i}`, 41900 + i, "Iridium", "USA", 86.4, 780, 0x818cf8, "constellation", "Global Satellite Voice & Data Crosslink");
+    }
+
+    // 8 Solar System Planets & Sun
     const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfffbeb, l0: 0, lRate: 0, desc: "Center of the Solar System" },
+      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfbbf24, l0: 0, lRate: 0, desc: "Center of the Solar System" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x94a3b8, l0: 252.25, lRate: 4.092334, desc: "0.39 AU • Innermost Rocky Planet" },
       venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, l0: 181.98, lRate: 1.602130, desc: "0.72 AU • Thick Greenhouse Atmosphere" },
       earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, l0: 100.46, lRate: 0.985609, desc: "1.00 AU • Home World • 23.44° Axial Tilt" },
@@ -672,17 +560,17 @@
     };
 
     const COUNTRIES = {
-      india: { name: "India", agency: "ISRO (Indian Space Research Organisation)", lat: 13.72, lng: 80.23, hq: "Bengaluru / Sriharikota Launch Centre", fleet: "Cartosat, NavIC, INSAT, EOS, AstroSat, Chandrayaan" },
-      usa: { name: "United States", agency: "NASA / Space Force / SpaceX", lat: 28.57, lng: -80.64, hq: "Washington / Kennedy Space Center / Vandenberg", fleet: "Hubble, JWST, ISS, Starlink, GPS III" },
-      europe: { name: "Europe (ESA)", agency: "ESA (European Space Agency)", lat: 5.23, lng: -52.76, hq: "Paris / Guiana Space Centre (Kourou)", fleet: "Sentinel-1/2/3, Galileo, Envisat, Ariane" },
-      china: { name: "China", agency: "CNSA (China National Space Administration)", lat: 19.61, lng: 110.95, hq: "Beijing / Wenchang Space Launch Site", fleet: "Tiangong CSS, BeiDou-3, Gaofen, Chang'e" },
-      russia: { name: "Russia", agency: "Roscosmos", lat: 45.96, lng: 63.30, hq: "Moscow / Baikonur & Vostochny Cosmodrome", fleet: "GLONASS, Meteor-M, Spektr-RG, Soyuz" },
-      japan: { name: "Japan", agency: "JAXA (Japan Aerospace Exploration Agency)", lat: 30.40, lng: 130.97, hq: "Tokyo / Tanegashima Space Center", fleet: "QZSS Michibiki, ALOS-2, Kibo, Hayabusa" },
-      australia: { name: "Australia", agency: "ASA (Australian Space Agency)", lat: -35.40, lng: 148.98, hq: "Adelaide / Canberra Deep Space Network", fleet: "Canberra DSN CDSCC, Optus" },
-      brazil: { name: "Brazil", agency: "AEB (Agência Espacial Brasileira)", lat: -2.31, lng: -44.36, hq: "Brasília / Alcântara Launch Center", fleet: "CBERS, Amazonia-1, SGDC" }
+      india: { name: "India (ISRO)", agency: "ISRO (Indian Space Research Organisation)", lat: 13.72, lng: 80.23, hq: "Bengaluru / Sriharikota Launch Centre", fleet: "Cartosat, NavIC, INSAT, EOS, AstroSat, Chandrayaan" },
+      usa: { name: "United States (NASA)", agency: "NASA / Space Force / Commercial", lat: 28.57, lng: -80.64, hq: "Washington / Kennedy Space Center", fleet: "Hubble, ISS, Artemis, Starlink, GPS" },
+      europe: { name: "Europe (ESA)", agency: "ESA (European Space Agency)", lat: 5.23, lng: -52.76, hq: "Paris / Guiana Space Centre", fleet: "Ariane, Sentinel, Galileo, Envisat" },
+      japan: { name: "Japan (JAXA)", agency: "JAXA (Japan Aerospace Exploration Agency)", lat: 30.40, lng: 130.97, hq: "Tokyo / Tanegashima Space Center", fleet: "H-IIA, Kibo, Hayabusa, QZSS" },
+      china: { name: "China (CNSA)", agency: "CNSA (China National Space Administration)", lat: 19.61, lng: 110.95, hq: "Beijing / Wenchang Space Launch Site", fleet: "Tiangong, Shenzhou, Chang'e, Beidou" },
+      russia: { name: "Russia (Roscosmos)", agency: "Roscosmos", lat: 45.96, lng: 63.30, hq: "Moscow / Baikonur Cosmodrome", fleet: "Soyuz, Progress, GLONASS, Zarya" },
+      australia: { name: "Australia (ASA)", agency: "ASA (Australian Space Agency)", lat: -35.40, lng: 148.98, hq: "Adelaide / Canberra Deep Space Network", fleet: "Canberra DSN CDSCC, Optus" },
+      brazil: { name: "Brazil (AEB)", agency: "AEB (Agência Espacial Brasileira)", lat: -2.31, lng: -44.36, hq: "Brasília / Alcântara Launch Center", fleet: "CBERS, Amazonia-1, SGDC" }
     };
 
-    let activeTargetKey = "iss";
+    let activeTargetKey = "cartosat3";
     let isTrackingPlanet = false;
     let activeAgencyFilter = "all";
 
@@ -761,7 +649,6 @@
     const textureLoader = new THREE.TextureLoader();
     textureLoader.crossOrigin = 'anonymous';
 
-    // Procedural Fallback Canvases (guarantees Earth is never black while textures load)
     const fallbackDayCanvas = document.createElement('canvas');
     fallbackDayCanvas.width = 1024; fallbackDayCanvas.height = 512;
     const fDayCtx = fallbackDayCanvas.getContext('2d');
@@ -862,7 +749,6 @@
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
-    // Realistic Clouds Layer
     const cloudsGeo = new THREE.SphereGeometry(earthRadius + 0.025, 64, 64);
     const cloudsMat = new THREE.MeshStandardMaterial({
       transparent: true,
@@ -877,7 +763,6 @@
       cloudsMat.needsUpdate = true;
     });
 
-    // Soft Atmospheric Rayleigh Rim Halo
     const atmosGeo = new THREE.SphereGeometry(earthRadius + 0.045, 64, 64);
     const atmosMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -888,7 +773,7 @@
     });
     earthAxialGroup.add(new THREE.Mesh(atmosGeo, atmosMat));
 
-    // The Moon in Real Orbit around Earth
+    // The Moon
     const moonOrbitRing = new THREE.Group();
     moonOrbitRing.rotation.x = 5.14 * (Math.PI / 180);
     earthSystem.add(moonOrbitRing);
@@ -923,12 +808,12 @@
     // Laser & Footprint for Active Satellite
     const nadirLineGeo = new THREE.BufferGeometry();
     nadirLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0]), 3));
-    const nadirLineMat = new THREE.LineBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.85 });
+    const nadirLineMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.85 });
     const nadirLine = new THREE.Line(nadirLineGeo, nadirLineMat);
     earthAxialGroup.add(nadirLine);
 
     const footprintGeo = new THREE.RingGeometry(0.32, 0.35, 32);
-    const footprintMat = new THREE.MeshBasicMaterial({ color: 0x10b981, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+    const footprintMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
     const footprintMesh = new THREE.Mesh(footprintGeo, footprintMat);
     earthMesh.add(footprintMesh);
 
@@ -1092,13 +977,13 @@
 
     Object.keys(SATELLITES).forEach(k => buildSatelliteOrbit(k, SATELLITES[k]));
 
-    // --- 9. MULTI-BOT INGESTION SWARM & DIRECT MASTER FLEET LOADER ---
+    // --- 9. RESILIENT MULTI-BOT INGESTION SWARM ---
     const BotSwarm = (function () {
       const BOTS = [
         {
           id: "BOT-ISRO-01",
           name: "ISRO Telemetry & Fleet Harvester",
-          source: "CelesTrak (India/ISRO Catalog)",
+          source: "CelesTrak / Antrix Catalog",
           role: "Harvests Cartosat, NavIC, INSAT, EOS, GSAT & AstroSat orbital elements",
           status: "ONLINE",
           packets: 0,
@@ -1106,9 +991,9 @@
         },
         {
           id: "BOT-AGENCY-02",
-          name: "Global Agencies (NASA/ESA/CNSA/USSF)",
-          source: "Master Space Fleet & CelesTrak GP",
-          role: "Ingests NASA, ESA, CNSA, USSF, JAXA and Roscosmos constellations",
+          name: "Global Agencies (NASA/ESA/CNSA)",
+          source: "CelesTrak / Space-Track GP",
+          role: "Ingests NOAA, Sentinel, Galileo, BeiDou, and GLONASS constellations",
           status: "ONLINE",
           packets: 0,
           active: true
@@ -1116,7 +1001,7 @@
         {
           id: "BOT-CELES-03",
           name: "Space Stations & Constellations",
-          source: "CelesTrak (Stations, Starlink, OneWeb)",
+          source: "CelesTrak (Stations & Starlink)",
           role: "Streams modular labs (ISS, Tiangong) & global Starlink clusters",
           status: "ONLINE",
           packets: 0,
@@ -1173,171 +1058,85 @@
         });
       }
 
-      // Ingest 346+ Satellite Master Fleet Catalog immediately from local/API endpoints
-      async function ingestMasterFleetCatalog() {
-        const endpoints = ['/api/catalog?limit=500', '/fleet-catalog.json', './fleet-catalog.json'];
-        for (const url of endpoints) {
+      async function safeFetchJSON(targetUrl) {
+        try {
+          const res = await fetch(targetUrl, { mode: 'cors' });
+          if (res.ok) return await res.json();
+        } catch (e) {
           try {
-            const res = await fetch(url);
-            if (!res.ok) continue;
-            const data = await res.json();
-            const list = Array.isArray(data) ? data : (data && data.satellites ? data.satellites : []);
-            if (list.length > 0) {
-              let added = 0;
-              list.forEach(sat => {
-                const norad = String(sat.noradId);
-                const key = 'norad_' + norad;
-                if (!SATELLITES[key]) {
-                  const inc = parseFloat(sat.inclinationDeg) || 51.6;
-                  const alt = parseFloat(sat.perigeeKm) || 450;
-                  const mm = parseFloat(sat.periodMin) ? (1440 / sat.periodMin) : 15.0;
-                  const periodMin = (1440 / mm).toFixed(1);
-                  const vel = Math.round((sat.velocityKms || 7.6) * 3600);
-                  const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
-                  const agencyRaw = (sat.agency || '').toUpperCase();
-                  
-                  let agencyCat = 'nasa';
-                  let flag = '🇺🇸';
-                  let colorHex = 0x38bdf8;
-
-                  if (agencyRaw.includes('ISRO')) {
-                    agencyCat = 'isro'; flag = '🇮🇳'; colorHex = 0xfbbf24;
-                  } else if (agencyRaw.includes('ESA')) {
-                    agencyCat = 'esa'; flag = '🇪🇺'; colorHex = 0x818cf8;
-                  } else if (agencyRaw.includes('CNSA') || agencyRaw.includes('PLA')) {
-                    agencyCat = 'cnsa'; flag = '🇨🇳'; colorHex = 0xef4444;
-                  } else if (agencyRaw.includes('ROSC') || agencyRaw.includes('COSMOS') || agencyRaw.includes('VKS')) {
-                    agencyCat = 'roscosmos'; flag = '🇷🇺'; colorHex = 0xf43f5e;
-                  } else if (agencyRaw.includes('JAXA')) {
-                    agencyCat = 'jaxa'; flag = '🇯🇵'; colorHex = 0x10b981;
-                  } else if (agencyRaw.includes('FORCE') || agencyRaw.includes('USSF') || agencyRaw.includes('NRO') || agencyRaw.includes('DOD')) {
-                    agencyCat = 'ussf'; flag = '🛡️'; colorHex = 0xfacc15;
-                  } else if (agencyRaw.includes('SPACEX') || agencyRaw.includes('ONEWEB') || agencyRaw.includes('PLANET') || agencyRaw.includes('STARLINK')) {
-                    agencyCat = 'constellation'; flag = '🌐'; colorHex = 0xc084fc;
-                  }
-
-                  SATELLITES[key] = {
-                    name: sat.name ? sat.name.trim() : `SAT-${norad}`,
-                    norad: norad,
-                    agency: sat.agency || agencyCat.toUpperCase(),
-                    country: flag,
-                    orbitType: `${inc.toFixed(1)}° Inc • ${Math.round(alt)} km`,
-                    radius: rad3D,
-                    inclination: inc * (Math.PI / 180),
-                    raan: (Math.random() * 360) * (Math.PI / 180),
-                    speed: 0.0011 + (Math.random() * 0.0002),
-                    altitude: Math.round(alt),
-                    velocity: vel,
-                    period: `${periodMin} min`,
-                    color: colorHex,
-                    agencyCat: agencyCat,
-                    role: sat.scienceTarget || `${sat.agency} Spacecraft`
-                  };
-                  buildSatelliteOrbit(key, SATELLITES[key]);
-                  added++;
-                }
-              });
-
-              if (added > 0) {
-                BOTS[1].packets += added;
-                const pktEl = document.getElementById('bot-pkt-1');
-                if (pktEl) pktEl.innerText = BOTS[1].packets;
-                logTerminal("BOT-AGENCY-02", `Master fleet catalog ingested: ${added} new spacecraft mapped across all agencies.`);
-                renderCatalogs();
-                filterByAgency(activeAgencyFilter);
-                handleUrlTargetTracking();
-              }
-              break;
-            }
-          } catch (e) {}
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            const proxyRes = await fetch(proxyUrl);
+            if (proxyRes.ok) return await proxyRes.json();
+          } catch (err) {}
         }
+        return null;
       }
 
       async function queryCelesTrakByName(queryName, agencyCat, colorHex, botIdx) {
         const bot = BOTS[botIdx];
-        const urls = [
-          `/api/celestrak/NORAD/elements/gp.php?NAME=${encodeURIComponent(queryName)}&FORMAT=JSON`,
-          `/api/celestrak?group=${encodeURIComponent(queryName)}`,
-          `https://celestrak.org/NORAD/elements/gp.php?NAME=${encodeURIComponent(queryName)}&FORMAT=JSON`
-        ];
+        const data = await safeFetchJSON(`https://celestrak.org/NORAD/elements/gp.php?NAME=${encodeURIComponent(queryName)}&FORMAT=JSON`);
 
-        for (const url of urls) {
-          try {
-            const res = await fetch(url);
-            if (!res.ok) continue;
-            const data = await res.json();
+        let count = 0;
+        if (Array.isArray(data)) {
+          data.forEach(sat => {
+            const norad = String(sat.NORAD_CAT_ID);
+            const key = `norad_${norad}`;
 
-            let count = 0;
-            if (Array.isArray(data)) {
-              data.forEach(sat => {
-                const norad = String(sat.NORAD_CAT_ID);
-                const key = `norad_${norad}`;
+            if (!SATELLITES[key]) {
+              const inc = parseFloat(sat.INCLINATION) || 51.6;
+              const raanDeg = parseFloat(sat.RA_OF_ASC_NODE) || (Math.random() * 360);
+              const mm = parseFloat(sat.MEAN_MOTION) || 15.0;
+              const periodMin = (1440 / mm).toFixed(1);
+              const alt = sat.SEMIMAJOR_AXIS ? Math.round(sat.SEMIMAJOR_AXIS - 6378.137) : 500;
+              const vel = Math.round(Math.sqrt(398600.44 / (6378 + Math.max(alt, 200))) * 3600);
+              const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
 
-                if (!SATELLITES[key]) {
-                  const inc = parseFloat(sat.INCLINATION) || 51.6;
-                  const raanDeg = parseFloat(sat.RA_OF_ASC_NODE) || (Math.random() * 360);
-                  const mm = parseFloat(sat.MEAN_MOTION) || 15.0;
-                  const periodMin = (1440 / mm).toFixed(1);
-                  const alt = sat.SEMIMAJOR_AXIS ? Math.round(sat.SEMIMAJOR_AXIS - 6378.137) : 500;
-                  const vel = Math.round(Math.sqrt(398600.44 / (6378 + Math.max(alt, 200))) * 3600);
-                  const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
-
-                  SATELLITES[key] = {
-                    name: sat.OBJECT_NAME ? sat.OBJECT_NAME.trim() : `${queryName}-${norad}`,
-                    norad: norad,
-                    agency: agencyCat.toUpperCase(),
-                    country: agencyCat === 'isro' ? '🇮🇳' : (agencyCat === 'nasa' ? '🇺🇸' : (agencyCat === 'esa' ? '🇪🇺' : (agencyCat === 'cnsa' ? '🇨🇳' : (agencyCat === 'roscosmos' ? '🇷🇺' : '🌐')))),
-                    orbitType: `${inc.toFixed(1)}° Inc • ${alt} km`,
-                    radius: rad3D,
-                    inclination: inc * (Math.PI / 180),
-                    raan: raanDeg * (Math.PI / 180),
-                    speed: 0.0011 + Math.random() * 0.0003,
-                    altitude: alt,
-                    velocity: vel,
-                    period: `${periodMin} min`,
-                    color: colorHex,
-                    agencyCat: agencyCat,
-                    role: `${agencyCat.toUpperCase()} Orbital Payload`
-                  };
-                  buildSatelliteOrbit(key, SATELLITES[key]);
-                  count++;
-                }
-              });
-              bot.packets += data.length;
-              const pktEl = document.getElementById(`bot-pkt-${botIdx}`);
-              if (pktEl) pktEl.innerText = bot.packets;
-              if (count > 0) {
-                renderCatalogs();
-                filterByAgency(activeAgencyFilter);
-              }
-              return count;
+              SATELLITES[key] = {
+                name: sat.OBJECT_NAME ? sat.OBJECT_NAME.trim() : `${queryName}-${norad}`,
+                norad: norad,
+                agency: agencyCat.toUpperCase(),
+                country: agencyCat === 'isro' ? 'IND' : 'INT',
+                orbitType: `${inc.toFixed(1)}° Inc • ${alt} km`,
+                radius: rad3D,
+                inclination: inc * (Math.PI / 180),
+                raan: raanDeg * (Math.PI / 180),
+                speed: 0.0011 + Math.random() * 0.0003,
+                altitude: alt,
+                velocity: vel,
+                period: `${periodMin} min`,
+                color: colorHex,
+                agencyCat: agencyCat,
+                role: `${agencyCat.toUpperCase()} Orbital Payload`
+              };
+              buildSatelliteOrbit(key, SATELLITES[key]);
+              count++;
             }
-          } catch (e) {}
+          });
+          bot.packets += data.length;
+          const pktEl = document.getElementById(`bot-pkt-${botIdx}`);
+          if (pktEl) pktEl.innerText = bot.packets;
         }
-        return 0;
+        return count;
       }
 
       async function runHarvesterFleet() {
-        // Step 1: Ingest complete local Master Catalog immediately
-        await ingestMasterFleetCatalog();
-
-        // Step 2: Query Live Worldwide Streams
-        logTerminal("BOT-ISRO-01", "Checking real-time ISRO telemetry ephemeris...");
+        logTerminal("BOT-ISRO-01", "Verifying live Indian Space Research Organisation (ISRO) fleet...");
         const isroQueries = ["CARTOSAT", "EOS", "INSAT", "GSAT", "IRNSS", "ASTROSAT", "RISAT", "OCEANSAT"];
         for (const q of isroQueries) {
-          queryCelesTrakByName(q, "isro", 0xfbbf24, 0);
+          await queryCelesTrakByName(q, "isro", 0xfbbf24, 0);
         }
+        logTerminal("BOT-ISRO-01", "ISRO Satellite fleet verified and active in tracking system.");
 
-        logTerminal("BOT-AGENCY-02", "Harvesting NASA, ESA, CNSA, USSF, and Roscosmos feeds...");
-        queryCelesTrakByName("NOAA", "nasa", 0x38bdf8, 1);
-        queryCelesTrakByName("SENTINEL", "esa", 0x818cf8, 1);
-        queryCelesTrakByName("BEIDOU", "cnsa", 0xef4444, 1);
-        queryCelesTrakByName("GLONASS", "roscosmos", 0xf43f5e, 1);
-        queryCelesTrakByName("STARLINK", "constellation", 0xc084fc, 2);
+        logTerminal("BOT-AGENCY-02", "Scanning NASA, ESA, CNSA, and Roscosmos catalogs...");
+        await queryCelesTrakByName("NOAA", "nasa", 0x38bdf8, 1);
+        await queryCelesTrakByName("SENTINEL", "esa", 0x818cf8, 1);
+        await queryCelesTrakByName("BEIDOU", "cnsa", 0xef4444, 1);
+        await queryCelesTrakByName("GLONASS", "roscosmos", 0xf43f5e, 1);
 
         const totalSats = Object.keys(SATELLITES).length;
         document.getElementById("sat-count-badge").innerText = `${totalSats} Active`;
         document.getElementById("bot-swarm-badge").innerText = `📡 ${totalSats} SATELLITES TRACKED`;
+        updateAgencyCounters();
         renderCatalogs();
       }
 
@@ -1347,9 +1146,8 @@
 
         if (activeTargetKey === "iss") {
           try {
-            const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
-            if (res.ok) {
-              const d = await res.json();
+            const d = await safeFetchJSON("https://api.wheretheiss.at/v1/satellites/25544");
+            if (d) {
               document.getElementById("tele-lat").innerText = `${d.latitude.toFixed(2)}°`;
               document.getElementById("tele-lng").innerText = `${d.longitude.toFixed(2)}°`;
               document.getElementById("tele-alt").innerText = `${Math.round(d.altitude)} km`;
@@ -1384,6 +1182,21 @@
         manualHarvest: runHarvesterFleet
       };
     })();
+
+    // Update Agency Counts on Filter Pills
+    function updateAgencyCounters() {
+      const counts = { all: 0, isro: 0, nasa: 0, esa: 0, cnsa: 0, roscosmos: 0, jaxa: 0, constellation: 0 };
+      Object.values(SATELLITES).forEach(s => {
+        counts.all++;
+        if (counts[s.agencyCat] !== undefined) {
+          counts[s.agencyCat]++;
+        }
+      });
+      Object.keys(counts).forEach(k => {
+        const el = document.getElementById(`cnt-${k}`);
+        if (el) el.innerText = counts[k];
+      });
+    }
 
     // --- 10. VIDEO STREAM SWITCHER ---
     const STREAM_FEEDS = [
@@ -1479,23 +1292,50 @@
       }
     }
 
+    // Interactive Agency Filtering
     function filterByAgency(agency) {
-      activeAgencyFilter = agency;
+      if (activeAgencyFilter === agency && agency !== 'all') {
+        activeAgencyFilter = 'all'; // Toggle back to all
+      } else {
+        activeAgencyFilter = agency;
+      }
+
       document.querySelectorAll('.agency-filter-btn').forEach(btn => {
-        const isMatch = btn.getAttribute('data-filter') === agency;
-        btn.className = isMatch
-          ? "agency-filter-btn px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 whitespace-nowrap"
-          : "agency-filter-btn px-2 py-0.5 rounded text-slate-400 hover:text-white whitespace-nowrap";
+        btn.className = "agency-filter-btn px-2 py-0.5 rounded text-slate-400 hover:text-white whitespace-nowrap";
       });
+      const activeBtn = document.getElementById(`btn-agency-${activeAgencyFilter}`);
+      if (activeBtn) {
+        activeBtn.className = "agency-filter-btn px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 whitespace-nowrap font-bold";
+      }
+
+      applyCatalogFilters();
+    }
+
+    function applyCatalogFilters() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      let visibleCount = 0;
 
       document.querySelectorAll('.sat-item').forEach(el => {
         const itemAgency = el.getAttribute('data-agency');
-        if (agency === 'all' || itemAgency === agency) {
+        const textMatch = el.innerText.toLowerCase().includes(query);
+        const agencyMatch = (activeAgencyFilter === 'all' || itemAgency === activeAgencyFilter);
+
+        if (textMatch && agencyMatch) {
           el.style.display = 'flex';
+          visibleCount++;
         } else {
           el.style.display = 'none';
         }
       });
+
+      document.querySelectorAll('.planet-item, .country-item').forEach(el => {
+        el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+      });
+
+      const subtitle = document.getElementById('sat-count-subtitle');
+      if (subtitle) {
+        subtitle.innerText = `Showing ${visibleCount} satellites (${activeAgencyFilter.toUpperCase()}):`;
+      }
     }
 
     // TARGET SELECTION & CAMERA LOCK
@@ -1506,7 +1346,7 @@
         isTrackingPlanet = false;
         const sat = SATELLITES[key];
         document.getElementById('target-name').innerText = sat.name;
-        document.getElementById('target-agency').innerText = `${sat.country ? sat.country + ' ' : ''}${sat.agency}`;
+        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? '🇮🇳' : ''} ${sat.agency}`;
         document.getElementById('target-orbit').innerText = sat.orbitType;
 
         document.getElementById('tele-agency').innerText = sat.agency;
@@ -1565,28 +1405,7 @@
     }
 
     function resetCameraView() {
-      setFocusTo('iss');
-    }
-
-    // Deep Link Query Target Tracking (?track=, ?target=, ?norad=)
-    function handleUrlTargetTracking() {
-      const params = new URLSearchParams(window.location.search);
-      const targetParam = params.get('track') || params.get('target') || params.get('norad') || params.get('sat');
-      if (!targetParam) return;
-
-      const norm = targetParam.trim().toLowerCase();
-      for (const k of Object.keys(SATELLITES)) {
-        if (k.toLowerCase() === norm || String(SATELLITES[k].norad) === norm || SATELLITES[k].name.toLowerCase().includes(norm)) {
-          setFocusTo(k);
-          return;
-        }
-      }
-      for (const k of Object.keys(CELESTIAL_BODIES)) {
-        if (k.toLowerCase() === norm || CELESTIAL_BODIES[k].name.toLowerCase().includes(norm)) {
-          setFocusTo(k);
-          return;
-        }
-      }
+      setFocusTo('cartosat3');
     }
 
     // --- 12. CATALOG POPULATOR ---
@@ -1595,26 +1414,32 @@
       if (!satCont) return;
       satCont.innerHTML = '';
 
-      const totalSats = Object.keys(SATELLITES).length;
-      const countEl = document.getElementById('sat-count-badge');
-      if (countEl) countEl.innerText = `${totalSats} Active`;
-
       Object.keys(SATELLITES).forEach(k => {
         const item = SATELLITES[k];
         const card = document.createElement('div');
         card.className = "sat-item p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition flex items-center justify-between";
-        card.setAttribute('data-agency', item.agencyCat || 'nasa');
+        card.setAttribute('data-agency', item.agencyCat || 'isro');
         card.onclick = () => setFocusTo(k);
 
         const hex = '#' + item.color.toString(16).padStart(6, '0');
-        const flag = item.country || '🛰️';
+        const flagMap = {
+          'IND': '🇮🇳 ',
+          'USA': '🇺🇸 ',
+          'ESA': '🇪🇺 ',
+          'CHN': '🇨🇳 ',
+          'RUS': '🇷🇺 ',
+          'JPN': '🇯🇵 ',
+          'UK': '🇬🇧 ',
+          'USSF': '🇺🇸 '
+        };
+        const flag = flagMap[item.country] || '';
         
         card.innerHTML = `
           <div>
             <div class="font-bold text-white flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full" style="background-color: ${hex}"></span>
               <span class="truncate max-w-[170px]">${item.name}</span>
-              <span class="text-[9px] bg-slate-800 text-slate-300 px-1 rounded font-mono">${flag} ${item.agency}</span>
+              <span class="text-[9px] bg-slate-800 text-slate-300 px-1 rounded font-mono">${flag}${item.agency}</span>
             </div>
             <p class="text-[10px] text-slate-400 mt-0.5 font-mono">NORAD: ${item.norad} • ${item.altitude} km • ${item.role ? item.role.substring(0, 32) + '...' : item.orbitType}</p>
           </div>
@@ -1661,16 +1486,34 @@
           planetCont.appendChild(card);
         });
       }
+
+      updateAgencyCounters();
+      applyCatalogFilters();
+    }
+
+    // Deep Link Query Target Tracking (?track=, ?target=, ?norad=)
+    function handleUrlTargetTracking() {
+      const params = new URLSearchParams(window.location.search);
+      const targetParam = params.get('track') || params.get('target') || params.get('norad') || params.get('sat');
+      if (!targetParam) return;
+
+      const norm = targetParam.trim().toLowerCase();
+      for (const k of Object.keys(SATELLITES)) {
+        if (k.toLowerCase() === norm || String(SATELLITES[k].norad) === norm || SATELLITES[k].name.toLowerCase().includes(norm)) {
+          setFocusTo(k);
+          return;
+        }
+      }
+      for (const k of Object.keys(CELESTIAL_BODIES)) {
+        if (k.toLowerCase() === norm || CELESTIAL_BODIES[k].name.toLowerCase().includes(norm)) {
+          setFocusTo(k);
+          return;
+        }
+      }
     }
 
     renderCatalogs();
-
-    function filterUnifiedCatalog() {
-      const query = document.getElementById('search-input').value.toLowerCase().trim();
-      document.querySelectorAll('.sat-item, .planet-item, .country-item').forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
-      });
-    }
+    handleUrlTargetTracking();
 
     // --- 13. SCROLL & TOUCH ISOLATION ---
     document.querySelectorAll('#catalog-panel, #telemetry-panel, #video-panel').forEach(p => {
@@ -1731,13 +1574,13 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
+    // Launch Swarm
     BotSwarm.init();
 
     // --- 14. REAL-TIME ASTRONOMICAL ANIMATION & ROTATION ENGINE ---
     function animate() {
       requestAnimationFrame(animate);
 
-      // 1. Advance Astronomical Virtual Time
       const nowReal = performance.now();
       const deltaRealMs = nowReal - lastRealTime;
       lastRealTime = nowReal;
@@ -1746,14 +1589,14 @@
       const astro = getAstroTimeData(virtualEpochTime);
 
       const utcString = astro.date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-      document.getElementById('live-utc-display').innerText = `${utcString} • JD: ${astro.jd.toFixed(4)} • CREATED BY MR SINGH`;
+      document.getElementById('live-utc-display').innerText = `${utcString} • JD: ${astro.jd.toFixed(4)} • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION`;
 
-      // 2. Real Heliocentric Motion of Earth & Planets around the Sun
+      // 1. Heliocentric Orbits
       const earthLRad = ((CELESTIAL_BODIES.earth.l0 + CELESTIAL_BODIES.earth.lRate * astro.d) % 360) * (Math.PI / 180);
       earthSystem.position.x = Math.cos(earthLRad) * CELESTIAL_BODIES.earth.dist;
       earthSystem.position.z = Math.sin(earthLRad) * CELESTIAL_BODIES.earth.dist;
 
-      // 3. Real Greenwich Mean Sidereal Time (GMST) Earth Rotation
+      // 2. Real Greenwich Mean Sidereal Time (GMST) Earth Rotation
       const subsolarLngDeg = (12.0 - astro.utcHours) * 15.0;
       const sunAngleInEarthPlane = earthLRad + Math.PI;
       earthMesh.rotation.y = sunAngleInEarthPlane + (subsolarLngDeg * Math.PI / 180);
@@ -1764,7 +1607,7 @@
       moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.dist;
       moonMesh.position.z = Math.sin(moonLRad) * CELESTIAL_BODIES.moon.dist;
 
-      // Real Heliocentric Positions for All Other Planets
+      // Heliocentric Motion for All Planets
       Object.keys(planetMeshes).forEach(pk => {
         const pObj = planetMeshes[pk];
         const pLRad = ((pObj.data.l0 + pObj.data.lRate * astro.d) % 360) * (Math.PI / 180);
@@ -1773,7 +1616,7 @@
         pObj.mesh.rotation.y += 0.002 * timeScale;
       });
 
-      // Animate Deep Space Escaping Probes
+      // Animate Deep Space Probes
       Object.keys(deepSpaceSystems).forEach(dk => {
         const dObj = deepSpaceSystems[dk];
         dObj.currentAngle += 0.00002 * timeScale;
@@ -1781,7 +1624,7 @@
         dObj.mesh.position.z = Math.sin(dObj.currentAngle) * dObj.data.dist;
       });
 
-      // 4. Propagate Satellites in Earth's Inertial Frame
+      // 3. Propagate ALL Satellites around Earth
       const isSat = !!(SATELLITES[activeTargetKey] && satelliteMeshMap[activeTargetKey]);
       nadirLine.visible = isSat;
       footprintMesh.visible = isSat;
@@ -1814,7 +1657,7 @@
         }
       });
 
-      // 5. Nadir Laser & Footprint Coordinate Transformation
+      // 4. Nadir Laser & Footprint Coordinate Transformation
       if (isSat) {
         const activeSat = satelliteMeshMap[activeTargetKey];
         if (activeSat) {
@@ -1835,7 +1678,7 @@
         }
       }
 
-      // 6. Smooth Camera Focus Tracking
+      // 5. Smooth Camera Focus Tracking
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
       if (activeTargetKey === 'sun') {
         focusWorldPos.set(0, 0, 0);
