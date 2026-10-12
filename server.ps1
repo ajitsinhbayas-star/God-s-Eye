@@ -485,6 +485,7 @@ while ($listener.IsListening) {
         # ----------------------------------------------------------------------
         if ($path -eq "/api/catalog") {
             $q = $request.QueryString["q"]
+            $norad = $request.QueryString["norad"]
             $agency = $request.QueryString["agency"]
             $regime = $request.QueryString["regime"]
             $status = $request.QueryString["status"]
@@ -492,6 +493,10 @@ while ($listener.IsListening) {
             $offsetStr = $request.QueryString["offset"]
 
             $filtered = @($MasterFleetCatalog)
+
+            if (-not [string]::IsNullOrWhiteSpace($norad)) {
+                $filtered = @($filtered | Where-Object { $_.noradId.ToString() -eq $norad.Trim() })
+            }
 
             if (-not [string]::IsNullOrWhiteSpace($agency)) {
                 $filtered = @($filtered | Where-Object { $_.agency -like "*$agency*" })

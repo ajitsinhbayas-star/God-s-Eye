@@ -79,35 +79,51 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // SOLAR SYSTEM & REAL EARTH RADAR</h1>
-          <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">📡 HARVESTING ORBITS...</span>
+          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // REAL-TIME ASTRONOMICAL HUD</h1>
+          <span id="epoch-time-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">UTC SYNCED</span>
+          <span id="bot-swarm-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono hidden md:inline">📡 HARVESTING ORBITS...</span>
         </div>
-        <p class="text-[10px] text-slate-400">GOD’S EYE // ORBITAL • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION • High-Resolution Earth • Deep Space Telemetry • Autonomous Ingestion Swarm</p>
+        <div class="flex items-center gap-3">
+          <p class="text-[10px] text-slate-400 font-mono" id="live-utc-display">UTC 2026-10-12 00:00:00 • JD: 2461325.5</p>
+          <span class="text-[9px] text-slate-500 hidden xl:inline font-mono">CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION</span>
+        </div>
       </div>
     </div>
 
+    <!-- Real-Time Astronomical Speed Engine -->
+    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] font-mono">
+      <span class="text-slate-400 px-1.5 hidden sm:inline">WARP:</span>
+      <button onclick="setTimeScale(1)" id="btn-scale-1" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">1x (LIVE)</button>
+      <button onclick="setTimeScale(10)" id="btn-scale-10" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">10x</button>
+      <button onclick="setTimeScale(100)" id="btn-scale-100" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">100x</button>
+      <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
+    </div>
+
     <!-- Active Target Badge -->
-    <div class="hidden sm:flex items-center gap-4 px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
+    <div class="hidden sm:flex items-center gap-3 px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Tracking</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Target</span>
         <span id="target-name" class="text-cyan-400 font-bold">ISS (ZARYA)</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Domain</span>
+        <span class="text-[9px] text-slate-400 block uppercase">System Frame</span>
         <span id="target-frame" class="text-indigo-400 font-bold">Earth LEO</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Trajectory / Info</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Ephemeris</span>
         <span id="target-orbit" class="text-emerald-400 font-bold">51.6° Inclination</span>
+      </div>
+      <div class="border-l border-slate-800 pl-2">
+        <a id="target-catalog-link" href="catalog.html?search=25544" target="_blank" class="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold underline" title="Open Classified Master Satellite Catalog Dossier">Dossier ↗</a>
       </div>
     </div>
 
     <!-- Quick Navigation Actions -->
     <div class="flex items-center gap-2">
-      <a href="catalog.html" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1.5 no-underline">
+      <a href="catalog.html" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1.5 no-underline" title="Master Fleet Catalog (Shortcut: C)">
         <span>Master Catalog ↗</span>
       </a>
-      <button onclick="toggleVideoPanel()" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1.5">
+      <button onclick="toggleVideoPanel()" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1.5" title="Toggle Live ISS Stream (Shortcut: V)">
         <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
         <span class="hidden md:inline">NASA Live</span> Feed
       </button>
@@ -124,7 +140,7 @@
       <button onclick="toggleHUDPanels()" title="Toggle Panels (Shortcut: M)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
         HUD (M)
       </button>
-      <button onclick="resetCameraView()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
+      <button onclick="resetCameraView()" title="Reset to ISS (Shortcut: R)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
         Reset
       </button>
     </div>
@@ -367,7 +383,33 @@
 
   <!-- Three.js Astronomical Engine & Bot Ingestion Swarm -->
   <script>
-    // --- 1. SATELLITE CATALOG & SOLAR SYSTEM FOUNDATION ---
+    // --- 1. ASTRONOMICAL TIME ENGINE (UTC & JULIAN DATE) ---
+    let timeScale = 1.0; // 1x = Real-Time 1 second per second
+    let virtualEpochTime = Date.now();
+    let lastRealTime = performance.now();
+
+    function setTimeScale(scale) {
+      timeScale = scale;
+      [1, 10, 100, 1000].forEach(s => {
+        const btn = document.getElementById(`btn-scale-${s}`);
+        if (btn) {
+          btn.className = s === scale 
+            ? "px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold" 
+            : "px-2 py-0.5 rounded text-slate-400 hover:text-white";
+        }
+      });
+    }
+
+    // NASA JPL Keplerian Elements Epoch Math: d = JD - 2451545.0
+    function getAstroTimeData(epochMs) {
+      const jd = (epochMs / 86400000) + 2440587.5;
+      const d = jd - 2451545.0; // Days since J2000.0
+      const date = new Date(epochMs);
+      const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600 + date.getUTCMilliseconds() / 3600000;
+      return { jd, d, utcHours, date };
+    }
+
+    // --- 2. SATELLITE CATALOG & REAL PLANETARY ORBITAL ELEMENTS ---
     const SATELLITES = {
       iss: {
         name: "ISS (ZARYA)",
@@ -376,7 +418,7 @@
         radius: 2.14,
         inclination: 51.64 * (Math.PI / 180),
         raan: 164.2 * (Math.PI / 180),
-        speed: 0.009,
+        speed: 0.00115, // Real mean motion rad/s
         altitude: 420,
         velocity: 27580,
         period: "92.8 min",
@@ -390,7 +432,7 @@
         radius: 2.19,
         inclination: 28.47 * (Math.PI / 180),
         raan: 265.1 * (Math.PI / 180),
-        speed: 0.0084,
+        speed: 0.00109,
         altitude: 540,
         velocity: 27200,
         period: "95.4 min",
@@ -404,7 +446,7 @@
         radius: 2.13,
         inclination: 41.47 * (Math.PI / 180),
         raan: 88.5 * (Math.PI / 180),
-        speed: 0.0092,
+        speed: 0.00113,
         altitude: 390,
         velocity: 27650,
         period: "92.2 min",
@@ -418,7 +460,7 @@
         radius: 2.17,
         inclination: 97.5 * (Math.PI / 180),
         raan: 45.2 * (Math.PI / 180),
-        speed: 0.0087,
+        speed: 0.00110,
         altitude: 505,
         velocity: 27400,
         period: "94.6 min",
@@ -427,20 +469,21 @@
       }
     };
 
+    // NASA JPL Real-world Keplerian Planetary Longitude Rates (deg per day)
     const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfbbf24, speed: 0, desc: "Center of the Solar System" },
-      mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x94a3b8, speed: 0.004, desc: "0.39 AU • Innermost Rocky Planet" },
-      venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, speed: 0.0022, desc: "0.72 AU • Thick Atmosphere" },
-      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, speed: 0.0014, desc: "1.00 AU • Home World • 23.44° Axial Tilt" },
-      moon: { name: "The Moon (Luna)", type: "Natural Satellite", dist: 3.5, radius: 0.45, color: 0xcccccc, speed: 0.006, desc: "384,400 km from Earth" },
-      mars: { name: "Mars", type: "Terrestrial Planet", dist: 28.0, radius: 1.05, color: 0xef4444, speed: 0.0010, desc: "1.52 AU • The Red Planet" },
-      jupiter: { name: "Jupiter", type: "Gas Giant", dist: 40.0, radius: 2.8, color: 0xd97706, speed: 0.0006, desc: "5.20 AU • Largest Planetary Body" },
-      saturn: { name: "Saturn & Rings", type: "Gas Giant & Rings", dist: 53.0, radius: 2.3, color: 0xfcd34d, speed: 0.00045, desc: "9.58 AU • Spectacular Ring System" },
-      uranus: { name: "Uranus", type: "Ice Giant", dist: 66.0, radius: 1.6, color: 0x67e8f9, speed: 0.00032, desc: "19.2 AU • 97.77° Extreme Axial Tilt" },
-      neptune: { name: "Neptune", type: "Ice Giant", dist: 78.0, radius: 1.55, color: 0x3b82f6, speed: 0.00025, desc: "30.1 AU • Outermost Primary Planet" },
-      voyager1: { name: "Voyager 1", type: "Hyperbolic Escape", dist: 92.0, radius: 0.15, color: 0xf59e0b, speed: 0.0003, angle: 0.8, tilt: 0.62 },
-      voyager2: { name: "Voyager 2", type: "Hyperbolic Escape", dist: 84.0, radius: 0.15, color: 0xf59e0b, speed: 0.0003, angle: 3.2, tilt: -0.84 },
-      newhorizons: { name: "New Horizons", type: "Solar Escape", dist: 74.0, radius: 0.15, color: 0xf59e0b, speed: 0.0004, angle: 5.1, tilt: 0.04 }
+      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfbbf24, l0: 0, lRate: 0, desc: "Center of the Solar System" },
+      mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x94a3b8, l0: 252.25, lRate: 4.092334, desc: "0.39 AU • Innermost Rocky Planet" },
+      venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, l0: 181.98, lRate: 1.602130, desc: "0.72 AU • Thick Atmosphere" },
+      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, l0: 100.46, lRate: 0.985609, desc: "1.00 AU • Home World • 23.44° Axial Tilt" },
+      moon: { name: "The Moon (Luna)", type: "Natural Satellite", dist: 3.5, radius: 0.45, color: 0xcccccc, l0: 218.32, lRate: 13.176396, desc: "384,400 km from Earth" },
+      mars: { name: "Mars", type: "Terrestrial Planet", dist: 28.0, radius: 1.05, color: 0xef4444, l0: 355.45, lRate: 0.524033, desc: "1.52 AU • The Red Planet" },
+      jupiter: { name: "Jupiter", type: "Gas Giant", dist: 40.0, radius: 2.8, color: 0xd97706, l0: 34.40, lRate: 0.083085, desc: "5.20 AU • Largest Planetary Body" },
+      saturn: { name: "Saturn & Rings", type: "Gas Giant & Rings", dist: 53.0, radius: 2.3, color: 0xfcd34d, l0: 49.94, lRate: 0.033444, desc: "9.58 AU • Spectacular Ring System" },
+      uranus: { name: "Uranus", type: "Ice Giant", dist: 66.0, radius: 1.6, color: 0x67e8f9, l0: 313.23, lRate: 0.011728, desc: "19.2 AU • 97.77° Extreme Axial Tilt" },
+      neptune: { name: "Neptune", type: "Ice Giant", dist: 78.0, radius: 1.55, color: 0x3b82f6, l0: 304.88, lRate: 0.005981, desc: "30.1 AU • Outermost Primary Planet" },
+      voyager1: { name: "Voyager 1", type: "Hyperbolic Escape", dist: 92.0, radius: 0.15, color: 0xf59e0b, angle: 0.8, tilt: 0.62 },
+      voyager2: { name: "Voyager 2", type: "Hyperbolic Escape", dist: 84.0, radius: 0.15, color: 0xf59e0b, angle: 3.2, tilt: -0.84 },
+      newhorizons: { name: "New Horizons", type: "Solar Escape", dist: 74.0, radius: 0.15, color: 0xf59e0b, angle: 5.1, tilt: 0.04 }
     };
 
     const COUNTRIES = {
@@ -1063,7 +1106,63 @@
         return false;
       }
 
+      async function ingestLocalMasterCatalog() {
+        try {
+          const res = await fetch("/api/catalog?limit=500");
+          if (!res.ok) return 0;
+          const data = await res.json();
+          if (data && data.satellites && data.satellites.length > 0) {
+            let count = 0;
+            data.satellites.forEach(sat => {
+              const norad = String(sat.noradId);
+              const key = "norad_" + norad;
+              if (!SATELLITES[key]) {
+                const inc = parseFloat(sat.inclinationDeg) || 51.6;
+                const alt = parseFloat(sat.perigeeKm) || 450;
+                const mm = parseFloat(sat.periodMin) ? (1440 / sat.periodMin) : 15.0;
+                const periodMin = (1440 / mm).toFixed(1);
+                const vel = Math.round((sat.velocityKms || 7.6) * 3600);
+                const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
+                const agency = (sat.agency || '').toUpperCase();
+                const colorHex = agency.includes('ISRO') ? 0xff8800 :
+                                 agency.includes('ESA') ? 0x00ff66 :
+                                 agency.includes('SPACEX') ? 0xc084fc :
+                                 agency.includes('CNSA') ? 0xff3344 :
+                                 agency.includes('JAXA') ? 0xff99bb : 0x38bdf8;
+                let subtype = 'science';
+                const reg = (sat.regime || '').toUpperCase();
+                if (reg.includes('GEO') || reg.includes('SSO') || (sat.family === 'weather')) subtype = 'weather';
+                else if (sat.family === 'stations' || (sat.name || '').includes('STATION')) subtype = 'stations';
+                else if (sat.family === 'constellation' || (sat.name || '').includes('STARLINK')) subtype = 'constellation';
+
+                SATELLITES[key] = {
+                  name: sat.name ? sat.name.trim() : `SAT-${norad}`,
+                  norad: norad,
+                  orbitType: `${inc.toFixed(1)}° Inc • ${Math.round(alt)} km`,
+                  radius: rad3D,
+                  inclination: inc * (Math.PI / 180),
+                  raan: (Math.random() * 360) * (Math.PI / 180),
+                  speed: 0.0011 + Math.random() * 0.0003,
+                  altitude: Math.round(alt),
+                  velocity: vel,
+                  period: `${periodMin} min`,
+                  color: colorHex,
+                  subtype: subtype
+                };
+                buildSatelliteOrbit(key, SATELLITES[key]);
+                count++;
+              }
+            });
+            logTerminal("BOT-CATALOG", `Ingested ${count} classified assets from Master Fleet Database.`);
+            return count;
+          }
+        } catch (e) {}
+        return 0;
+      }
+
       async function runHarvesterFleet() {
+        await ingestLocalMasterCatalog();
+
         await ingestCelesTrakFeed(
           "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=JSON",
           "science",
@@ -1100,6 +1199,7 @@
         document.getElementById("sat-count-badge").innerText = `${totalSats} Active`;
         document.getElementById("bot-swarm-badge").innerText = `📡 ${totalSats} SATELLITES TRACKED`;
         renderCatalogs();
+        handleUrlTargetTracking();
       }
 
       async function runN2YOBot() {
@@ -1193,7 +1293,19 @@
     }
 
     window.addEventListener('keydown', (e) => {
-      if ((e.key === 'm' || e.key === 'M') && e.target.tagName !== 'INPUT') toggleHUDPanels();
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'm' || e.key === 'M') toggleHUDPanels();
+      if (e.key === 'c' || e.key === 'C') window.location.href = 'catalog.html';
+      if (e.key === 'r' || e.key === 'R') resetCameraView();
+      if (e.key === 'v' || e.key === 'V') toggleVideoPanel();
+      if (e.key === ' ') {
+        e.preventDefault();
+        setTimeScale(timeScale === 0 ? 1 : 0);
+      }
+      if (e.key === '1') setTimeScale(1);
+      if (e.key === '2') setTimeScale(10);
+      if (e.key === '3') setTimeScale(100);
+      if (e.key === '4') setTimeScale(1000);
     });
 
     function toggleVideoPanel() {
@@ -1234,8 +1346,83 @@
       filterUnifiedCatalog();
     }
 
+    async function handleUrlTargetTracking() {
+      const params = new URLSearchParams(window.location.search);
+      const targetParam = params.get('track') || params.get('target') || params.get('norad');
+      if (!targetParam) return;
+
+      const lower = targetParam.toLowerCase();
+
+      // 1. Direct celestial or satellite key match
+      if (CELESTIAL_BODIES[lower]) {
+        setFocusTo(lower);
+        return;
+      }
+      if (SATELLITES[lower]) {
+        setFocusTo(lower);
+        return;
+      }
+      if (SATELLITES[`norad_${targetParam}`]) {
+        setFocusTo(`norad_${targetParam}`);
+        return;
+      }
+
+      // 2. Search existing in-memory satellites by NORAD ID or name
+      const foundKey = Object.keys(SATELLITES).find(k => {
+        const sat = SATELLITES[k];
+        return sat.norad === targetParam || sat.name.toLowerCase().includes(lower);
+      });
+      if (foundKey) {
+        setFocusTo(foundKey);
+        return;
+      }
+
+      // 3. Fallback: Query backend /api/catalog?norad=... or ?q=...
+      try {
+        const queryUrl = /^\d+$/.test(targetParam) ? `/api/catalog?norad=${targetParam}` : `/api/catalog?q=${encodeURIComponent(targetParam)}`;
+        const res = await fetch(queryUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.satellites && data.satellites.length > 0) {
+            const sat = data.satellites[0];
+            const norad = String(sat.noradId);
+            const key = `norad_${norad}`;
+            if (!SATELLITES[key]) {
+              const inc = parseFloat(sat.inclinationDeg) || 51.6;
+              const alt = parseFloat(sat.perigeeKm) || 450;
+              const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
+              const vel = Math.round((sat.velocityKms || 7.6) * 3600);
+              const agency = (sat.agency || '').toUpperCase();
+              const colorHex = agency.includes('ISRO') ? 0xff8800 : agency.includes('ESA') ? 0x00ff66 : 0x38bdf8;
+
+              SATELLITES[key] = {
+                name: sat.name ? sat.name.trim() : `SAT-${norad}`,
+                norad: norad,
+                orbitType: `${inc.toFixed(1)}° Inc • ${Math.round(alt)} km`,
+                radius: rad3D,
+                inclination: inc * (Math.PI / 180),
+                raan: (Math.random() * 360) * (Math.PI / 180),
+                speed: 0.0011 + Math.random() * 0.0003,
+                altitude: Math.round(alt),
+                velocity: vel,
+                period: `${sat.periodMin || 92} min`,
+                color: colorHex,
+                subtype: (sat.regime || 'LEO').toLowerCase().includes('geo') ? 'weather' : 'science'
+              };
+              buildSatelliteOrbit(key, SATELLITES[key]);
+              renderCatalogs();
+            }
+            setFocusTo(key);
+          }
+        }
+      } catch (err) {
+        console.warn("[URL TRACKING] Target resolution error:", err);
+      }
+    }
+
     function setFocusTo(key) {
       activeTargetKey = key;
+      const catLink = document.getElementById('target-catalog-link');
 
       if (SATELLITES[key]) {
         isTrackingPlanet = false;
@@ -1246,6 +1433,11 @@
         const frameEl = document.getElementById('target-frame');
         if (frameEl) frameEl.innerText = "Earth LEO Orbit";
         document.getElementById('target-orbit').innerText = sat.orbitType;
+
+        if (catLink) {
+          catLink.href = `catalog.html?search=${encodeURIComponent(sat.norad || sat.name)}`;
+          catLink.style.display = 'inline';
+        }
 
         cameraDistance = 5.2;
 
@@ -1268,6 +1460,11 @@
         if (frameEl) frameEl.innerText = body.type;
         document.getElementById('target-orbit').innerText = body.desc || `${body.dist} AU from Sun`;
 
+        if (catLink) {
+          catLink.href = `catalog.html?search=${encodeURIComponent(body.name)}`;
+          catLink.style.display = 'inline';
+        }
+
         if (key === 'sun') cameraDistance = 45.0;
         else if (key === 'earth') cameraDistance = 5.2;
         else if (key === 'moon') cameraDistance = 2.4;
@@ -1275,7 +1472,7 @@
         else cameraDistance = 8.5;
 
         document.getElementById('tele-alt').innerText = `${(body.dist * 149597870).toLocaleString()} km`;
-        document.getElementById('tele-vel').innerText = `${Math.round(body.speed * 1000000).toLocaleString()} km/h`;
+        document.getElementById('tele-vel').innerText = `${Math.round((body.lRate || 0) * 100000).toLocaleString()} km/h`;
         document.getElementById('tele-period').innerText = key === 'sun' ? "Static Center" : "Keplerian";
 
         minimizeBothPanels();
@@ -1450,74 +1647,105 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Launch Bot Ingestion Swarm
+    // Launch Bot Ingestion Swarm & URL Deep Linking
     BotSwarm.init();
+    handleUrlTargetTracking();
 
-    // --- 13. MASTER ANIMATION LOOP ---
-    let solarClock = 0;
-
+    // --- 14. REAL-TIME ASTRONOMICAL ANIMATION & ROTATION ENGINE ---
     function animate() {
       requestAnimationFrame(animate);
-      solarClock += 1;
 
-      // 1. Planetary Heliocentric Motion
-      const earthAngle = solarClock * CELESTIAL_BODIES.earth.speed;
-      earthSystem.position.x = Math.cos(earthAngle) * CELESTIAL_BODIES.earth.dist;
-      earthSystem.position.z = Math.sin(earthAngle) * CELESTIAL_BODIES.earth.dist;
+      // 1. Advance Astronomical Virtual Time
+      const nowReal = performance.now();
+      const deltaRealMs = nowReal - lastRealTime;
+      lastRealTime = nowReal;
 
-      earthMesh.rotation.y += 0.0012;
-      cloudsMesh.rotation.y += 0.0016;
+      virtualEpochTime += deltaRealMs * timeScale;
+      const astro = getAstroTimeData(virtualEpochTime);
 
-      const moonAngle = solarClock * CELESTIAL_BODIES.moon.speed;
-      moonMesh.position.x = Math.cos(moonAngle) * CELESTIAL_BODIES.moon.dist;
-      moonMesh.position.z = Math.sin(moonAngle) * CELESTIAL_BODIES.moon.dist;
+      // Update Live Clock Display
+      const utcString = astro.date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+      const liveUtcEl = document.getElementById('live-utc-display');
+      if (liveUtcEl) liveUtcEl.innerText = `${utcString} • JD: ${astro.jd.toFixed(4)}`;
 
+      // 2. Real Heliocentric Keplerian Motion of Earth & Planets around the Sun
+      // Earth Mean Longitude (Radians)
+      const earthLRad = ((CELESTIAL_BODIES.earth.l0 + CELESTIAL_BODIES.earth.lRate * astro.d) % 360) * (Math.PI / 180);
+      earthSystem.position.x = Math.cos(earthLRad) * CELESTIAL_BODIES.earth.dist;
+      earthSystem.position.z = Math.sin(earthLRad) * CELESTIAL_BODIES.earth.dist;
+
+      // 3. Real Greenwich Mean Sidereal Time (GMST) & Physical Day/Night Alignment
+      // Subsolar Longitude: Meridian where Sun is directly overhead (Noon)
+      const subsolarLngDeg = (12.0 - astro.utcHours) * 15.0;
+      // Angle towards Sun in Earth coordinates:
+      const sunAngleInEarthPlane = earthLRad + Math.PI;
+      // Set Earth rotation so that subsolar meridian faces the Sun:
+      earthMesh.rotation.y = sunAngleInEarthPlane + (subsolarLngDeg * Math.PI / 180);
+      cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.1); // Dynamic realistic cloud drift
+
+      // Moon Real Geocentric Orbit around Earth
+      const moonLRad = ((CELESTIAL_BODIES.moon.l0 + CELESTIAL_BODIES.moon.lRate * astro.d) % 360) * (Math.PI / 180);
+      moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.dist;
+      moonMesh.position.z = Math.sin(moonLRad) * CELESTIAL_BODIES.moon.dist;
+
+      // Real Keplerian Motion for All Other Planets
       Object.keys(planetMeshes).forEach(pk => {
         const pObj = planetMeshes[pk];
-        const pAngle = solarClock * pObj.data.speed;
-        pObj.group.position.x = Math.cos(pAngle) * pObj.data.dist;
-        pObj.group.position.z = Math.sin(pAngle) * pObj.data.dist;
-        pObj.mesh.rotation.y += 0.002;
+        const pLRad = ((pObj.data.l0 + pObj.data.lRate * astro.d) % 360) * (Math.PI / 180);
+        pObj.group.position.x = Math.cos(pLRad) * pObj.data.dist;
+        pObj.group.position.z = Math.sin(pLRad) * pObj.data.dist;
+        pObj.mesh.rotation.y += 0.002 * timeScale;
       });
 
-      // Animate Deep Space Probes
+      // Animate Deep Space Escaping Probes
       Object.keys(deepSpaceSystems).forEach(dk => {
         const dObj = deepSpaceSystems[dk];
-        dObj.currentAngle += dObj.data.speed * 0.1;
+        dObj.currentAngle += 0.00002 * timeScale;
         dObj.mesh.position.x = Math.cos(dObj.currentAngle) * dObj.data.dist;
         dObj.mesh.position.z = Math.sin(dObj.currentAngle) * dObj.data.dist;
       });
 
-      // 2. Propagate ALL Satellites around Earth
+      // 4. Propagate Satellites in Earth's Inertial Frame
       const isSat = !!(SATELLITES[activeTargetKey] && satelliteMeshMap[activeTargetKey]);
       nadirLine.visible = isSat;
       footprintMesh.visible = isSat;
 
       Object.keys(satelliteMeshMap).forEach(k => {
         const item = satelliteMeshMap[k];
-        item.angle += item.data.speed;
-        item.satMesh.position.x = Math.cos(item.angle) * item.data.radius;
-        item.satMesh.position.z = Math.sin(item.angle) * item.data.radius;
+        // Advance satellite along true Keplerian mean motion
+        item.angle += (item.data.speed * (deltaRealMs / 1000) * timeScale);
+
+        // Position beacon on orbit ring (except ISS when locked onto live GPS)
+        if (k !== 'iss' || timeScale !== 1.0) {
+          item.satMesh.position.x = Math.cos(item.angle) * item.data.radius;
+          item.satMesh.position.z = Math.sin(item.angle) * item.data.radius;
+        }
 
         if (item.crosshair.visible) {
           const s = 1 + Math.sin(Date.now() * 0.006) * 0.2;
           item.crosshair.scale.set(s, s, s);
         }
 
+        // Live telemetry calculation for active target
         if (k === activeTargetKey && activeTargetKey !== 'iss') {
           const inc = item.data.inclination;
           const lat = Math.asin(Math.sin(inc) * Math.sin(item.angle)) * (180 / Math.PI);
           const isAsc = Math.cos(item.angle) >= 0;
 
-          document.getElementById('tele-lat').innerText = `${lat.toFixed(2)}°`;
-          document.getElementById('tele-alt').innerText = `${item.data.altitude} km`;
-          document.getElementById('tele-vel').innerText = `${item.data.velocity.toLocaleString()} km/h`;
-          document.getElementById('tele-direction').innerText = isAsc ? `${((inc * 180) / Math.PI).toFixed(1)}° NE (Asc)` : `${((180 - (inc * 180) / Math.PI)).toFixed(1)}° SE (Desc)`;
-          document.getElementById('tele-period').innerText = item.data.period;
+          const teleLat = document.getElementById('tele-lat');
+          if (teleLat) teleLat.innerText = `${lat.toFixed(2)}°`;
+          const teleAlt = document.getElementById('tele-alt');
+          if (teleAlt) teleAlt.innerText = `${item.data.altitude} km`;
+          const teleVel = document.getElementById('tele-vel');
+          if (teleVel) teleVel.innerText = `${item.data.velocity.toLocaleString()} km/h`;
+          const teleDir = document.getElementById('tele-direction');
+          if (teleDir) teleDir.innerText = isAsc ? `${((inc * 180) / Math.PI).toFixed(1)}° NE (Asc)` : `${((180 - (inc * 180) / Math.PI)).toFixed(1)}° SE (Desc)`;
+          const telePeriod = document.getElementById('tele-period');
+          if (telePeriod) telePeriod.innerText = item.data.period;
         }
       });
 
-      // 3. Nadir Laser & Footprint Coordinate Transformation
+      // 5. Nadir Laser & Footprint Coordinate Transformation
       if (isSat) {
         const activeSat = satelliteMeshMap[activeTargetKey];
         if (activeSat) {
@@ -1538,7 +1766,7 @@
         }
       }
 
-      // 4. Smooth Camera Focus Tracking
+      // 6. Smooth Camera Focus Tracking
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
       if (activeTargetKey === 'sun') {
         focusWorldPos.set(0, 0, 0);

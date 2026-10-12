@@ -1180,18 +1180,30 @@
       <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         <!-- NASA ISS Earth Stream -->
-        <div class="lg:col-span-2 overflow-hidden rounded-xl bg-black border border-cyan-500/20 shadow-inner aspect-video relative">
+        <div class="lg:col-span-2 overflow-hidden rounded-xl bg-black border border-cyan-500/20 shadow-inner aspect-video relative flex flex-col">
+          <div class="flex items-center justify-between p-2 bg-slate-950/90 border-b border-slate-800 text-[11px] font-mono">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              <span class="font-bold text-white uppercase">ISS Live Feed</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="hubStreamSelect" onchange="switchHubStream(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500">
+                <option value="SD0dlqX9xzo">Cam 1: NASA HD Earth Views</option>
+                <option value="DDU-r6sDXdA">Cam 2: Space Videos Orbit</option>
+                <option value="21X5lGlDOfg">Cam 3: NASA TV Live Ops</option>
+                <option value="k204D5g3z30">Cam 4: Sen 4K Ultra HD</option>
+              </select>
+              <a id="hubStreamOutlink" href="https://www.youtube.com/watch?v=SD0dlqX9xzo" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline text-[10px]">YouTube ↗</a>
+            </div>
+          </div>
           <iframe 
-            class="w-full h-full border-0" 
-            src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1&mute=1" 
+            id="hubIssIframe"
+            class="w-full flex-1 border-0" 
+            src="https://www.youtube.com/embed/SD0dlqX9xzo?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" 
             title="Official NASA ISS Live Stream"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
           </iframe>
-          <div class="absolute top-2 left-2 px-2.5 py-1 rounded bg-black/80 backdrop-blur border border-cyan-500/30 text-[10px] font-semibold text-rose-400 flex items-center gap-1.5 font-mono">
-            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-            LIVE FROM ORBIT (ISS)
-          </div>
         </div>
 
         <!-- Live Telemetry Card -->
@@ -1225,7 +1237,7 @@
           <div class="flex flex-col gap-2">
             <button id="btnTrackIssFromHub" class="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-emerald-900/30 transition flex items-center justify-center gap-1.5 cursor-pointer font-mono" style="border:1px solid rgba(0,255,102,0.4);">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              ðŸŽ¯ INTERCEPT &amp; LOCK ON 3D GLOBE
+              🎯 INTERCEPT &amp; LOCK ON 3D GLOBE
             </button>
             <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-[11px] text-slate-400">
               <span>Refresh: <b class="text-slate-300">5s live poll</b></span>
@@ -1237,10 +1249,10 @@
 
       <!-- Category Navigation Tabs -->
       <div class="flex items-center gap-2 mt-8 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-mono">
-        <button onclick="switchTab('deepspace')" id="tab-deepspace" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 transition cursor-pointer">ðŸŒŒ Deep Space &amp; Probes</button>
-        <button onclick="switchTab('astronomy')" id="tab-astronomy" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ”­ Astronomy &amp; Comets</button>
-        <button onclick="switchTab('satellites')" id="tab-satellites" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ›°ï¸ Satellite Passes &amp; Ham Radio</button>
-        <button onclick="switchTab('catalogs')" id="tab-catalogs" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">ðŸ“¡ N2YO Catalogs &amp; Launches</button>
+        <button onclick="switchTab('deepspace')" id="tab-deepspace" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium bg-cyan-950/70 text-cyan-300 border border-cyan-500/30 transition cursor-pointer">🌌 Deep Space &amp; Probes</button>
+        <button onclick="switchTab('astronomy')" id="tab-astronomy" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">🔭 Astronomy &amp; Comets</button>
+        <button onclick="switchTab('satellites')" id="tab-satellites" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">🛰️ Satellite Passes &amp; Ham Radio</button>
+        <button onclick="switchTab('catalogs')" id="tab-catalogs" class="tab-btn px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition cursor-pointer">📡 N2YO Catalogs &amp; Launches</button>
       </div>
 
       <!-- Tab Content Panes -->
@@ -1427,6 +1439,46 @@
     let pageSize = 50;
     let activeModalSat = null;
 
+    function switchHubStream(val) {
+      const frame = document.getElementById('hubIssIframe');
+      const outlink = document.getElementById('hubStreamOutlink');
+      if (frame) frame.src = `https://www.youtube.com/embed/${val}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`;
+      if (outlink) outlink.href = `https://www.youtube.com/watch?v=${val}`;
+    }
+
+    function applyUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const searchVal = params.get('search') || params.get('q') || params.get('track');
+      const noradVal = params.get('norad');
+      const agencyVal = params.get('agency');
+
+      if (agencyVal) {
+        selectedAgency = agencyVal;
+        document.querySelectorAll('.filter-pill[data-filter="agency"]').forEach(p => {
+          if (p.getAttribute('data-val').toUpperCase() === agencyVal.toUpperCase()) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      }
+
+      if (searchVal || noradVal) {
+        const query = searchVal || noradVal;
+        searchTerm = query;
+        const input = document.getElementById('catalogSearchInput');
+        if (input) input.value = query;
+      }
+
+      if (noradVal || (searchVal && /^\d+$/.test(searchVal))) {
+        const id = parseInt(noradVal || searchVal, 10);
+        const match = fullCatalog.find(s => s.noradId === id);
+        if (match) {
+          setTimeout(() => openDetailModal(match), 250);
+        }
+      }
+    }
+
     // Fetch live catalog from REST API with fallback
     function loadCatalogData() {
       fetch('/api/catalog?limit=1000')
@@ -1434,10 +1486,12 @@
         .then(data => {
           if (data && data.satellites && data.satellites.length > 0) {
             fullCatalog = data.satellites;
-            renderTable();
           }
+          applyUrlParams();
+          renderTable();
         })
         .catch(() => {
+          applyUrlParams();
           renderTable();
         });
     }
