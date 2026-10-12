@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOD'S EYE // ORBITAL - Global Space Situational Awareness & Multi-Agency Satellite Fleet HUD</title>
+  <title>GOD'S EYE // ORBITAL - Real-Time Astronomical Day/Night & Multi-Agency Fleet HUD</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN -->
@@ -79,10 +79,10 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL • GLOBAL SPACE SITUATIONAL AWARENESS HUD</h1>
-          <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">📡 ALL FLEETS ACTIVE</span>
+          <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow">GOD'S EYE // ORBITAL • SOLAR TERMINATOR & SPACE COMMAND HUD</h1>
+          <span id="bot-swarm-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">☀️ LIVE DAY/NIGHT</span>
         </div>
-        <p class="text-[10px] text-slate-400 font-mono" id="live-utc-display">UTC 2026-10-12 00:00:00 • JD: 2461325.5 • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION</p>
+        <p class="text-[10px] text-slate-400 font-mono" id="live-utc-display">UTC 2026-10-12 10:11:00 • JD: 2461325.92 • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION</p>
       </div>
     </div>
 
@@ -106,8 +106,8 @@
         <span id="target-agency" class="text-amber-400 font-bold">🇮🇳 ISRO</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Orbit</span>
-        <span id="target-orbit" class="text-emerald-400 font-bold">97.5° SSO • 505 km</span>
+        <span class="text-[9px] text-slate-400 block uppercase">Illumination</span>
+        <span id="target-orbit" class="text-emerald-400 font-bold">IN SUNLIGHT (Day)</span>
       </div>
     </div>
 
@@ -123,9 +123,8 @@
       <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>🇮🇳 ISRO Fleet</span>
       </button>
-      <button onclick="switchCategory('bots'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 text-xs font-medium transition flex items-center gap-1.5">
-        <span>🤖 Master Log</span>
-        <span id="hud-bot-count" class="text-[10px] bg-emerald-500/20 px-1 rounded font-mono">4 BOTS</span>
+      <button onclick="switchCategory('solardata'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
+        <span>☀️ Sun Position</span>
       </button>
       <button onclick="setFocusTo('earth')" title="Focus on Earth" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>🌍 Earth</span>
@@ -144,7 +143,7 @@
 
   <!-- Left Minimized Pill Button -->
   <button id="btn-expand-catalog" onclick="expandCatalog()" class="hidden absolute top-20 left-3 z-30 px-3 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-medium text-xs shadow-2xl transition-all flex items-center gap-2 group animate-pulse">
-    <span>🛰️ Catalog & Bots</span>
+    <span>🛰️ Catalog & Sun</span>
     <span class="text-xs group-hover:translate-x-0.5 transition-transform">❯</span>
   </button>
 
@@ -176,8 +175,8 @@
     <!-- Category Tabs -->
     <div class="flex items-center gap-1 p-2 border-b border-slate-800/80 bg-slate-950/60 overflow-x-auto text-[11px] shrink-0">
       <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40">Satellites</button>
+      <button onclick="switchCategory('solardata')" id="tab-solardata" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-amber-300 hover:text-white">☀️ Sun Position</button>
       <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white">🤖 Master Log</button>
-      <button onclick="switchCategory('countries')" id="tab-countries" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Agencies</button>
       <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Planets (8)</button>
       <button onclick="switchCategory('deepspace')" id="tab-deepspace" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white">Deep Space</button>
     </div>
@@ -206,7 +205,78 @@
         <div id="sat-list-container" class="space-y-1.5"></div>
       </div>
 
-      <!-- Panel 2: Master Telemetry Log & Autonomous Bot Swarm -->
+      <!-- Panel 2: Real Solar Ephemeris, Day/Night & Sunrise/Sunset Calculator -->
+      <div id="panel-solardata" class="cat-panel hidden space-y-3 font-mono text-[11px]">
+        <div class="p-2.5 rounded-xl bg-amber-950/30 border border-amber-500/40 text-amber-200">
+          <div class="font-bold flex items-center justify-between text-xs text-amber-400">
+            <span>☀️ SUBSOLAR POINT (SOLAR NOON)</span>
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          </div>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-[10px]">
+            <div><span class="text-slate-400">Subsolar Lat (Declination):</span> <b id="sol-sub-lat" class="text-white">-7.48°</b></div>
+            <div><span class="text-slate-400">Subsolar Longitude:</span> <b id="sol-sub-lng" class="text-white">+27.25° E</b></div>
+            <div><span class="text-slate-400">Equation of Time (EoT):</span> <b id="sol-eot" class="text-white">+13.4 min</b></div>
+            <div><span class="text-slate-400">Earth Axial Tilt (Obliquity):</span> <b class="text-white">23.44°</b></div>
+          </div>
+        </div>
+
+        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Live Sun Elevation & Rise/Set Calculations:</div>
+
+        <!-- City Cards -->
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <div class="flex items-center justify-between font-bold text-white">
+            <span>🇮🇳 INDIA (New Delhi / Sriharikota)</span>
+            <span id="card-status-ind" class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">☀️ DAYLIGHT</span>
+          </div>
+          <div class="text-[10px] text-slate-400 grid grid-cols-2 gap-1 mt-1">
+            <div>Elevation: <b id="card-elev-ind" class="text-cyan-400">+34.2°</b></div>
+            <div>Solar Noon: <b id="card-noon-ind" class="text-slate-300">12:12 IST</b></div>
+            <div>Sunrise: <b id="card-rise-ind" class="text-slate-300">06:21 IST</b></div>
+            <div>Sunset: <b id="card-set-ind" class="text-slate-300">17:53 IST</b></div>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <div class="flex items-center justify-between font-bold text-white">
+            <span>🇯🇵 JAPAN (Tokyo)</span>
+            <span id="card-status-jpn" class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold">🌙 NIGHT / DUSK</span>
+          </div>
+          <div class="text-[10px] text-slate-400 grid grid-cols-2 gap-1 mt-1">
+            <div>Elevation: <b id="card-elev-jpn" class="text-indigo-400">-24.8°</b></div>
+            <div>Solar Noon: <b id="card-noon-jpn" class="text-slate-300">11:28 JST</b></div>
+            <div>Sunrise: <b id="card-rise-jpn" class="text-slate-300">05:46 JST</b></div>
+            <div>Sunset: <b id="card-set-jpn" class="text-slate-300">17:10 JST</b></div>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <div class="flex items-center justify-between font-bold text-white">
+            <span>🇺🇸 UNITED STATES (New York / KSC)</span>
+            <span id="card-status-usa" class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">☀️ DAYLIGHT</span>
+          </div>
+          <div class="text-[10px] text-slate-400 grid grid-cols-2 gap-1 mt-1">
+            <div>Elevation: <b id="card-elev-usa" class="text-cyan-400">+12.4°</b></div>
+            <div>Solar Noon: <b id="card-noon-usa" class="text-slate-300">12:43 EDT</b></div>
+            <div>Sunrise: <b id="card-rise-usa" class="text-slate-300">07:07 EDT</b></div>
+            <div>Sunset: <b id="card-set-usa" class="text-slate-300">18:19 EDT</b></div>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <div class="flex items-center justify-between font-bold text-white">
+            <span>🇬🇧 GREENWICH / UK (UTC 0°)</span>
+            <span id="card-status-uk" class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">☀️ DAYLIGHT</span>
+          </div>
+          <div class="text-[10px] text-slate-400 grid grid-cols-2 gap-1 mt-1">
+            <div>Elevation: <b id="card-elev-uk" class="text-cyan-400">+28.5°</b></div>
+            <div>Solar Noon: <b id="card-noon-uk" class="text-slate-300">11:46 UTC</b></div>
+            <div>Sunrise: <b id="card-rise-uk" class="text-slate-300">06:18 UTC</b></div>
+            <div>Sunset: <b id="card-set-uk" class="text-slate-300">17:14 UTC</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Master Telemetry Log & Autonomous Bot Swarm -->
       <div id="panel-bots" class="cat-panel hidden space-y-3">
         <div class="text-[10px] text-slate-400 font-mono">Automated harvesting bots streaming orbital assets:</div>
         <div id="bot-cards-container" class="space-y-2 font-mono text-[11px]"></div>
@@ -221,12 +291,6 @@
             <div>[SYS] ARCHITECT: CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION.</div>
           </div>
         </div>
-      </div>
-
-      <!-- Panel 3: Countries & National Space Agencies -->
-      <div id="panel-countries" class="cat-panel hidden space-y-2">
-        <div class="text-[10px] text-slate-400 font-mono mb-1">Select an agency to rotate Earth to its launch center:</div>
-        <div id="country-list-container" class="space-y-1.5"></div>
       </div>
 
       <!-- Panel 4: All 8 Planets & Solar System Bodies -->
@@ -318,7 +382,7 @@
       </div>
     </div>
 
-    <!-- Flight Heading & Keplerian Elements -->
+    <!-- Flight Heading & Solar Illumination -->
     <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1 text-[10px]">
       <div class="flex justify-between items-center text-slate-400">
         <span>Agency / Operator:</span>
@@ -338,7 +402,7 @@
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Solar Illumination:</span>
-        <span id="tele-shadow" class="text-amber-400 font-semibold">Sunlight (Day)</span>
+        <span id="tele-shadow" class="text-amber-400 font-semibold">IN SUNLIGHT (Day)</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Period:</span>
@@ -377,7 +441,7 @@
     </div>
   </div>
 
-  <!-- Three.js Astronomical Engine, Satellite Database & Day/Night Shader -->
+  <!-- Three.js Astronomical Engine, Sun Math & Day/Night Shader -->
   <script>
     // --- 1. ASTRONOMICAL TIME ENGINE (UTC & JULIAN DATE) ---
     let timeScale = 1.0;
@@ -396,15 +460,85 @@
       });
     }
 
+    // Precise NOAA / Astronomical Ephemeris Math
     function getAstroTimeData(epochMs) {
       const jd = (epochMs / 86400000) + 2440587.5;
-      const d = jd - 2451545.0;
+      const d = jd - 2451545.0; // Days since J2000.0
       const date = new Date(epochMs);
       const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600 + date.getUTCMilliseconds() / 3600000;
-      return { jd, d, utcHours, date };
+
+      // Sun Mean Anomaly & True Longitude
+      const M = (357.529 + 0.98560028 * d) % 360;
+      const Mrad = M * (Math.PI / 180);
+      const L = (280.466 + 0.9856474 * d) % 360;
+      const C = 1.915 * Math.sin(Mrad) + 0.020 * Math.sin(2 * Mrad);
+      const lambda = (L + C) % 360;
+      const lambdaRad = lambda * (Math.PI / 180);
+
+      // Obliquity of Ecliptic & Solar Declination
+      const epsilon = (23.439 - 0.0000004 * d) * (Math.PI / 180);
+      const alphaRad = Math.atan2(Math.sin(lambdaRad) * Math.cos(epsilon), Math.cos(lambdaRad));
+      const alphaDeg = (alphaRad * 180 / Math.PI + 360) % 360;
+
+      const deltaRad = Math.asin(Math.sin(epsilon) * Math.sin(lambdaRad));
+      const deltaDeg = deltaRad * (180 / Math.PI);
+
+      // Equation of Time (EoT in minutes & degrees)
+      const eotMin = 4 * ((L - alphaDeg + 360) % 360);
+      const eotDeg = eotMin / 4.0;
+
+      // Subsolar Longitude: Meridian where Sun is at zenith (Solar Noon)
+      let subsolarLngDeg = (12.0 - utcHours) * 15.0 - eotDeg;
+      while (subsolarLngDeg > 180) subsolarLngDeg -= 360;
+      while (subsolarLngDeg < -180) subsolarLngDeg += 360;
+
+      return { jd, d, utcHours, date, deltaDeg, deltaRad, subsolarLngDeg, eotMin };
     }
 
-    // --- 2. MASTER GLOBAL SATELLITE FLEET (165+ PRE-LOADED ASSETS) ---
+    // Precise NOAA Sunrise / Sunset Calculator
+    function calculateSunTimes(lat, lng, astro) {
+      const phiRad = lat * (Math.PI / 180);
+      const deltaRad = astro.deltaRad;
+
+      // Solar noon in local standard time
+      const solarNoonUTC = 12.0 - (lng / 15.0) - (astro.eotMin / 60.0);
+
+      // Hour angle at horizon (-0.833 deg standard refraction)
+      const cosOmega = (-0.0145 - Math.sin(phiRad) * Math.sin(deltaRad)) / (Math.cos(phiRad) * Math.cos(deltaRad));
+
+      let sunriseUTC = null;
+      let sunsetUTC = null;
+      if (cosOmega >= -1 && cosOmega <= 1) {
+        const omegaDeg = Math.acos(cosOmega) * (180 / Math.PI);
+        const halfDayHours = omegaDeg / 15.0;
+        sunriseUTC = (solarNoonUTC - halfDayHours + 24) % 24;
+        sunsetUTC = (solarNoonUTC + halfDayHours + 24) % 24;
+      }
+
+      // Sun Elevation Angle at this moment
+      const hourAngleDeg = (astro.utcHours - solarNoonUTC) * 15.0;
+      const hourAngleRad = hourAngleDeg * (Math.PI / 180);
+      const sinAlt = Math.sin(phiRad) * Math.sin(deltaRad) + Math.cos(phiRad) * Math.cos(deltaRad) * Math.cos(hourAngleRad);
+      const sunAltDeg = Math.asin(sinAlt) * (180 / Math.PI);
+
+      return {
+        sunAltDeg,
+        isDay: sunAltDeg > -0.833,
+        solarNoonUTC,
+        sunriseUTC,
+        sunsetUTC
+      };
+    }
+
+    function formatTimeHours(hoursFloat, offsetHours = 0) {
+      if (hoursFloat === null) return "--:--";
+      const totalHours = (hoursFloat + offsetHours + 24) % 24;
+      const h = Math.floor(totalHours);
+      const m = Math.floor((totalHours - h) * 60);
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    // --- 2. MASTER GLOBAL SATELLITE FLEET (165+ SATELLITES PRELOADED) ---
     const SATELLITES = {};
 
     function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role) {
@@ -434,7 +568,7 @@
       };
     }
 
-    // A. 🇮🇳 ISRO Complete Fleet (32 Satellites)
+    // 🇮🇳 ISRO Complete Fleet (32 Satellites)
     addSat("cartosat3", "Cartosat-3", 44804, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "0.25m High-Resolution Optical Earth Observation");
     addSat("cartosat2f", "Cartosat-2F", 43111, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Cartographic & Defense Reconnaissance");
     addSat("cartosat2e", "Cartosat-2E", 42767, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Urban Planning & High-Res Infrastructure");
@@ -468,7 +602,7 @@
     addSat("resourcesat2a", "Resourcesat-2A", 41877, "ISRO", "IND", 98.7, 817, 0x10b981, "isro", "Crop, Water & Forest Resource Management");
     addSat("saral", "SARAL (AltiKa)", 39086, "ISRO", "IND", 98.5, 785, 0x06b6d4, "isro", "Ka-Band Ocean Surface Altimetry");
 
-    // B. 🇺🇸 NASA & US Missions (25 Satellites)
+    // 🇺🇸 NASA Fleet (25 Satellites)
     addSat("iss", "ISS (ZARYA)", 25544, "NASA / INT", "USA", 51.64, 420, 0x10b981, "nasa", "International Space Station Modular Laboratory");
     addSat("hubble", "Hubble Space Telescope", 20580, "NASA / ESA", "USA", 28.47, 540, 0x38bdf8, "nasa", "Deep Optical Space Telescope");
     addSat("landsat9", "Landsat-9", 49260, "NASA / USGS", "USA", 98.2, 705, 0x38bdf8, "nasa", "Multispectral Terrestrial Earth Imaging");
@@ -487,7 +621,7 @@
       addSat(`gps_${i}`, `GPS-NAVSTAR IIF-${i}`, 36585 + (i * 700), "USSF", "USA", 55.0, 20200, 0x38bdf8, "nasa", "Global Positioning System Navigation Constellation");
     }
 
-    // C. 🇪🇺 ESA (Europe) Fleet (22 Satellites)
+    // 🇪🇺 ESA Fleet (22 Satellites)
     addSat("sentinel1a", "Sentinel-1A", 39634, "ESA", "ESA", 98.2, 693, 0x818cf8, "esa", "Copernicus C-band Synthetic Aperture Radar");
     addSat("sentinel2a", "Sentinel-2A", 40697, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus High-Res Multispectral Imager");
     addSat("sentinel2b", "Sentinel-2B", 42063, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus Optical Earth Observation Pair");
@@ -501,7 +635,7 @@
       addSat(`galileo_${i}`, `Galileo FOC-${i}`, 40128 + (i * 350), "ESA", "ESA", 56.0, 23222, 0x818cf8, "esa", "European Global Navigation Constellation Node");
     }
 
-    // D. 🇨🇳 CNSA (China) Fleet (20 Satellites)
+    // 🇨🇳 CNSA Fleet (20 Satellites)
     addSat("tiangong", "Tiangong (CSS)", 48274, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "Chinese Space Station Modular Laboratory");
     addSat("wentian", "Wentian Lab Module", 53239, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "CSS Science & Life Support Module");
     addSat("mengtian", "Mengtian Lab Module", 54216, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "CSS Microgravity & Fluid Physics Module");
@@ -511,7 +645,7 @@
       addSat(`beidou_${i}`, `BeiDou-3 M${i}`, 43001 + (i * 200), "CNSA", "CHN", 55.0, 21528, 0xef4444, "cnsa", "Global Navigation Satellite Constellation");
     }
 
-    // E. 🇷🇺 ROSCOSMOS (Russia) Fleet (18 Satellites)
+    // 🇷🇺 ROSCOSMOS Fleet (18 Satellites)
     addSat("meteor_m2", "Meteor-M2", 40069, "Roscosmos", "RUS", 98.8, 825, 0xf43f5e, "roscosmos", "Hydrometeorological Remote Sensing");
     addSat("meteor_m2_3", "Meteor-M2-3", 57166, "Roscosmos", "RUS", 98.8, 825, 0xf43f5e, "roscosmos", "Polar Weather Radar & Ice Monitoring");
     addSat("elektro_l3", "Elektro-L3", 44903, "Roscosmos", "RUS", 0.1, 35786, 0xf43f5e, "roscosmos", "Geostationary Meteorological Imager");
@@ -520,7 +654,7 @@
       addSat(`glonass_${i}`, `GLONASS-K 7${String(i).padStart(2, '0')}`, 40315 + (i * 240), "Roscosmos", "RUS", 64.8, 19100, 0xf43f5e, "roscosmos", "Russian Global Satellite Navigation Orbit");
     }
 
-    // F. 🇯🇵 JAXA (Japan) Fleet (15 Satellites)
+    // 🇯🇵 JAXA Fleet (15 Satellites)
     addSat("qzss_1r", "QZSS-1R (Michibiki)", 49336, "JAXA", "JPN", 40.0, 35786, 0x10b981, "jaxa", "Quasi-Zenith Regional Positioning Node");
     addSat("qzss_2", "QZSS-2", 42738, "JAXA", "JPN", 40.0, 35786, 0x10b981, "jaxa", "Quasi-Zenith Navigation Satellite");
     addSat("qzss_3", "QZSS-3 (Geostationary)", 42917, "JAXA", "JPN", 0.1, 35786, 0x10b981, "jaxa", "Geostationary Positioning Augmentation");
@@ -531,7 +665,7 @@
       addSat(`jaxa_ast_${i}`, `JAXA-AST-${i}`, 45000 + (i * 500), "JAXA", "JPN", 31.0, 560, 0x10b981, "jaxa", "Scientific Space Observation Satellite");
     }
 
-    // G. 🌐 Commercial & Constellations (35 Satellites)
+    // 🌐 Constellations (35 Satellites)
     for (let i = 1; i <= 20; i++) {
       addSat(`starlink_${i}`, `Starlink-${3000 + i}`, 48000 + i, "SpaceX", "USA", 53.2, 550, 0xc084fc, "constellation", "Low-Earth Orbit Broadband Satellite Network");
     }
@@ -542,7 +676,7 @@
       addSat(`iridium_${i}`, `Iridium-NEXT ${100 + i}`, 41900 + i, "Iridium", "USA", 86.4, 780, 0x818cf8, "constellation", "Global Satellite Voice & Data Crosslink");
     }
 
-    // 8 Solar System Planets & Sun
+    // Heliocentric Solar System Bodies
     const CELESTIAL_BODIES = {
       sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 2.8, color: 0xfbbf24, l0: 0, lRate: 0, desc: "Center of the Solar System" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x94a3b8, l0: 252.25, lRate: 4.092334, desc: "0.39 AU • Innermost Rocky Planet" },
@@ -557,17 +691,6 @@
       voyager1: { name: "Voyager 1", type: "Hyperbolic Escape", dist: 92.0, radius: 0.15, color: 0xf59e0b, angle: 0.8, tilt: 0.62 },
       voyager2: { name: "Voyager 2", type: "Hyperbolic Escape", dist: 84.0, radius: 0.15, color: 0xf59e0b, angle: 3.2, tilt: -0.84 },
       newhorizons: { name: "New Horizons", type: "Solar Escape", dist: 74.0, radius: 0.15, color: 0xf59e0b, angle: 5.1, tilt: 0.04 }
-    };
-
-    const COUNTRIES = {
-      india: { name: "India (ISRO)", agency: "ISRO (Indian Space Research Organisation)", lat: 13.72, lng: 80.23, hq: "Bengaluru / Sriharikota Launch Centre", fleet: "Cartosat, NavIC, INSAT, EOS, AstroSat, Chandrayaan" },
-      usa: { name: "United States (NASA)", agency: "NASA / Space Force / Commercial", lat: 28.57, lng: -80.64, hq: "Washington / Kennedy Space Center", fleet: "Hubble, ISS, Artemis, Starlink, GPS" },
-      europe: { name: "Europe (ESA)", agency: "ESA (European Space Agency)", lat: 5.23, lng: -52.76, hq: "Paris / Guiana Space Centre", fleet: "Ariane, Sentinel, Galileo, Envisat" },
-      japan: { name: "Japan (JAXA)", agency: "JAXA (Japan Aerospace Exploration Agency)", lat: 30.40, lng: 130.97, hq: "Tokyo / Tanegashima Space Center", fleet: "H-IIA, Kibo, Hayabusa, QZSS" },
-      china: { name: "China (CNSA)", agency: "CNSA (China National Space Administration)", lat: 19.61, lng: 110.95, hq: "Beijing / Wenchang Space Launch Site", fleet: "Tiangong, Shenzhou, Chang'e, Beidou" },
-      russia: { name: "Russia (Roscosmos)", agency: "Roscosmos", lat: 45.96, lng: 63.30, hq: "Moscow / Baikonur Cosmodrome", fleet: "Soyuz, Progress, GLONASS, Zarya" },
-      australia: { name: "Australia (ASA)", agency: "ASA (Australian Space Agency)", lat: -35.40, lng: 148.98, hq: "Adelaide / Canberra Deep Space Network", fleet: "Canberra DSN CDSCC, Optus" },
-      brazil: { name: "Brazil (AEB)", agency: "AEB (Agência Espacial Brasileira)", lat: -2.31, lng: -44.36, hq: "Brasília / Alcântara Launch Center", fleet: "CBERS, Amazonia-1, SGDC" }
     };
 
     let activeTargetKey = "cartosat3";
@@ -590,7 +713,7 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.32);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
     scene.add(ambientLight);
 
     // Deep Space Starfield
@@ -645,10 +768,11 @@
       return ring;
     }
 
-    // --- 5. DAY/NIGHT SHADER MATERIAL & SATELLITE TEXTURES ---
+    // --- 5. ASTRONOMICAL DAY/NIGHT SHADER MATERIAL ---
     const textureLoader = new THREE.TextureLoader();
     textureLoader.crossOrigin = 'anonymous';
 
+    // Procedural High-Res Fallbacks
     const fallbackDayCanvas = document.createElement('canvas');
     fallbackDayCanvas.width = 1024; fallbackDayCanvas.height = 512;
     const fDayCtx = fallbackDayCanvas.getContext('2d');
@@ -664,53 +788,49 @@
       uniforms: {
         uDayMap: { value: new THREE.CanvasTexture(fallbackDayCanvas) },
         uNightMap: { value: new THREE.CanvasTexture(fallbackNightCanvas) },
-        uSunPosition: { value: new THREE.Vector3(0, 0, 0) }
+        uSunDirLocal: { value: new THREE.Vector3(1, 0, 0) } // Direction to Sun in local mesh coordinates!
       },
       vertexShader: `
         varying vec2 vUv;
-        varying vec3 vWorldNormal;
-        varying vec3 vWorldPosition;
+        varying vec3 vNormalLocal;
 
         void main() {
           vUv = uv;
-          vec4 worldPos = modelMatrix * vec4(position, 1.0);
-          vWorldPosition = worldPos.xyz;
-          vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
-          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          vNormalLocal = normalize(normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
         uniform sampler2D uDayMap;
         uniform sampler2D uNightMap;
-        uniform vec3 uSunPosition;
+        uniform vec3 uSunDirLocal;
 
         varying vec2 vUv;
-        varying vec3 vWorldNormal;
-        varying vec3 vWorldPosition;
+        varying vec3 vNormalLocal;
 
         void main() {
-          vec3 sunDir = normalize(uSunPosition - vWorldPosition);
-          float nDotL = dot(vWorldNormal, sunDir);
+          // Exact physical dot product between surface normal and Sun vector
+          float cosZenith = dot(vNormalLocal, normalize(uSunDirLocal));
 
-          float dayFactor = smoothstep(-0.16, 0.20, nDotL);
+          // Smooth twilight terminator transition
+          float dayFactor = smoothstep(-0.14, 0.18, cosZenith);
 
           vec4 dayColor = texture2D(uDayMap, vUv);
           vec4 nightColor = texture2D(uNightMap, vUv);
 
-          vec3 litDay = dayColor.rgb * (max(0.0, nDotL) * 1.3 + 0.12);
-          vec3 litNight = nightColor.rgb * 1.8 * (1.0 - dayFactor);
+          // Sunlight direct illumination on day side
+          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.35 + 0.12);
 
-          float sunsetFactor = 1.0 - abs(nDotL * 4.0);
-          vec3 sunsetGlow = vec3(0.9, 0.45, 0.1) * max(0.0, sunsetFactor) * 0.2;
+          // Glowing city lights on dark night side
+          vec3 litNight = nightColor.rgb * 1.85 * (1.0 - dayFactor);
+
+          // Golden twilight sunset glow along the terminator
+          float sunsetFactor = 1.0 - abs(cosZenith * 4.5);
+          vec3 sunsetGlow = vec3(0.95, 0.45, 0.1) * max(0.0, sunsetFactor) * 0.25;
 
           vec3 finalColor = mix(litNight, litDay, dayFactor) + sunsetGlow;
 
-          vec3 viewDir = normalize(cameraPosition - vWorldPosition);
-          float fresnel = 1.0 - max(0.0, dot(viewDir, vWorldNormal));
-          fresnel = pow(fresnel, 3.2);
-          vec3 atmosphereGlow = vec3(0.2, 0.65, 1.0) * fresnel * max(0.0, nDotL + 0.3) * 1.3;
-
-          gl_FragColor = vec4(finalColor + atmosphereGlow, 1.0);
+          gl_FragColor = vec4(finalColor, 1.0);
         }
       `
     });
@@ -733,7 +853,7 @@
     scene.add(earthSystem);
 
     const earthAxialGroup = new THREE.Group();
-    earthAxialGroup.rotation.z = 23.44 * (Math.PI / 180);
+    earthAxialGroup.rotation.z = 23.44 * (Math.PI / 180); // Exact Obliquity
     earthSystem.add(earthAxialGroup);
 
     const earthRadius = CELESTIAL_BODIES.earth.radius;
@@ -749,10 +869,11 @@
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
+    // Dynamic Clouds Layer
     const cloudsGeo = new THREE.SphereGeometry(earthRadius + 0.025, 64, 64);
     const cloudsMat = new THREE.MeshStandardMaterial({
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.42,
       blending: THREE.NormalBlending
     });
     const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
@@ -763,11 +884,12 @@
       cloudsMat.needsUpdate = true;
     });
 
+    // Atmospheric Rayleigh Limb Glow
     const atmosGeo = new THREE.SphereGeometry(earthRadius + 0.045, 64, 64);
     const atmosMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.14,
       side: THREE.BackSide,
       blending: THREE.AdditiveBlending
     });
@@ -874,7 +996,7 @@
 
     Object.keys(CELESTIAL_BODIES).forEach(k => buildPlanet(k, CELESTIAL_BODIES[k]));
 
-    // Deep Space Probe Meshes
+    // Deep Space Probes
     const deepSpaceSystems = {};
     ['voyager1', 'voyager2', 'newhorizons'].forEach(k => {
       const pData = CELESTIAL_BODIES[k];
@@ -1152,7 +1274,6 @@
               document.getElementById("tele-lng").innerText = `${d.longitude.toFixed(2)}°`;
               document.getElementById("tele-alt").innerText = `${Math.round(d.altitude)} km`;
               document.getElementById("tele-vel").innerText = `${Math.round(d.velocity).toLocaleString()} km/h`;
-              document.getElementById("tele-shadow").innerText = d.visibility === "daylight" ? "Sunlight (Day)" : "Eclipsed (Night)";
 
               const satVec = latLngToEarthVector(d.latitude, d.longitude, SATELLITES.iss.radius);
               if (satelliteMeshMap.iss) {
@@ -1183,7 +1304,6 @@
       };
     })();
 
-    // Update Agency Counts on Filter Pills
     function updateAgencyCounters() {
       const counts = { all: 0, isro: 0, nasa: 0, esa: 0, cnsa: 0, roscosmos: 0, jaxa: 0, constellation: 0 };
       Object.values(SATELLITES).forEach(s => {
@@ -1292,10 +1412,9 @@
       }
     }
 
-    // Interactive Agency Filtering
     function filterByAgency(agency) {
       if (activeAgencyFilter === agency && agency !== 'all') {
-        activeAgencyFilter = 'all'; // Toggle back to all
+        activeAgencyFilter = 'all';
       } else {
         activeAgencyFilter = agency;
       }
@@ -1328,7 +1447,7 @@
         }
       });
 
-      document.querySelectorAll('.planet-item, .country-item').forEach(el => {
+      document.querySelectorAll('.planet-item').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
       });
 
@@ -1387,23 +1506,6 @@
       }
     }
 
-    function selectCountry(k) {
-      const c = COUNTRIES[k];
-      document.getElementById('target-name').innerText = c.name;
-      document.getElementById('target-agency').innerText = c.agency;
-      document.getElementById('target-orbit').innerText = `Lat: ${c.lat}° | Lng: ${c.lng}°`;
-
-      document.getElementById('tele-agency').innerText = c.agency;
-      document.getElementById('tele-lat').innerText = `${c.lat.toFixed(2)}°`;
-      document.getElementById('tele-lng').innerText = `${c.lng.toFixed(2)}°`;
-      document.getElementById('tele-alt').innerText = "Surface (0 km)";
-      document.getElementById('tele-vel').innerText = "1,670 km/h (Earth spin)";
-      document.getElementById('tele-direction').innerText = `HQ: ${c.hq}`;
-
-      earthMesh.rotation.y = -((c.lng + 90) * Math.PI) / 180;
-      setFocusTo('earth');
-    }
-
     function resetCameraView() {
       setFocusTo('cartosat3');
     }
@@ -1447,25 +1549,6 @@
         `;
         satCont.appendChild(card);
       });
-
-      const countryCont = document.getElementById('country-list-container');
-      if (countryCont) {
-        countryCont.innerHTML = '';
-        Object.keys(COUNTRIES).forEach(k => {
-          const c = COUNTRIES[k];
-          const card = document.createElement('div');
-          card.className = "country-item p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-cyan-400 cursor-pointer transition flex justify-between items-center";
-          card.onclick = () => selectCountry(k);
-          card.innerHTML = `
-            <div>
-              <span class="text-white font-bold block">${c.name}</span>
-              <span class="text-[10px] text-slate-400">${c.agency}</span>
-            </div>
-            <span class="text-[10px] text-cyan-400 font-mono font-bold">FOCUS →</span>
-          `;
-          countryCont.appendChild(card);
-        });
-      }
 
       const planetCont = document.getElementById('planets-list-container');
       if (planetCont) {
@@ -1574,7 +1657,6 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Launch Swarm
     BotSwarm.init();
 
     // --- 14. REAL-TIME ASTRONOMICAL ANIMATION & ROTATION ENGINE ---
@@ -1591,16 +1673,67 @@
       const utcString = astro.date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
       document.getElementById('live-utc-display').innerText = `${utcString} • JD: ${astro.jd.toFixed(4)} • CREATED BY MR SINGH // SPECIAL ACTIVITIES DIVISION`;
 
-      // 1. Heliocentric Orbits
+      // 1. Calculate Real Solar Vector in Earth's Local Mesh Coordinate Frame
+      // In Three.js SphereGeometry:
+      // X = cos(lat)*cos(lng), Y = sin(lat), Z = -cos(lat)*sin(lng)
+      const subsolarLngRad = astro.subsolarLngDeg * (Math.PI / 180);
+      const sunLocalX = Math.cos(astro.deltaRad) * Math.cos(subsolarLngRad);
+      const sunLocalY = Math.sin(astro.deltaRad);
+      const sunLocalZ = -Math.cos(astro.deltaRad) * Math.sin(subsolarLngRad);
+
+      earthShaderMat.uniforms.uSunDirLocal.value.set(sunLocalX, sunLocalY, sunLocalZ).normalize();
+
+      // Update Sun Position Card in HUD
+      document.getElementById('sol-sub-lat').innerText = `${astro.deltaDeg > 0 ? '+' : ''}${astro.deltaDeg.toFixed(2)}°`;
+      document.getElementById('sol-sub-lng').innerText = `${astro.subsolarLngDeg > 0 ? '+' : ''}${astro.subsolarLngDeg.toFixed(2)}°`;
+      document.getElementById('sol-eot').innerText = `${astro.eotMin > 0 ? '+' : ''}${astro.eotMin.toFixed(1)} min`;
+
+      // Live Calculation of Sun Elevation & Rise/Set for Key Cities
+      const indSun = calculateSunTimes(28.61, 77.21, astro); // New Delhi
+      const jpnSun = calculateSunTimes(35.68, 139.76, astro); // Tokyo
+      const usaSun = calculateSunTimes(40.71, -74.00, astro); // New York
+      const ukSun = calculateSunTimes(51.48, 0.00, astro);    // Greenwich
+
+      document.getElementById('card-elev-ind').innerText = `${indSun.sunAltDeg > 0 ? '+' : ''}${indSun.sunAltDeg.toFixed(1)}°`;
+      document.getElementById('card-status-ind').innerText = indSun.isDay ? "☀️ DAYLIGHT" : "🌙 NIGHT";
+      document.getElementById('card-status-ind').className = indSun.isDay 
+        ? "text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold"
+        : "text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold";
+      document.getElementById('card-noon-ind').innerText = `${formatTimeHours(indSun.solarNoonUTC, 5.5)} IST`;
+      document.getElementById('card-rise-ind').innerText = `${formatTimeHours(indSun.sunriseUTC, 5.5)} IST`;
+      document.getElementById('card-set-ind').innerText = `${formatTimeHours(indSun.sunsetUTC, 5.5)} IST`;
+
+      document.getElementById('card-elev-jpn').innerText = `${jpnSun.sunAltDeg > 0 ? '+' : ''}${jpnSun.sunAltDeg.toFixed(1)}°`;
+      document.getElementById('card-status-jpn').innerText = jpnSun.isDay ? "☀️ DAYLIGHT" : "🌙 NIGHT / DUSK";
+      document.getElementById('card-status-jpn').className = jpnSun.isDay 
+        ? "text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold"
+        : "text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold";
+      document.getElementById('card-noon-jpn').innerText = `${formatTimeHours(jpnSun.solarNoonUTC, 9.0)} JST`;
+      document.getElementById('card-rise-jpn').innerText = `${formatTimeHours(jpnSun.sunriseUTC, 9.0)} JST`;
+      document.getElementById('card-set-jpn').innerText = `${formatTimeHours(jpnSun.sunsetUTC, 9.0)} JST`;
+
+      document.getElementById('card-elev-usa').innerText = `${usaSun.sunAltDeg > 0 ? '+' : ''}${usaSun.sunAltDeg.toFixed(1)}°`;
+      document.getElementById('card-status-usa').innerText = usaSun.isDay ? "☀️ DAYLIGHT" : "🌙 NIGHT";
+      document.getElementById('card-noon-usa').innerText = `${formatTimeHours(usaSun.solarNoonUTC, -4.0)} EDT`;
+      document.getElementById('card-rise-usa').innerText = `${formatTimeHours(usaSun.sunriseUTC, -4.0)} EDT`;
+      document.getElementById('card-set-usa').innerText = `${formatTimeHours(usaSun.sunsetUTC, -4.0)} EDT`;
+
+      document.getElementById('card-elev-uk').innerText = `${ukSun.sunAltDeg > 0 ? '+' : ''}${ukSun.sunAltDeg.toFixed(1)}°`;
+      document.getElementById('card-status-uk').innerText = ukSun.isDay ? "☀️ DAYLIGHT" : "🌙 NIGHT";
+      document.getElementById('card-noon-uk').innerText = `${formatTimeHours(ukSun.solarNoonUTC, 0)} UTC`;
+      document.getElementById('card-rise-uk').innerText = `${formatTimeHours(ukSun.sunriseUTC, 0)} UTC`;
+      document.getElementById('card-set-uk').innerText = `${formatTimeHours(ukSun.sunsetUTC, 0)} UTC`;
+
+      // 2. Real Heliocentric Motion of Earth & Planets around the Sun
       const earthLRad = ((CELESTIAL_BODIES.earth.l0 + CELESTIAL_BODIES.earth.lRate * astro.d) % 360) * (Math.PI / 180);
       earthSystem.position.x = Math.cos(earthLRad) * CELESTIAL_BODIES.earth.dist;
       earthSystem.position.z = Math.sin(earthLRad) * CELESTIAL_BODIES.earth.dist;
 
-      // 2. Real Greenwich Mean Sidereal Time (GMST) Earth Rotation
-      const subsolarLngDeg = (12.0 - astro.utcHours) * 15.0;
-      const sunAngleInEarthPlane = earthLRad + Math.PI;
-      earthMesh.rotation.y = sunAngleInEarthPlane + (subsolarLngDeg * Math.PI / 180);
-      cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.1);
+      // 3. Real Greenwich Mean Sidereal Time (GMST) Earth Physical Rotation
+      // Rotate Earth mesh so that subsolar longitude aligns towards the Sun at (0,0,0) in world coordinates!
+      const sunAngleInEcliptic = earthLRad + Math.PI;
+      earthMesh.rotation.y = sunAngleInEcliptic + (astro.subsolarLngDeg * Math.PI / 180);
+      cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.12);
 
       // Real Moon Geocentric Orbit around Earth
       const moonLRad = ((CELESTIAL_BODIES.moon.l0 + CELESTIAL_BODIES.moon.lRate * astro.d) % 360) * (Math.PI / 180);
@@ -1624,7 +1757,7 @@
         dObj.mesh.position.z = Math.sin(dObj.currentAngle) * dObj.data.dist;
       });
 
-      // 3. Propagate ALL Satellites around Earth
+      // 4. Propagate ALL Satellites around Earth
       const isSat = !!(SATELLITES[activeTargetKey] && satelliteMeshMap[activeTargetKey]);
       nadirLine.visible = isSat;
       footprintMesh.visible = isSat;
@@ -1654,10 +1787,18 @@
           document.getElementById('tele-vel').innerText = `${item.data.velocity.toLocaleString()} km/h`;
           document.getElementById('tele-direction').innerText = isAsc ? `${((inc * 180) / Math.PI).toFixed(1)}° NE (Asc)` : `${((180 - (inc * 180) / Math.PI)).toFixed(1)}° SE (Desc)`;
           document.getElementById('tele-period').innerText = item.data.period;
+
+          // Spacecraft Eclipse / Shadow Detection
+          const satNorm = item.satMesh.position.clone().normalize();
+          const sunDot = satNorm.dot(earthShaderMat.uniforms.uSunDirLocal.value);
+          const inSunlight = sunDot > -0.22;
+          document.getElementById('tele-shadow').innerText = inSunlight ? "IN SUNLIGHT (Day)" : "ECLIPSED (Orbital Night)";
+          document.getElementById('tele-shadow').className = inSunlight ? "text-amber-400 font-semibold" : "text-indigo-400 font-semibold";
+          document.getElementById('target-orbit').innerText = inSunlight ? "IN SUNLIGHT (Day)" : "ECLIPSED (Orbital Night)";
         }
       });
 
-      // 4. Nadir Laser & Footprint Coordinate Transformation
+      // 5. Nadir Laser & Footprint Coordinate Transformation
       if (isSat) {
         const activeSat = satelliteMeshMap[activeTargetKey];
         if (activeSat) {
@@ -1678,7 +1819,7 @@
         }
       }
 
-      // 5. Smooth Camera Focus Tracking
+      // 6. Smooth Camera Focus Tracking
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
       if (activeTargetKey === 'sun') {
         focusWorldPos.set(0, 0, 0);
