@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -111,9 +111,28 @@
       </div>
     </div>
 
+    <!-- 1-Click Perspective Director (Camera Presets) -->
+    <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono">
+      <button onclick="setFocusTo('earth')" id="view-btn-earth" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition flex items-center gap-1">
+        <span>🌍 Earth</span>
+      </button>
+      <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog(); updatePerspectiveButtons('isro');" id="view-btn-isro" class="px-2.5 py-1 rounded text-amber-300 hover:bg-amber-500/10 transition flex items-center gap-1">
+        <span>🇮🇳 ISRO</span>
+      </button>
+      <button onclick="setFocusTo('mars')" id="view-btn-mars" class="px-2.5 py-1 rounded text-orange-400 hover:bg-orange-500/10 transition flex items-center gap-1">
+        <span>🔴 Mars</span>
+      </button>
+      <button onclick="setFocusTo('jupiter')" id="view-btn-jupiter" class="px-2.5 py-1 rounded text-amber-200 hover:bg-amber-500/10 transition flex items-center gap-1">
+        <span>🟠 Jupiter</span>
+      </button>
+      <button onclick="setFocusTo('sun')" id="view-btn-sun" class="px-2.5 py-1 rounded text-yellow-300 hover:bg-yellow-500/10 transition flex items-center gap-1">
+        <span>☀️ Solar System</span>
+      </button>
+    </div>
+
     <!-- Quick Navigation Actions -->
     <div class="flex items-center gap-2">
-      <a href="catalog.html" title="Open Master Fleet Radar Catalog" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-medium transition flex items-center gap-1">
+      <a href="catalog.html" title="Open Master Fleet Radar Catalog (Shortcut: Shift+C)" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>🛰️ Fleet Catalog ↗</span>
       </a>
       <button onclick="toggleVideoPanel()" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1.5">
@@ -121,22 +140,10 @@
         <span class="hidden md:inline">NASA Live</span> Feed
       </button>
       <button onclick="switchCategory('orbiters'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🚀 Planet Probes</span>
-      </button>
-      <button onclick="setFocusTo('mars')" class="px-2.5 py-1.5 rounded-lg bg-orange-950/70 hover:bg-orange-900 text-orange-300 border border-orange-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🔴 Mars</span>
-      </button>
-      <button onclick="setFocusTo('jupiter')" class="px-2.5 py-1.5 rounded-lg bg-amber-950/70 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🟠 Jupiter</span>
-      </button>
-      <button onclick="setFocusTo('earth')" class="px-2.5 py-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🌍 Earth</span>
+        <span>🚀 Probes</span>
       </button>
       <button onclick="switchCategory('solardata'); expandCatalog();" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>☀️ Sun Position</span>
-      </button>
-      <button onclick="setFocusTo('sun')" class="px-2.5 py-1.5 rounded-lg bg-amber-950/70 hover:bg-amber-900 text-amber-300 border border-amber-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>☀️ Solar View</span>
+        <span>☀️ Sun Data</span>
       </button>
       <button onclick="toggleHUDPanels()" title="Toggle Panels (Shortcut: M)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition">
         HUD (M)
@@ -154,7 +161,7 @@
   </button>
 
   <!-- Left Side: Interactive Catalogs & Planets -->
-  <aside id="catalog-panel" class="panel-slide-left absolute top-20 left-3 bottom-4 w-96 max-w-[calc(100vw-1.5rem)] z-20 flex flex-col rounded-2xl hud-glass pointer-events-auto">
+  <aside id="catalog-panel" class="panel-slide-left absolute top-20 left-3 bottom-16 sm:bottom-20 w-96 max-w-[calc(100vw-1.5rem)] z-20 flex flex-col rounded-2xl hud-glass pointer-events-auto">
     <div class="flex items-center justify-between p-3 border-b border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
@@ -378,7 +385,7 @@
   </aside>
 
   <!-- Video Stream Player -->
-  <div id="video-panel" class="absolute bottom-4 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
+  <div id="video-panel" class="absolute bottom-16 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
     <div class="flex items-center justify-between p-2.5 bg-slate-950/85 border-b border-slate-800">
       <div class="flex items-center gap-2">
         <span id="stream-status-dot" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
@@ -404,6 +411,23 @@
         allowfullscreen>
       </iframe>
     </div>
+  </div>
+
+  <!-- Floating Bottom Mission Dock (Controls Bar) -->
+  <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto">
+    <!-- Camera Drift Mode Toggle -->
+    <button onclick="toggleCinematicCamera()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Cinematic Drift (Shortcut: C)">
+      <span class="w-2 h-2 rounded-full bg-slate-500" id="dot-cinematic"></span>
+      <span>Cinematic Drift</span>
+    </button>
+    <!-- Master HUD Visibility -->
+    <button onclick="toggleHUDPanels()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition" title="Toggle Panels (Shortcut: M)">
+      HUD (M)
+    </button>
+    <!-- Fullscreen Toggle -->
+    <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition" title="Toggle Fullscreen (Shortcut: F)">
+      ⛶ Fullscreen
+    </button>
   </div>
 
   <!-- Three.js Astronomical Engine & Interplanetary Physics -->
@@ -1008,9 +1032,13 @@
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
     const cameraTarget = new THREE.Vector3(0, 0, 0);
-    let cameraDistance = 3.6;
-    let cameraPhi = 0.3;
-    let cameraTheta = 0.5;
+
+    // Cinematic Opening Animation Parameters
+    let cameraDistance = 10.5; // Starts pulled back in deep space!
+    let targetCameraDistance = 5.2; // Smoothly glides to orbital altitude
+    let cameraPhi = 0.45;
+    let cameraTheta = 0.8;
+    let isCinematicDrift = false;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1601,6 +1629,41 @@
       }
     }
 
+    function toggleCinematicCamera() {
+      isCinematicDrift = !isCinematicDrift;
+      const dot = document.getElementById("dot-cinematic");
+      if (dot) {
+        dot.className = isCinematicDrift 
+          ? "w-2 h-2 rounded-full bg-cyan-400 animate-pulse" 
+          : "w-2 h-2 rounded-full bg-slate-500";
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
+
+    function updatePerspectiveButtons(activeKey) {
+      const keys = ['earth', 'isro', 'mars', 'jupiter', 'sun'];
+      keys.forEach(k => {
+        const btn = document.getElementById(`view-btn-${k}`);
+        if (!btn) return;
+        if (k === activeKey) {
+          btn.className = "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition flex items-center gap-1";
+        } else {
+          btn.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1";
+        }
+      });
+    }
+
     function toggleVideoPanel() {
       const p = document.getElementById('video-panel');
       if (p) p.classList.toggle('hidden');
@@ -1698,11 +1761,13 @@
       document.getElementById('tele-status').innerText = "ACTIVE SCIENCE";
       document.getElementById('tele-status').className = "text-emerald-400 font-semibold";
 
-      if (orb.parent === 'mars') cameraDistance = 3.6;
-      else if (orb.parent === 'jupiter') cameraDistance = 7.5;
-      else if (orb.parent === 'saturn') cameraDistance = 6.8;
-      else if (orb.parent === 'moon') cameraDistance = 1.8;
-      else cameraDistance = 4.2;
+      if (orb.parent === 'mars') targetCameraDistance = 3.6;
+      else if (orb.parent === 'jupiter') targetCameraDistance = 7.5;
+      else if (orb.parent === 'saturn') targetCameraDistance = 6.8;
+      else if (orb.parent === 'moon') targetCameraDistance = 1.8;
+      else targetCameraDistance = 4.2;
+
+      updatePerspectiveButtons(orb.parent);
 
       nadirLine.visible = false;
       footprintMesh.visible = false;
@@ -1732,7 +1797,8 @@
         document.getElementById('tele-inc').innerText = sat.orbitType;
         document.getElementById('tele-period').innerText = sat.period;
 
-        cameraDistance = sat.radius > 3.0 ? 8.5 : 5.2;
+        targetCameraDistance = sat.radius > 3.0 ? 8.5 : 5.2;
+        updatePerspectiveButtons('earth');
 
         Object.keys(satelliteMeshMap).forEach(k => {
           satelliteMeshMap[k].orbitRing.opacity = k === key ? 0.95 : 0.08;
@@ -1761,13 +1827,15 @@
         document.getElementById('tele-status').innerText = "STABLE ORBIT";
         document.getElementById('tele-status').className = "text-cyan-400 font-semibold";
 
-        if (key === 'sun') cameraDistance = 45.0;
-        else if (key === 'earth') cameraDistance = 5.2;
-        else if (key === 'mars') cameraDistance = 3.8;
-        else if (key === 'jupiter') cameraDistance = 8.0;
-        else if (key === 'saturn') cameraDistance = 7.2;
-        else if (key === 'moon') cameraDistance = 2.4;
-        else cameraDistance = 5.0;
+        if (key === 'sun') targetCameraDistance = 45.0;
+        else if (key === 'earth') targetCameraDistance = 5.2;
+        else if (key === 'mars') targetCameraDistance = 3.8;
+        else if (key === 'jupiter') targetCameraDistance = 8.0;
+        else if (key === 'saturn') targetCameraDistance = 7.2;
+        else if (key === 'moon') targetCameraDistance = 2.4;
+        else targetCameraDistance = 5.0;
+
+        updatePerspectiveButtons(key);
 
         nadirLine.visible = false;
         footprintMesh.visible = false;
@@ -1777,6 +1845,7 @@
     }
 
     function resetCameraView() {
+      targetCameraDistance = 5.2;
       setFocusToOrbiter('mom');
     }
 
@@ -1961,7 +2030,7 @@
 
     window.addEventListener('wheel', e => {
       if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
-      cameraDistance = Math.max(1.5, Math.min(220.0, cameraDistance + e.deltaY * 0.015));
+      targetCameraDistance = Math.max(1.8, Math.min(220.0, targetCameraDistance + e.deltaY * 0.015));
     }, { passive: true });
 
     window.addEventListener('resize', () => {
@@ -1973,6 +2042,9 @@
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'm' || e.key === 'M') toggleHUDPanels();
+      if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+      if ((e.key === 'c' || e.key === 'C') && !e.shiftKey) toggleCinematicCamera();
+      if ((e.key === 'c' || e.key === 'C') && e.shiftKey) window.location.href = 'catalog.html';
       if (e.key === ' ') {
         e.preventDefault();
         setTimeScale(timeScale === 0 ? 1 : 0);
@@ -1981,7 +2053,6 @@
       if (e.key === '2') setTimeScale(10);
       if (e.key === '3') setTimeScale(100);
       if (e.key === '4') setTimeScale(1000);
-      if (e.key === 'c' || e.key === 'C') window.location.href = 'catalog.html';
       if (e.key === 'r' || e.key === 'R') resetCameraView();
       if (e.key === 'v' || e.key === 'V') toggleVideoPanel();
     });
@@ -1991,6 +2062,13 @@
     // --- 16. MASTER ANIMATION & ASTRONOMICAL MOTION LOOP ---
     function animate() {
       requestAnimationFrame(animate);
+
+      // Smooth Cinematic Camera Zoom Interpolation (Opening Glide & Fly-Tos)
+      cameraDistance += (targetCameraDistance - cameraDistance) * 0.06;
+
+      if (isCinematicDrift) {
+        cameraTheta += 0.0015;
+      }
 
       const nowReal = performance.now();
       const deltaRealMs = nowReal - lastRealTime;
