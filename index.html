@@ -1122,9 +1122,10 @@
           const res = await fetch("/api/catalog?limit=500");
           if (!res.ok) return 0;
           const data = await res.json();
-          if (data && data.satellites && data.satellites.length > 0) {
+          const list = Array.isArray(data) ? data : (data && data.satellites ? data.satellites : []);
+          if (list.length > 0) {
             let count = 0;
-            data.satellites.forEach(sat => {
+            list.forEach(sat => {
               const norad = String(sat.noradId);
               const key = "norad_" + norad;
               if (!SATELLITES[key]) {
@@ -1393,9 +1394,9 @@
         const queryUrl = /^\d+$/.test(targetParam) ? `/api/catalog?norad=${targetParam}` : `/api/catalog?q=${encodeURIComponent(targetParam)}`;
         const res = await fetch(queryUrl);
         if (res.ok) {
-          const data = await res.json();
-          if (data && data.satellites && data.satellites.length > 0) {
-            const sat = data.satellites[0];
+          const list = Array.isArray(data) ? data : (data && data.satellites ? data.satellites : []);
+          if (list.length > 0) {
+            const sat = /^\d+$/.test(targetParam) ? (list.find(s => String(s.noradId) === targetParam) || list[0]) : list[0];
             const norad = String(sat.noradId);
             const key = `norad_${norad}`;
             if (!SATELLITES[key]) {
