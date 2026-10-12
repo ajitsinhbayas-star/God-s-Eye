@@ -1,8 +1,34 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build Output
+dist/
+build/
+.vercel
+.netlify
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Logs & Crash Dumps
 *.log
 chrome_debug.log
 edge_*_test.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# OS metadata
+# Editor & OS artifacts
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
