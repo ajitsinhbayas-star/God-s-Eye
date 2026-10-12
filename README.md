@@ -7,92 +7,70 @@
 
 ---
 
-## 🛰 Overview
+# Orbital Command & Real-Time Astronomical Tracking HUD
 
-**GOD’S EYE // RADAR** is an ultra-HD tactical cyber command system and real-time orbital intelligence platform. Inspired by covert mission control dossiers, it fuses physics-grade SGP4 astrodynamics with WebGL/Three.js 3D earth rendering, autonomous telemetry ingestion bots, and a cryptographically audited differential backend.
+A real-time 3D space situational awareness dashboard built with Three.js, Tailwind CSS, and Keplerian orbital mechanics. 
 
----
-
-## ⚡ Core Capabilities
-
-### 1. 3D Tactical Command Globe & HUD (`index.html`)
-- **Solid High-Contrast Earth**: 100% vector-sharp landmasses, bathymetric shelf glow, and international borders.
-- **SGP4 Real-Time Orbit Engine**: Propagates live orbital tracks for LEO, MEO, GEO, SSO, Molniya, Lunar, and Deep Space trajectories.
-- **Dynamic Comms & Radar Cones**: Ground station acquisition cones (5° elevation limit) and real-time Line-of-Sight (LOS/AOS) laser telemetry beams.
-- **Solar Day/Night Terminator**: Dynamic real-time calculation of the solar dividing terminator and atmospheric rim glow.
-- **Interactive 4-Tab Command Center**:
-  - `01. FLEET`: Hierarchical constellation tree, target lock, and instant telemetry dossier.
-  - `02. BOTS`: 13 dedicated autonomous worldwide telemetry feeds with real-time indicators, `[⚡ EXECUTE]` controls, and `[🛰 AUTO-DISCOVER MISSING SATS]`.
-  - `03. AUDIT`: Master differential audit trail, categorized live filters (`ALL`, `SATELLITES`, `INTEL`, `SECURITY`), and live stream terminal.
-  - `04. INFO`: Astrodynamics constants, keyboard shortcuts, directive manual, JSON/CSV exports, and mission purge sequence.
-
-### 2. Autonomous Missing Satellite Discovery Bot
-- **Auto-Discovery Engine (`AutoSatelliteDiscoveryBot`)**: Continuously monitors the master fleet database against global space registries (NASA, ISRO, ESA, SpaceX, CelesTrak, Space-Track).
-- **Zero-Latency Ingestion**: Detects missing satellites (e.g., NISAR, XPoSat, INSAT-3DS, PACE, Euclid, Cartosat-3, Starlink Direct-to-Cell), calculates initial orbital states, injects them directly into persistent storage, and renders them instantly onto the 3D globe.
-- **Master Audit Trail**: Broadcasts every injection event (`[SATELLITE_INJECTED]`) into the cryptographic master audit log (`/api/audit`) and live terminal stream.
-
-### 3. Master Space Fleet Catalog Terminal (`catalog.html`)
-- Ultra-HD master inventory table with real-time sorting, search, pagination, and multi-parameter filtering (Agency, Regime, Status).
-- Quick actions: `[🛰 AUTO-DISCOVER MISSING SATS]`, `[📥 EXPORT CSV]`, `[💾 EXPORT JSON]`.
-- Detailed satellite dossier modal with one-click 3D tracking link.
-
-### 4. 13 Worldwide Autonomous Bot Feeds (`run-intel-bots.ps1`)
-1. **AutoSatelliteDiscoveryBot**: Autonomous Missing Satellite Ingestion.
-2. **CelestrakEphemerisBot**: CelesTrak NORAD GP ephemeris feeds.
-3. **NasaHorizonsDeepSpaceBot**: NASA/JPL Horizons interplanetary trajectories.
-4. **EsaCopernicusTrackerBot**: ESA Copernicus & DISCOS telemetry.
-5. **IsroIstracNetraBot**: ISRO Project NETRA SSA & ISTRAC telemetry.
-6. **SpaceTrackConjunctionBot**: Space-Track & 18th SDS orbital safety.
-7. **NoaaSpaceWeatherBot**: NOAA SWPC space weather (Kp/F10.7 indices).
-8. **SatNOGSGroundTelemetryBot**: SatNOGS global open RF passes.
-9. **N2yoOrbitalPassBot**: N2YO real-time pass predictors.
-10. **AmsatRadioTelemetryBot**: AMSAT amateur satellite operations.
-11. **JaxaMichibikiBot**: JAXA Michibiki (QZSS) & Hayabusa telemetry.
-12. **NasaEarthScienceBot**: NASA Earth Observing System (EOSDIS).
-13. **DecayWatchBot**: Thermospheric re-entry & orbital decay watch.
+Simulates real heliocentric planetary positions, Earth's sidereal rotation (GMST), subsolar lighting terminators, and an autonomous multi-bot swarm that harvests and renders live satellite orbits.
 
 ---
 
-## 🛠 System Architecture & Stack
+## 🌟 Key Architecture & Capabilities
 
-- **Frontend**: Pure HTML5 / Canvas / WebGL (Three.js r128, OrbitControls, Satellite.js SGP4). Zero heavyweight framework dependencies.
-- **Backend**: PowerShell HTTP REST Server (`server.ps1`) with in-memory TTL ephemeris caching, thread-safe ArrayList stores, and JSON disk persistence (`fleet-catalog.json`, `audit-log.json`, `intel-store.json`).
-- **Telemetry Ingestion**: Autonomous PowerShell crawler/reconciliation orchestrator (`run-intel-bots.ps1`) using cryptographic SHA-256 state hashing.
-- **Differential Schema**: Full SQL DDL (`schema.sql`) and TypeScript differential sync pipeline (`DifferentialSyncEngine.ts`).
+### 1. Astronomical & Planetary Physics
+* **Heliocentric Solar System:** The Sun is situated at `(0, 0, 0)` with all 8 major planets (Mercury through Neptune) placed in accurate orbital longitudes calculated from NASA JPL epoch rates ($d = \text{JD} - 2451545.0$).
+* **Sidereal Earth Rotation:** Earth rotates according to Greenwich Mean Sidereal Time (GMST) and subsolar longitude ($\lambda_{\odot} = (12 - \text{UTC}_\text{hours}) \times 15^\circ$), ensuring that solar noon matches real-world illumination over target continents.
+* **Axial Obliquity:** 23.44° true axial tilt applied to Earth, its atmospheric cloud layer, and orbiting satellites.
+
+### 2. Autonomous Telemetry & Bot Swarm
+* **`BOT-CELES-01` (Visual Fleet):** Queries live CelesTrak NORAD GP JSON streams to spawn interactive 3D satellite beacons and Keplerian orbital paths.
+* **`BOT-CELES-02` (Stations & Constellations):** Ingests crewed space stations (ISS, Tiangong) and communications clusters.
+* **`BOT-WEATHER-03` (Earth Observation):** Ingests Sun-synchronous weather and cartographic satellites (NOAA, METEOR, Cartosat).
+* **`BOT-N2YO-04` (Real-Time Telemetry Sentinel):** Streams live geodetic coordinates, nadir lasers, and optical ground footprints.
+* **`BOT-DEEP-05` (Deep Space Scout):** Models hyperbolic escape trajectories and light-time delay for Voyager 1, Voyager 2, and New Horizons.
+* **13 Worldwide Autonomous Bot Feeds (`run-intel-bots.ps1`):** Ingestion pipelines covering CelesTrak, NASA Horizons, ESA Copernicus, ISRO NETRA, Space-Track 18th SDS, NOAA Space Weather, SatNOGS, N2YO, AMSAT, JAXA Michibiki, NASA EOSDIS, Decay Watch, and Auto-Satellite Discovery.
+
+### 3. User Controls & Tactile HUD
+* **1-Click 3D Raycasting:** Click any satellite, planet, or country directly in the 3D viewport to lock tracking, update telemetry cards, and auto-minimize HUD drawers.
+* **Time Warp Engine:** Toggle between `1x` (real-time 1s per 1s), `10x`, `100x`, and `1000x` orbital speeds.
+* **Keyboard Shortcuts:**
+  - <kbd>M</kbd> — Toggle HUD drawers and side panels on and off.
+  - <kbd>Space</kbd> — Pause / resume real-time propagation.
+  - <kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> / <kbd>4</kbd> — Switch speed warp (1x, 10x, 100x, 1000x).
+  - <kbd>C</kbd> — Open Master Space Fleet Catalog radar.
+  - <kbd>R</kbd> — Reset orbital camera view.
+  - <kbd>V</kbd> — Toggle ISS multi-feed live stream modal.
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Getting Started
 
-### 1. Launch HTTP Backend Server
-```powershell
-powershell -ExecutionPolicy Bypass -File .\server.ps1 -Port 8080
+### Option A: Direct Open (Static)
+Double-click `index.html` to open it in any modern WebGL-compatible browser.
+
+### Option B: Local Development Server (Recommended)
+Running via a local server ensures CORS proxies work properly:
+
+```bash
+# 1. Install dev tools
+npm install
+
+# 2. Launch Vite dev server (Port 3000)
+npm run dev
 ```
 
-### 2. Launch 13 Autonomous Data Ingestion Bots
+### Option C: PowerShell Native Backend & Intel Swarm
 ```powershell
+# 1. Launch HTTP Backend REST Server (Port 8080)
+powershell -ExecutionPolicy Bypass -File .\server.ps1 -Port 8080
+
+# 2. Launch 13 Autonomous Data Ingestion Bots
 powershell -ExecutionPolicy Bypass -File .\run-intel-bots.ps1 -PollIntervalSec 30
 ```
 
-### 3. Access Interfaces
-- **3D Tactical Command Viewport**: Open `http://localhost:8080/` in your browser.
-- **Dedicated Fleet Catalog Terminal**: Open `http://localhost:8080/catalog.html`.
-
-### 4. Modern Web Tooling & Cloud Deployment (Vite / Vercel / Netlify)
-- **Vite Dev Server (Port 3000)**:
-  ```bash
-  npm install
-  npm run dev
-  ```
-- **Production Build**:
-  ```bash
-  npm run build
-  npm run preview
-  ```
-- **Vercel Cloud Deployment**:
-  Deploy with one click or via `vercel deploy`. Configured with zero-CORS reverse-proxy rewrites for CelesTrak ephemeris (`/api/celestrak/(.*)`), static catalog fallback (`/api/catalog`), and hardened HTTP security headers in `vercel.json`.
-- **Netlify Cloud Deployment**:
-  Deploy via Netlify CLI (`netlify deploy`) or Git integration. Fully pre-configured in `netlify.toml` with edge reverse-proxying (`/api/celestrak/*` -> `https://celestrak.org/:splat`), static catalog routing (`/api/catalog` -> `/fleet-catalog.json`), zero-cache index header, and security policies.
+### Option D: Cloud Deployment (Vercel / Netlify)
+- **Vercel**: Deploy with one click or via `vercel deploy`. Pre-configured in `vercel.json` with zero-CORS rewrites for `/api/celestrak/(.*)`, static catalog fallback (`/api/catalog`), and security headers.
+- **Netlify**: Deploy via Netlify CLI (`netlify deploy`) or Git link. Pre-configured in `netlify.toml` with edge reverse-proxying (`/api/celestrak/*`), cache headers, and security rules.
 
 ---
 
@@ -101,7 +79,7 @@ powershell -ExecutionPolicy Bypass -File .\run-intel-bots.ps1 -PollIntervalSec 3
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
 | `/api/health` | GET | System uptime, memory, source registry health |
-| `/api/catalog` | GET | Master fleet database with search & pagination |
+| `/api/catalog` | GET | Master fleet database with search & pagination (`?q=`, `?norad=`, `?agency=`) |
 | `/api/satellites/discover` | GET/POST | Auto-discover & inject missing satellites into fleet database |
 | `/api/sources` | GET | Registry of all 13 autonomous worldwide feeds |
 | `/api/audit` | GET/POST | Master differential audit log (latest entries) |
