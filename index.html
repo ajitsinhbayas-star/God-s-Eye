@@ -2164,10 +2164,10 @@
     // --- INGESTION BOT SWARM (RESILIENT / ZERO UNCAUGHT ERRORS) ---
     const BotSwarm = (function () {
       const BOTS = [
-        { id: "BOT-ISRO-01", name: "ISRO Telemetry Harvester", source: "Embedded NORAD Ephemeris", role: "Propagates Cartosat, NavIC, INSAT, EOS & AstroSat vectors", status: "ONLINE", packets: 165, active: true },
-        { id: "BOT-WIKI-INTEL", name: "Wikipedia Autonomous Intel Agent", source: "Wikipedia MediaWiki REST API", role: "Fetches encyclopedic mission payloads and intelligence dossiers on target lock", status: "ONLINE", packets: 0, active: true },
-        { id: "BOT-AGENCY-02", name: "Global Fleet Harvester", source: "Onboard Keplerian Engine", role: "Computes NOAA, Sentinel, Galileo, and BeiDou orbital tracks", status: "ONLINE", packets: 120, active: true },
-        { id: "BOT-N2YO-04", name: "ISS Live Sentinel", source: "wheretheiss.at (Native CORS)", role: "Streams real-time sub-satellite coordinates and orbital velocity", status: "ONLINE", packets: 0, active: true }
+        { id: "BOT-ISRO-01", name: "ISRO Telemetry Harvester", source: "Embedded NORAD Engine", role: "Propagates INSAT, GSAT, Cartosat, and AstroSat vectors", status: "ONLINE", packets: 165, active: true },
+        { id: "BOT-WIKI-INTEL", name: "Wikipedia Autonomous Intel Agent", source: "MediaWiki REST API", role: "Fetches encyclopedic mission payloads on target lock", status: "ONLINE", packets: 0, active: true },
+        { id: "BOT-AGENCY-02", name: "Global Fleet Harvester", source: "Onboard Keplerian Physics", role: "Calculates NOAA, Sentinel, and Galileo orbital tracks", status: "ONLINE", packets: 120, active: true },
+        { id: "BOT-N2YO-04", name: "ISS Live Sentinel", source: "wheretheiss.at (Native CORS)", role: "Streams live ISS sub-satellite coordinates", status: "ONLINE", packets: 0, active: true }
       ];
 
       function logTerminal(botId, msg) {
@@ -2206,54 +2206,40 @@
         });
       }
 
-      // Safe fetch with strict 3-second timeout and zero uncaught exceptions
-      async function safeFetchJSON(url) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
-        try {
-          const res = await fetch(url, { signal: controller.signal, mode: 'cors' });
-          clearTimeout(timeout);
-          if (res.ok) return await res.json();
-        } catch (e) {
-          clearTimeout(timeout);
-        }
-        return null;
-      }
-
-      // Only polls wheretheiss.at (which natively supports CORS) for ISS telemetry
+      // Safe live query strictly for ISS (native CORS support only, NO proxies)
       async function runISSSentinel() {
         if (activeTargetKey !== "iss") return;
         try {
-          const d = await safeFetchJSON("https://api.wheretheiss.at/v1/satellites/25544");
+          const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544", { mode: "cors" });
+          if (!res.ok) return;
+          const d = await res.json();
           if (d && d.latitude && d.longitude) {
             document.getElementById("tele-lat").innerText = `${d.latitude.toFixed(2)}°`;
             document.getElementById("tele-lng").innerText = `${d.longitude.toFixed(2)}°`;
             document.getElementById("tele-alt").innerText = `${Math.round(d.altitude)} km`;
             document.getElementById("tele-vel").innerText = `${Math.round(d.velocity).toLocaleString()} km/h`;
-            
+
             const satVec = latLngToEarthVector(d.latitude, d.longitude, SATELLITES.iss.radius);
             if (satelliteMeshMap.iss) satelliteMeshMap.iss.satMesh.position.copy(satVec);
-            
             BOTS[3].packets++;
           }
         } catch (e) {
-          // Graceful fallback: local mathematical propagation continues uninterrupted
+          // Local mathematical orbit propagation continues automatically
         }
       }
 
       function init() {
         updateBotCardsUI();
-        logTerminal("BOT-SWARM", "High-precision Keplerian orbital engines online for all 165+ assets.");
-        if (typeof SatelliteDataEngine !== 'undefined') SatelliteDataEngine.sync();
-        setInterval(runISSSentinel, 2500);
+        logTerminal("BOT-SWARM", "Orbital telemetry engine initialized. INSAT, GSAT, ASTROSAT, NOAA active.");
+        setInterval(runISSSentinel, 3000);
       }
 
-      return { 
+      return {
         init,
         logTerminal,
         manualHarvest: () => {
-          logTerminal("BOT-SWARM", "All orbital ephemerides verified & synchronized.");
           if (typeof SatelliteDataEngine !== 'undefined') SatelliteDataEngine.sync();
+          logTerminal("BOT-SWARM", "All orbital ephemerides re-verified.");
         },
         getBots: () => BOTS
       };
@@ -2471,11 +2457,7 @@
             const resp = await fetch(directUrl, { headers: { 'Accept': 'application/json' }, mode: 'cors' });
             if (resp.ok) data = await resp.json();
           } catch (fetchErr) {
-            try {
-              const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
-              const proxyResp = await fetch(proxyUrl);
-              if (proxyResp.ok) data = await proxyResp.json();
-            } catch (pErr) {}
+            // Direct native fetch failed: handled cleanly by offline fallback below
           }
 
           if (data && (data.extract || data.description)) {
