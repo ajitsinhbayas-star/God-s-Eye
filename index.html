@@ -2177,7 +2177,9 @@
         const line = document.createElement("div");
         line.innerHTML = `<span class="text-slate-500">[${time}]</span> <span class="text-cyan-400 font-bold">[${botId}]</span> ${msg}`;
         term.appendChild(line);
-        if (term.children.length > 55) term.removeChild(term.children[0]);
+        while (term.children.length > 55) {
+          term.removeChild(term.children[0]);
+        }
         term.scrollTop = term.scrollHeight;
       }
 
@@ -2185,7 +2187,7 @@
         const cont = document.getElementById("bot-cards-container");
         if (!cont) return;
         cont.innerHTML = "";
-        BOTS.forEach((b) => {
+        BOTS.forEach((b, idx) => {
           const card = document.createElement("div");
           card.className = "p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col gap-1.5";
           card.innerHTML = `
@@ -2194,43 +2196,70 @@
                 <span class="w-2 h-2 rounded-full ${b.active ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}"></span>
                 <span>${b.name}</span>
               </div>
-              <span class="text-[9px] px-1.5 py-0.2 rounded border ${b.active ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' : 'border-slate-700 text-slate-500'}">${b.status}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded border ${b.active ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' : 'border-slate-700 text-slate-500'}">${b.status}</span>
             </div>
             <div class="text-[10px] text-slate-400">${b.role}</div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-500">
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-500 font-mono">
               <span>Source: <b class="text-slate-300">${b.source}</b></span>
-              <span>Status: <b class="text-emerald-400">ACTIVE</b></span>
+              <span>Packets: <b class="text-cyan-400" id="bot-pkt-${idx}">${b.packets}</b></span>
             </div>
           `;
           cont.appendChild(card);
         });
       }
 
-      // Safe live query strictly for ISS (native CORS support only, NO proxies)
+      // Safe live query for ISS (CORS compliant, abort timeout, null-safe DOM updates)
       async function runISSSentinel() {
-        if (activeTargetKey !== "iss") return;
-        try {
-          const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544", { mode: "cors" });
-          if (!res.ok) return;
-          const d = await res.json();
-          if (d && d.latitude && d.longitude) {
-            document.getElementById("tele-lat").innerText = `${d.latitude.toFixed(2)}°`;
-            document.getElementById("tele-lng").innerText = `${d.longitude.toFixed(2)}°`;
-            document.getElementById("tele-alt").innerText = `${Math.round(d.altitude)} km`;
-            document.getElementById("tele-vel").innerText = `${Math.round(d.velocity).toLocaleString()} km/h`;
+        // Ensure activeTargetKey is defined in window/scope
+        const currentTarget = typeof activeTargetKey !== "undefined" ? activeTargetKey : null;
+        if (currentTarget !== "iss") return;
 
-            const satVec = latLngToEarthVector(d.latitude, d.longitude, SATELLITES.iss.radius);
-            if (satelliteMeshMap.iss) satelliteMeshMap.iss.satMesh.position.copy(satVec);
-            BOTS[3].packets++;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3500);
+
+        try {
+          const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544", { 
+            mode: "cors",
+            signal: controller.signal 
+          });
+          clearTimeout(timeout);
+          if (!res.ok) return;
+
+          const d = await res.json();
+          if (!d || typeof d.latitude !== "number" || typeof d.longitude !== "number") return;
+
+          // Safe DOM Updates
+          const elLat = document.getElementById("tele-lat");
+          const elLng = document.getElementById("tele-lng");
+          const elAlt = document.getElementById("tele-alt");
+          const elVel = document.getElementById("tele-vel");
+
+          if (elLat) elLat.innerText = `${d.latitude.toFixed(2)}°`;
+          if (elLng) elLng.innerText = `${d.longitude.toFixed(2)}°`;
+          if (elAlt) elAlt.innerText = `${Math.round(d.altitude)} km`;
+          if (elVel) elVel.innerText = `${Math.round(d.velocity).toLocaleString()} km/h`;
+
+          // 3D Object Coordinate Sync
+          const satRadius = (typeof SATELLITES !== "undefined" && SATELLITES.iss) ? SATELLITES.iss.radius : 2.1;
+          if (typeof latLngToEarthVector === "function" && typeof satelliteMeshMap !== "undefined" && satelliteMeshMap.iss?.satMesh) {
+            const satVec = latLngToEarthVector(d.latitude, d.longitude, satRadius);
+            satelliteMeshMap.iss.satMesh.position.copy(satVec);
           }
+
+          // Increment packet counter and update UI
+          BOTS[3].packets++;
+          const pktDisplay = document.getElementById("bot-pkt-3");
+          if (pktDisplay) pktDisplay.innerText = BOTS[3].packets;
+
         } catch (e) {
-          // Local mathematical orbit propagation continues automatically
+          clearTimeout(timeout);
+          // Mathematical propagation in main render loop handles position gracefully
         }
       }
 
       function init() {
         updateBotCardsUI();
-        logTerminal("BOT-SWARM", "Orbital telemetry engine initialized. INSAT, GSAT, ASTROSAT, NOAA active.");
+        logTerminal("BOT-SWARM", "Orbital telemetry engine initialized. INSAT, GSAT, ASTROSAT, NOAA online.");
         setInterval(runISSSentinel, 3000);
       }
 
@@ -2238,7 +2267,9 @@
         init,
         logTerminal,
         manualHarvest: () => {
-          if (typeof SatelliteDataEngine !== 'undefined') SatelliteDataEngine.sync();
+          if (typeof SatelliteDataEngine !== "undefined" && typeof SatelliteDataEngine.sync === "function") {
+            SatelliteDataEngine.sync();
+          }
           logTerminal("BOT-SWARM", "All orbital ephemerides re-verified.");
         },
         getBots: () => BOTS
@@ -2475,7 +2506,7 @@
               const wBot = bots.find(b => b.id === "BOT-WIKI-INTEL");
               if (wBot) {
                 wBot.packets++;
-                const pktEl = document.getElementById("bot-pkt-4");
+                const pktEl = document.getElementById("bot-pkt-1") || document.getElementById("bot-pkt-4");
                 if (pktEl) pktEl.innerText = wBot.packets;
               }
             }
