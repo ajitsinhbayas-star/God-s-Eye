@@ -1293,6 +1293,126 @@
         hasEinsteinArcs: true,
         observatories: "JWST NIRCam + Hubble Relic Survey",
         description: "Galaxy cluster core warping spacetime into concentric magnified Einstein arcs."
+      },
+      gn_z11: {
+        id: "gn_z11",
+        name: "GN-z11 (Cosmic Dawn)",
+        type: "Primordial Galaxy",
+        distMly: 13400.0,
+        redshift: 10.603,
+        scale3D: 2.2,
+        pos: new THREE.Vector3(70, 220, -260),
+        coreColor: 0xffedd5,
+        diskColor: 0xef4444,
+        outflowColor: 0xfacc15,
+        isPrimordial: true,
+        observatories: "JWST (NIRCam + NIRSpec) + Hubble",
+        description: "Luminous primordial galaxy seen 430 million years after the Big Bang with ionized gas envelope."
+      },
+      jades_deep: {
+        id: "jades_deep",
+        name: "JADES Deep Field (GOODS-N)",
+        type: "Cosmic Deep Field Cluster",
+        distMly: 13500.0,
+        redshift: 13.200,
+        scale3D: 5.5,
+        pos: new THREE.Vector3(-80, 240, -290),
+        coreColor: 0xffffff,
+        diskColor: 0x38bdf8,
+        outflowColor: 0xf43f5e,
+        isDeepField: true,
+        observatories: "JWST Advanced Deep Extragalactic Survey",
+        description: "Thousands of early galaxies revealing cosmic reionization and first-generation star clusters."
+      },
+      horsehead: {
+        id: "horsehead",
+        name: "Horsehead Nebula (Barnard 33)",
+        type: "Dark Molecular Cloud / PDR",
+        distMly: 0.001375, // ~1,375 ly
+        redshift: 0.00000,
+        scale3D: 3.2,
+        pos: new THREE.Vector3(-110, -50, 180),
+        coreColor: 0xfbbf24,
+        diskColor: 0x92400e,
+        outflowColor: 0x38bdf8,
+        isNebulaPillar: true,
+        observatories: "JWST (NIRCam/MIRI) + Euclid + Hubble",
+        description: "Dense interstellar dust pillar shaped by UV radiation from nearby massive stars."
+      },
+      serpens_jets: {
+        id: "serpens_jets",
+        name: "Serpens Nebula Outflows",
+        type: "Protostellar Jet Cluster",
+        distMly: 0.0013, // ~1,300 ly
+        redshift: 0.00000,
+        scale3D: 3.0,
+        pos: new THREE.Vector3(140, 20, 160),
+        coreColor: 0xffedd5,
+        diskColor: 0xf97316,
+        outflowColor: 0xe11d48,
+        hasProtostellarJets: true,
+        observatories: "JWST NIRCam + ALMA + Spitzer",
+        description: "Aligned supersonic protostellar jets punching through molecular cloud envelopes."
+      },
+      ring_m57: {
+        id: "ring_m57",
+        name: "Ring Nebula (Messier 57)",
+        type: "Planetary Nebula Shell",
+        distMly: 0.00257, // ~2,570 ly
+        redshift: -0.00007,
+        scale3D: 3.5,
+        pos: new THREE.Vector3(30, -130, 190),
+        coreColor: 0x67e8f9,
+        diskColor: 0x22c55e,
+        outflowColor: 0xf43f5e,
+        isPlanetaryNebula: true,
+        observatories: "JWST (MIRI/NIRCam) + Hubble",
+        description: "Glowing shroud of dying star with concentric outer halos and hot inner white dwarf bubble."
+      },
+      m64_blackeye: {
+        id: "m64_blackeye",
+        name: "Messier 64 (Black Eye Galaxy)",
+        type: "Spiral / Counter-Rotating Gas",
+        distMly: 17.3,
+        redshift: 0.00136,
+        scale3D: 4.2,
+        pos: new THREE.Vector3(-160, 100, -80),
+        coreColor: 0xfef08a,
+        diskColor: 0x38bdf8,
+        outflowColor: 0x09090b,
+        hasCounterDust: true,
+        observatories: "Hubble + Chandra + Spitzer",
+        description: "Dramatic dark dust band absorbing core light with counter-rotating gas merger remnant."
+      },
+      ngc1672: {
+        id: "ngc1672",
+        name: "NGC 1672 (Barred Spiral)",
+        type: "Seyfert 2 Barred Spiral",
+        distMly: 60.0,
+        redshift: 0.00444,
+        scale3D: 4.6,
+        pos: new THREE.Vector3(-190, -110, -120),
+        coreColor: 0xfef08a,
+        diskColor: 0x38bdf8,
+        outflowColor: 0xd946ef,
+        hasXrayBinaries: true,
+        observatories: "Chandra (X-ray) + Webb (MIRI) + Hubble",
+        description: "Luminous stellar bar funneled into nuclear starburst with high-mass X-ray binary point sources."
+      },
+      andromeda_core: {
+        id: "andromeda_core",
+        name: "Andromeda Core (M31 Nucleus)",
+        type: "Double Nucleus / Spiral Core",
+        distMly: 2.54,
+        redshift: -0.00100,
+        scale3D: 4.8,
+        pos: new THREE.Vector3(170, 70, 90),
+        coreColor: 0xfde047,
+        diskColor: 0x38bdf8,
+        outflowColor: 0x818cf8,
+        hasDualCore: true,
+        observatories: "Webb + Chandra + Hubble + NuSTAR",
+        description: "Dense double nucleus harboring 100M-solar-mass supermassive black hole and globular clusters."
       }
     };
 
@@ -2847,6 +2967,146 @@
           }
         }
 
+        // --- 8. PRIMORDIAL COSMIC DAWN GALAXY (GN-z11) ---
+        if (data.isPrimordial) {
+          // Extremely compact, high-redshift ionized hydrogen envelope
+          const haloGeo = new THREE.SphereGeometry(data.scale3D * 0.9, 24, 24);
+          const haloMat = new THREE.MeshBasicMaterial({
+            color: 0xef4444,
+            transparent: true,
+            opacity: 0.35,
+            blending: THREE.AdditiveBlending
+          });
+          gObj.add(new THREE.Mesh(haloGeo, haloMat));
+
+          // Lensed accretion flare
+          const flare = new THREE.Mesh(
+            new THREE.RingGeometry(data.scale3D * 0.35, data.scale3D * 0.7, 32),
+            new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+          );
+          flare.rotation.x = Math.PI / 3;
+          gObj.add(flare);
+        }
+
+        // --- 9. COSMIC DEEP FIELD MULTI-GALAXY CLUSTER (JADES / GOODS-N) ---
+        if (data.isDeepField) {
+          const fieldCount = 280;
+          const fgGeo = new THREE.BufferGeometry();
+          const fgPos = new Float32Array(fieldCount * 3);
+          const fgCol = new Float32Array(fieldCount * 3);
+          for (let j = 0; j < fieldCount; j++) {
+            fgPos[j * 3]     = (Math.random() - 0.5) * (data.scale3D * 3.5);
+            fgPos[j * 3 + 1] = (Math.random() - 0.5) * (data.scale3D * 2.5);
+            fgPos[j * 3 + 2] = (Math.random() - 0.5) * (data.scale3D * 3.5);
+
+            // Mix between early red, golden spirals, and distant blue dwarfs
+            const rnd = Math.random();
+            if (rnd > 0.6) { fgCol[j * 3] = 0.95; fgCol[j * 3 + 1] = 0.25; fgCol[j * 3 + 2] = 0.15; }
+            else if (rnd > 0.3) { fgCol[j * 3] = 0.98; fgCol[j * 3 + 1] = 0.75; fgCol[j * 3 + 2] = 0.25; }
+            else { fgCol[j * 3] = 0.35; fgCol[j * 3 + 1] = 0.65; fgCol[j * 3 + 2] = 1.00; }
+          }
+          fgGeo.setAttribute('position', new THREE.BufferAttribute(fgPos, 3));
+          fgGeo.setAttribute('color', new THREE.BufferAttribute(fgCol, 3));
+          const fieldParticles = new THREE.Points(fgGeo, new THREE.PointsMaterial({
+            size: 0.18, vertexColors: true, transparent: true, opacity: 0.85
+          }));
+          gObj.add(fieldParticles);
+        }
+
+        // --- 10. NEBULA PILLAR (HORSEHEAD BARNARD 33) ---
+        if (data.isNebulaPillar) {
+          const pillarGeo = new THREE.CylinderGeometry(data.scale3D * 0.3, data.scale3D * 0.9, data.scale3D * 2.8, 16, 1, true);
+          const pillarMat = new THREE.MeshBasicMaterial({
+            color: 0x92400e,
+            transparent: true,
+            opacity: 0.75,
+            wireframe: false,
+            side: THREE.DoubleSide
+          });
+          const pillarMesh = new THREE.Mesh(pillarGeo, pillarMat);
+          pillarMesh.position.y = -data.scale3D * 0.4;
+          gObj.add(pillarMesh);
+
+          // PDR Photodissociation illuminated edge (cyan/gold rim)
+          const edgeGeo = new THREE.TorusGeometry(data.scale3D * 0.65, 0.08, 8, 32, Math.PI);
+          const edgeMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85 });
+          const edgeMesh = new THREE.Mesh(edgeGeo, edgeMat);
+          edgeMesh.position.set(0, data.scale3D * 0.8, 0);
+          edgeMesh.rotation.z = Math.PI;
+          gObj.add(edgeMesh);
+        }
+
+        // --- 11. BIPOLAR PROTOSTELLAR SUPERSONIC JETS (SERPENS) ---
+        if (data.hasProtostellarJets) {
+          for (let j = -1; j <= 1; j += 2) {
+            const jetGeo = new THREE.ConeGeometry(0.18, data.scale3D * 2.2, 12, 1, true);
+            const jetMat = new THREE.MeshBasicMaterial({
+              color: 0xe11d48, transparent: true, opacity: 0.75, side: THREE.DoubleSide
+            });
+            const jetMesh = new THREE.Mesh(jetGeo, jetMat);
+            jetMesh.position.y = j * data.scale3D * 1.1;
+            jetMesh.rotation.x = j === 1 ? 0 : Math.PI;
+            gObj.add(jetMesh);
+          }
+        }
+
+        // --- 12. PLANETARY NEBULA CONCENTRIC SHELLS (RING M57) ---
+        if (data.isPlanetaryNebula) {
+          // Inner hot ionizing bubble
+          const innerBubble = new THREE.Mesh(
+            new THREE.SphereGeometry(data.scale3D * 0.85, 24, 24),
+            new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending })
+          );
+          gObj.add(innerBubble);
+
+          // Dense main molecular gas ring
+          const ringGeo = new THREE.RingGeometry(data.scale3D * 0.95, data.scale3D * 1.45, 48);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x22c55e, side: THREE.DoubleSide, transparent: true, opacity: 0.85
+          });
+          const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+          ringMesh.rotation.x = Math.PI / 4;
+          gObj.add(ringMesh);
+
+          // Outer faint halo envelope
+          const outerHalo = new THREE.Mesh(
+            new THREE.RingGeometry(data.scale3D * 1.5, data.scale3D * 2.2, 48),
+            new THREE.MeshBasicMaterial({ color: 0xf43f5e, side: THREE.DoubleSide, transparent: true, opacity: 0.4 })
+          );
+          outerHalo.rotation.x = Math.PI / 4;
+          gObj.add(outerHalo);
+        }
+
+        // --- 13. COUNTER-ROTATING ABSORBING DUST BELT (BLACK EYE M64) ---
+        if (data.hasCounterDust) {
+          const dustGeo = new THREE.RingGeometry(data.scale3D * 0.45, data.scale3D * 0.95, 48, 1, 0, Math.PI * 1.35);
+          const dustMat = new THREE.MeshBasicMaterial({
+            color: 0x09090b, side: THREE.DoubleSide, transparent: true, opacity: 0.92
+          });
+          const dustMesh = new THREE.Mesh(dustGeo, dustMat);
+          dustMesh.rotation.x = Math.PI / 2.2;
+          gObj.add(dustMesh);
+        }
+
+        // --- 14. CHANDRA X-RAY POINT BINARIES (NGC 1672) ---
+        if (data.hasXrayBinaries) {
+          const xrayCount = 28;
+          const xPos = new Float32Array(xrayCount * 3);
+          for (let x = 0; x < xrayCount; x++) {
+            const rad = Math.random() * (data.scale3D * 2.0);
+            const ang = Math.random() * Math.PI * 2;
+            xPos[x * 3]     = Math.cos(ang) * rad;
+            xPos[x * 3 + 1] = (Math.random() - 0.5) * 0.3;
+            xPos[x * 3 + 2] = Math.sin(ang) * rad;
+          }
+          const xGeo = new THREE.BufferGeometry();
+          xGeo.setAttribute('position', new THREE.BufferAttribute(xPos, 3));
+          const xPoints = new THREE.Points(xGeo, new THREE.PointsMaterial({
+            color: 0xd946ef, size: 0.22, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending
+          }));
+          gObj.add(xPoints);
+        }
+
         // 8. 3D Billboard Label
         const label = createPlanetLabelSprite(data.name);
         label.position.set(0, data.scale3D * 2.2, 0);
@@ -2972,11 +3232,38 @@
       }
     }
 
-    const DEEP_SKY_KEYS = Object.keys(DEEP_SKY_CATALOG);
+    // Re-bind the full deep sky targets index array
+    const DEEP_SKY_KEYS = [
+      "m82",
+      "gn_z11",
+      "jades_deep",
+      "horsehead",
+      "serpens_jets",
+      "ring_m57",
+      "m64_blackeye",
+      "ngc1672",
+      "andromeda_core",
+      "ngc253",
+      "sgrA_irs3",
+      "centaurusA",
+      "ngc1385",
+      "ngc1569",
+      "ngc3256",
+      "m104",
+      "gravitational_lens"
+    ];
 
     function cycleGalaxyTarget(direction) {
       let idx = DEEP_SKY_KEYS.indexOf(activeGalaxyKey);
       if (idx === -1) idx = 0;
+      for (let step = 1; step <= DEEP_SKY_KEYS.length; step++) {
+        let testIdx = (idx + direction * step + DEEP_SKY_KEYS.length * 10) % DEEP_SKY_KEYS.length;
+        let testKey = DEEP_SKY_KEYS[testIdx];
+        if (deepSkyMeshes[testKey]) {
+          flyToDeepSkyNASA(testKey);
+          return;
+        }
+      }
       let nextIdx = (idx + direction + DEEP_SKY_KEYS.length) % DEEP_SKY_KEYS.length;
       flyToDeepSkyNASA(DEEP_SKY_KEYS[nextIdx]);
     }
@@ -3390,8 +3677,20 @@
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
       if (currentViewDomain === 'deepsky') {
         Object.keys(deepSkyMeshes).forEach(gk => {
-          deepSkyMeshes[gk].group.rotation.y += 0.001;
+          const meshObj = deepSkyMeshes[gk];
+          // Slow galactic differential rotation
+          meshObj.group.rotation.y += 0.0008;
+
+          // Counter-rotate the Black Eye dust lane if present
+          if (meshObj.data.hasCounterDust) {
+            meshObj.group.children.forEach(child => {
+              if (child.material && child.material.opacity > 0.9) {
+                child.rotation.z -= 0.002;
+              }
+            });
+          }
         });
+
         if (deepSkyMeshes[activeGalaxyKey]) {
           focusWorldPos.copy(deepSkyMeshes[activeGalaxyKey].group.position);
         }
