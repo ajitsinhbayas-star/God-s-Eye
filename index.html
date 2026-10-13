@@ -210,9 +210,9 @@
         <span id="icon-sound">&#128266;</span>
         <span id="label-sound" class="hidden sm:inline">Audio On</span>
       </button>
-      <a href="catalog.html" title="Open Master Fleet Radar Catalog (Shortcut: Shift+C)" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-medium transition flex items-center gap-1">
-        <span>🛰️ Fleet Catalog ↗</span>
-      </a>
+      <button onclick="expandCatalog(); switchCategory('satellites');" title="Open Master Fleet Radar Catalog (Shortcut: Shift+C)" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-medium transition flex items-center gap-1">
+        <span>🛰️ Fleet Catalog</span>
+      </button>
       <button onclick="toggleVideoPanel()" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
         <span class="hidden md:inline">NASA Live</span> Feed
@@ -3209,7 +3209,7 @@
       if (e.key === 'm' || e.key === 'M') toggleHUDPanels();
       if (e.key === 'f' || e.key === 'F') toggleFullscreen();
       if ((e.key === 'c' || e.key === 'C') && !e.shiftKey) toggleCinematicCamera();
-      if ((e.key === 'c' || e.key === 'C') && e.shiftKey) window.location.href = 'catalog.html';
+      if ((e.key === 'c' || e.key === 'C') && e.shiftKey) { expandCatalog(); switchCategory('satellites'); }
       if (e.key === ' ') {
         e.preventDefault();
         setTimeScale(timeScale === 0 ? 1 : 0);

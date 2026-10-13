@@ -1,34 +1,19 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
 
-# Build Output
-dist/
-build/
-.vercel
-.netlify
+# Local Database & Diagnostics
+diagnostics-db.json
+*.db
+*.sqlite
 
 # Environment Variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 
-# Logs & Crash Dumps
+# Logs
 *.log
-chrome_debug.log
-edge_*_test.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 
-# Editor & OS artifacts
+# OS & Editor artifacts
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
-*.swp
-*.swo
