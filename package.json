@@ -20,6 +20,9 @@
   ],
   "author": "Mr Singh // SPECIAL ACTIVITIES DIVISION",
   "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
   "devDependencies": {
     "vite": "^5.4.0"
   }
