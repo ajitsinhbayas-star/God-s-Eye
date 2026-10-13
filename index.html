@@ -868,6 +868,201 @@
       }
     };
 
+    // --- 9-TIER COSMIC ADDRESS DATA MODEL ---
+    const COSMIC_HIERARCHY = [
+      {
+        id: "level_1",
+        level: 1,
+        title: "Earth Subsystem",
+        scale: "0.01 AU (~1.5M km)",
+        domain: "Planetary Hill Sphere",
+        binding: "Geomagnetic & Terrestrial Gravity",
+        speed: "29.78 km/s (Helio-orbit)",
+        wikiKey: "Earth",
+        summary: "Terrestrial space environment bounded by the geomagnetic field and Hill sphere.",
+        nodes: [
+          "Moon / Luna (Natural Satellite)",
+          "Atmosphere (Troposphere to Exosphere)",
+          "Magnetosphere & Van Allen Radiation Belts",
+          "Geocorona (Luminescent Hydrogen Cloud)",
+          "Earth Trojans (2010 TK7, 2020 XL5)",
+          "Quasi-Satellites (Kamoʻoalewa)",
+          "Near-Earth Objects & Space Debris (Aten, Apollo, Amor)"
+        ]
+      },
+      {
+        id: "level_2",
+        level: 2,
+        title: "Solar System",
+        scale: "~100,000 AU (1.6 - 2.0 ly)",
+        domain: "Heliospheric Cavity & Oort Cloud",
+        binding: "Solar Gravity & Solar Wind",
+        speed: "230 km/s (Galactic Orbit)",
+        wikiKey: "Solar_System",
+        summary: "Gravitationally bound system of the Sun and objects orbiting it out to the Oort Cloud.",
+        nodes: [
+          "The Sun (G-Type Main-Sequence Core, Photosphere, Corona)",
+          "Terrestrial Planets (Mercury, Venus, Earth, Mars)",
+          "Main Asteroid Belt (Ceres, Vesta, Pallas, Hygiea)",
+          "Gas Giants (Jupiter, Saturn & Ring Systems)",
+          "Ice Giants (Uranus, Neptune)",
+          "Jupiter & Neptune Trojan Swarms",
+          "Centaurs (Chiron, Chariklo)",
+          "Kuiper Belt & Scattered Disc (Pluto, Eris, Haumea, Makemake)",
+          "Sednoids & Detached Objects (Sedna, 2012 VP113)",
+          "Interplanetary Dust Cloud & Zodiacal Light",
+          "Heliosphere (Termination Shock, Heliopause)",
+          "Oort Cloud (Hills Cloud & Cometary Reservoir)"
+        ]
+      },
+      {
+        id: "level_3",
+        level: 3,
+        title: "Orion Spiral Arm",
+        scale: "3,500 ly (~1.1 kpc)",
+        domain: "Local Interstellar Neighborhood",
+        binding: "Local ISM Turbulence & Kinematics",
+        speed: "19.4 km/s (Solar Apex Motion)",
+        wikiKey: "Orion_Arm",
+        summary: "Minor spiral arm of the Milky Way between Perseus and Sagittarius containing our Sun.",
+        nodes: [
+          "Local Cavity / Local Bubble (Supernova Void)",
+          "Gould Belt & Radcliffe Wave (Coherent Star-Forming Arc)",
+          "Local Interstellar Cloud (Surrounding ISM)",
+          "Neighbor Systems (Alpha Centauri, Barnard's Star, Sirius)",
+          "Open Clusters (Pleiades, Hyades, Coma)",
+          "Giant Molecular Clouds (Orion & Horsehead Nebulae, Barnard's Loop)",
+          "Stellar Remnants (Sirius B, Geminga Pulsar)",
+          "Rogue Planets & Sub-Brown Dwarfs (PSO J318.5-22)"
+        ]
+      },
+      {
+        id: "level_4",
+        level: 4,
+        title: "Milky Way Galaxy",
+        scale: "~100,000 ly (30 kpc)",
+        domain: "Barred Spiral Galactic Disc & Halo",
+        binding: "Dark Matter Halo & Galactic Center Potential",
+        speed: "Period ≈ 230 Myr",
+        wikiKey: "Milky_Way",
+        summary: "Barred spiral galaxy with central SMBH Sagittarius A* and extensive stellar discs.",
+        nodes: [
+          "Galactic Center (Sagittarius A* SMBH & Nuclear Star Cluster)",
+          "Galactic Bulge & Central Triaxial Bar",
+          "Thin & Thick Disks (Active Star Formation & Dust Lanes)",
+          "Major Spiral Arms (Perseus, Scutum-Centaurus)",
+          "Minor Arms & Spurs (Sagittarius, Norma, Orion-Cygnus)",
+          "Galactic Halo (Stellar Halo, Globular Clusters M13, Omega Centauri)",
+          "Dark Matter Halo (Non-Baryonic Envelope)",
+          "Fermi & eROSITA Bubbles (High-Energy Outflow Lobes)",
+          "Stellar Streams (Sagittarius, Helmi Streams)"
+        ]
+      },
+      {
+        id: "level_5",
+        level: 5,
+        title: "Local Group",
+        scale: "~10 Million ly (3 Mpc)",
+        domain: "Gravitationally Bound Galactic Cluster",
+        binding: "Mutual Gravity (Milky Way - M31 Infall)",
+        speed: "110 km/s (MW-Andromeda closing speed)",
+        wikiKey: "Local_Group",
+        summary: "The largest strictly gravitationally bound structure containing our galaxy.",
+        nodes: [
+          "Primary Spirals (Milky Way, Andromeda/M31, Triangulum/M33)",
+          "Milky Way Subgroup (LMC, SMC, Sagittarius Dwarf, Fornax)",
+          "Andromeda Subgroup (M32, M110, NGC 147, NGC 185)",
+          "Isolated Dwarfs (Wolf-Lundmark-Melotte, Leo A)",
+          "Magellanic Stream & Bridge (Neutral Hydrogen Filaments)",
+          "Intergalactic Globular Clusters & Ultra-Compact Dwarfs",
+          "Local Group Corona (Warm-Hot Intergalactic Medium)"
+        ]
+      },
+      {
+        id: "level_6",
+        level: 6,
+        title: "Virgo Supercluster",
+        scale: "~110 Million ly (33 Mpc)",
+        domain: "Local Supercluster Clumping",
+        binding: "Virgo Cluster Core Infall vs. Hubble Flow",
+        speed: "250-400 km/s (Infall toward M87)",
+        wikiKey: "Virgo_Supercluster",
+        summary: "Concentration of galaxy groups and clusters centered on the massive Virgo Cluster.",
+        nodes: [
+          "Virgo Cluster Core (Giant Ellipticals M87, M84, M86)",
+          "Local Group (Member Galaxy Group)",
+          "Canes Venatici Groups (M51, M101)",
+          "Centaurus A / M83 Group",
+          "M81 / M82 Group",
+          "Sculptor Group & Leo I / M96 Group",
+          "Intracluster Stellar Population (Orphan Stars)",
+          "Local Sheet & Local Void Boundary"
+        ]
+      },
+      {
+        id: "level_7",
+        level: 7,
+        title: "Laniakea Supercluster",
+        scale: "~520 Million ly (160 Mpc)",
+        domain: "Cosmic Velocity Watershed Basin",
+        binding: "Peculiar Velocity Streamlines to Great Attractor",
+        speed: "~600 km/s (Bulk Flow to Norma)",
+        wikiKey: "Laniakea_Supercluster",
+        summary: "Gravitational basin of attraction defined by continuous galaxy motion toward the Great Attractor.",
+        nodes: [
+          "Virgo Supercluster Branch (Local Branch)",
+          "Hydra-Centaurus Supercluster (Centaurus Cluster, Hydra/Abell 1060)",
+          "Pavo-Indus Supercluster (Southern Filament)",
+          "Southern Supercluster (Fornax & Eridanus Clusters)",
+          "The Great Attractor (Norma Cluster Core in Zone of Avoidance)",
+          "Antlia Cluster & Abell 3627 Potential Wells",
+          "Watershed Flow Boundaries (Divergence with Perseus-Pisces)"
+        ]
+      },
+      {
+        id: "level_8",
+        level: 8,
+        title: "Pisces–Cetus Complex",
+        scale: "~1 Billion ly (300 Mpc)",
+        domain: "Macro-Filament Complex",
+        binding: "Large-Scale Filament Alignment & Void Walls",
+        speed: "Shapley Attractor Peculiar Infall",
+        wikiKey: "Pisces–Cetus_Supercluster_Complex",
+        summary: "Galaxy filament superstructure including Laniakea and the Perseus-Pisces Supercluster.",
+        nodes: [
+          "Laniakea Macro-Filament",
+          "Perseus-Pisces Supercluster (Abell 426 Node)",
+          "Coma-Cheshire Connecting Filament",
+          "Shapley Supercluster Exterior Basin",
+          "Giant Cosmic Voids (Boötes Great Void, Canes Major, Sculptor)",
+          "Supercluster Sheets & Walls of Filaments"
+        ]
+      },
+      {
+        id: "level_9",
+        level: 9,
+        title: "The Observable Universe",
+        scale: "93 Billion ly (28.5 Gpc)",
+        domain: "Particle Horizon / Cosmic Web",
+        binding: "FLRW Metric Expansion (Dark Energy / ΛCDM)",
+        speed: "369.8 km/s (CMB Dipole Vector)",
+        wikiKey: "Observable_universe",
+        summary: "The entire spherical volume of space that can be observed from Earth at the present epoch.",
+        nodes: [
+          "Cosmic Web Filaments (Sloan Great Wall, BOSS Great Wall, Hercules-Corona Borealis)",
+          "Supercluster Nodes & Macro-Voids driving Cosmic Expansion",
+          "Active Galactic Nuclei (Quasars, Blazars, Radio Galaxies)",
+          "Cosmic Neutrino Background (Relic Big Bang Nucleosynthesis)",
+          "Extragalactic Background Light & Ultra-High-Energy Cosmic Rays",
+          "Large-Scale Dark Matter Non-Baryonic Scaffolding",
+          "Cosmic Microwave Background (CMB at 2.725 K / Surface of Last Scattering)",
+          "Hubble Sphere (Recession Velocity = c Boundary)",
+          "Particle Horizon (~46.5 Gly Co-moving Edge)",
+          "Cosmological Event Horizon (Ultimate Future Information Limit)"
+        ]
+      }
+    ];
+
     // --- 5. EXACT KEPLERIAN MATHEMATICAL SOLVER ---
     function computeKeplerianOrbit(pData, d) {
       if (pData.a === 0) {
