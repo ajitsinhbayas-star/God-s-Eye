@@ -286,6 +286,9 @@
     <!-- Category Tabs -->
     <div class="flex items-center gap-1 p-2 border-b border-slate-800/80 bg-slate-950/60 overflow-x-auto text-[11px] shrink-0 scroll-container">
       <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40 whitespace-nowrap">Planets (9)</button>
+      <button onclick="switchCategory('cosmic')" id="tab-cosmic" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-purple-400 hover:text-white whitespace-nowrap">
+        🌌 Cosmic Scale (9)
+      </button>
       <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">Earth Satellites</button>
       <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">🚀 Planet Probes</button>
       <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap">🤖 Swarm Log</button>
@@ -304,6 +307,9 @@
     <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2 text-xs">
       <div id="panel-solarsystem" class="cat-panel space-y-1.5">
         <div id="planets-list-container" class="space-y-1.5"></div>
+      </div>
+      <div id="panel-cosmic" class="cat-panel hidden space-y-1.5">
+        <div id="cosmic-list-container" class="space-y-1.5"></div>
       </div>
       <div id="panel-satellites" class="cat-panel hidden space-y-1.5">
         <div id="sat-list-container" class="space-y-1.5"></div>
