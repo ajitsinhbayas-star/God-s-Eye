@@ -409,13 +409,13 @@
       </div>
       <div class="flex items-center gap-1.5">
         <select id="feed-switcher" onchange="changeLiveStream(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono cursor-pointer">
+          <option value="0">NASA Official Feed (awQzjn72bI0)</option>
+          <option value="1">Space Videos Earth Orbit</option>
+          <option value="2">NASA TV Live Operations</option>
+          <option value="3">Sen 4K Ultra HD Orbit</option>
           <option value="simulated">Simulation: LEO Live Camera</option>
-          <option value="0">Feed 1: NASA HD Earth Views</option>
-          <option value="1">Feed 2: Space Videos Orbit</option>
-          <option value="2">Feed 3: NASA TV Live Operations</option>
-          <option value="3">Feed 4: Sen 4K Ultra HD</option>
         </select>
-        <a id="stream-outlink" href="https://www.youtube.com/watch?v=SD0dlqX9xzo" target="_blank" rel="noopener noreferrer" title="Open Stream directly on YouTube (Fixes local Error 153)" class="text-slate-400 hover:text-cyan-400 text-xs px-1">↗</a>
+        <a id="stream-outlink" href="https://www.youtube.com/live/awQzjn72bI0" target="_blank" rel="noopener noreferrer" title="Open Stream directly on YouTube" class="text-slate-400 hover:text-cyan-400 text-xs px-1">↗</a>
         <button onclick="toggleVideoPanel()" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded">✕</button>
       </div>
     </div>
@@ -427,8 +427,8 @@
       <iframe 
         id="iss-video-frame"
         class="w-full h-full border-0" 
-        src="https://www.youtube-nocookie.com/embed/SD0dlqX9xzo?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1" 
-        title="Official NASA ISS Live Stream"
+        src="https://www.youtube-nocookie.com/embed/awQzjn72bI0?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1" 
+        title="Official NASA ISS Live Stream (awQzjn72bI0)"
         referrerpolicy="strict-origin-when-cross-origin"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
         allowfullscreen>
@@ -1613,7 +1613,7 @@
 
     // --- 12. VIDEO STREAM SWITCHER & ERROR 153 PROTECTION ---
     const STREAM_FEEDS = [
-      { id: "SD0dlqX9xzo", title: "NASA HD Earth Views", url: "https://www.youtube.com/watch?v=SD0dlqX9xzo" },
+      { id: "awQzjn72bI0", title: "NASA Official ISS Live Feed", url: "https://www.youtube.com/live/awQzjn72bI0" },
       { id: "DDU-r6sDXdA", title: "Space Videos Earth Orbit", url: "https://www.youtube.com/watch?v=DDU-r6sDXdA" },
       { id: "21X5lGlDOfg", title: "NASA TV Live Operations", url: "https://www.youtube.com/watch?v=21X5lGlDOfg" },
       { id: "k204D5g3z30", title: "Sen 4K Ultra HD Orbit", url: "https://www.youtube.com/watch?v=k204D5g3z30" }

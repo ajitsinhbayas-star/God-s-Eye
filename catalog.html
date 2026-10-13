@@ -1188,19 +1188,19 @@
             </div>
             <div class="flex items-center gap-2">
               <select id="hubStreamSelect" onchange="switchHubStream(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500">
-                <option value="SD0dlqX9xzo">Cam 1: NASA HD Earth Views</option>
+                <option value="awQzjn72bI0">NASA Official Feed (awQzjn72bI0)</option>
                 <option value="DDU-r6sDXdA">Cam 2: Space Videos Orbit</option>
                 <option value="21X5lGlDOfg">Cam 3: NASA TV Live Ops</option>
                 <option value="k204D5g3z30">Cam 4: Sen 4K Ultra HD</option>
               </select>
-              <a id="hubStreamOutlink" href="https://www.youtube.com/watch?v=SD0dlqX9xzo" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline text-[10px]">YouTube ↗</a>
+              <a id="hubStreamOutlink" href="https://www.youtube.com/live/awQzjn72bI0" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline text-[10px]">YouTube ↗</a>
             </div>
           </div>
           <iframe 
             id="hubIssIframe"
             class="w-full flex-1 border-0" 
-            src="https://www.youtube.com/embed/SD0dlqX9xzo?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" 
-            title="Official NASA ISS Live Stream"
+            src="https://www.youtube-nocookie.com/embed/awQzjn72bI0?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" 
+            title="Official NASA ISS Live Stream (awQzjn72bI0)"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
           </iframe>
@@ -1442,8 +1442,8 @@
     function switchHubStream(val) {
       const frame = document.getElementById('hubIssIframe');
       const outlink = document.getElementById('hubStreamOutlink');
-      if (frame) frame.src = `https://www.youtube.com/embed/${val}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`;
-      if (outlink) outlink.href = `https://www.youtube.com/watch?v=${val}`;
+      if (frame) frame.src = `https://www.youtube-nocookie.com/embed/${val}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`;
+      if (outlink) outlink.href = val === 'awQzjn72bI0' ? `https://www.youtube.com/live/${val}` : `https://www.youtube.com/watch?v=${val}`;
     }
 
     function applyUrlParams() {
