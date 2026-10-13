@@ -514,18 +514,107 @@
 
   <!-- Primary Astronomical Simulation & Engine Script -->
   <script>
-    // --- 1. AUDIO & SOUNDTRACK ENGINE ---
+    // --- 1. RESILIENT AUDIO & SOUNDTRACK ENGINE ---
     const audioCinematic = document.getElementById('audio-cinematic');
     const audioIntro = document.getElementById('audio-intro');
     let isMasterAudioEnabled = false;
 
+    // Web Audio API Synthesizer Fallback (Zero external files needed)
+    let synthAudioCtx = null;
+    let synthNodes = [];
+    let isSynthActive = false;
+
+    function initSynthAudioContext() {
+      if (!synthAudioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          synthAudioCtx = new AudioContextClass();
+        }
+      }
+      if (synthAudioCtx && synthAudioCtx.state === 'suspended') {
+        synthAudioCtx.resume().catch(() => {});
+      }
+    }
+
+    function startSynthDrone(mode = 'intro') {
+      if (!isMasterAudioEnabled) return;
+      try {
+        initSynthAudioContext();
+        if (!synthAudioCtx) return;
+        stopSynthDrone();
+
+        const masterGain = synthAudioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.001, synthAudioCtx.currentTime);
+        masterGain.gain.exponentialRampToValueAtTime(0.35, synthAudioCtx.currentTime + 1.5);
+        masterGain.connect(synthAudioCtx.destination);
+        synthNodes.push(masterGain);
+
+        const freqs = mode === 'drift'
+          ? [65.41, 98.0, 130.81, 155.56, 196.0]
+          : [55.0, 110.0, 164.81, 220.0, 329.63];
+
+        freqs.forEach((f, i) => {
+          const osc = synthAudioCtx.createOscillator();
+          const gain = synthAudioCtx.createGain();
+          osc.type = i === 0 ? 'sine' : (i % 2 === 0 ? 'triangle' : 'sine');
+          osc.frequency.setValueAtTime(f, synthAudioCtx.currentTime);
+
+          const lfo = synthAudioCtx.createOscillator();
+          const lfoGain = synthAudioCtx.createGain();
+          lfo.frequency.setValueAtTime(0.08 + i * 0.04, synthAudioCtx.currentTime);
+          lfoGain.gain.setValueAtTime(f * 0.012, synthAudioCtx.currentTime);
+          lfo.connect(osc.frequency);
+          lfo.start();
+          synthNodes.push(lfo);
+
+          gain.gain.setValueAtTime(0.18 / (i + 1), synthAudioCtx.currentTime);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start();
+          synthNodes.push(osc);
+        });
+
+        isSynthActive = true;
+        console.log(`[Audio Engine] Procedural Web Audio drone active (${mode} mode)`);
+      } catch (err) {
+        console.warn("[Audio Engine] Synth Drone fallback error:", err);
+      }
+    }
+
+    function stopSynthDrone() {
+      if (synthNodes.length > 0) {
+        synthNodes.forEach(node => {
+          try { node.stop?.(); } catch (_) {}
+          try { node.disconnect?.(); } catch (_) {}
+        });
+        synthNodes = [];
+      }
+      isSynthActive = false;
+    }
+
     function playAudioTrack(audioEl) {
-      if (!isMasterAudioEnabled || !audioEl) return;
+      if (!isMasterAudioEnabled) return;
+      initSynthAudioContext();
+
+      if (!audioEl) {
+        startSynthDrone(audioEl === audioCinematic ? 'drift' : 'intro');
+        return;
+      }
+
       audioEl.volume = 0.75;
-      audioEl.play().catch(() => {});
+      const playPromise = audioEl.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          stopSynthDrone();
+        }).catch((err) => {
+          console.warn("[Audio Engine] Native MP3 playback deferred/failed; engaging procedural synthesizer fallback:", err);
+          startSynthDrone(audioEl === audioCinematic ? 'drift' : 'intro');
+        });
+      }
     }
 
     function fadeOutAudio(audioEl, durationMs = 800) {
+      stopSynthDrone();
       if (!audioEl || audioEl.paused) return;
       const step = 0.05;
       const interval = durationMs / (audioEl.volume / step);
@@ -540,41 +629,55 @@
       }, interval);
     }
 
-    function toggleAudioMaster() {
-      isMasterAudioEnabled = !isMasterAudioEnabled;
+    function updateAudioUI() {
       const icon = document.getElementById('icon-sound');
       const label = document.getElementById('label-sound');
       const mBtn = document.getElementById('btn-master-sound-m');
-
       if (isMasterAudioEnabled) {
         if (icon) icon.innerText = '🔊';
         if (label) label.innerText = 'Audio On';
         if (mBtn) mBtn.innerText = '🔊';
-        if (isCinematicMode) playAudioTrack(audioCinematic);
-        else playAudioTrack(audioIntro);
       } else {
         if (icon) icon.innerText = '🔇';
         if (label) label.innerText = 'Muted';
         if (mBtn) mBtn.innerText = '🔇';
+      }
+    }
+
+    function toggleAudioMaster() {
+      isMasterAudioEnabled = !isMasterAudioEnabled;
+      updateAudioUI();
+
+      if (isMasterAudioEnabled) {
+        if (isCinematicMode) playAudioTrack(audioCinematic);
+        else playAudioTrack(audioIntro);
+      } else {
         if (audioCinematic) audioCinematic.pause();
         if (audioIntro) audioIntro.pause();
+        stopSynthDrone();
       }
     }
 
     function launchInitialExperience() {
       isMasterAudioEnabled = true;
+      initSynthAudioContext();
+      updateAudioUI();
       playAudioTrack(audioIntro);
+
       const modal = document.getElementById('intro-launch-modal');
       if (modal) {
         modal.style.opacity = '0';
         setTimeout(() => modal.style.display = 'none', 700);
       }
-      toggleAudioMaster();
-      isMasterAudioEnabled = true;
     }
 
     function dismissIntroWithoutAudio() {
       isMasterAudioEnabled = false;
+      updateAudioUI();
+      if (audioCinematic) audioCinematic.pause();
+      if (audioIntro) audioIntro.pause();
+      stopSynthDrone();
+
       const modal = document.getElementById('intro-launch-modal');
       if (modal) {
         modal.style.opacity = '0';
@@ -589,6 +692,9 @@
       if (files[1]) audioIntro.src = URL.createObjectURL(files[1]);
       const lbl = document.getElementById('audio-status-label');
       if (lbl) lbl.innerText = `Custom MP3 Loaded ✓`;
+      if (isMasterAudioEnabled) {
+        playAudioTrack(isCinematicMode ? audioCinematic : audioIntro);
+      }
     }
 
     // --- 2. CINEMATIC DRIFT SEQUENCER ---
