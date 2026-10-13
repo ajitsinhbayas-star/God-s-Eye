@@ -1621,58 +1621,69 @@
       return ringMesh;
     }
 
+    // --- 5. PLANET BUILDER WITH DAY/NIGHT TERMINATOR ---
     function buildPlanet(k, pData) {
       if (k === 'sun' || k === 'earth' || k === 'moon') return;
-      createKeplerianOrbitRing(pData, pData.color);
+      const orbitRing = createKeplerianOrbitRing(pData, pData.color);
 
-      // System group placed in 3D orbit
       const pSys = new THREE.Group();
       scene.add(pSys);
 
-      // Physical Axial Tilt Group (Obliquity)
+      // Physical axial tilt group
       const axialGroup = new THREE.Group();
       axialGroup.rotation.z = (pData.tilt || 0) * (Math.PI / 180);
       pSys.add(axialGroup);
 
-      // Planet mesh spins on its local Y axis
+      // Material lit by the central Sun at (0,0,0)
       const pMat = new THREE.MeshStandardMaterial({
         map: createProceduralFallback(k),
-        roughness: 0.8,
-        metalness: 0.1
+        roughness: k === 'venus' ? 0.35 : 0.82,
+        metalness: 0.05
       });
       loadNASAPlanetTexture(k, pMat);
-      const pMesh = new THREE.Mesh(new THREE.SphereGeometry(pData.radius, 32, 32), pMat);
+
+      const pMesh = new THREE.Mesh(new THREE.SphereGeometry(pData.radius, 48, 48), pMat);
       axialGroup.add(pMesh);
 
-      // Hitbox for raycasting
+      // Raycast hitbox
       const hit = new THREE.Mesh(new THREE.SphereGeometry(pData.radius * 1.8, 10, 10), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
       hit.userData = { targetKey: k };
       pMesh.add(hit);
       clickableMeshes.push(hit);
 
-      // Saturn Rings bound to its 26.73° tilted equatorial plane
-      if (k === 'saturn') {
-        const ringGeo = new THREE.RingGeometry(pData.radius + 0.6, pData.radius + 2.4, 64);
-        const ringMat = new THREE.MeshStandardMaterial({
-          color: 0xd9b372,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.85
-        });
-        const saturnRings = new THREE.Mesh(ringGeo, ringMat);
-        saturnRings.rotation.x = Math.PI / 2;
-        axialGroup.add(saturnRings);
+      // Atmospheric limb glow halos
+      let atmoHalo = null;
+      if (k === 'venus') {
+        atmoHalo = createAtmosphereHalo(pData.radius, 0xffd27d, 0.55);
+        pSys.add(atmoHalo);
+      } else if (k === 'mars') {
+        atmoHalo = createAtmosphereHalo(pData.radius, 0xe07148, 0.45);
+        pSys.add(atmoHalo);
       }
 
-      // Live 3D Orbit Position Reticle
+      // Saturn Rings
+      if (k === 'saturn') {
+        const rings = createSaturnRingsNASA(pData.radius * 1.35, pData.radius * 2.55);
+        axialGroup.add(rings);
+      }
+
+      // Live 3D Orbit Reticle Ring
       const beaconRing = new THREE.Mesh(
         new THREE.RingGeometry(pData.radius + 0.35, pData.radius + 0.55, 32),
-        new THREE.MeshBasicMaterial({ color: pData.color, side: THREE.DoubleSide, transparent: true, opacity: 0.5 })
+        new THREE.MeshBasicMaterial({ color: pData.color, side: THREE.DoubleSide, transparent: true, opacity: 0.45 })
       );
       beaconRing.rotation.x = Math.PI / 2;
       pSys.add(beaconRing);
 
-      planetMeshes[k] = { group: pSys, axialGroup, mesh: pMesh, data: pData };
+      planetMeshes[k] = { 
+        group: pSys, 
+        axialGroup, 
+        mesh: pMesh, 
+        atmoHalo,
+        orbitRing,
+        beaconRing,
+        data: pData 
+      };
     }
 
     Object.keys(CELESTIAL_BODIES).forEach(k => buildPlanet(k, CELESTIAL_BODIES[k]));
