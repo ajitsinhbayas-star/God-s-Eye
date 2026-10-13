@@ -2687,6 +2687,43 @@
       camera.position.z = cameraTarget.z + cameraDistance * Math.cos(cameraPhi) * Math.cos(cameraTheta);
       camera.lookAt(cameraTarget);
 
+      // 1. Adaptive Orbit Trail Fading (Hides orbit lines when close to a planet)
+      const distToActive = camera.position.distanceTo(cameraTarget);
+      const orbitOpacity = THREE.MathUtils.clamp((distToActive - 8.0) / 24.0, 0.03, 0.45);
+      
+      Object.keys(planetMeshes).forEach(pk => {
+        const pObj = planetMeshes[pk];
+        if (pObj.orbitRing && pObj.orbitRing.material) {
+          pObj.orbitRing.material.opacity = orbitOpacity;
+        }
+
+        // Update atmospheric halo light vector (points from planet center to (0,0,0) Sun)
+        if (pObj.atmoHalo && pObj.atmoHalo.material.uniforms) {
+          const sunDir = new THREE.Vector3().subVectors(new THREE.Vector3(0,0,0), pObj.group.position).normalize();
+          pObj.atmoHalo.material.uniforms.uSunDir.value.copy(sunDir);
+        }
+      });
+
+      // 2. NASA Eyes Live Phase Angle & Illumination Calculation
+      if (activeTargetKey && activeTargetKey !== 'sun') {
+        const targetPos = new THREE.Vector3();
+        if (activeTargetKey === 'earth') targetPos.copy(earthSystem.position);
+        else if (planetMeshes[activeTargetKey]) targetPos.copy(planetMeshes[activeTargetKey].group.position);
+
+        const toSun = new THREE.Vector3(0, 0, 0).sub(targetPos).normalize();
+        const toCam = new THREE.Vector3().subVectors(camera.position, targetPos).normalize();
+        
+        // Phase angle between Sun and Camera from the planet's perspective
+        const cosPhase = THREE.MathUtils.clamp(toSun.dot(toCam), -1.0, 1.0);
+        const phaseAngleDeg = Math.acos(cosPhase) * (180 / Math.PI);
+        const illuminatedFraction = ((1.0 + cosPhase) / 2.0) * 100.0;
+
+        const phaseEl = document.getElementById('nasa-target-type');
+        if (phaseEl) {
+          phaseEl.innerText = `${illuminatedFraction.toFixed(0)}% LIT • ${phaseAngleDeg.toFixed(0)}° PHASE`;
+        }
+      }
+
       renderer.render(scene, camera);
     }
 
