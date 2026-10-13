@@ -6,9 +6,17 @@
   <title>GOD'S EYE // ORBITAL - Interplanetary Solar System & Multi-Agency Fleet HUD</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-mono, .bot-terminal, #telemetry-panel, #dock-bar, .agency-filter-btn {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    }
     .scroll-container {
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
@@ -41,7 +49,7 @@
     .bot-terminal {
       background: rgba(2, 6, 18, 0.95);
       border: 1px solid rgba(56, 189, 248, 0.25);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     /* Panel Transitions */
@@ -64,12 +72,70 @@
       opacity: 0 !important;
       pointer-events: none !important;
     }
+
+    .edge-pill-left, .edge-pill-right {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    /* Cinematic Mode UI Fade */
+    body.cinematic-active header,
+    body.cinematic-active #catalog-panel,
+    body.cinematic-active #telemetry-panel,
+    body.cinematic-active #btn-expand-catalog,
+    body.cinematic-active #btn-expand-telemetry,
+    body.cinematic-active #video-panel {
+      opacity: 0.15 !important;
+      pointer-events: none !important;
+      transition: opacity 0.8s ease;
+    }
+    body.cinematic-active header:hover,
+    body.cinematic-active #dock-bar:hover {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
   </style>
 </head>
 <body class="bg-[#000208] text-slate-100 font-sans h-screen w-screen overflow-hidden select-none">
 
   <!-- 3D Three.js WebGL Viewport -->
   <div id="globe-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
+
+  <!-- Audio Elements -->
+  <!-- Audio 1: Cinematic Drift Song (Solar Tour to Earth) -->
+  <audio id="audio-cinematic" loop preload="auto" src="cinematic-drift.mp3"></audio>
+  <!-- Audio 2: Home Page / Entry Ambient Sound -->
+  <audio id="audio-intro" loop preload="auto" src="intro-ambient.mp3"></audio>
+
+  <!-- First-Time User Initialization & Launch Overlay (Bypasses Browser Autoplay Lock) -->
+  <div id="intro-launch-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl transition-opacity duration-1000 p-4">
+    <div class="max-w-md w-full p-6 sm:p-8 rounded-3xl hud-glass text-center border border-cyan-500/40 hud-glow relative overflow-hidden">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-950/80 border border-cyan-500/50 flex items-center justify-center hud-glow">
+        <span class="w-6 h-6 rounded-full bg-cyan-400 animate-ping"></span>
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold tracking-widest uppercase text-white hud-text-glow font-mono">GOD'S EYE // ORBITAL COMMAND</h2>
+      <p class="text-xs text-slate-300 mt-2 font-mono leading-relaxed">
+        Real-Time Heliocentric Solar Physics &bull; Multi-Agency Swarm Telemetry &bull; Interplanetary Explorers
+      </p>
+
+      <div class="mt-6 flex flex-col gap-3">
+        <button onclick="launchInitialExperience()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold tracking-wider text-xs uppercase font-mono shadow-lg shadow-cyan-500/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+          &#128640; Initialize Command HUD & Audio
+        </button>
+        <button onclick="dismissIntroWithoutAudio()" class="text-[11px] text-slate-400 hover:text-white font-mono transition">
+          Enter Muted (Silent Mode)
+        </button>
+      </div>
+
+      <!-- Quick Audio Load Helper -->
+      <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] text-slate-400 font-mono flex items-center justify-between">
+        <span>Audio Status: <b id="audio-status-label" class="text-cyan-400">Ready to Stream</b></span>
+        <label class="cursor-pointer text-cyan-400 hover:underline">
+          Load Local MP3s
+          <input type="file" accept="audio/*" multiple class="hidden" onchange="handleCustomAudioUpload(event)">
+        </label>
+      </div>
+    </div>
+  </div>
 
   <!-- Top Mission Control Navigation Bar -->
   <header class="absolute top-3 left-3 right-3 z-30 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl hud-glass pointer-events-auto">
@@ -89,19 +155,19 @@
         <!-- 1-Click Perspective Director -->
     <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono">
       <button onclick="setFocusTo('sun'); updatePerspectiveButtons('sun');" id="view-btn-sun" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1">
-        <span>â˜€ï¸ Solar System</span>
+        <span>&#9728;&#65039; Solar System</span>
       </button>
       <button onclick="setFocusTo('earth'); updatePerspectiveButtons('earth');" id="view-btn-earth" class="px-2.5 py-1 rounded text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1">
-        <span>ðŸŒ Earth</span>
+        <span>&#127757; Earth</span>
       </button>
       <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog(); updatePerspectiveButtons('isro');" id="view-btn-isro" class="px-2.5 py-1 rounded text-amber-300 hover:bg-amber-500/10 transition flex items-center gap-1">
-        <span>ðŸ‡®ðŸ‡³ ISRO</span>
+        <span>&#127470;&#127475; ISRO</span>
       </button>
       <button onclick="setFocusTo('mars'); updatePerspectiveButtons('mars');" id="view-btn-mars" class="px-2.5 py-1 rounded text-orange-400 hover:bg-orange-500/10 transition flex items-center gap-1">
-        <span>ðŸ”´ Mars</span>
+        <span>&#128308; Mars</span>
       </button>
       <button onclick="setFocusTo('jupiter'); updatePerspectiveButtons('jupiter');" id="view-btn-jupiter" class="px-2.5 py-1 rounded text-amber-200 hover:bg-amber-500/10 transition flex items-center gap-1">
-        <span>ðŸŸ  Jupiter</span>
+        <span>&#128992; Jupiter</span>
       </button>
     </div>
 
@@ -123,6 +189,11 @@
 
     <!-- Quick Navigation Actions -->
     <div class="flex items-center gap-2">
+      <!-- Master Sound Controller -->
+      <button onclick="toggleAudioMaster()" id="btn-master-sound" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Ambient Audio Soundtrack">
+        <span id="icon-sound">&#128266;</span>
+        <span id="label-sound" class="hidden sm:inline">Audio On</span>
+      </button>
       <a href="catalog.html" title="Open Master Fleet Radar Catalog (Shortcut: Shift+C)" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 text-xs font-medium transition flex items-center gap-1">
         <span>🛰️ Fleet Catalog ↗</span>
       </a>
@@ -176,13 +247,13 @@
       />
     </div>
 
-        <!-- Category Tabs -->
+            <!-- Category Tabs -->
     <div class="flex items-center gap-1 p-2 border-b border-slate-800/80 bg-slate-950/60 overflow-x-auto text-[11px] shrink-0 scroll-container">
-      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-amber-950 text-amber-300 border border-amber-500/40 whitespace-nowrap">ðŸª Planets (9)</button>
-      <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">ðŸš€ Planet Probes</button>
-      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">ðŸ›°ï¸ Earth Fleet</button>
-      <button onclick="switchCategory('solardata')" id="tab-solardata" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-amber-300 hover:text-white whitespace-nowrap">â˜€ï¸ Sun Position</button>
-      <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap">ðŸ¤– Master Log</button>
+      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-amber-950 text-amber-300 border border-amber-500/40 whitespace-nowrap font-mono">&#129680; Solar System (9)</button>
+      <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap font-mono">&#128640; Planetary Probes</button>
+      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap font-mono">&#128752;&#65039; Earth Fleet (165+)</button>
+      <button onclick="switchCategory('solardata')" id="tab-solardata" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-amber-300 hover:text-white whitespace-nowrap font-mono">&#9728;&#65039; Solar Ephemeris</button>
+      <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap font-mono">&#129302; Intel Swarm Log</button>
     </div>
 
     <!-- Agency Filter Pills with Live Counter Badges (for Earth Fleet) -->
@@ -338,7 +409,7 @@
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
         <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-2">Mean Longitude</span>
-        <span id="tele-lng" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00Â°</span>
+        <span id="tele-lng" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00&deg;</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
         <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-3">Orbital Velocity</span>
@@ -346,7 +417,7 @@
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
         <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-4">Axial Tilt</span>
-        <span id="tele-vel" class="text-cyan-400 font-bold text-xs sm:text-sm">7.25Â°</span>
+        <span id="tele-vel" class="text-cyan-400 font-bold text-xs sm:text-sm">7.25&deg;</span>
       </div>
     </div>
 
@@ -433,8 +504,8 @@
     </div>
   </div>
 
-    <!-- Floating Bottom Mission Dock (Controls Bar) -->
-  <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto">
+      <!-- Floating Bottom Mission Dock (Controls Bar) -->
+  <div id="dock-bar" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto transition-all">
     <!-- Astronomical Time Warp Bar -->
     <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] font-mono">
       <span class="text-slate-400 px-1 hidden sm:inline">WARP:</span>
@@ -443,10 +514,10 @@
       <button onclick="setTimeScale(100)" id="btn-scale-100" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">100x</button>
       <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
     </div>
-    <!-- Camera Drift Mode Toggle -->
-    <button onclick="toggleCinematicCamera()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Cinematic Drift (Shortcut: C)">
+    <!-- Cinematic Drift with Multi-Stage Audio Sequence -->
+    <button onclick="startCinematicDriftExperience()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Cinematic Drift Tour (Shortcut: C)">
       <span class="w-2 h-2 rounded-full bg-slate-500" id="dot-cinematic"></span>
-      <span>Cinematic Drift</span>
+      <span id="txt-cinematic">Cinematic Drift</span>
     </button>
     <!-- Master HUD Visibility -->
     <button onclick="toggleHUDPanels()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition" title="Toggle Panels (Shortcut: M)">
@@ -460,6 +531,183 @@
 
   <!-- Three.js Astronomical Engine & Interplanetary Physics -->
   <script>
+    // --- AUDIO CONTROLLER ENGINE (INTRO AMBIENT & CINEMATIC DRIFT SOUNDTRACK) ---
+    const audioCinematic = document.getElementById('audio-cinematic');
+    const audioIntro = document.getElementById('audio-intro');
+    let isMasterAudioEnabled = false;
+
+    // Web Audio Synthesizer fallback if file stream blocked by browser
+    let synthAudioCtx = null;
+    let synthOsc1 = null, synthOsc2 = null, synthGain = null;
+
+    function initSynthDrone(freq1 = 55, freq2 = 110) {
+      try {
+        if (!synthAudioCtx) {
+          synthAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (synthAudioCtx.state === 'suspended') {
+          synthAudioCtx.resume();
+        }
+        if (!synthGain) {
+          synthGain = synthAudioCtx.createGain();
+          synthGain.gain.setValueAtTime(0.08, synthAudioCtx.currentTime);
+          synthGain.connect(synthAudioCtx.destination);
+        }
+        if (synthOsc1) { synthOsc1.stop(); synthOsc1.disconnect(); }
+        if (synthOsc2) { synthOsc2.stop(); synthOsc2.disconnect(); }
+        synthOsc1 = synthAudioCtx.createOscillator();
+        synthOsc2 = synthAudioCtx.createOscillator();
+        synthOsc1.type = 'sine';
+        synthOsc2.type = 'triangle';
+        synthOsc1.frequency.setValueAtTime(freq1, synthAudioCtx.currentTime);
+        synthOsc2.frequency.setValueAtTime(freq2, synthAudioCtx.currentTime);
+        synthOsc1.connect(synthGain);
+        synthOsc2.connect(synthGain);
+        synthOsc1.start();
+        synthOsc2.start();
+      } catch (e) {
+        console.warn("WebAudio Synth fallback:", e);
+      }
+    }
+
+    function stopSynthDrone() {
+      try {
+        if (synthGain && synthAudioCtx) {
+          synthGain.gain.setTargetAtTime(0, synthAudioCtx.currentTime, 0.2);
+        }
+      } catch (e) {}
+    }
+
+    function playAudioTrack(audioEl) {
+      if (!isMasterAudioEnabled) return;
+      audioEl.volume = 0.75;
+      audioEl.play().catch(e => {
+        console.log("Audio HTML5 waiting/fallback, triggering synth drone:", e);
+        if (audioEl === audioCinematic) initSynthDrone(65.4, 98.0);
+        else initSynthDrone(55.0, 110.0);
+      });
+    }
+
+    function fadeOutAudio(audioEl, durationMs = 800) {
+      if (!audioEl || audioEl.paused) {
+        stopSynthDrone();
+        return;
+      }
+      const step = 0.05;
+      const interval = durationMs / (audioEl.volume / step);
+      const timer = setInterval(() => {
+        if (audioEl.volume > step) {
+          audioEl.volume -= step;
+        } else {
+          audioEl.pause();
+          audioEl.volume = 0.75;
+          clearInterval(timer);
+        }
+      }, interval);
+    }
+
+    function toggleAudioMaster() {
+      isMasterAudioEnabled = !isMasterAudioEnabled;
+      const icon = document.getElementById('icon-sound');
+      const label = document.getElementById('label-sound');
+      if (isMasterAudioEnabled) {
+        if (icon) icon.innerText = '\u{1F50A}';
+        if (label) label.innerText = 'Audio On';
+        if (isCinematicMode) {
+          playAudioTrack(audioCinematic);
+        } else {
+          playAudioTrack(audioIntro);
+        }
+      } else {
+        if (icon) icon.innerText = '\u{1F507}';
+        if (label) label.innerText = 'Muted';
+        audioCinematic.pause();
+        audioIntro.pause();
+        stopSynthDrone();
+      }
+    }
+
+    function launchInitialExperience() {
+      isMasterAudioEnabled = true;
+      playAudioTrack(audioIntro);
+      const modal = document.getElementById('intro-launch-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; }, 900);
+      }
+      const icon = document.getElementById('icon-sound');
+      const label = document.getElementById('label-sound');
+      if (icon) icon.innerText = '\u{1F50A}';
+      if (label) label.innerText = 'Audio On';
+    }
+
+    function dismissIntroWithoutAudio() {
+      isMasterAudioEnabled = false;
+      const modal = document.getElementById('intro-launch-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; }, 900);
+      }
+      const icon = document.getElementById('icon-sound');
+      const label = document.getElementById('label-sound');
+      if (icon) icon.innerText = '\u{1F507}';
+      if (label) label.innerText = 'Muted';
+    }
+
+    function handleCustomAudioUpload(evt) {
+      const files = evt.target.files;
+      if (!files || !files.length) return;
+      if (files[0]) {
+        audioCinematic.src = URL.createObjectURL(files[0]);
+        const lbl = document.getElementById('audio-status-label');
+        if (lbl) lbl.innerText = `Loaded: ${files[0].name.substring(0, 16)}...`;
+      }
+      if (files[1]) {
+        audioIntro.src = URL.createObjectURL(files[1]);
+      }
+    }
+
+    // --- CINEMATIC DRIFT SEQUENCER (SOLAR SYSTEM TOUR -> SMOOTH FOCUS ON EARTH) ---
+    let isCinematicMode = false;
+    let cinematicStage = 0; // 0 = Solar Overview Sweep, 1 = Descending to Earth, 2 = Locked Earth Orbit
+    let cinematicTimer = 0;
+
+    function startCinematicDriftExperience() {
+      isCinematicMode = !isCinematicMode;
+      const dot = document.getElementById("dot-cinematic");
+      const txt = document.getElementById("txt-cinematic");
+
+      if (isCinematicMode) {
+        document.body.classList.add("cinematic-active");
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-cyan-400 animate-pulse";
+        if (txt) txt.innerText = "Exit Drift";
+        cinematicStage = 0;
+        cinematicTimer = 0;
+
+        // Switch soundtrack: fade out intro, play cinematic track (Audio 1)
+        fadeOutAudio(audioIntro, 600);
+        setTimeout(() => playAudioTrack(audioCinematic), 400);
+
+        // Start wide in the Solar System
+        setFocusTo('sun');
+        targetCameraDistance = 125.0;
+        cameraPhi = 0.52;
+      } else {
+        document.body.classList.remove("cinematic-active");
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-slate-500";
+        if (txt) txt.innerText = "Cinematic Drift";
+
+        // Return to Ambient Intro Sound (Audio 2)
+        fadeOutAudio(audioCinematic, 600);
+        setTimeout(() => playAudioTrack(audioIntro), 400);
+
+        setFocusTo('earth');
+      }
+    }
+
+    function toggleCinematicCamera() {
+      startCinematicDriftExperience();
+    }
 
     // --- 1. ASTRONOMICAL TIME ENGINE (UTC & JULIAN DATE) ---
     let timeScale = 1.0;
@@ -1748,13 +1996,7 @@
     }
 
     function toggleCinematicCamera() {
-      isCinematicDrift = !isCinematicDrift;
-      const dot = document.getElementById("dot-cinematic");
-      if (dot) {
-        dot.className = isCinematicDrift 
-          ? "w-2 h-2 rounded-full bg-cyan-400 animate-pulse" 
-          : "w-2 h-2 rounded-full bg-slate-500";
-      }
+      startCinematicDriftExperience();
     }
 
     function toggleFullscreen() {
@@ -1879,7 +2121,7 @@
       document.getElementById('target-name').innerText = orb.name;
       document.getElementById('target-name').className = "text-cyan-400 font-bold";
       document.getElementById('target-parent').innerText = `${orb.parent.toUpperCase()} Orbit`;
-      document.getElementById('target-agency').innerText = `${orb.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${orb.agency}`;
+      document.getElementById('target-agency').innerText = `${orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${orb.agency}`;
 
       // Update Telemetry Panel to Orbiter Mode
       const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Parent Body";
@@ -1887,14 +2129,14 @@
       const l3 = document.getElementById('tele-lbl-3'); if (l3) l3.innerText = "Orbital Altitude";
       const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Speed";
 
-      document.getElementById('tele-parent').innerText = `${orb.parent === 'mars' ? 'ðŸ”´' : (orb.parent === 'jupiter' ? 'ðŸŸ ' : (orb.parent === 'saturn' ? 'ðŸª' : 'âšª'))} ${orb.parent.toUpperCase()}`;
-      document.getElementById('tele-agency').innerText = `${orb.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${orb.agency}`;
+      document.getElementById('tele-parent').innerText = `${orb.parent === 'mars' ? '\u{1F534}' : (orb.parent === 'jupiter' ? '\u{1F7E0}' : (orb.parent === 'saturn' ? '\u{1FA90}' : '\u26AA'))} ${orb.parent.toUpperCase()}`;
+      document.getElementById('tele-agency').innerText = `${orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${orb.agency}`;
       document.getElementById('tele-lat').innerText = orb.parent.toUpperCase();
-      document.getElementById('tele-lng').innerText = `${orb.inc.toFixed(1)}Â°`;
+      document.getElementById('tele-lng').innerText = `${orb.inc.toFixed(1)}\u00B0`;
       document.getElementById('tele-alt').innerText = orb.altitude;
       document.getElementById('tele-vel').innerText = orb.velocity;
       document.getElementById('tele-period').innerText = orb.period;
-      document.getElementById('tele-inc').innerText = `${orb.inc.toFixed(1)}Â°`;
+      document.getElementById('tele-inc').innerText = `${orb.inc.toFixed(1)}\u00B0`;
       document.getElementById('tele-status').innerText = "ACTIVE SCIENCE";
       document.getElementById('tele-status').className = "text-emerald-400 font-semibold";
 
@@ -1905,7 +2147,7 @@
       else targetCameraDistance = 4.2;
 
       const dirEl = document.getElementById('tele-direction');
-      if (dirEl) dirEl.innerText = `${(orb.inc || 0).toFixed(1)}Â° Planetary Node`;
+      if (dirEl) dirEl.innerText = `${(orb.inc || 0).toFixed(1)}\u00B0 Planetary Node`;
       const raanEl = document.getElementById('tele-raan');
       if (raanEl) raanEl.innerText = "Interplanetary";
       const fpEl = document.getElementById('tele-footprint');
@@ -1934,8 +2176,8 @@
         const sat = SATELLITES[key];
         document.getElementById('target-name').innerText = sat.name;
         document.getElementById('target-name').className = "text-cyan-400 font-bold";
-        document.getElementById('target-parent').innerText = "ðŸŒ Earth LEO/GEO";
-        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${sat.agency}`;
+        document.getElementById('target-parent').innerText = "\u{1F30D} Earth LEO/GEO";
+        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${sat.agency}`;
 
         // Update Telemetry Panel to Satellite Mode
         const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Latitude / Decl";
@@ -1943,7 +2185,7 @@
         const l3 = document.getElementById('tele-lbl-3'); if (l3) l3.innerText = "Altitude / Orbit";
         const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Orbital Velocity";
 
-        document.getElementById('tele-parent').innerText = "ðŸŒ Earth";
+        document.getElementById('tele-parent').innerText = "\u{1F30D} Earth";
         document.getElementById('tele-agency').innerText = sat.agency;
         document.getElementById('tele-alt').innerText = `${sat.altitude.toLocaleString()} km`;
         document.getElementById('tele-vel').innerText = `${sat.velocity.toLocaleString()} km/h`;
@@ -1951,11 +2193,11 @@
         document.getElementById('tele-period').innerText = sat.period;
 
         const dirEl = document.getElementById('tele-direction');
-        if (dirEl) dirEl.innerText = `${(sat.inclination * 180 / Math.PI).toFixed(1)}Â° Inc`;
+        if (dirEl) dirEl.innerText = `${(sat.inclination * 180 / Math.PI).toFixed(1)}\u00B0 Inc`;
         const raanEl = document.getElementById('tele-raan');
-        if (raanEl) raanEl.innerText = `${((sat.raan * 180) / Math.PI).toFixed(1)}Â°`;
+        if (raanEl) raanEl.innerText = `${((sat.raan * 180) / Math.PI).toFixed(1)}\u00B0`;
         const fpEl = document.getElementById('tele-footprint');
-        if (fpEl) fpEl.innerText = `~${Math.round(2 * Math.sqrt(2 * 6371 * sat.altitude + sat.altitude * sat.altitude) * 0.75).toLocaleString()} km âŒ€`;
+        if (fpEl) fpEl.innerText = `~${Math.round(2 * Math.sqrt(2 * 6371 * sat.altitude + sat.altitude * sat.altitude) * 0.75).toLocaleString()} km \u2300`;
 
         targetCameraDistance = sat.radius > 3.0 ? 8.5 : 5.2;
         updatePerspectiveButtons('earth');
@@ -1988,10 +2230,10 @@
         document.getElementById('tele-parent').innerText = key === 'sun' ? "Gravitational Center" : "Sun (Sol)";
         document.getElementById('tele-agency').innerText = body.type;
         document.getElementById('tele-lat').innerText = `${body.dist.toFixed(2)} AU`;
-        document.getElementById('tele-lng').innerText = `${(body.l0 || 0).toFixed(1)}Â°`;
+        document.getElementById('tele-lng').innerText = `${(body.l0 || 0).toFixed(1)}\u00B0`;
         document.getElementById('tele-alt').innerText = `${Math.round(body.lRate * 100000).toLocaleString()} km/h`;
-        document.getElementById('tele-vel').innerText = `${(body.tilt || 0).toFixed(1)}Â°`;
-        document.getElementById('tele-inc').innerText = `${body.tilt || 0}Â° Tilt`;
+        document.getElementById('tele-vel').innerText = `${(body.tilt || 0).toFixed(1)}\u00B0`;
+        document.getElementById('tele-inc').innerText = `${body.tilt || 0}\u00B0 Tilt`;
         document.getElementById('tele-period').innerText = key === 'sun' ? "Static Reference" : "Keplerian";
         document.getElementById('tele-status').innerText = key === 'sun' ? "STELLAR SOURCE" : "STABLE ORBIT";
         document.getElementById('tele-status').className = "text-cyan-400 font-semibold";
@@ -2234,6 +2476,7 @@
       if (e.key === '4') setTimeScale(1000);
       if (e.key === 'r' || e.key === 'R') resetCameraView();
       if (e.key === 'v' || e.key === 'V') toggleVideoPanel();
+      if (e.key === 'a' || e.key === 'A') toggleAudioMaster();
     });
 
     BotSwarm.init();
@@ -2245,8 +2488,26 @@
       // Smooth Cinematic Camera Zoom Interpolation (Opening Glide & Fly-Tos)
       cameraDistance += (targetCameraDistance - cameraDistance) * 0.06;
 
-      if (isCinematicDrift) {
-        cameraTheta += 0.0015;
+      // Cinematic Drift Sequence Manager
+      if (isCinematicMode || isCinematicDrift) {
+        cinematicTimer += 1;
+        cameraTheta += 0.0018;
+
+        if (cinematicStage === 0) {
+          // Solar Overview Phase
+          if (cinematicTimer > 320) {
+            cinematicStage = 1; // Begin descent toward Earth
+            setFocusTo('earth');
+            targetCameraDistance = 16.0;
+          }
+        } else if (cinematicStage === 1) {
+          // Approaching Earth Phase
+          if (cinematicTimer > 540) {
+            cinematicStage = 2; // Locked Earth orbit
+            targetCameraDistance = 5.2;
+            cameraPhi = 0.32;
+          }
+        }
       }
 
       const nowReal = performance.now();

@@ -18,11 +18,17 @@ Simulates real heliocentric planetary positions, Earth's sidereal rotation (GMST
 ## 🌟 Key Architecture & Capabilities
 
 ### 1. Astronomical & Planetary Physics
-* **Heliocentric Solar System:** The Sun is situated at `(0, 0, 0)` with all 8 major planets (Mercury through Neptune) placed in accurate orbital longitudes calculated from NASA JPL epoch rates ($d = \text{JD} - 2451545.0$).
+* **Heliocentric Solar System on Launch:** Opens with a wide-angle overview of the Sun and all 9 planetary bodies in real heliocentric Keplerian positions ($d = \text{JD} - 2451545.0$).
+* **Deep-Space Visibility Rings (Beacons):** Luminous beacon rings around Earth and all planets allowing instant recognition and 1-click raycast locking across interplanetary space.
 * **Sidereal Earth Rotation:** Earth rotates according to Greenwich Mean Sidereal Time (GMST) and subsolar longitude ($\lambda_{\odot} = (12 - \text{UTC}_\text{hours}) \times 15^\circ$), ensuring that solar noon matches real-world illumination over target continents.
 * **Axial Obliquity:** 23.44° true axial tilt applied to Earth, its atmospheric cloud layer, and orbiting satellites.
 
-### 2. Autonomous Telemetry & Bot Swarm
+### 2. Audio Controller & Cinematic Drift Sequencer
+* **Atmospheric Audio Engine:** Multi-soundtrack system with entry ambient sound (`intro-ambient.mp3`) and cinematic drift tour score (`cinematic-drift.mp3`), plus a Web Audio synthesizer fallback.
+* **Initial Launch Modal:** First-time user overlay that complies with browser autoplay policies, providing 1-click audio initialization, muted mode, and custom local audio upload.
+* **Cinematic Drift Sequencer:** Multi-stage orbital tour sweeping from the outer Solar System heliocentric plane and smoothly descending into a locked Low Earth Orbit, with automated audio crossfading and UI fade.
+
+### 3. Autonomous Telemetry & Bot Swarm
 * **`BOT-CELES-01` (Visual Fleet):** Queries live CelesTrak NORAD GP JSON streams to spawn interactive 3D satellite beacons and Keplerian orbital paths.
 * **`BOT-CELES-02` (Stations & Constellations):** Ingests crewed space stations (ISS, Tiangong) and communications clusters.
 * **`BOT-WEATHER-03` (Earth Observation):** Ingests Sun-synchronous weather and cartographic satellites (NOAA, METEOR, Cartosat).
@@ -30,16 +36,19 @@ Simulates real heliocentric planetary positions, Earth's sidereal rotation (GMST
 * **`BOT-DEEP-05` (Deep Space Scout):** Models hyperbolic escape trajectories and light-time delay for Voyager 1, Voyager 2, and New Horizons.
 * **13 Worldwide Autonomous Bot Feeds (`run-intel-bots.ps1`):** Ingestion pipelines covering CelesTrak, NASA Horizons, ESA Copernicus, ISRO NETRA, Space-Track 18th SDS, NOAA Space Weather, SatNOGS, N2YO, AMSAT, JAXA Michibiki, NASA EOSDIS, Decay Watch, and Auto-Satellite Discovery.
 
-### 3. User Controls & Tactile HUD
-* **1-Click 3D Raycasting:** Click any satellite, planet, or country directly in the 3D viewport to lock tracking, update telemetry cards, and auto-minimize HUD drawers.
+### 4. User Controls & Tactile HUD
+* **1-Click 3D Raycasting:** Click any satellite, planet, or probe directly in the 3D viewport to lock tracking, update telemetry cards, and auto-minimize HUD drawers.
+* **Context-Sensitive Dual-Mode Telemetry:** Dynamically switches between Keplerian planetary orbital metrics and satellite geodetic coordinates.
 * **Time Warp Engine:** Toggle between `1x` (real-time 1s per 1s), `10x`, `100x`, and `1000x` orbital speeds.
 * **Keyboard Shortcuts:**
   - <kbd>M</kbd> — Toggle HUD drawers and side panels on and off.
   - <kbd>Space</kbd> — Pause / resume real-time propagation.
   - <kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> / <kbd>4</kbd> — Switch speed warp (1x, 10x, 100x, 1000x).
-  - <kbd>C</kbd> — Open Master Space Fleet Catalog radar.
-  - <kbd>R</kbd> — Reset orbital camera view.
+  - <kbd>C</kbd> — Toggle Cinematic Drift Tour sequence.
+  - <kbd>Shift</kbd>+<kbd>C</kbd> — Open Master Space Fleet Catalog radar.
+  - <kbd>R</kbd> — Reset orbital camera view to Solar System overview.
   - <kbd>V</kbd> — Toggle ISS multi-feed live stream modal.
+  - <kbd>A</kbd> — Toggle master ambient audio soundtrack.
 
 ---
 
