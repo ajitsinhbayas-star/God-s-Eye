@@ -86,48 +86,39 @@
       </div>
     </div>
 
-    <!-- Astronomical Time Warp Bar -->
-    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] font-mono">
-      <span class="text-slate-400 px-1.5 hidden sm:inline">WARP:</span>
-      <button onclick="setTimeScale(1)" id="btn-scale-1" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">1x (LIVE)</button>
-      <button onclick="setTimeScale(10)" id="btn-scale-10" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">10x</button>
-      <button onclick="setTimeScale(100)" id="btn-scale-100" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">100x</button>
-      <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
+        <!-- 1-Click Perspective Director -->
+    <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono">
+      <button onclick="setFocusTo('sun'); updatePerspectiveButtons('sun');" id="view-btn-sun" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1">
+        <span>â˜€ï¸ Solar System</span>
+      </button>
+      <button onclick="setFocusTo('earth'); updatePerspectiveButtons('earth');" id="view-btn-earth" class="px-2.5 py-1 rounded text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1">
+        <span>ðŸŒ Earth</span>
+      </button>
+      <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog(); updatePerspectiveButtons('isro');" id="view-btn-isro" class="px-2.5 py-1 rounded text-amber-300 hover:bg-amber-500/10 transition flex items-center gap-1">
+        <span>ðŸ‡®ðŸ‡³ ISRO</span>
+      </button>
+      <button onclick="setFocusTo('mars'); updatePerspectiveButtons('mars');" id="view-btn-mars" class="px-2.5 py-1 rounded text-orange-400 hover:bg-orange-500/10 transition flex items-center gap-1">
+        <span>ðŸ”´ Mars</span>
+      </button>
+      <button onclick="setFocusTo('jupiter'); updatePerspectiveButtons('jupiter');" id="view-btn-jupiter" class="px-2.5 py-1 rounded text-amber-200 hover:bg-amber-500/10 transition flex items-center gap-1">
+        <span>ðŸŸ  Jupiter</span>
+      </button>
     </div>
 
     <!-- Active Target Badge -->
     <div class="hidden md:flex items-center gap-4 px-3 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Target</span>
-        <span id="target-name" class="text-cyan-400 font-bold">Mangalyaan (MOM)</span>
+        <span id="target-name" class="text-amber-400 font-bold">The Sun (Sol)</span>
       </div>
       <div>
-        <span class="text-[9px] text-slate-400 block uppercase">Parent Body</span>
-        <span id="target-parent" class="text-amber-400 font-bold">🔴 Mars Orbit</span>
+        <span class="text-[9px] text-slate-400 block uppercase">System Frame</span>
+        <span id="target-parent" class="text-cyan-400 font-bold">Heliocentric Center</span>
       </div>
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Operator</span>
-        <span id="target-agency" class="text-emerald-400 font-bold">🇮🇳 ISRO</span>
+        <span id="target-agency" class="text-emerald-400 font-bold">8 Planets + Pluto Active</span>
       </div>
-    </div>
-
-    <!-- 1-Click Perspective Director (Camera Presets) -->
-    <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono">
-      <button onclick="setFocusTo('earth')" id="view-btn-earth" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition flex items-center gap-1">
-        <span>🌍 Earth</span>
-      </button>
-      <button onclick="filterByAgency('isro'); switchCategory('satellites'); expandCatalog(); updatePerspectiveButtons('isro');" id="view-btn-isro" class="px-2.5 py-1 rounded text-amber-300 hover:bg-amber-500/10 transition flex items-center gap-1">
-        <span>🇮🇳 ISRO</span>
-      </button>
-      <button onclick="setFocusTo('mars')" id="view-btn-mars" class="px-2.5 py-1 rounded text-orange-400 hover:bg-orange-500/10 transition flex items-center gap-1">
-        <span>🔴 Mars</span>
-      </button>
-      <button onclick="setFocusTo('jupiter')" id="view-btn-jupiter" class="px-2.5 py-1 rounded text-amber-200 hover:bg-amber-500/10 transition flex items-center gap-1">
-        <span>🟠 Jupiter</span>
-      </button>
-      <button onclick="setFocusTo('sun')" id="view-btn-sun" class="px-2.5 py-1 rounded text-yellow-300 hover:bg-yellow-500/10 transition flex items-center gap-1">
-        <span>☀️ Solar System</span>
-      </button>
     </div>
 
     <!-- Quick Navigation Actions -->
@@ -185,13 +176,13 @@
       />
     </div>
 
-    <!-- Category Tabs -->
+        <!-- Category Tabs -->
     <div class="flex items-center gap-1 p-2 border-b border-slate-800/80 bg-slate-950/60 overflow-x-auto text-[11px] shrink-0 scroll-container">
-      <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40 whitespace-nowrap">🚀 Planet Probes</button>
-      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">🛰️ Earth Fleet</button>
-      <button onclick="switchCategory('solardata')" id="tab-solardata" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-amber-300 hover:text-white whitespace-nowrap">☀️ Sun Position</button>
-      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">🪐 Planets (9)</button>
-      <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap">🤖 Master Log</button>
+      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-amber-950 text-amber-300 border border-amber-500/40 whitespace-nowrap">ðŸª Planets (9)</button>
+      <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">ðŸš€ Planet Probes</button>
+      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">ðŸ›°ï¸ Earth Fleet</button>
+      <button onclick="switchCategory('solardata')" id="tab-solardata" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-amber-300 hover:text-white whitespace-nowrap">â˜€ï¸ Sun Position</button>
+      <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap">ðŸ¤– Master Log</button>
     </div>
 
     <!-- Agency Filter Pills with Live Counter Badges (for Earth Fleet) -->
@@ -210,7 +201,7 @@
     <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2 text-xs">
       
       <!-- Panel 1: Spacecraft Orbiting Other Planets (Mars, Jupiter, Saturn, etc.) -->
-      <div id="panel-orbiters" class="cat-panel space-y-2">
+      <div id="panel-orbiters" class="cat-panel hidden space-y-2">
         <div class="text-[10px] text-slate-400 font-mono mb-1">Click a probe to fly across the Solar System & lock 3D camera:</div>
         <div id="planet-orbiters-container" class="space-y-1.5"></div>
       </div>
@@ -296,7 +287,7 @@
       </div>
 
       <!-- Panel 4: Realistic Planets & Pluto -->
-      <div id="panel-solarsystem" class="cat-panel hidden space-y-2">
+      <div id="panel-solarsystem" class="cat-panel space-y-2">
         <div class="text-[10px] text-slate-400 font-mono mb-1">Planetary bodies with surface mapping & axial tilts:</div>
         <div id="planets-list-container" class="space-y-1.5"></div>
       </div>
@@ -339,23 +330,23 @@
       </button>
     </div>
 
-    <!-- Live Telemetry Matrix -->
+        <!-- Live Telemetry Matrix -->
     <div class="grid grid-cols-2 gap-2">
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase">Latitude / Decl</span>
-        <span id="tele-lat" class="text-emerald-400 font-bold text-xs sm:text-sm">--.--°</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-1">Semi-Major Axis</span>
+        <span id="tele-lat" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00 AU</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase">Longitude / RA</span>
-        <span id="tele-lng" class="text-emerald-400 font-bold text-xs sm:text-sm">--.--°</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-2">Mean Longitude</span>
+        <span id="tele-lng" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00Â°</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase">Altitude / Orbit</span>
-        <span id="tele-alt" class="text-cyan-400 font-bold text-xs sm:text-sm">--- km</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-3">Orbital Velocity</span>
+        <span id="tele-alt" class="text-cyan-400 font-bold text-xs sm:text-sm">0 km/h</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase">Orbital Velocity</span>
-        <span id="tele-vel" class="text-cyan-400 font-bold text-xs sm:text-sm">--,--- km/h</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-4">Axial Tilt</span>
+        <span id="tele-vel" class="text-cyan-400 font-bold text-xs sm:text-sm">7.25Â°</span>
       </div>
     </div>
 
@@ -442,8 +433,16 @@
     </div>
   </div>
 
-  <!-- Floating Bottom Mission Dock (Controls Bar) -->
+    <!-- Floating Bottom Mission Dock (Controls Bar) -->
   <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto">
+    <!-- Astronomical Time Warp Bar -->
+    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] font-mono">
+      <span class="text-slate-400 px-1 hidden sm:inline">WARP:</span>
+      <button onclick="setTimeScale(1)" id="btn-scale-1" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">1x (LIVE)</button>
+      <button onclick="setTimeScale(10)" id="btn-scale-10" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">10x</button>
+      <button onclick="setTimeScale(100)" id="btn-scale-100" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">100x</button>
+      <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
+    </div>
     <!-- Camera Drift Mode Toggle -->
     <button onclick="toggleCinematicCamera()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Cinematic Drift (Shortcut: C)">
       <span class="w-2 h-2 rounded-full bg-slate-500" id="dot-cinematic"></span>
@@ -952,8 +951,9 @@
       addSat(`iridium_${i}`, `Iridium-NEXT ${100 + i}`, 41900 + i, "Iridium", "USA", 86.4, 780, 0x818cf8, "constellation", "Global Satellite Voice & Data Crosslink");
     }
 
-    let activeTargetKey = "mom";
-    let isTrackingPlanet = false;
+    // DEFAULT STARTING VIEW TARGET: THE SUN / FULL SOLAR SYSTEM OVERVIEW
+    let activeTargetKey = "sun";
+    let isTrackingPlanet = true;
     let activeAgencyFilter = "all";
 
     // --- 5. PROCEDURAL HIGH-RESOLUTION PLANETARY SURFACE GENERATORS ---
@@ -1059,14 +1059,14 @@
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000208, 0.008);
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
-    const cameraTarget = new THREE.Vector3(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 4000);
+    const cameraTarget = new THREE.Vector3(0, 0, 0); // Focus at center (The Sun)
 
-    // Cinematic Opening Animation Parameters
-    let cameraDistance = 10.5; // Starts pulled back in deep space!
-    let targetCameraDistance = 5.2; // Smoothly glides to orbital altitude
-    let cameraPhi = 0.45;
-    let cameraTheta = 0.8;
+    // Cinematic Opening Animation Parameters: Wide Solar System Perspective
+    let cameraDistance = 145.0; // Starts pulled back in deep space!
+    let targetCameraDistance = 115.0; // Wide heliocentric view of all orbits
+    let cameraPhi = 0.58;
+    let cameraTheta = 0.75;
     let isCinematicDrift = false;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -1193,6 +1193,14 @@
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
+    // Earth Beacon (Visible from deep space)
+    const earthBeacon = new THREE.Mesh(
+      new THREE.RingGeometry(earthRadius + 0.3, earthRadius + 0.45, 32),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.7 })
+    );
+    earthBeacon.rotation.x = Math.PI / 2;
+    earthSystem.add(earthBeacon);
+
     const cloudsMat = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.42, blending: THREE.NormalBlending });
     const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.025, 64, 64), cloudsMat);
     earthAxialGroup.add(cloudsMesh);
@@ -1274,6 +1282,14 @@
         new THREE.MeshLambertMaterial({ map: pTex, color: 0xffffff })
       );
       tiltGroup.add(pMesh);
+
+      // Deep space beacon ring so the planet is instantly spotted from afar
+      const beaconRing = new THREE.Mesh(
+        new THREE.RingGeometry(pData.radius + 0.35, pData.radius + 0.55, 32),
+        new THREE.MeshBasicMaterial({ color: pData.color, side: THREE.DoubleSide, transparent: true, opacity: 0.65 })
+      );
+      beaconRing.rotation.x = Math.PI / 2;
+      pSys.add(beaconRing);
 
       const hit = new THREE.Mesh(
         new THREE.SphereGeometry(pData.radius * 1.4, 12, 12),
@@ -1754,12 +1770,22 @@
     }
 
     function updatePerspectiveButtons(activeKey) {
-      const keys = ['earth', 'isro', 'mars', 'jupiter', 'sun'];
+      const keys = ['sun', 'earth', 'isro', 'mars', 'jupiter'];
       keys.forEach(k => {
         const btn = document.getElementById(`view-btn-${k}`);
         if (!btn) return;
         if (k === activeKey) {
-          btn.className = "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition flex items-center gap-1";
+          if (k === 'sun') {
+            btn.className = "px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1";
+          } else if (k === 'earth') {
+            btn.className = "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition flex items-center gap-1";
+          } else if (k === 'isro') {
+            btn.className = "px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1";
+          } else if (k === 'mars') {
+            btn.className = "px-2.5 py-1 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 font-bold transition flex items-center gap-1";
+          } else if (k === 'jupiter') {
+            btn.className = "px-2.5 py-1 rounded bg-amber-500/20 text-amber-200 border border-amber-500/40 font-bold transition flex items-center gap-1";
+          }
         } else {
           btn.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1";
         }
@@ -1842,7 +1868,7 @@
       }
     }
 
-    // TARGET SELECTION & CAMERA LOCK
+        // TARGET SELECTION & CAMERA LOCK
     function setFocusToOrbiter(key) {
       const orb = PLANETARY_ORBITERS[key];
       if (!orb) return;
@@ -1851,15 +1877,24 @@
       isTrackingPlanet = false;
 
       document.getElementById('target-name').innerText = orb.name;
+      document.getElementById('target-name').className = "text-cyan-400 font-bold";
       document.getElementById('target-parent').innerText = `${orb.parent.toUpperCase()} Orbit`;
-      document.getElementById('target-agency').innerText = `${orb.country === 'IND' ? '🇮🇳 ' : ''}${orb.agency}`;
+      document.getElementById('target-agency').innerText = `${orb.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${orb.agency}`;
 
-      document.getElementById('tele-parent').innerText = `${orb.parent === 'mars' ? '🔴' : (orb.parent === 'jupiter' ? '🟠' : (orb.parent === 'saturn' ? '🪐' : '⚪'))} ${orb.parent.toUpperCase()}`;
-      document.getElementById('tele-agency').innerText = `${orb.country === 'IND' ? '🇮🇳 ' : ''}${orb.agency}`;
+      // Update Telemetry Panel to Orbiter Mode
+      const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Parent Body";
+      const l2 = document.getElementById('tele-lbl-2'); if (l2) l2.innerText = "Inclination";
+      const l3 = document.getElementById('tele-lbl-3'); if (l3) l3.innerText = "Orbital Altitude";
+      const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Speed";
+
+      document.getElementById('tele-parent').innerText = `${orb.parent === 'mars' ? 'ðŸ”´' : (orb.parent === 'jupiter' ? 'ðŸŸ ' : (orb.parent === 'saturn' ? 'ðŸª' : 'âšª'))} ${orb.parent.toUpperCase()}`;
+      document.getElementById('tele-agency').innerText = `${orb.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${orb.agency}`;
+      document.getElementById('tele-lat').innerText = orb.parent.toUpperCase();
+      document.getElementById('tele-lng').innerText = `${orb.inc.toFixed(1)}Â°`;
       document.getElementById('tele-alt').innerText = orb.altitude;
       document.getElementById('tele-vel').innerText = orb.velocity;
       document.getElementById('tele-period').innerText = orb.period;
-      document.getElementById('tele-inc').innerText = `${orb.inc.toFixed(1)}°`;
+      document.getElementById('tele-inc').innerText = `${orb.inc.toFixed(1)}Â°`;
       document.getElementById('tele-status').innerText = "ACTIVE SCIENCE";
       document.getElementById('tele-status').className = "text-emerald-400 font-semibold";
 
@@ -1870,7 +1905,7 @@
       else targetCameraDistance = 4.2;
 
       const dirEl = document.getElementById('tele-direction');
-      if (dirEl) dirEl.innerText = `${(orb.inc || 0).toFixed(1)}° Planetary Node`;
+      if (dirEl) dirEl.innerText = `${(orb.inc || 0).toFixed(1)}Â° Planetary Node`;
       const raanEl = document.getElementById('tele-raan');
       if (raanEl) raanEl.innerText = "Interplanetary";
       const fpEl = document.getElementById('tele-footprint');
@@ -1898,10 +1933,17 @@
         isTrackingPlanet = false;
         const sat = SATELLITES[key];
         document.getElementById('target-name').innerText = sat.name;
-        document.getElementById('target-parent').innerText = "🌍 Earth LEO/GEO";
-        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? '🇮🇳 ' : ''}${sat.agency}`;
+        document.getElementById('target-name').className = "text-cyan-400 font-bold";
+        document.getElementById('target-parent').innerText = "ðŸŒ Earth LEO/GEO";
+        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? 'ðŸ‡®ðŸ‡³ ' : ''}${sat.agency}`;
 
-        document.getElementById('tele-parent').innerText = "🌍 Earth";
+        // Update Telemetry Panel to Satellite Mode
+        const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Latitude / Decl";
+        const l2 = document.getElementById('tele-lbl-2'); if (l2) l2.innerText = "Longitude / RA";
+        const l3 = document.getElementById('tele-lbl-3'); if (l3) l3.innerText = "Altitude / Orbit";
+        const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Orbital Velocity";
+
+        document.getElementById('tele-parent').innerText = "ðŸŒ Earth";
         document.getElementById('tele-agency').innerText = sat.agency;
         document.getElementById('tele-alt').innerText = `${sat.altitude.toLocaleString()} km`;
         document.getElementById('tele-vel').innerText = `${sat.velocity.toLocaleString()} km/h`;
@@ -1909,11 +1951,11 @@
         document.getElementById('tele-period').innerText = sat.period;
 
         const dirEl = document.getElementById('tele-direction');
-        if (dirEl) dirEl.innerText = `${(sat.inclination * 180 / Math.PI).toFixed(1)}° Inc`;
+        if (dirEl) dirEl.innerText = `${(sat.inclination * 180 / Math.PI).toFixed(1)}Â° Inc`;
         const raanEl = document.getElementById('tele-raan');
-        if (raanEl) raanEl.innerText = `${((sat.raan * 180) / Math.PI).toFixed(1)}°`;
+        if (raanEl) raanEl.innerText = `${((sat.raan * 180) / Math.PI).toFixed(1)}Â°`;
         const fpEl = document.getElementById('tele-footprint');
-        if (fpEl) fpEl.innerText = `~${Math.round(2 * Math.sqrt(2 * 6371 * sat.altitude + sat.altitude * sat.altitude) * 0.75).toLocaleString()} km ⌀`;
+        if (fpEl) fpEl.innerText = `~${Math.round(2 * Math.sqrt(2 * 6371 * sat.altitude + sat.altitude * sat.altitude) * 0.75).toLocaleString()} km âŒ€`;
 
         targetCameraDistance = sat.radius > 3.0 ? 8.5 : 5.2;
         updatePerspectiveButtons('earth');
@@ -1933,20 +1975,29 @@
         isTrackingPlanet = true;
         const body = CELESTIAL_BODIES[key];
         document.getElementById('target-name').innerText = body.name;
-        document.getElementById('target-parent').innerText = "Solar System";
-        document.getElementById('target-agency').innerText = "Natural Body";
+        document.getElementById('target-name').className = key === 'sun' ? "text-amber-400 font-bold" : "text-cyan-400 font-bold";
+        document.getElementById('target-parent').innerText = key === 'sun' ? "Heliocentric Center" : "Solar System Body";
+        document.getElementById('target-agency').innerText = body.desc || `${body.dist} AU from Sun`;
 
-        document.getElementById('tele-parent').innerText = "Sun (Sol)";
-        document.getElementById('tele-agency').innerText = "Planetary Object";
-        document.getElementById('tele-alt').innerText = `${body.dist} AU from Sun`;
-        document.getElementById('tele-vel').innerText = `${Math.round(body.lRate * 100000).toLocaleString()} km/h`;
-        document.getElementById('tele-inc').innerText = `${body.tilt || 0}° Tilt`;
-        document.getElementById('tele-period').innerText = "Keplerian";
-        document.getElementById('tele-status').innerText = "STABLE ORBIT";
+        // Update Telemetry Panel to Planet / Solar System Mode
+        const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Semi-Major Axis";
+        const l2 = document.getElementById('tele-lbl-2'); if (l2) l2.innerText = "Mean Longitude";
+        const l3 = document.getElementById('tele-lbl-3'); if (l3) l3.innerText = "Orbital Velocity";
+        const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Axial Tilt";
+
+        document.getElementById('tele-parent').innerText = key === 'sun' ? "Gravitational Center" : "Sun (Sol)";
+        document.getElementById('tele-agency').innerText = body.type;
+        document.getElementById('tele-lat').innerText = `${body.dist.toFixed(2)} AU`;
+        document.getElementById('tele-lng').innerText = `${(body.l0 || 0).toFixed(1)}Â°`;
+        document.getElementById('tele-alt').innerText = `${Math.round(body.lRate * 100000).toLocaleString()} km/h`;
+        document.getElementById('tele-vel').innerText = `${(body.tilt || 0).toFixed(1)}Â°`;
+        document.getElementById('tele-inc').innerText = `${body.tilt || 0}Â° Tilt`;
+        document.getElementById('tele-period').innerText = key === 'sun' ? "Static Reference" : "Keplerian";
+        document.getElementById('tele-status').innerText = key === 'sun' ? "STELLAR SOURCE" : "STABLE ORBIT";
         document.getElementById('tele-status').className = "text-cyan-400 font-semibold";
 
         const dirEl = document.getElementById('tele-direction');
-        if (dirEl) dirEl.innerText = "Prograde Keplerian";
+        if (dirEl) dirEl.innerText = key === 'sun' ? "Heliocentric Prime" : "Prograde Keplerian";
         const raanEl = document.getElementById('tele-raan');
         if (raanEl) raanEl.innerText = "Ecliptic Invariant";
         const fpEl = document.getElementById('tele-footprint');
@@ -1954,7 +2005,7 @@
         const shadowEl = document.getElementById('tele-shadow');
         if (shadowEl) shadowEl.innerText = key === 'sun' ? "STELLAR SOURCE" : "SOLAR ILLUMINATED";
 
-        if (key === 'sun') targetCameraDistance = 45.0;
+        if (key === 'sun') targetCameraDistance = 115.0; // WIDE OPENING SOLAR VIEW!
         else if (key === 'earth') targetCameraDistance = 5.2;
         else if (key === 'mars') targetCameraDistance = 3.8;
         else if (key === 'jupiter') targetCameraDistance = 8.0;
@@ -1972,8 +2023,7 @@
     }
 
     function resetCameraView() {
-      targetCameraDistance = 5.2;
-      setFocusToOrbiter('mom');
+      setFocusTo('sun'); // Resets to starting Solar System perspective
     }
 
     function handleUrlTargetTracking() {
@@ -2084,7 +2134,6 @@
       if (planetCont) {
         planetCont.innerHTML = '';
         Object.keys(CELESTIAL_BODIES).forEach(k => {
-          if (k === 'sun') return;
           const b = CELESTIAL_BODIES[k];
           const card = document.createElement('div');
           card.className = "planet-item p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-amber-400 cursor-pointer transition flex justify-between items-center";
@@ -2094,7 +2143,7 @@
               <span class="text-white font-bold block">${b.name}</span>
               <span class="text-[10px] text-slate-400">${b.desc}</span>
             </div>
-            <span class="text-[10px] text-amber-400 font-mono font-bold">ZOOM 3D →</span>
+            <span class="text-[10px] text-amber-400 font-mono font-bold">VIEW 3D →</span>
           `;
           planetCont.appendChild(card);
         });
@@ -2106,6 +2155,9 @@
 
     renderCatalogs();
     handleUrlTargetTracking();
+    if (!window.location.search.includes('target=')) {
+      setFocusTo('sun');
+    }
 
     // --- 15. SCROLL, TOUCH & EVENT LISTENERS ---
     document.querySelectorAll('#catalog-panel, #telemetry-panel, #video-panel').forEach(p => {
@@ -2279,7 +2331,21 @@
         pObj.group.position.x = Math.cos(pLRad) * pObj.data.dist;
         pObj.group.position.z = Math.sin(pLRad) * pObj.data.dist;
         pObj.mesh.rotation.y += 0.003 * timeScale;
+
+        if (pk === activeTargetKey) {
+          const degLng = ((pObj.data.l0 + pObj.data.lRate * astro.d) % 360);
+          const posLng = degLng < 0 ? degLng + 360 : degLng;
+          const lngEl = document.getElementById('tele-lng');
+          if (lngEl) lngEl.innerText = `${posLng.toFixed(1)}°`;
+        }
       });
+
+      if (activeTargetKey === 'earth') {
+        const earthDeg = ((CELESTIAL_BODIES.earth.l0 + CELESTIAL_BODIES.earth.lRate * astro.d) % 360);
+        const posEarth = earthDeg < 0 ? earthDeg + 360 : earthDeg;
+        const lngEl = document.getElementById('tele-lng');
+        if (lngEl) lngEl.innerText = `${posEarth.toFixed(1)}°`;
+      }
 
       // 4. Propagate Interplanetary Spacecraft (Mangalyaan, Juno, Cassini, etc.)
       Object.keys(orbiterMeshes).forEach(ok => {
