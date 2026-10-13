@@ -2319,92 +2319,54 @@
       });
     }
 
-    // --- 12. VIDEO STREAM SWITCHER & ERROR 153 PROTECTION ---
+    // --- 12. VIDEO STREAM SWITCHER & ON-DEMAND STREAM MANAGER ---
     const STREAM_FEEDS = [
-      { id: "awQzjn72bI0", title: "NASA Live ISS Feed", url: "https://www.youtube.com/watch?v=awQzjn72bI0" },
-      { id: "DDU-r6sDXdA", title: "Space Videos Earth Orbit Live HD", url: "https://www.youtube.com/watch?v=DDU-r6sDXdA" },
-      { id: "21X5lGlDOfg", title: "NASA TV Live Operations", url: "https://www.youtube.com/watch?v=21X5lGlDOfg" },
-      { id: "k204D5g3z30", title: "Sen 4K Ultra HD Orbit", url: "https://www.youtube.com/watch?v=k204D5g3z30" }
+      { id: "awQzjn72bI0", title: "NASA Official ISS Live Feed" },
+      { id: "DDU-r6sDXdA", title: "Space Videos Earth Orbit" },
+      { id: "21X5lGlDOfg", title: "NASA TV Live Operations" },
+      { id: "k204D5g3z30", title: "Sen 4K Ultra HD Orbit" }
     ];
 
+    let currentStreamIndex = 0;
     let isSimulatedCamActive = false;
-    const simCamCanvas = document.getElementById("simulated-orbit-canvas");
-    const simCamCtx = simCamCanvas ? simCamCanvas.getContext("2d") : null;
 
     function renderSimulatedLEOCam() {
-      if (!isSimulatedCamActive || !simCamCtx) return;
-      const w = simCamCanvas.width = 400;
-      const h = simCamCanvas.height = 225;
-
-      // Deep space background
-      simCamCtx.fillStyle = '#010612';
-      simCamCtx.fillRect(0, 0, w, h);
-
-      // Curved Earth Horizon
-      const grad = simCamCtx.createRadialGradient(w / 2, h + 140, 20, w / 2, h + 140, 280);
-      grad.addColorStop(0, '#0284c7');
-      grad.addColorStop(0.4, '#0369a1');
-      grad.addColorStop(0.8, '#082f49');
-      grad.addColorStop(1, '#000000');
-      simCamCtx.fillStyle = grad;
-      simCamCtx.beginPath();
-      simCamCtx.arc(w / 2, h + 140, 260, 0, Math.PI * 2);
-      simCamCtx.fill();
-
-      // Atmospheric limb glow
-      simCamCtx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-      simCamCtx.lineWidth = 3;
-      simCamCtx.stroke();
-
-      // Telemetry HUD overlay
-      simCamCtx.fillStyle = '#38bdf8';
-      simCamCtx.font = '10px ui-monospace, monospace';
-      simCamCtx.fillText(`LIVE LEO FEED • ALT: 420 KM • VEL: 27,580 KM/H`, 12, 22);
-      simCamCtx.fillStyle = '#10b981';
-      simCamCtx.fillText(`TARGET: ISS (ZARYA) • OPTICAL SENSOR 01`, 12, 38);
-
-      // Crosshair
-      simCamCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      simCamCtx.lineWidth = 1;
-      simCamCtx.beginPath();
-      simCamCtx.moveTo(w / 2 - 15, h / 2); simCamCtx.lineTo(w / 2 + 15, h / 2);
-      simCamCtx.moveTo(w / 2, h / 2 - 15); simCamCtx.lineTo(w / 2, h / 2 + 15);
-      simCamCtx.stroke();
+      // Safe no-op maintaining render loop compatibility
     }
 
-    function changeLiveStream(val) {
+    function setIframeStream(index) {
       const frame = document.getElementById("iss-video-frame");
-      const canvas = document.getElementById("simulated-orbit-canvas");
-      const outlink = document.getElementById("stream-outlink");
-      const helper = document.getElementById("stream-error-helper");
-
-      if (val === "simulated") {
-        isSimulatedCamActive = true;
-        if (frame) frame.classList.add("hidden");
-        if (canvas) canvas.classList.remove("hidden");
-        if (helper) helper.classList.add("hidden");
-        return;
+      if (!frame) return;
+      const feed = STREAM_FEEDS[index] || STREAM_FEEDS[0];
+      const targetSrc = `https://www.youtube-nocookie.com/embed/${feed.id}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
+      
+      if (frame.src !== targetSrc) {
+        frame.src = targetSrc;
       }
+    }
 
-      isSimulatedCamActive = false;
-      if (canvas) canvas.classList.add("hidden");
-      if (frame) frame.classList.remove("hidden");
+    function toggleVideoPanel() {
+      const p = document.getElementById('video-panel');
+      const frame = document.getElementById('iss-video-frame');
+      if (!p) return;
 
-      const feedIdx = parseInt(val, 10);
-      const feed = STREAM_FEEDS[feedIdx] || STREAM_FEEDS[0];
+      const isOpening = p.classList.contains('hidden');
+      p.classList.toggle('hidden');
 
-      if (frame) {
-        // Enforce strict origin & non-restricted params to avoid Error 153
-        const originParam = window.location.protocol.startsWith('http') ? `&origin=${encodeURIComponent(window.location.origin)}` : '';
-        frame.src = `https://www.youtube-nocookie.com/embed/${feed.id}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1${originParam}`;
+      if (isOpening) {
+        // Load feed only when visible
+        setIframeStream(currentStreamIndex);
+      } else {
+        // Cleanly terminate iframe execution when closed to stop requestIdleCallback loops
+        if (frame) frame.src = "about:blank";
       }
-      if (outlink) {
-        outlink.href = feed.url || `https://www.youtube.com/watch?v=${feed.id}`;
-      }
+    }
 
-      // Show helper banner if on file:/// protocol where YouTube error 153 is known to occur
-      if (window.location.protocol === 'file:' && helper) {
-        helper.classList.remove("hidden");
+    function changeLiveStream(idx) {
+      currentStreamIndex = parseInt(idx, 10) || 0;
+      const p = document.getElementById('video-panel');
+      if (p && !p.classList.contains('hidden')) {
+        setIframeStream(currentStreamIndex);
       }
     }
 
@@ -2692,20 +2654,6 @@
       });
     }
 
-    function toggleVideoPanel() {
-      const p = document.getElementById('video-panel');
-      if (p) {
-        const isHidden = p.classList.toggle('hidden');
-        const frame = document.getElementById('iss-video-frame');
-        if (!isHidden && frame && (frame.src === 'about:blank' || !frame.src || frame.src.endsWith('about:blank'))) {
-          const switcher = document.getElementById('feed-switcher');
-          changeLiveStream(switcher ? switcher.value : '0');
-        } else if (isHidden && frame) {
-          // Unload YouTube iframe to completely stop background WebGPU/WebGL decode loops
-          frame.src = 'about:blank';
-        }
-      }
-    }
 
     function switchCategory(cat) {
       document.querySelectorAll('.cat-panel').forEach(p => p.classList.add('hidden'));
