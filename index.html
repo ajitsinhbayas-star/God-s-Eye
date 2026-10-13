@@ -24,7 +24,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
-    /* Mobile Safe Area & Viewport Lockdown */
     :root {
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
@@ -37,6 +36,11 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
+      height: 100%;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+      background-color: #000208;
     }
 
     .scroll-container {
@@ -47,6 +51,10 @@
 
     #globe-container {
       touch-action: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
     ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -55,11 +63,11 @@
     ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.7); }
 
     .hud-glass {
-      background: rgba(8, 14, 29, 0.88);
+      background: rgba(8, 14, 29, 0.90);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(56, 189, 248, 0.22);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .hud-glow {
       box-shadow: 0 0 25px -3px rgba(6, 182, 212, 0.45);
@@ -74,7 +82,6 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
-    /* Panel Transitions */
     .panel-slide-left {
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
       will-change: transform, opacity;
@@ -105,7 +112,6 @@
       pointer-events: none !important;
     }
 
-    /* Safe Area Offsets */
     .header-safe {
       top: calc(0.75rem + var(--sat));
       left: calc(0.75rem + var(--sal));
@@ -115,7 +121,6 @@
       bottom: calc(0.75rem + var(--sab));
     }
 
-    /* Cinematic Mode UI Fade */
     body.cinematic-active header,
     body.cinematic-active #catalog-panel,
     body.cinematic-active #telemetry-panel,
@@ -127,23 +132,18 @@
       pointer-events: none !important;
       transition: opacity 0.8s ease;
     }
-    body.cinematic-active header:hover,
-    body.cinematic-active #dock-bar:hover {
-      opacity: 1 !important;
-      pointer-events: auto !important;
-    }
   </style>
 </head>
 <body class="bg-[#000208] text-slate-100 font-sans h-screen h-[100dvh] w-screen overflow-hidden select-none">
 
   <!-- 3D Three.js WebGL Viewport -->
-  <div id="globe-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
+  <div id="globe-container" class="cursor-grab active:cursor-grabbing"></div>
 
   <!-- Audio Elements -->
   <audio id="audio-cinematic" loop preload="auto" src="cinematic-drift.mp3"></audio>
   <audio id="audio-intro" loop preload="auto" src="intro-ambient.mp3"></audio>
 
-  <!-- Responsive Entry Launch Modal -->
+  <!-- Entry Launch Modal -->
   <div id="intro-launch-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl transition-opacity duration-700 p-4">
     <div class="max-w-md w-full p-6 sm:p-8 rounded-3xl hud-glass text-center border border-cyan-500/40 hud-glow relative overflow-hidden">
       <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-2xl bg-cyan-950/80 border border-cyan-500/50 flex items-center justify-center hud-glow">
@@ -151,7 +151,7 @@
       </div>
       <h2 class="text-lg sm:text-2xl font-bold tracking-widest uppercase text-white hud-text-glow font-mono">ORBITAL COMMAND</h2>
       <p class="text-xs text-slate-300 mt-2 font-mono leading-relaxed">
-        Real-Time Heliocentric Physics • Multi-Agency Fleets • Touch Optimized
+        Real-Time Heliocentric Physics • Multi-Agency Fleets • Adaptive Engine
       </p>
 
       <div class="mt-6 flex flex-col gap-3">
@@ -175,10 +175,10 @@
 
   <!-- Adaptive Top Mission Control Header -->
   <header class="header-safe absolute z-30 flex flex-col md:flex-row md:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-2xl hud-glass pointer-events-auto">
-    <!-- Brand Title & Live UTC -->
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
-        <div class="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 hud-glow shrink-0">
+        <!-- Logo with Triple-Tap Mobile DevBot Detection -->
+        <div id="hud-logo-badge" class="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 hud-glow shrink-0 cursor-pointer active:scale-95" title="Triple-tap for Dev Bot">
           <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
         </div>
         <div>
@@ -190,10 +190,10 @@
         </div>
       </div>
 
-      <!-- Mobile Quick Actions -->
+      <!-- Mobile Quick Action Buttons -->
       <div class="flex items-center gap-1 md:hidden">
         <button onclick="toggleVideoPanel()" class="p-1.5 px-2 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-mono">
-          Live Cam
+          Cam
         </button>
         <button onclick="toggleAudioMaster()" id="btn-master-sound-m" class="p-1.5 px-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-mono">
           🔊
@@ -204,7 +204,7 @@
       </div>
     </div>
 
-    <!-- 1-Click Perspective Director (Tablet & Desktop) -->
+    <!-- 1-Click Perspective Director -->
     <div class="hidden sm:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono overflow-x-auto scroll-container">
       <button onclick="setFocusTo('sun')" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition whitespace-nowrap">
         ☀️ Solar View
@@ -223,7 +223,7 @@
       </button>
     </div>
 
-    <!-- Desktop Active Target & Actions -->
+    <!-- Desktop Tracking & Settings -->
     <div class="hidden lg:flex items-center gap-3">
       <div class="flex items-center gap-3 px-2.5 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
         <div>
@@ -258,8 +258,8 @@
     <span class="text-xs group-hover:translate-x-0.5 transition-transform">❯</span>
   </button>
 
-  <!-- Left Side: Interactive Catalog (Mobile: Full Width, Tablet: w-80, Desktop: w-96) -->
-  <aside id="catalog-panel" class="panel-slide-left absolute top-20 sm:top-24 left-3 bottom-20 sm:bottom-24 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 z-30 flex flex-col rounded-2xl hud-glass pointer-events-auto">
+  <!-- Left Side: Interactive Catalog -->
+  <aside id="catalog-panel" class="panel-slide-left absolute top-20 sm:top-24 left-3 bottom-20 sm:bottom-24 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 max-h-[calc(100dvh-10rem)] z-30 flex flex-col rounded-2xl hud-glass pointer-events-auto">
     <div class="flex items-center justify-between p-3 border-b border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
@@ -378,8 +378,8 @@
     </div>
   </aside>
 
-  <!-- Responsive Mission Intelligence Dossier Card (Auto-Opens on Target Selection) -->
-  <div id="intel-card" class="intel-card-slide is-hidden absolute top-20 sm:top-24 right-3 bottom-20 sm:bottom-24 z-40 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden">
+  <!-- Mission Intelligence Dossier Card -->
+  <div id="intel-card" class="intel-card-slide is-hidden absolute top-20 sm:top-24 right-3 bottom-20 sm:bottom-24 z-40 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 max-h-[calc(100dvh-10rem)] rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-950/85 border-b border-slate-800 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
@@ -395,7 +395,6 @@
     </div>
 
     <div class="flex-1 overflow-y-auto scroll-container p-3 sm:p-3.5 space-y-2.5 font-mono text-xs">
-      <!-- 2x2 Telemetry Grid -->
       <div class="grid grid-cols-2 gap-2">
         <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
           <span class="text-slate-500 block text-[9px] uppercase">Altitude / Orbit</span>
@@ -415,7 +414,6 @@
         </div>
       </div>
 
-      <!-- Launch Specifications -->
       <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5 text-[10px] sm:text-[11px]">
         <div class="flex justify-between items-center">
           <span class="text-slate-400">Launch Date:</span>
@@ -431,7 +429,6 @@
         </div>
       </div>
 
-      <!-- Working Method & Sensors -->
       <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1 text-[11px]">
         <span class="text-[10px] uppercase font-bold text-cyan-400 block">Working Method & Sensors:</span>
         <p id="card-intel-method" class="text-slate-300 leading-relaxed text-[10px] sm:text-[11px]">
@@ -439,13 +436,11 @@
         </p>
       </div>
 
-      <!-- Tracking Station -->
       <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-[10px] sm:text-[11px]">
         <span class="text-slate-400">Tracking Station:</span>
         <span id="card-intel-radar" class="text-white font-bold truncate max-w-[160px]">ISTRAC, Bengaluru</span>
       </div>
 
-      <!-- Wikipedia Live Dossier -->
       <div class="p-2.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-[10px] text-cyan-300 font-bold flex items-center gap-1">
@@ -519,7 +514,7 @@
     </div>
   </div>
 
-  <!-- Astronomical Simulation, Cross-Platform Touch Gestures & Autonomous Agents -->
+  <!-- Primary Astronomical Simulation & UI Engine -->
   <script>
     // --- 1. AUDIO & SOUNDTRACK ENGINE ---
     const audioCinematic = document.getElementById('audio-cinematic');
@@ -678,7 +673,7 @@
       return { jd, d, utcHours, date, deltaDeg, deltaRad, subsolarLngDeg, eotMin };
     }
 
-    // --- 4. SATELLITE & SOLAR SYSTEM DATA ---
+    // --- 4. DATASETS: SATELLITES & SOLAR SYSTEM ---
     const SATELLITES = {};
 
     function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role, launchDate, launchVeh, launchSite, radarStation, workingMethod, wikiKey) {
@@ -724,7 +719,6 @@
       addSat(`starlink_${i}`, `Starlink-${3000 + i}`, 48000 + i, "SpaceX", "USA", 53.2, 550, 0xc084fc, "constellation", "Low-Earth Orbit Broadband Internet", "Active Batch", "Falcon 9", "Cape Canaveral", "SpaceX Gateway", "Phased array antennas and optical inter-satellite space lasers.", "Starlink");
     }
 
-    // Interplanetary Probes
     const PLANETARY_ORBITERS = {
       mom: { 
         name: "Mangalyaan (MOM)", parent: "mars", agency: "ISRO", country: "IND", orbitRadius: 2.4, inc: 150.0, speed: 0.0016, color: 0xfbbf24, altitude: "421 × 76,993 km", velocity: "14,800 km/h", period: "72.9 hrs",
@@ -748,7 +742,6 @@
       }
     };
 
-    // Heliocentric Solar System
     const CELESTIAL_BODIES = {
       sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 3.2, color: 0xfbbf24, l0: 0, lRate: 0, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.70, color: 0x94a3b8, l0: 252.25, lRate: 4.092334, desc: "0.39 AU • Innermost Rocky Planet", wikiKey: "Mercury_(planet)" },
@@ -767,7 +760,7 @@
     let isTrackingPlanet = true;
     let activeAgencyFilter = "all";
 
-    // --- 5. THREE.JS VIEWPORT & RESPONSIVE CANVAS ---
+    // --- 5. THREE.JS VIEWPORT & CONTEXT RECOVERY ---
     const container = document.getElementById("globe-container");
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000208, 0.006);
@@ -782,8 +775,19 @@
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     container.appendChild(renderer.domElement);
+
+    // WebGL Context-Loss Guard
+    renderer.domElement.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      console.warn('[WebGL Engine] Context lost. Executing automatic preservation hook.');
+    }, false);
+
+    renderer.domElement.addEventListener('webglcontextrestored', () => {
+      console.log('[WebGL Engine] Context restored successfully.');
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }, false);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
     scene.add(ambientLight);
@@ -910,7 +914,7 @@
     earthBeacon.rotation.x = Math.PI / 2;
     earthSystem.add(earthBeacon);
 
-    // Procedural Clouds Canvas Fallback
+    // Cloud Layer
     function createProceduralCloudsCanvas() {
       const c = document.createElement('canvas'); c.width = 1024; c.height = 512;
       const ctx = c.getContext('2d');
@@ -1118,7 +1122,7 @@
 
     Object.keys(PLANETARY_ORBITERS).forEach(k => buildPlanetaryOrbiter(k, PLANETARY_ORBITERS[k]));
 
-    // --- 9. WIKIPEDIA INTEL BOT ---
+    // --- 9. RESILIENT WIKIPEDIA INTEL BOT (Multi-Tier Fallback) ---
     const WikiIntelBot = (function() {
       const cache = {};
 
@@ -1138,20 +1142,38 @@
         }
 
         try {
+          // Tier 1: Direct REST Summary
           const endpoint = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(targetTitle)}`;
-          const response = await fetch(endpoint, { mode: 'cors' });
-          if (!response.ok) throw new Error("Not found");
+          const response = await fetch(endpoint);
+          if (!response.ok) throw new Error("Tier 1 not found");
           const data = await response.json();
           cache[targetTitle] = data;
           renderResult(data);
-          if (window.BotSwarm && window.BotSwarm.logTerminal) {
-            BotSwarm.logTerminal("BOT-WIKI", `Intel synced: ${data.title}`);
-          }
+          BotSwarm.logTerminal("BOT-WIKI", `Intel verified: ${data.title}`);
         } catch {
-          if (indicator) indicator.innerText = "Local Spec";
-          if (textField) textField.innerText = `Detailed encyclopedic dossier not returned via live query. Displaying onboard sensor specifications.`;
-          if (imgContainer) imgContainer.classList.add("hidden");
-          if (linkField) linkField.href = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(targetTitle)}`;
+          try {
+            // Tier 2: OpenSearch MediaWiki Fallback
+            const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(targetTitle)}&limit=1&namespace=0&format=json&origin=*`);
+            const searchData = await searchRes.json();
+            if (searchData && searchData[1] && searchData[1][0]) {
+              const matchedTitle = searchData[1][0];
+              const fallbackEndpoint = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(matchedTitle)}`;
+              const fbRes = await fetch(fallbackEndpoint);
+              if (fbRes.ok) {
+                const fbData = await fbRes.json();
+                cache[targetTitle] = fbData;
+                renderResult(fbData);
+                return;
+              }
+            }
+            throw new Error("Tier 2 not found");
+          } catch {
+            // Tier 3: Local Sensor Fallback
+            if (indicator) indicator.innerText = "Local Spec";
+            if (textField) textField.innerText = "Detailed encyclopedic dossier not returned via live query. Displaying onboard sensor specifications.";
+            if (imgContainer) imgContainer.classList.add("hidden");
+            if (linkField) linkField.href = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(targetTitle)}`;
+          }
         }
       }
 
@@ -1180,7 +1202,6 @@
 
     // --- 10. ADAPTIVE PANEL CONTROLLER ---
     function openIntelCard(key, isOrbiter = false) {
-      // Mobile Single-Panel Rule: Auto-close drawers to prevent screen clutter
       if (window.innerWidth < 768) {
         minimizeBothPanels();
       }
@@ -1294,8 +1315,6 @@
     window.addEventListener('keydown', e => {
       if ((e.key === 'm' || e.key === 'M') && e.target.tagName !== 'INPUT') toggleHUDPanels();
       if ((e.key === 'f' || e.key === 'F') && e.target.tagName !== 'INPUT') toggleFullscreen();
-      if ((e.key === 'v' || e.key === 'V') && e.target.tagName !== 'INPUT') toggleVideoPanel();
-      if ((e.key === 'r' || e.key === 'R') && e.target.tagName !== 'INPUT') resetCameraView();
       if (e.key === 'Escape') closeIntelCard();
     });
 
@@ -1539,7 +1558,7 @@
 
     renderCatalogs();
 
-    // --- 13. CROSS-PLATFORM TOUCH & GESTURE ENGINE (PINCH-TO-ZOOM + ORBIT) ---
+    // --- 13. CROSS-PLATFORM TOUCH & GESTURE ENGINE ---
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
     let startClick = { x: 0, y: 0 };
@@ -1547,9 +1566,9 @@
     const raycaster = new THREE.Raycaster();
     const mouseVec = new THREE.Vector2();
 
-    // Mouse Controls (Desktop)
+    // Desktop Mouse
     window.addEventListener('mousedown', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       isDragging = true;
       prevMouse = { x: e.clientX, y: e.clientY };
       startClick = { x: e.clientX, y: e.clientY };
@@ -1560,21 +1579,21 @@
       const dx = e.clientX - prevMouse.x;
       const dy = e.clientY - prevMouse.y;
       cameraTheta -= dx * 0.006;
-      cameraPhi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraPhi + dy * 0.005));
+      cameraPhi = Math.max(-1.52, Math.min(1.52, cameraPhi + dy * 0.005));
       prevMouse = { x: e.clientX, y: e.clientY };
     });
 
     window.addEventListener('mouseup', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       isDragging = false;
       if (Math.hypot(e.clientX - startClick.x, e.clientY - startClick.y) < 6) {
         checkRaycastHit(e.clientX, e.clientY);
       }
     });
 
-    // Touch Controls (Mobile Safari iOS, Android Chrome, Tablets)
+    // Mobile / Tablet Touch
     window.addEventListener('touchstart', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       if (e.touches.length === 1) {
         isDragging = true;
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -1589,12 +1608,12 @@
     }, { passive: true });
 
     window.addEventListener('touchmove', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       if (e.touches.length === 1 && isDragging) {
         const dx = e.touches[0].clientX - prevMouse.x;
         const dy = e.touches[0].clientY - prevMouse.y;
         cameraTheta -= dx * 0.007;
-        cameraPhi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraPhi + dy * 0.006));
+        cameraPhi = Math.max(-1.52, Math.min(1.52, cameraPhi + dy * 0.006));
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       } else if (e.touches.length === 2 && initialPinchDistance) {
         const currentDistance = Math.hypot(
@@ -1608,7 +1627,7 @@
     }, { passive: true });
 
     window.addEventListener('touchend', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       if (e.touches.length === 0) {
         isDragging = false;
         initialPinchDistance = null;
@@ -1631,19 +1650,24 @@
     }
 
     window.addEventListener('wheel', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #sentinel-dev-panel, button, input, select, a')) return;
       targetCameraDistance = Math.max(1.8, Math.min(260.0, targetCameraDistance + e.deltaY * 0.02));
     }, { passive: true });
 
-    // Dynamic Viewport Resize
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+    // Dynamic Visual Viewport & Orientation Resize
+    function handleViewportResize() {
+      const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    }
 
-    // --- 14. RESILIENT BOT SWARM & OFFLINE DATA ENGINE ---
+    window.addEventListener('resize', handleViewportResize);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleViewportResize);
+
+    // --- 14. RESILIENT BOT SWARM ---
     const BotSwarm = (function () {
       const BOTS = [
         { id: "BOT-ISRO-01", name: "ISRO Telemetry Harvester", source: "Embedded NORAD Engine", role: "Propagates INSAT, GSAT, Cartosat, and AstroSat vectors", status: "ONLINE", packets: 165, active: true },
@@ -1729,7 +1753,7 @@
         setInterval(runISSSentinel, 3000);
       }
 
-      return { 
+            return { 
         init, 
         logTerminal,
         manualHarvest: () => {
@@ -1767,7 +1791,7 @@
 
     BotSwarm.init();
 
-    // --- 15. MAIN ASTRONOMICAL RENDER LOOP ---
+    // --- 15. MAIN RENDER LOOP ---
     function animate() {
       requestAnimationFrame(animate);
 
@@ -1896,7 +1920,7 @@
     animate();
   </script>
 
-  <!-- Autonomous Client-Side Dev Bot (Hotkey: Shift + D) -->
+  <!-- Autonomous Client-Side Dev Bot (Mobile Triple-Tap & Shift+D Trigger) -->
   <script>
     (function() {
       const STORAGE_KEY = "_sentinel_diagnostics_store";
@@ -1912,7 +1936,7 @@
           records.unshift(incident);
           if (records.length > 200) records.pop();
           localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-        } catch {}
+        } catch(e) {}
       }
 
       // Self-Healing Error Handlers
@@ -1957,7 +1981,7 @@
           </div>
           <div class="text-[10px] text-slate-400 flex justify-between">
             <span>Recorded Incidents: <b class="text-white">${incidents.length}</b></span>
-            <span>HotKey: <b class="text-cyan-400">Shift + D</b></span>
+            <span>Mobile: <b class="text-cyan-400">3x Logo Tap</b></span>
           </div>
           <div class="max-h-44 overflow-y-auto space-y-1.5 scroll-container pr-1">
             ${incidents.length === 0 ? '<div class="text-slate-500 py-3 text-center">No anomalies detected. Mobile & Desktop system healthy.</div>' : ''}
@@ -1979,10 +2003,32 @@
         document.body.appendChild(div);
       };
 
+      // Desktop Shortcut: Shift + D
       window.addEventListener("keydown", e => {
         if (e.shiftKey && (e.key === "D" || e.key === "d")) window.openDevBot();
       });
 
+      // Mobile Touch Shortcut: Triple-Tap Logo (#hud-logo-badge)
+      let tapCount = 0;
+      let lastTapTime = 0;
+      const logoEl = document.getElementById("hud-logo-badge");
+      if (logoEl) {
+        logoEl.addEventListener("click", () => {
+          const now = Date.now();
+          if (now - lastTapTime < 450) {
+            tapCount++;
+            if (tapCount >= 2) { // 3 rapid clicks total
+              window.openDevBot();
+              tapCount = 0;
+            }
+          } else {
+            tapCount = 0;
+          }
+          lastTapTime = now;
+        });
+      }
+
+      // URL Dev Key Check
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("dev_key") === "my_dev_master_key") {
         document.addEventListener("DOMContentLoaded", window.openDevBot);
