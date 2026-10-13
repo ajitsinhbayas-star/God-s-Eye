@@ -1849,12 +1849,49 @@
     earthBeacon.rotation.x = Math.PI / 2;
     earthSystem.add(earthBeacon);
 
-    const cloudsMat = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.42, blending: THREE.NormalBlending });
+    // --- REALISTIC DYNAMIC CLOUDS WITH PROCEDURAL FALLBACK (Zero 404s) ---
+    function createProceduralCloudsCanvas() {
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 1024, 512);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      
+      // Procedural realistic atmospheric cloud swirls
+      for (let i = 0; i < 240; i++) {
+        const x = Math.random() * 1024;
+        const y = 80 + Math.random() * 352;
+        const rx = 20 + Math.random() * 55;
+        const ry = 6 + Math.random() * 18;
+        ctx.beginPath();
+        ctx.ellipse(x, y, rx, ry, (Math.random() - 0.5) * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(c);
+    }
+
+    const cloudsMat = new THREE.MeshStandardMaterial({
+      map: createProceduralCloudsCanvas(), // Instant fallback: renders immediately with zero network delay
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.NormalBlending
+    });
     const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.025, 64, 64), cloudsMat);
     earthAxialGroup.add(cloudsMesh);
-    textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-clouds.png', tex => {
-      cloudsMat.map = tex; cloudsMat.needsUpdate = true;
-    });
+
+    // Corrected CDN path: example/clouds/clouds.png (NOT example/img/earth-clouds.png)
+    textureLoader.load(
+      'https://cdn.jsdelivr.net/npm/three-globe/example/clouds/clouds.png',
+      (tex) => {
+        cloudsMat.map = tex;
+        cloudsMat.needsUpdate = true;
+      },
+      undefined,
+      (err) => {
+        // Keeps procedural clouds intact if CDN is slow or blocked
+        console.warn('[Texture Engine] CDN cloud texture unavailable; procedural fallback active.');
+      }
+    );
 
     earthAxialGroup.add(new THREE.Mesh(
       new THREE.SphereGeometry(earthRadius + 0.045, 64, 64),
