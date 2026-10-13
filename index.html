@@ -1127,89 +1127,50 @@
       };
     }
 
-    // --- 6. PROCEDURAL SURFACE TEXTURE GENERATOR (Visible Spin) ---
-    function generatePlanetCanvasTexture(planetKey) {
+    // --- 2. NASA EYES PHOTOGRAPHIC TEXTURE ENGINE WITH FALLBACKS ---
+    const NASA_TEXTURE_MAPS = {
+      mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
+      venus:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
+      moon:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/moonmap1k.jpg',
+      mars:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
+      jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
+      saturn:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
+      uranus:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
+      neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg',
+      pluto:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/plutomap1k.jpg'
+    };
+
+    function createProceduralFallback(planetKey) {
       const c = document.createElement('canvas');
-      c.width = 512;
-      c.height = 256;
+      c.width = 512; c.height = 256;
       const ctx = c.getContext('2d');
-
-      if (planetKey === 'mercury') {
-        ctx.fillStyle = '#8c827a';
-        ctx.fillRect(0, 0, 512, 256);
-        for (let i = 0; i < 280; i++) {
-          ctx.fillStyle = Math.random() > 0.5 ? '#686058' : '#b2a89f';
-          ctx.beginPath();
-          ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 6 + 1, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      } else if (planetKey === 'venus') {
-        const grad = ctx.createLinearGradient(0, 0, 0, 256);
-        grad.addColorStop(0, '#e8c878');
-        grad.addColorStop(0.5, '#f5e2a3');
-        grad.addColorStop(1, '#c9a859');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 512, 256);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-        for (let y = 30; y < 230; y += 18) {
-          ctx.fillRect(0, y + Math.sin(y) * 8, 512, 6);
-        }
-      } else if (planetKey === 'mars') {
-        ctx.fillStyle = '#c1440e';
-        ctx.fillRect(0, 0, 512, 256);
-        ctx.fillStyle = '#6b2005';
-        for (let i = 0; i < 40; i++) {
-          ctx.beginPath();
-          ctx.ellipse(Math.random() * 512, 60 + Math.random() * 136, 35 + Math.random() * 40, 15 + Math.random() * 15, Math.random(), 0, Math.PI * 2);
-          ctx.fill();
-        }
-        // Polar Ice Caps
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, 512, 22);
-        ctx.fillRect(0, 234, 512, 22);
-      } else if (planetKey === 'jupiter') {
-        ctx.fillStyle = '#d39c63';
-        ctx.fillRect(0, 0, 512, 256);
-        const bands = ['#8c4d22', '#f3d19e', '#a85f2b', '#ebd1b2', '#7b3e15', '#e2be95'];
-        for (let i = 0; i < bands.length; i++) {
-          ctx.fillStyle = bands[i];
-          ctx.fillRect(0, i * 42, 512, 32);
-        }
-        // Great Red Spot
-        ctx.fillStyle = '#c5381b';
-        ctx.beginPath();
-        ctx.ellipse(290, 165, 36, 20, 0, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (planetKey === 'saturn') {
-        const grad = ctx.createLinearGradient(0, 0, 0, 256);
-        grad.addColorStop(0, '#d1b87a');
-        grad.addColorStop(0.3, '#ebd8a0');
-        grad.addColorStop(0.7, '#c9ae6a');
-        grad.addColorStop(1, '#a68c4a');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 512, 256);
-      } else if (planetKey === 'uranus') {
-        ctx.fillStyle = '#7de8ea';
-        ctx.fillRect(0, 0, 512, 256);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.fillRect(0, 0, 512, 50);
-      } else if (planetKey === 'neptune') {
-        ctx.fillStyle = '#274687';
-        ctx.fillRect(0, 0, 512, 256);
-        ctx.fillStyle = '#4b75d6';
-        ctx.beginPath();
-        ctx.ellipse(320, 130, 32, 18, 0.2, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.fillStyle = '#8b5a2b';
-        ctx.fillRect(0, 0, 512, 256);
-        ctx.fillStyle = '#f5eedb';
-        ctx.beginPath();
-        ctx.arc(256, 128, 45, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
+      const colors = {
+        mercury: '#827d78', venus: '#e3bb76', moon: '#a1a1aa',
+        mars: '#c84e1d', jupiter: '#c99661', saturn: '#e2bf7d',
+        uranus: '#7fe3e8', neptune: '#2b52a1', pluto: '#946f51'
+      };
+      ctx.fillStyle = colors[planetKey] || '#888888';
+      ctx.fillRect(0, 0, 512, 256);
       return new THREE.CanvasTexture(c);
+    }
+
+    function loadNASAPlanetTexture(planetKey, material) {
+      const url = NASA_TEXTURE_MAPS[planetKey];
+      if (!url) return;
+
+      textureLoader.load(
+        url,
+        (tex) => {
+          tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          tex.encoding = THREE.sRGBEncoding;
+          material.map = tex;
+          material.needsUpdate = true;
+        },
+        undefined,
+        () => {
+          console.warn(`[Texture Engine] Fallback procedural map retained for ${planetKey}`);
+        }
+      );
     }
 
     // --- 7. SATELLITES & INTERPLANETARY PROBES ---
@@ -1523,9 +1484,15 @@
     moonPathGeo.setAttribute('position', new THREE.BufferAttribute(moonPathPos, 3));
     moonOrbitRing.add(new THREE.Line(moonPathGeo, new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 })));
 
-    const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius, 24, 24), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
+    const moonMat = new THREE.MeshStandardMaterial({
+      map: createProceduralFallback('moon'),
+      roughness: 0.8,
+      metalness: 0.1
+    });
+    const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius, 24, 24), moonMat);
     moonMesh.position.x = CELESTIAL_BODIES.moon.baseDist;
     moonOrbitRing.add(moonMesh);
+    loadNASAPlanetTexture('moon', moonMat);
 
     const moonHit = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius * 1.5, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
     moonHit.userData = { targetKey: 'moon' };
@@ -1572,10 +1539,11 @@
 
       // Planet mesh spins on its local Y axis
       const pMat = new THREE.MeshStandardMaterial({
-        map: generatePlanetCanvasTexture(k),
+        map: createProceduralFallback(k),
         roughness: 0.8,
         metalness: 0.1
       });
+      loadNASAPlanetTexture(k, pMat);
       const pMesh = new THREE.Mesh(new THREE.SphereGeometry(pData.radius, 32, 32), pMat);
       axialGroup.add(pMesh);
 
