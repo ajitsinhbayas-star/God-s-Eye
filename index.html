@@ -1942,7 +1942,7 @@
         const agencyMatch = (activeAgencyFilter === 'all' || itemAgency === activeAgencyFilter);
         el.style.display = (textMatch && agencyMatch) ? 'flex' : 'none';
       });
-      document.querySelectorAll('.orbiter-item, .planet-item').forEach(el => {
+      document.querySelectorAll('.orbiter-item, .planet-item, .cosmic-tier-item').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
       });
     }
@@ -2016,8 +2016,98 @@
       setFocusTo('sun');
     }
 
+    // --- RENDER COSMIC ADDRESS HIERARCHY TREE ---
+    function renderCosmicHierarchy() {
+      const container = document.getElementById("cosmic-tree-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      COSMIC_HIERARCHY.forEach(tier => {
+        const card = document.createElement("div");
+        card.className = "cosmic-tier-item p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition flex flex-col gap-2";
+
+        const subNodesHTML = tier.nodes.map(n => `
+          <li class="flex items-start gap-1.5 text-[10px] text-slate-400">
+            <span class="text-purple-400 select-none">↳</span>
+            <span>${n}</span>
+          </li>
+        `).join("");
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 font-bold text-white">
+              <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+              <span>${tier.title}</span>
+            </div>
+            <span class="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/40 text-purple-300 bg-purple-500/10">
+              LEVEL ${tier.level}
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-1.5 text-[10px] text-slate-400 bg-slate-950/70 p-2 rounded-lg border border-slate-800/80">
+            <div>Scale: <b class="text-slate-200 block truncate">${tier.scale}</b></div>
+            <div>Kinematics: <b class="text-cyan-300 block truncate">${tier.speed}</b></div>
+          </div>
+
+          <!-- Expandable Sub-Hierarchy -->
+          <details class="text-[10px] text-slate-400 group">
+            <summary class="cursor-pointer text-purple-400 hover:text-purple-300 font-bold select-none list-none flex items-center justify-between">
+              <span>Structure Breakdown (${tier.nodes.length})</span>
+              <span class="transition-transform group-open:rotate-180">▾</span>
+            </summary>
+            <ul class="mt-1.5 space-y-1 pl-1 border-l border-purple-500/30">
+              ${subNodesHTML}
+            </ul>
+          </details>
+
+          <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
+            <span class="text-slate-500 truncate max-w-[160px]">${tier.domain}</span>
+            <button onclick="openCosmicDossier('${tier.id}')" class="px-2 py-0.5 rounded bg-purple-950 hover:bg-purple-900 text-purple-300 border border-purple-500/40 font-bold transition">
+              DOSSIER 🔭
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // --- OPEN COSMIC TIER IN THE INTEL CARD ---
+    function openCosmicDossier(tierId) {
+      const tier = COSMIC_HIERARCHY.find(t => t.id === tierId);
+      if (!tier) return;
+
+      if (window.innerWidth < 768) minimizeBothPanels();
+
+      const card = document.getElementById("intel-card");
+      if (!card) return;
+
+      document.getElementById("card-intel-name").innerText = tier.title;
+      document.getElementById("card-intel-subtitle").innerText = `Cosmic Tier ${tier.level} • ${tier.domain}`;
+      document.getElementById("card-intel-badge").innerText = `TIER ${tier.level}`;
+      document.getElementById("card-intel-badge").className = "text-[9px] px-1.5 py-0.5 rounded font-mono font-bold border border-purple-500/40 text-purple-300 bg-purple-500/10";
+
+      document.getElementById("card-intel-alt").innerText = tier.scale;
+      document.getElementById("card-intel-vel").innerText = tier.speed;
+      document.getElementById("card-intel-dist").innerText = tier.domain;
+      document.getElementById("card-intel-coords").innerText = `${tier.nodes.length} Key Sub-structures`;
+
+      document.getElementById("card-intel-launch-date").innerText = tier.binding;
+      document.getElementById("card-intel-vehicle").innerText = `Level ${tier.level} of 9`;
+      document.getElementById("card-intel-site").innerText = "Cosmic Hierarchy Frame";
+      document.getElementById("card-intel-method").innerText = tier.summary;
+
+      card.classList.remove("is-hidden");
+
+      // Query Wikipedia for the macro-scale cosmological entity
+      if (window.WikiIntelBot && typeof WikiIntelBot.fetchSummary === "function") {
+        WikiIntelBot.fetchSummary(tier.wikiKey);
+      }
+    }
+
     // --- 15. CATALOG POPULATOR ---
     function renderCatalogs() {
+      renderCosmicHierarchy();
       const planetCont = document.getElementById('planets-list-container');
       if (planetCont) {
         planetCont.innerHTML = '';
