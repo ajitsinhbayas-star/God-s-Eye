@@ -75,6 +75,20 @@
     .hud-text-glow {
       text-shadow: 0 0 12px rgba(56, 189, 248, 0.75);
     }
+    .nasa-target-glow {
+      background: rgba(8, 14, 29, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(217, 70, 239, 0.35);
+      box-shadow: 0 0 25px -3px rgba(217, 70, 239, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .nasa-pill-btn {
+      transition: all 0.2s ease;
+    }
+    .nasa-pill-btn:hover {
+      border-color: rgba(217, 70, 239, 0.6);
+      color: #ffffff;
+    }
 
     .bot-terminal {
       background: rgba(2, 6, 18, 0.95);
@@ -203,7 +217,7 @@
     </div>
 
     <!-- 1-Click Perspective Director -->
-    <div class="hidden sm:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono overflow-x-auto scroll-container">
+    <div id="nasa-target-bar" class="hidden sm:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono overflow-x-auto scroll-container">
       <button onclick="setFocusTo('sun')" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition whitespace-nowrap">
         ☀️ Solar View
       </button>
@@ -221,6 +235,9 @@
       </button>
       <button onclick="setFocusTo('saturn')" class="px-2.5 py-1 rounded text-yellow-300 hover:bg-yellow-500/10 transition whitespace-nowrap">
         🪐 Saturn
+      </button>
+      <button onclick="switchViewDomain('deepsky')" class="px-2.5 py-1 rounded text-fuchsia-300 hover:bg-fuchsia-500/10 border border-fuchsia-500/30 font-bold transition whitespace-nowrap">
+        🌌 Universe
       </button>
     </div>
 
@@ -252,6 +269,47 @@
       </button>
     </div>
   </header>
+
+  <!-- UNIVERSE / DEEP-SKY EXPLORATION BAR -->
+  <div id="universe-nav-bar" class="header-safe absolute top-16 sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl nasa-target-glow pointer-events-auto max-w-[calc(100vw-1.5rem)] font-mono text-xs" style="display: none;">
+    
+    <!-- System / Universe Mode Switcher -->
+    <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-700">
+      <button onclick="switchViewDomain('solar')" id="btn-mode-solar" class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition">
+        ☀️ Solar
+      </button>
+      <button onclick="switchViewDomain('deepsky')" id="btn-mode-deepsky" class="px-2 py-0.5 rounded-lg text-slate-400 hover:text-white transition">
+        🌌 Universe
+      </button>
+    </div>
+
+    <!-- Deep Space Target Carousel -->
+    <button onclick="cycleGalaxyTarget(-1)" title="Previous Deep Sky Object" class="nasa-pill-btn p-1.5 px-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">
+      ◀
+    </button>
+    
+    <div class="flex items-center gap-2 px-2 border-x border-slate-700/60 text-left">
+      <span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-ping"></span>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span id="deep-sky-title" class="text-xs sm:text-sm font-bold text-white tracking-wider uppercase truncate max-w-[130px] sm:max-w-[170px]">M82 CIGAR</span>
+          <span id="deep-sky-tag" class="text-[9px] px-1 py-0.2 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">STARBURST</span>
+        </div>
+        <div class="text-[9px] text-slate-400 flex items-center gap-2">
+          <span>Dist: <b id="deep-sky-dist" class="text-amber-300">12.0 Mly</b></span>
+          <span>z: <b id="deep-sky-redshift" class="text-cyan-400">+0.00068</b></span>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="flyToCurrentDeepSky()" class="nasa-pill-btn px-2.5 py-1 rounded-xl bg-fuchsia-500/20 hover:bg-fuchsia-500/30 border border-fuchsia-500/40 text-fuchsia-300 text-[10px] sm:text-xs font-bold uppercase">
+      Warp
+    </button>
+
+    <button onclick="cycleGalaxyTarget(1)" title="Next Deep Sky Object" class="nasa-pill-btn p-1.5 px-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300">
+      ▶
+    </button>
+  </div>
 
   <!-- NASA Eyes on Earth Layer Deck (Auto-reveals when Earth is selected) -->
   <div id="nasa-earth-layers-deck" class="absolute top-28 sm:top-24 right-3 sm:right-6 z-30 flex flex-col gap-1.5 p-2 rounded-2xl hud-glass pointer-events-auto font-mono text-[10px] border border-cyan-500/40 shadow-2xl transition-all duration-300">
@@ -1101,6 +1159,142 @@
         ]
       }
     ];
+
+    // --- 9 LANDMARK NASA DEEP-SKY GALACTIC TARGETS ---
+    const DEEP_SKY_CATALOG = {
+      ngc253: {
+        id: "ngc253",
+        name: "NGC 253 (Sculptor Galaxy)",
+        type: "Starburst Spiral (SABc)",
+        distMly: 11.4,
+        redshift: 0.00081,
+        scale3D: 3.8,
+        pos: new THREE.Vector3(120, -45, 110),
+        coreColor: 0xffffff,
+        diskColor: 0x38bdf8,
+        outflowColor: 0xf43f5e,
+        observatories: "Webb (MIRI) + Chandra (X-ray) + ESO",
+        description: "Star-forming engine driving multi-phase superwinds heated to 10M Kelvin."
+      },
+      sgrA_irs3: {
+        id: "sgrA_irs3",
+        name: "IRS 3 / Sagittarius A* Core",
+        type: "Galactic Nuclear Cluster",
+        distMly: 0.0267, // 26,700 ly
+        redshift: 0.00000,
+        scale3D: 2.4,
+        pos: new THREE.Vector3(0, 5, -80),
+        coreColor: 0xfbbf24,
+        diskColor: 0xf97316,
+        outflowColor: 0x818cf8,
+        observatories: "JWST (NIRCam + MIRI)",
+        description: "Dense star field 0.5 ly from our supermassive black hole with water/dust shells."
+      },
+      centaurusA: {
+        id: "centaurusA",
+        name: "Centaurus A (NGC 5128)",
+        type: "Peculiar Elliptical / AGN Jet",
+        distMly: 12.0,
+        redshift: 0.00183,
+        scale3D: 4.2,
+        pos: new THREE.Vector3(-140, 60, -90),
+        coreColor: 0xffffff,
+        diskColor: 0x9333ea,
+        outflowColor: 0x38bdf8,
+        hasJet: true,
+        jetVector: new THREE.Vector3(1.2, 1.8, 0.4).normalize(),
+        observatories: "Chandra + IXPE + Webb + Hubble",
+        description: "Collimated relativistic plasma jet blasting tens of thousands of light-years."
+      },
+      ngc1385: {
+        id: "ngc1385",
+        name: "NGC 1385",
+        type: "Barred Spiral Engine (SBm)",
+        distMly: 41.0,
+        redshift: 0.00500,
+        scale3D: 3.5,
+        pos: new THREE.Vector3(-170, -80, 130),
+        coreColor: 0xfef08a,
+        diskColor: 0x06b6d4,
+        outflowColor: 0xf97316,
+        observatories: "Webb (MIRI/NIRCam) + Chandra + Hubble",
+        description: "Intense starburst ridges funneled inward along a luminous stellar bar."
+      },
+      ngc1569: {
+        id: "ngc1569",
+        name: "NGC 1569",
+        type: "Starburst Dwarf Laboratory",
+        distMly: 11.0,
+        redshift: -0.00035,
+        scale3D: 2.8,
+        pos: new THREE.Vector3(80, 110, -120),
+        coreColor: 0xffffff,
+        diskColor: 0x60a5fa,
+        outflowColor: 0xf43f5e,
+        observatories: "Hubble + Chandra + Webb",
+        description: "Super Star Clusters and giant ionized gas cavities from recent supernova bursts."
+      },
+      m82: {
+        id: "m82",
+        name: "Messier 82 (Cigar Galaxy)",
+        type: "Prototype Starburst Galaxy",
+        distMly: 12.0,
+        redshift: 0.00068,
+        scale3D: 4.0,
+        pos: new THREE.Vector3(150, 80, -60),
+        coreColor: 0xffedd5,
+        diskColor: 0x38bdf8,
+        outflowColor: 0xe11d48,
+        hasBipolarOutflow: true,
+        observatories: "Chandra + NuSTAR + Hubble + Spitzer + Webb",
+        description: "Bipolar galactic superwinds expelling hot matter thousands of light-years out."
+      },
+      ngc3256: {
+        id: "ngc3256",
+        name: "NGC 3256",
+        type: "Dual-Nucleus LIRG Merger",
+        distMly: 120.0,
+        redshift: 0.00935,
+        scale3D: 4.5,
+        pos: new THREE.Vector3(-210, -40, -150),
+        coreColor: 0xfef08a,
+        diskColor: 0xa855f7,
+        outflowColor: 0xf43f5e,
+        hasDualCore: true,
+        observatories: "Chandra (X-ray) + Webb (MIRI) + Hubble",
+        description: "Violent head-on merger harboring two supermassive black holes 2,500 ly apart."
+      },
+      m104: {
+        id: "m104",
+        name: "Messier 104 (Sombrero Galaxy)",
+        type: "Unbarred Spiral / Giant Halo",
+        distMly: 30.0,
+        redshift: 0.00341,
+        scale3D: 5.0,
+        pos: new THREE.Vector3(160, -90, -140),
+        coreColor: 0xffedd5,
+        diskColor: 0xd97706,
+        outflowColor: 0x60a5fa,
+        hasDustRing: true,
+        observatories: "Webb (MIRI) + Chandra (X-ray) + Hubble",
+        description: "Colossal stellar bulge and razor-sharp dust ring wrapped in a million-degree X-ray halo."
+      },
+      gravitational_lens: {
+        id: "gravitational_lens",
+        name: "Cosmic House of Mirrors",
+        type: "Gravitational Lens Cluster",
+        distMly: 4200.0, // Cosmological scale
+        redshift: 0.39000,
+        scale3D: 6.0,
+        pos: new THREE.Vector3(0, 180, -220),
+        coreColor: 0xfbbf24,
+        diskColor: 0x3b82f6,
+        outflowColor: 0xf59e0b,
+        hasEinsteinArcs: true,
+        observatories: "JWST NIRCam + Hubble Relic Survey",
+        description: "Galaxy cluster core warping spacetime into concentric magnified Einstein arcs."
+      }
+    };
 
     // --- 5. EXACT KEPLERIAN MATHEMATICAL SOLVER ---
     function computeKeplerianOrbit(pData, d) {
@@ -2478,8 +2672,322 @@
       applyCatalogFilters();
     }
 
+    // --- 3D DEEP-SKY INTERGALACTIC VOLUMETRIC SCENE GRAPH ---
+    function createPlanetLabelSprite(text) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+      if (ctx.roundRect) {
+        ctx.roundRect(4, 8, 248, 48, 8);
+      } else {
+        ctx.rect(4, 8, 248, 48);
+      }
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.font = 'bold 20px monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 32);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(4, 1, 1);
+      return sprite;
+    }
+
+    const deepSkyGroup = new THREE.Group();
+    deepSkyGroup.visible = false; // Hidden in Solar mode, enabled in Universe mode
+    scene.add(deepSkyGroup);
+
+    const deepSkyMeshes = {};
+    let activeGalaxyKey = "m82";
+    let currentViewDomain = "solar"; // "solar" | "deepsky"
+
+    let flightProgress = 0.0;
+    let isFlyingToTarget = false;
+    const flightStartPos = new THREE.Vector3();
+    const flightStartLook = new THREE.Vector3();
+
+    function flyToNASAStyle(key) {
+      setFocusTo(key);
+    }
+
+    function buildDeepSkyUniverseObjects() {
+      Object.keys(DEEP_SKY_CATALOG).forEach(key => {
+        const data = DEEP_SKY_CATALOG[key];
+        const gObj = new THREE.Group();
+        gObj.position.copy(data.pos);
+
+        // 1. Core Stellar Nucleus
+        const coreGeo = new THREE.SphereGeometry(data.scale3D * 0.28, 24, 24);
+        const coreMat = new THREE.MeshBasicMaterial({ color: data.coreColor });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        gObj.add(coreMesh);
+
+        // 2. Dual Nucleus for NGC 3256
+        if (data.hasDualCore) {
+          const core2 = new THREE.Mesh(
+            new THREE.SphereGeometry(data.scale3D * 0.22, 16, 16),
+            new THREE.MeshBasicMaterial({ color: 0xf43f5e })
+          );
+          core2.position.set(data.scale3D * 0.45, data.scale3D * 0.15, 0);
+          gObj.add(core2);
+        }
+
+        // 3. Volumetric Particle Disc (Chandra + Webb Spectral Arm Representation)
+        const particleCount = 2400;
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(particleCount * 3);
+        const pCol = new Float32Array(particleCount * 3);
+        const c1 = new THREE.Color(data.diskColor);
+        const c2 = new THREE.Color(data.outflowColor);
+
+        for (let i = 0; i < particleCount; i++) {
+          const theta = Math.random() * Math.PI * 2;
+          const radius = (Math.pow(Math.random(), 0.6)) * (data.scale3D * 2.5);
+          const spiralOffset = radius * 0.8;
+          const armAngle = theta + spiralOffset;
+
+          const x = Math.cos(armAngle) * radius + (Math.random() - 0.5) * 0.4;
+          const z = Math.sin(armAngle) * radius + (Math.random() - 0.5) * 0.4;
+          const y = (Math.random() - 0.5) * (data.scale3D * 0.35) * Math.exp(-radius / data.scale3D);
+
+          pPos[i * 3] = x;
+          pPos[i * 3 + 1] = y;
+          pPos[i * 3 + 2] = z;
+
+          const lerpFactor = Math.min(1.0, radius / (data.scale3D * 2.0));
+          const col = c1.clone().lerp(c2, lerpFactor);
+          pCol[i * 3] = col.r;
+          pCol[i * 3 + 1] = col.g;
+          pCol[i * 3 + 2] = col.b;
+        }
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+
+        const pMat = new THREE.PointsMaterial({
+          size: 0.14,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.85,
+          blending: THREE.AdditiveBlending
+        });
+        const diskPoints = new THREE.Points(pGeo, pMat);
+        gObj.add(diskPoints);
+
+        // 4. Centaurus A Relativistic Jet
+        if (data.hasJet && data.jetVector) {
+          const jetLength = data.scale3D * 4.5;
+          const jetGeo = new THREE.CylinderGeometry(0.04, data.scale3D * 0.65, jetLength, 16, 1, true);
+          const jetMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.65,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending
+          });
+          const jetMesh = new THREE.Mesh(jetGeo, jetMat);
+          jetMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), data.jetVector);
+          gObj.add(jetMesh);
+        }
+
+        // 5. M82 Bipolar Outflow Cones (Perpendicular Superwinds)
+        if (data.hasBipolarOutflow) {
+          const coneGeo = new THREE.ConeGeometry(data.scale3D * 1.3, data.scale3D * 3.2, 16, 1, true);
+          const coneMat = new THREE.MeshBasicMaterial({
+            color: 0xe11d48,
+            transparent: true,
+            opacity: 0.42,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending
+          });
+          const topCone = new THREE.Mesh(coneGeo, coneMat);
+          topCone.position.y = data.scale3D * 1.6;
+          const btmCone = new THREE.Mesh(coneGeo, coneMat);
+          btmCone.position.y = -data.scale3D * 1.6;
+          btmCone.rotation.x = Math.PI;
+          gObj.add(topCone);
+          gObj.add(btmCone);
+        }
+
+        // 6. Sombrero Edge-on Dust Ring
+        if (data.hasDustRing) {
+          const ringGeo = new THREE.RingGeometry(data.scale3D * 1.2, data.scale3D * 2.2, 64);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x1c1917,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.88
+          });
+          const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+          ringMesh.rotation.x = Math.PI / 2.15;
+          gObj.add(ringMesh);
+        }
+
+        // 7. Gravitational Lens Einstein Arcs
+        if (data.hasEinsteinArcs) {
+          for (let r = 1; r <= 3; r++) {
+            const arcGeo = new THREE.RingGeometry(data.scale3D * (0.8 + r * 0.4), data.scale3D * (0.86 + r * 0.4), 32, 1, 0, Math.PI * 0.85);
+            const arcMat = new THREE.MeshBasicMaterial({
+              color: 0xf59e0b,
+              side: THREE.DoubleSide,
+              transparent: true,
+              opacity: 0.75,
+              blending: THREE.AdditiveBlending
+            });
+            const arcMesh = new THREE.Mesh(arcGeo, arcMat);
+            arcMesh.rotation.z = Math.random() * Math.PI * 2;
+            gObj.add(arcMesh);
+          }
+        }
+
+        // 8. 3D Billboard Label
+        const label = createPlanetLabelSprite(data.name);
+        label.position.set(0, data.scale3D * 2.2, 0);
+        gObj.add(label);
+
+        // 9. Click Hitbox
+        const hit = new THREE.Mesh(
+          new THREE.SphereGeometry(data.scale3D * 2.5, 10, 10),
+          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
+        );
+        hit.userData = { deepSkyKey: key };
+        gObj.add(hit);
+        clickableMeshes.push(hit);
+
+        deepSkyGroup.add(gObj);
+        deepSkyMeshes[key] = { group: gObj, data };
+      });
+    }
+
+    // --- DOMAIN VIEW TOGGLER (SOLAR vs. UNIVERSE) ---
+    function switchViewDomain(domain) {
+      currentViewDomain = domain;
+      const isDeep = domain === 'deepsky';
+
+      deepSkyGroup.visible = isDeep;
+      const uNavBar = document.getElementById("universe-nav-bar");
+      if (uNavBar) uNavBar.style.display = isDeep ? "flex" : "none";
+      const nTargetBar = document.getElementById("nasa-target-bar");
+      if (nTargetBar) nTargetBar.style.display = isDeep ? "none" : "flex";
+
+      const btnSolar = document.getElementById("btn-mode-solar");
+      if (btnSolar) {
+        btnSolar.className = !isDeep 
+          ? "px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition" 
+          : "px-2 py-0.5 rounded-lg text-slate-400 hover:text-white transition";
+      }
+
+      const btnDeep = document.getElementById("btn-mode-deepsky");
+      if (btnDeep) {
+        btnDeep.className = isDeep 
+          ? "px-2 py-0.5 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 font-bold transition" 
+          : "px-2 py-0.5 rounded-lg text-slate-400 hover:text-white transition";
+      }
+
+      if (isDeep) {
+        flyToDeepSkyNASA(activeGalaxyKey || "m82");
+      } else {
+        flyToNASAStyle(activeTargetKey || "sun");
+      }
+    }
+
+    function flyToDeepSkyNASA(key) {
+      const gObj = deepSkyMeshes[key];
+      if (!gObj) return;
+
+      activeGalaxyKey = key;
+      const data = gObj.data;
+
+      // Update Top Deep-Sky Bar
+      const elTitle = document.getElementById("deep-sky-title");
+      const elTag = document.getElementById("deep-sky-tag");
+      const elDist = document.getElementById("deep-sky-dist");
+      const elRedshift = document.getElementById("deep-sky-redshift");
+
+      if (elTitle) elTitle.innerText = data.name.toUpperCase();
+      if (elTag) elTag.innerText = data.type.split(" ")[0].toUpperCase();
+      if (elDist) elDist.innerText = `${data.distMly} Mly`;
+      if (elRedshift) elRedshift.innerText = `z: ${data.redshift >= 0 ? '+' : ''}${data.redshift.toFixed(5)}`;
+
+      // Camera Ease
+      flightProgress = 0.0;
+      isFlyingToTarget = true;
+      flightStartPos.copy(camera.position);
+      flightStartLook.copy(cameraTarget);
+
+      targetCameraDistance = data.scale3D * 4.2;
+      cameraPhi = 0.35;
+      cameraTheta = 0.72;
+
+      // Open Dossier Card with Observatory Data
+      openDeepSkyDossier(data);
+    }
+
+    function openDeepSkyDossier(data) {
+      if (window.innerWidth < 768) minimizeBothPanels();
+      const card = document.getElementById("intel-card");
+      if (!card) return;
+
+      const setName = document.getElementById("card-intel-name");
+      const setSub = document.getElementById("card-intel-subtitle");
+      const setBadge = document.getElementById("card-intel-badge");
+      const setAlt = document.getElementById("card-intel-alt");
+      const setVel = document.getElementById("card-intel-vel");
+      const setDist = document.getElementById("card-intel-dist");
+      const setCoords = document.getElementById("card-intel-coords");
+      const setLaunch = document.getElementById("card-intel-launch-date");
+      const setVehicle = document.getElementById("card-intel-vehicle");
+      const setSite = document.getElementById("card-intel-site");
+      const setMethod = document.getElementById("card-intel-method");
+
+      if (setName) setName.innerText = data.name;
+      if (setSub) setSub.innerText = `${data.type} • Redshift z=${data.redshift}`;
+      if (setBadge) {
+        setBadge.innerText = "NASA DEEP-SKY";
+        setBadge.className = "text-[9px] px-1.5 py-0.5 rounded font-mono font-bold border border-fuchsia-500/40 text-fuchsia-300 bg-fuchsia-500/10";
+      }
+
+      if (setAlt) setAlt.innerText = `${data.distMly} Mly`;
+      if (setVel) setVel.innerText = `z = ${data.redshift}`;
+      if (setDist) setDist.innerText = `${(data.distMly * 0.3066).toFixed(1)} Mpc`;
+      if (setCoords) setCoords.innerText = `Scale: ${data.scale3D} kpc eq.`;
+
+      if (setLaunch) setLaunch.innerText = data.observatories;
+      if (setVehicle) setVehicle.innerText = "Multi-Wavelength";
+      if (setSite) setSite.innerText = "Intergalactic Frame";
+      if (setMethod) setMethod.innerText = data.description;
+
+      card.classList.remove("is-hidden");
+
+      // Query Wikipedia
+      if (window.WikiIntelBot && typeof WikiIntelBot.fetchSummary === "function") {
+        WikiIntelBot.fetchSummary(data.name.split("(")[0].trim());
+      }
+    }
+
+    const DEEP_SKY_KEYS = Object.keys(DEEP_SKY_CATALOG);
+
+    function cycleGalaxyTarget(direction) {
+      let idx = DEEP_SKY_KEYS.indexOf(activeGalaxyKey);
+      if (idx === -1) idx = 0;
+      let nextIdx = (idx + direction + DEEP_SKY_KEYS.length) % DEEP_SKY_KEYS.length;
+      flyToDeepSkyNASA(DEEP_SKY_KEYS[nextIdx]);
+    }
+
+    function flyToCurrentDeepSky() {
+      flyToDeepSkyNASA(activeGalaxyKey || "m82");
+    }
+
     renderCatalogs();
     renderCosmicHierarchy();
+    buildDeepSkyUniverseObjects();
 
     // --- 16. CROSS-PLATFORM TOUCH & GESTURE CONTROLS ---
     let isDragging = false;
@@ -2565,8 +3073,13 @@
       const hits = raycaster.intersectObjects(clickableMeshes, true);
       if (hits.length > 0) {
         const hitObj = hits[0].object;
-        if (hitObj.userData.targetKey) setFocusTo(hitObj.userData.targetKey);
-        else if (hitObj.userData.orbiterKey) setFocusToOrbiter(hitObj.userData.orbiterKey);
+        if (hitObj.userData.deepSkyKey) {
+          flyToDeepSkyNASA(hitObj.userData.deepSkyKey);
+        } else if (hitObj.userData.targetKey) {
+          setFocusTo(hitObj.userData.targetKey);
+        } else if (hitObj.userData.orbiterKey) {
+          setFocusToOrbiter(hitObj.userData.orbiterKey);
+        }
       }
     }
 
@@ -2875,7 +3388,14 @@
 
       // 6. Camera Tracking & Lerp
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
-      if (PLANETARY_ORBITERS[activeTargetKey]) {
+      if (currentViewDomain === 'deepsky') {
+        Object.keys(deepSkyMeshes).forEach(gk => {
+          deepSkyMeshes[gk].group.rotation.y += 0.001;
+        });
+        if (deepSkyMeshes[activeGalaxyKey]) {
+          focusWorldPos.copy(deepSkyMeshes[activeGalaxyKey].group.position);
+        }
+      } else if (PLANETARY_ORBITERS[activeTargetKey]) {
         const orb = PLANETARY_ORBITERS[activeTargetKey];
         if (orb.parent === 'earth') focusWorldPos.copy(earthSystem.position);
         else if (orb.parent === 'moon') moonMesh.getWorldPosition(focusWorldPos);
