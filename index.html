@@ -77,19 +77,32 @@
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     }
 
+    /* Modal Intel Card Entrance */
+    .intel-card-slide {
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      will-change: transform, opacity;
+    }
+    .intel-card-slide.is-hidden {
+      transform: translateX(calc(100% + 36px)) scale(0.96) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
     /* Cinematic Mode UI Fade */
     body.cinematic-active header,
     body.cinematic-active #catalog-panel,
     body.cinematic-active #telemetry-panel,
     body.cinematic-active #btn-expand-catalog,
     body.cinematic-active #btn-expand-telemetry,
-    body.cinematic-active #video-panel {
+    body.cinematic-active #video-panel,
+    body.cinematic-active #intel-card {
       opacity: 0.15 !important;
       pointer-events: none !important;
       transition: opacity 0.8s ease;
     }
     body.cinematic-active header:hover,
-    body.cinematic-active #dock-bar:hover {
+    body.cinematic-active #dock-bar:hover,
+    body.cinematic-active #intel-card:hover {
       opacity: 1 !important;
       pointer-events: auto !important;
     }
@@ -184,6 +197,7 @@
       <div>
         <span class="text-[9px] text-slate-400 block uppercase">Operator</span>
         <span id="target-agency" class="text-emerald-400 font-bold">8 Planets + Pluto Active</span>
+        <span id="target-orbit" class="hidden">8 Planets + Pluto Active</span>
       </div>
     </div>
 
@@ -430,6 +444,7 @@
       <div class="flex justify-between items-center text-slate-400">
         <span>Operating Agency:</span>
         <span id="tele-agency" class="text-cyan-300 font-bold">ISRO</span>
+        <span id="tele-agency-val" class="hidden">ISRO</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
         <span>Flight Node / Direction:</span>
@@ -461,6 +476,112 @@
       </div>
     </div>
   </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MISSION INTELLIGENCE CARD (OPENS AUTOMATICALLY ON CLICK WITH WIKIPEDIA BOT) -->
+  <!-- ========================================================================= -->
+  <div id="intel-card" class="intel-card-slide is-hidden absolute top-20 right-3 bottom-16 sm:bottom-20 z-40 w-96 max-w-[calc(100vw-1.5rem)] rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden">
+    
+    <!-- Intel Card Header -->
+    <div class="p-3.5 bg-slate-950/85 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+        <div>
+          <h2 id="card-intel-name" class="text-sm font-bold text-white tracking-wide font-mono uppercase truncate max-w-[210px]">Cartosat-3</h2>
+          <span id="card-intel-subtitle" class="text-[9px] text-cyan-300 font-mono block">Earth Observation Spacecraft</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span id="card-intel-badge" class="text-[9px] px-2 py-0.5 rounded font-mono font-bold border border-amber-500/40 text-amber-300 bg-amber-500/10">🇮🇳 ISRO</span>
+        <button onclick="closeIntelCard()" title="Close Dossier (Shortcut: Esc)" class="w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-xs transition">✕</button>
+      </div>
+    </div>
+
+    <!-- Scrollable Dossier Content -->
+    <div class="flex-1 overflow-y-auto scroll-container p-3.5 space-y-3 font-mono text-xs">
+      
+      <!-- Key Telemetry Matrix -->
+      <div class="grid grid-cols-2 gap-2">
+        <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
+          <span class="text-slate-500 block text-[9px] uppercase">Altitude / Orbit</span>
+          <span id="card-intel-alt" class="text-cyan-400 font-bold text-xs">505 km</span>
+        </div>
+        <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
+          <span class="text-slate-500 block text-[9px] uppercase">Velocity</span>
+          <span id="card-intel-vel" class="text-cyan-400 font-bold text-xs">27,400 km/h</span>
+        </div>
+        <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
+          <span class="text-slate-500 block text-[9px] uppercase">Distance From Earth</span>
+          <span id="card-intel-dist" class="text-emerald-400 font-bold text-xs">505 km</span>
+        </div>
+        <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
+          <span class="text-slate-500 block text-[9px] uppercase">Live Coordinates</span>
+          <span id="card-intel-coords" class="text-emerald-400 font-bold text-xs">Lat/Lng</span>
+        </div>
+      </div>
+
+      <!-- Mission Specifics & Launch Specifications -->
+      <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2 text-[11px]">
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Launch Date:</span>
+          <span id="card-intel-launch-date" class="text-slate-200 font-bold">27 November 2019</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Launch Vehicle:</span>
+          <span id="card-intel-vehicle" class="text-cyan-300 font-semibold">PSLV-C47 (XL)</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Launch Spaceport:</span>
+          <span id="card-intel-site" class="text-slate-200 truncate max-w-[190px] text-right">SDSC SHAR, Sriharikota</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">In-Orbit Status:</span>
+          <span id="card-intel-status" class="text-emerald-400 font-bold">ACTIVE IN ORBIT</span>
+        </div>
+      </div>
+
+      <!-- Working Method & Operational Payloads -->
+      <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5 text-[11px]">
+        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block text-cyan-400">Working Method & Primary Sensors:</span>
+        <p id="card-intel-method" class="text-slate-300 leading-relaxed text-[11px]">
+          High-resolution imaging satellite carrying advanced Panchromatic and Multispectral optical instruments with 0.25 m ground resolution for cartography and urban infrastructure planning.
+        </p>
+      </div>
+
+      <!-- Tracking Radar Station -->
+      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-[11px]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">Active Radar / Tracking:</span>
+        </div>
+        <span id="card-intel-radar" class="text-white font-bold truncate max-w-[170px]">ISTRAC, Bengaluru</span>
+      </div>
+
+      <!-- Wikipedia Live Bot Intelligence Dossier -->
+      <div class="p-3 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-[10px] text-cyan-300 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>WIKIPEDIA INTELLIGENCE DOSSIER</span>
+          </div>
+          <span id="wiki-bot-indicator" class="text-[9px] text-slate-400 font-mono">Fetching...</span>
+        </div>
+
+        <div id="wiki-content-box" class="space-y-2">
+          <div id="wiki-image-container" class="hidden aspect-video w-full rounded-lg overflow-hidden bg-black/60 relative">
+            <img id="wiki-thumb" src="" alt="Spacecraft" class="w-full h-full object-cover">
+          </div>
+          <p id="wiki-text" class="text-[11px] text-slate-300 leading-relaxed font-sans">
+            Connecting to Wikipedia API for live encyclopedia records...
+          </p>
+          <a id="wiki-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-cyan-400 hover:text-cyan-300 font-mono underline pt-1">
+            Read Full Dossier on Wikipedia ↗
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <!-- Multi-Source Resilient Video Player (Error 153 Protected) -->
   <div id="video-panel" class="absolute bottom-16 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
@@ -793,17 +914,17 @@
 
     // --- 2. SOLAR SYSTEM PLANETS DATA ---
     const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 3.2, color: 0xfffbeb, l0: 0, lRate: 0, tilt: 0, desc: "Gravitational Center of the Solar System" },
-      mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x9e9e9e, l0: 252.25, lRate: 4.092334, tilt: 0.03, desc: "0.39 AU • Cratered Basalt Deserts" },
-      venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, l0: 181.98, lRate: 1.602130, tilt: 177.3, desc: "0.72 AU • Swirling Acid Clouds & Greenhouse" },
-      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, l0: 100.46, lRate: 0.985609, tilt: 23.44, desc: "1.00 AU • Home World • 23.44° Axial Tilt" },
-      moon: { name: "The Moon (Luna)", type: "Natural Satellite", dist: 3.5, radius: 0.45, color: 0xcccccc, l0: 218.32, lRate: 13.176396, tilt: 1.54, desc: "384,400 km from Earth" },
-      mars: { name: "Mars", type: "Terrestrial Planet", dist: 28.5, radius: 1.15, color: 0xef4444, l0: 355.45, lRate: 0.524033, tilt: 25.19, desc: "1.52 AU • Polar Ice & Volcanoes" },
-      jupiter: { name: "Jupiter", type: "Gas Giant", dist: 42.0, radius: 2.9, color: 0xd97706, l0: 34.40, lRate: 0.083085, tilt: 3.13, desc: "5.20 AU • Zonal Belts & Great Red Spot" },
-      saturn: { name: "Saturn", type: "Gas Giant & Rings", dist: 55.0, radius: 2.35, color: 0xfcd34d, l0: 49.94, lRate: 0.033444, tilt: 26.73, desc: "9.58 AU • Majestic Ring System" },
-      uranus: { name: "Uranus", type: "Ice Giant", dist: 68.0, radius: 1.65, color: 0x67e8f9, l0: 313.23, lRate: 0.011728, tilt: 97.77, desc: "19.2 AU • Pale Cyan with Vertical Tilt" },
-      neptune: { name: "Neptune", type: "Ice Giant", dist: 80.0, radius: 1.60, color: 0x2563eb, l0: 304.88, lRate: 0.005981, tilt: 28.32, desc: "30.1 AU • Deep Azure with Methane Cirrus" },
-      pluto: { name: "Pluto", type: "Dwarf Planet", dist: 92.0, radius: 0.55, color: 0xd97706, l0: 238.92, lRate: 0.003960, tilt: 122.5, desc: "39.5 AU • Sputnik Planitia Nitrogen Heart" }
+      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 3.2, color: 0xfffbeb, l0: 0, lRate: 0, tilt: 0, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
+      mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.65, color: 0x9e9e9e, l0: 252.25, lRate: 4.092334, tilt: 0.03, desc: "0.39 AU • Cratered Basalt Deserts", wikiKey: "Mercury_(planet)" },
+      venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, l0: 181.98, lRate: 1.602130, tilt: 177.3, desc: "0.72 AU • Swirling Acid Clouds & Greenhouse", wikiKey: "Venus" },
+      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, l0: 100.46, lRate: 0.985609, tilt: 23.44, desc: "1.00 AU • Home World • 23.44° Axial Tilt", wikiKey: "Earth" },
+      moon: { name: "The Moon (Luna)", type: "Natural Satellite", dist: 3.5, radius: 0.45, color: 0xcccccc, l0: 218.32, lRate: 13.176396, tilt: 1.54, desc: "384,400 km from Earth", wikiKey: "Moon" },
+      mars: { name: "Mars", type: "Terrestrial Planet", dist: 28.5, radius: 1.15, color: 0xef4444, l0: 355.45, lRate: 0.524033, tilt: 25.19, desc: "1.52 AU • Polar Ice & Volcanoes", wikiKey: "Mars" },
+      jupiter: { name: "Jupiter", type: "Gas Giant", dist: 42.0, radius: 2.9, color: 0xd97706, l0: 34.40, lRate: 0.083085, tilt: 3.13, desc: "5.20 AU • Zonal Belts & Great Red Spot", wikiKey: "Jupiter" },
+      saturn: { name: "Saturn", type: "Gas Giant & Rings", dist: 55.0, radius: 2.35, color: 0xfcd34d, l0: 49.94, lRate: 0.033444, tilt: 26.73, desc: "9.58 AU • Majestic Ring System", wikiKey: "Saturn" },
+      uranus: { name: "Uranus", type: "Ice Giant", dist: 68.0, radius: 1.65, color: 0x67e8f9, l0: 313.23, lRate: 0.011728, tilt: 97.77, desc: "19.2 AU • Pale Cyan with Vertical Tilt", wikiKey: "Uranus" },
+      neptune: { name: "Neptune", type: "Ice Giant", dist: 80.0, radius: 1.60, color: 0x2563eb, l0: 304.88, lRate: 0.005981, tilt: 28.32, desc: "30.1 AU • Deep Azure with Methane Cirrus", wikiKey: "Neptune" },
+      pluto: { name: "Pluto", type: "Dwarf Planet", dist: 92.0, radius: 0.55, color: 0xd97706, l0: 238.92, lRate: 0.003960, tilt: 122.5, desc: "39.5 AU • Sputnik Planitia Nitrogen Heart", wikiKey: "Pluto" }
     };
 
     // --- 3. INTERPLANETARY SPACECRAFT FLEET (ORBITING OTHER PLANETS) ---
@@ -821,7 +942,13 @@
         altitude: "421 × 76,993 km",
         velocity: "14,800 km/h",
         period: "72.9 hrs",
-        role: "🇮🇳 Mars Orbiter Mission - Atmospheric & Surface Remote Sensing"
+        role: "🇮🇳 Mars Orbiter Mission - Atmospheric & Surface Remote Sensing",
+        launchDate: "05 November 2013",
+        launchVeh: "PSLV-XL C25",
+        launchSite: "SDSC SHAR, Sriharikota",
+        radarStation: "Indian Deep Space Network (IDSN), Byalalu",
+        workingMethod: "Mars Colour Camera (MCC), Lyman Alpha Photometer (LAP), Thermal Infrared Imaging Spectrometer (TIS), and MENCA exospheric neutral mass spectrometer.",
+        wikiKey: "Mars_Orbiter_Mission"
       },
       mro: {
         name: "Mars Reconnaissance Orbiter (MRO)",
@@ -835,7 +962,13 @@
         altitude: "250 × 316 km",
         velocity: "12,240 km/h",
         period: "112 min",
-        role: "🇺🇸 HiRISE Ultra High-Resolution Camera & Subsurface Radar"
+        role: "🇺🇸 HiRISE Ultra High-Resolution Camera & Subsurface Radar",
+        launchDate: "12 August 2005",
+        launchVeh: "Atlas V 401",
+        launchSite: "Cape Canaveral SLC-41",
+        radarStation: "NASA Deep Space Network (Goldstone/Canberra/Madrid)",
+        workingMethod: "HiRISE 0.5-meter reflecting telescope capturing 0.3 m/pixel Martian terrain, CRISM spectrometer, and SHARAD shallow subsurface radar.",
+        wikiKey: "Mars_Reconnaissance_Orbiter"
       },
       maven: {
         name: "MAVEN",
@@ -849,7 +982,13 @@
         altitude: "150 × 6,200 km",
         velocity: "15,100 km/h",
         period: "4.5 hrs",
-        role: "🇺🇸 Mars Atmosphere and Volatile Evolution Probe"
+        role: "🇺🇸 Mars Atmosphere and Volatile Evolution Probe",
+        launchDate: "18 November 2013",
+        launchVeh: "Atlas V 401",
+        launchSite: "Cape Canaveral SLC-41",
+        radarStation: "NASA Deep Space Network (DSN)",
+        workingMethod: "Neutral Gas and Ion Mass Spectrometer (NGIMS), Solar Wind Ion Analyzer (SWIA), and Imaging Ultraviolet Spectrograph (IUVS) measuring atmospheric loss to space.",
+        wikiKey: "MAVEN"
       },
       tianwen1: {
         name: "Tianwen-1 Orbiter",
@@ -863,7 +1002,13 @@
         altitude: "265 × 12,500 km",
         velocity: "13,600 km/h",
         period: "7.8 hrs",
-        role: "🇨🇳 High-Resolution Imaging & Subsurface Sounding"
+        role: "🇨🇳 High-Resolution Imaging & Subsurface Sounding",
+        launchDate: "23 July 2020",
+        launchVeh: "Long March 5 (Y4)",
+        launchSite: "Wenchang Space Launch Site",
+        radarStation: "China Deep Space Network (Jiamusi/Kashi/Zapala)",
+        workingMethod: "High-Resolution Camera (MoRIC), Mars Subsurface Exploration Radar (MOSIR), and Mineralogy Spectrometer (MMS) surveying Martian topography and water ice.",
+        wikiKey: "Tianwen-1"
       },
       mex: {
         name: "Mars Express",
@@ -877,7 +1022,13 @@
         altitude: "298 × 10,107 km",
         velocity: "14,100 km/h",
         period: "6.7 hrs",
-        role: "🇪🇺 MARSIS Polar Ice Subsurface Radar & High-Res Stereo"
+        role: "🇪🇺 MARSIS Polar Ice Subsurface Radar & High-Res Stereo",
+        launchDate: "02 June 2003",
+        launchVeh: "Soyuz-FG / Fregat",
+        launchSite: "Baikonur Cosmodrome, Site 31/6",
+        radarStation: "ESA ESTRACK (New Norcia / Cebreros / Malargüe)",
+        workingMethod: "MARSIS low-frequency radar sounder detecting subsurface glaciers, High Resolution Stereo Camera (HRSC), and OMEGA mineralogical mapping spectrometer.",
+        wikiKey: "Mars_Express"
       },
       ody: {
         name: "2001 Mars Odyssey",
@@ -891,7 +1042,13 @@
         altitude: "390 × 405 km",
         velocity: "12,100 km/h",
         period: "118 min",
-        role: "🇺🇸 Thermal Emission Imaging & Radiation Environment"
+        role: "🇺🇸 Thermal Emission Imaging & Radiation Environment",
+        launchDate: "07 April 2001",
+        launchVeh: "Delta II 7925",
+        launchSite: "Cape Canaveral SLC-17A",
+        radarStation: "NASA Deep Space Network (DSN)",
+        workingMethod: "Thermal Emission Imaging System (THEMIS) mapping surface minerals and Gamma Ray Spectrometer (GRS) identifying hydrogen and water ice.",
+        wikiKey: "2001_Mars_Odyssey"
       },
 
       // 🟠 Jupiter Fleet
@@ -907,7 +1064,13 @@
         altitude: "4,200 × 8,100,000 km",
         velocity: "209,000 km/h",
         period: "38 days",
-        role: "🇺🇸 Deep Atmospheric Sounding & Jovian Magnetic Field"
+        role: "🇺🇸 Deep Atmospheric Sounding & Jovian Magnetic Field",
+        launchDate: "05 August 2011",
+        launchVeh: "Atlas V 551",
+        launchSite: "Cape Canaveral SLC-41",
+        radarStation: "NASA DSN 70m Antenna Array",
+        workingMethod: "Microwave Radiometer (MWR) probing deep beneath ammonia clouds, fluxgate magnetometers, and JunoCam in polar orbit powered by 3 massive solar wings.",
+        wikiKey: "Juno_(spacecraft)"
       },
       juice: {
         name: "JUICE",
@@ -921,7 +1084,13 @@
         altitude: "Jupiter Insertion Orbit",
         velocity: "42,000 km/h",
         period: "Cruising Jovian Moons",
-        role: "🇪🇺 JUpiter ICy moons Explorer (Ganymede, Callisto, Europa)"
+        role: "🇪🇺 JUpiter ICy moons Explorer (Ganymede, Callisto, Europa)",
+        launchDate: "14 April 2023",
+        launchVeh: "Ariane 5 ECA",
+        launchSite: "Guiana Space Centre, Kourou",
+        radarStation: "ESA ESTRACK Deep Space Antennas",
+        workingMethod: "RIME ice-penetrating radar, JANUS high-res optical camera, MAJIS imaging spectrometer, and GALA laser altimeter investigating sub-surface oceans on Ganymede, Callisto, and Europa.",
+        wikiKey: "Jupiter_Icy_Moons_Explorer"
       },
       galileo_probe: {
         name: "Galileo Orbiter (Historical)",
@@ -935,7 +1104,13 @@
         altitude: "Jovian Moon Crossings",
         velocity: "108,000 km/h",
         period: "Mission Complete",
-        role: "🇺🇸 First Spacecraft to Orbit Jupiter & Deploy Descent Probe"
+        role: "🇺🇸 First Spacecraft to Orbit Jupiter & Deploy Descent Probe",
+        launchDate: "18 October 1989",
+        launchVeh: "Space Shuttle Atlantis (STS-34)",
+        launchSite: "Kennedy Space Center LC-39B",
+        radarStation: "NASA Deep Space Network (DSN)",
+        workingMethod: "Solid-state imaging camera, near-infrared mapping spectrometer, and atmospheric descent probe measuring Jovian temperature, winds, and composition.",
+        wikiKey: "Galileo_(spacecraft)"
       },
 
       // 🪐 Saturn Fleet
@@ -951,7 +1126,13 @@
         altitude: "Ring-Grazing & Grand Finale",
         velocity: "122,000 km/h",
         period: "6.5 days",
-        role: "🇺🇸/🇪🇺 Titan Lakes & Enceladus Geysers Explorer"
+        role: "🇺🇸/🇪🇺 Titan Lakes & Enceladus Geysers Explorer",
+        launchDate: "15 October 1997",
+        launchVeh: "Titan IVB / Centaur",
+        launchSite: "Cape Canaveral LC-40",
+        radarStation: "NASA/ESA Deep Space Tracking Network",
+        workingMethod: "Synthetic Aperture Radar mapping Titan's liquid methane lakes, composite infrared spectrometer, and Huygens descent lander discovering subsurface oceans.",
+        wikiKey: "Cassini–Huygens"
       },
 
       // 🟡 Venus Fleet
@@ -967,7 +1148,13 @@
         altitude: "1,000 × 330,000 km",
         velocity: "18,400 km/h",
         period: "10.5 days",
-        role: "🇯🇵 Venus Meteorological Atmospheric Super-rotation Study"
+        role: "🇯🇵 Venus Meteorological Atmospheric Super-rotation Study",
+        launchDate: "20 May 2010",
+        launchVeh: "H-IIA 202",
+        launchSite: "Tanegashima Space Center, Yoshinobu",
+        radarStation: "Usuda Deep Space Center / JAXA DSN",
+        workingMethod: "1-micron and 2-micron infrared cameras, ultraviolet imager, and lightning/airglow camera analyzing Venusian super-rotation and cloud dynamics.",
+        wikiKey: "Akatsuki_(spacecraft)"
       },
       venus_express: {
         name: "Venus Express (Historical)",
@@ -981,7 +1168,13 @@
         altitude: "250 × 66,000 km",
         velocity: "21,000 km/h",
         period: "24 hrs",
-        role: "🇪🇺 First European Mission to Venus (UV / Infrared)"
+        role: "🇪🇺 First European Mission to Venus (UV / Infrared)",
+        launchDate: "09 November 2005",
+        launchVeh: "Soyuz-FG / Fregat",
+        launchSite: "Baikonur Cosmodrome, Site 31/6",
+        radarStation: "ESA ESTRACK Cebreros Station",
+        workingMethod: "VIRTIS imaging spectrometer, planetary Fourier spectrometer, and magnetometer discovering active volcanic hotspots and atmospheric greenhouse physics.",
+        wikiKey: "Venus_Express"
       },
 
       // ⚪ Mercury Fleet
@@ -997,7 +1190,13 @@
         altitude: "480 × 1,500 km",
         velocity: "32,000 km/h",
         period: "2.3 hrs",
-        role: "🇪🇺/🇯🇵 Dual Mercury Planetary & Magnetospheric Orbiters"
+        role: "🇪🇺/🇯🇵 Dual Mercury Planetary & Magnetospheric Orbiters",
+        launchDate: "20 October 2018",
+        launchVeh: "Ariane 5 ECA",
+        launchSite: "Guiana Space Centre, Kourou",
+        radarStation: "ESA / JAXA Deep Space Antennas",
+        workingMethod: "Dual spacecraft (Mercury Planetary Orbiter + Mio Magnetospheric Orbiter) utilizing ion thrusters to probe Mercury's core, exosphere, and magnetosphere.",
+        wikiKey: "BepiColombo"
       },
       messenger: {
         name: "MESSENGER (Historical)",
@@ -1011,7 +1210,13 @@
         altitude: "200 × 15,193 km",
         velocity: "36,000 km/h",
         period: "8 hrs",
-        role: "🇺🇸 First Orbital Insertion around Mercury"
+        role: "🇺🇸 First Orbital Insertion around Mercury",
+        launchDate: "03 August 2004",
+        launchVeh: "Delta II 7925H",
+        launchSite: "Cape Canaveral SLC-17B",
+        radarStation: "NASA Deep Space Network (DSN)",
+        workingMethod: "Mercury Dual Imaging System (MDIS), neutron spectrometer discovering polar water ice, and laser altimeter mapping topographic relief.",
+        wikiKey: "MESSENGER"
       },
 
       // 🌙 The Moon Fleet
@@ -1027,7 +1232,13 @@
         altitude: "100 × 100 km",
         velocity: "5,880 km/h",
         period: "119 min",
-        role: "🇮🇳 OHRC Ultra-High-Resolution 0.32m Lunar Mapping"
+        role: "🇮🇳 OHRC Ultra-High-Resolution 0.32m Lunar Mapping",
+        launchDate: "22 July 2019",
+        launchVeh: "GSLV Mk III-M1",
+        launchSite: "SDSC SHAR, Sriharikota",
+        radarStation: "Indian Deep Space Network (IDSN), Byalalu",
+        workingMethod: "Orbiter High Resolution Camera (OHRC) capturing 0.32m imagery, Dual Frequency Synthetic Aperture Radar (DFSAR), and CLASS X-ray spectrometer mapping lunar water ice.",
+        wikiKey: "Chandrayaan-2"
       },
       lro: {
         name: "Lunar Reconnaissance Orbiter (LRO)",
@@ -1041,7 +1252,13 @@
         altitude: "50 × 50 km",
         velocity: "5,950 km/h",
         period: "113 min",
-        role: "🇺🇸 3D Topography, Polar Water Ice & Landing Site Survey"
+        role: "🇺🇸 3D Topography, Polar Water Ice & Landing Site Survey",
+        launchDate: "18 June 2009",
+        launchVeh: "Atlas V 401",
+        launchSite: "Cape Canaveral SLC-41",
+        radarStation: "White Sands Complex / NASA DSN",
+        workingMethod: "LROC narrow-angle camera, LOLA laser altimeter, and Diviner lunar radiometer measuring extreme polar temperatures (-246°C) for Artemis landing sites.",
+        wikiKey: "Lunar_Reconnaissance_Orbiter"
       },
 
       // ❄️ Pluto Reconnaissance
@@ -1057,20 +1274,55 @@
         altitude: "12,500 km Close Approach",
         velocity: "49,600 km/h",
         period: "Solar Escape Trajectory",
-        role: "🇺🇸 First Reconnaissance of Pluto and the Kuiper Belt"
+        role: "🇺🇸 First Reconnaissance of Pluto and the Kuiper Belt",
+        launchDate: "19 January 2006",
+        launchVeh: "Atlas V 551",
+        launchSite: "Cape Canaveral SLC-41",
+        radarStation: "NASA Deep Space Network (Canberra/Goldstone/Madrid)",
+        workingMethod: "LORRI telescopic camera, Ralph color imager, Alice UV spectrometer, and REX radio science experiment conducting historic flyby of Pluto and Arrokoth.",
+        wikiKey: "New_Horizons"
       }
     };
 
     // --- 4. MASTER GLOBAL EARTH SATELLITE FLEET (165+ PRELOADED) ---
     const SATELLITES = {};
 
-    function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role) {
+    function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role, launchDate, launchVeh, launchSite, radarStation, workingMethod, wikiKey) {
       const incRad = inc * (Math.PI / 180);
       const raanRad = (Math.random() * 360) * (Math.PI / 180);
       const vel = Math.round(Math.sqrt(398600.44 / (6378 + Math.max(alt, 200))) * 3600);
       const mm = 1440 / (90 + (alt / 70));
       const periodMin = (1440 / mm).toFixed(1);
       const rad3D = 2.0 + Math.max(0.08, Math.min(alt / 4200, 1.3));
+
+      let defaultSite = "Active Spaceport";
+      let defaultVeh = "Multi-Stage Launch Vehicle";
+      let defaultRadar = "Global Ground Tracking Network";
+      if (agency === "ISRO" || country === "IND") {
+        defaultSite = "SDSC SHAR, Sriharikota";
+        defaultVeh = alt > 30000 ? "GSLV / LVM3" : "PSLV";
+        defaultRadar = alt > 30000 ? "Master Control Facility (MCF), Hassan" : "ISTRAC Ground Station, Bengaluru";
+      } else if (agency === "NASA" || country === "USA") {
+        defaultSite = alt > 600 ? "Vandenberg Space Force Base, CA" : "Cape Canaveral / Kennedy Space Center, FL";
+        defaultVeh = "Falcon 9 / Atlas V";
+        defaultRadar = "NASA Space Network (TDRSS) / White Sands";
+      } else if (agency === "ESA" || country === "ESA") {
+        defaultSite = "Guiana Space Centre, Kourou";
+        defaultVeh = "Ariane 5/6 / Vega";
+        defaultRadar = "ESTRACK Network (Kiruna / Cebreros / Redu)";
+      } else if (agency === "CNSA" || country === "CHN") {
+        defaultSite = "Wenchang / Jiuquan / Xichang Satellite Launch Center";
+        defaultVeh = "Long March Series (CZ)";
+        defaultRadar = "Beijing BACC / Xi'an Satellite Control Center";
+      } else if (agency === "Roscosmos" || country === "RUS") {
+        defaultSite = "Baikonur / Plesetsk Cosmodrome";
+        defaultVeh = "Soyuz-2 / Proton-M";
+        defaultRadar = "Titov Main Space Systems Control Centre, Moscow";
+      } else if (agency === "JAXA" || country === "JPN") {
+        defaultSite = "Tanegashima Space Center / Uchinoura";
+        defaultVeh = "H-IIA / H3";
+        defaultRadar = "JAXA Tsukuba Space Center / Earth Observation Center";
+      }
 
       SATELLITES[key] = {
         name,
@@ -1087,7 +1339,13 @@
         period: `${periodMin} min`,
         color,
         agencyCat,
-        role
+        role: role || "Orbital Satellite Telemetry",
+        launchDate: launchDate || "Operational In-Orbit",
+        launchVeh: launchVeh || defaultVeh,
+        launchSite: launchSite || defaultSite,
+        radarStation: radarStation || defaultRadar,
+        workingMethod: workingMethod || role || "Transmits continuous space situational awareness telemetry and scientific payloads.",
+        wikiKey: wikiKey || name.replace(/\s*\(.*?\)/, '').trim().replace(/\s+/g, '_')
       };
     }
 
@@ -1582,6 +1840,7 @@
     }
 
     Object.keys(CELESTIAL_BODIES).forEach(k => buildRealisticPlanet(k, CELESTIAL_BODIES[k]));
+    const planetMeshes = planetSystems;
 
     // --- 9. BUILD INTERPLANETARY ORBITERS (SPACECRAFT AROUND OTHER PLANETS) ---
     const orbiterMeshes = {};
@@ -1711,7 +1970,8 @@
         { id: "BOT-ISRO-01", name: "ISRO Telemetry & Fleet Harvester", source: "CelesTrak / Antrix Catalog", role: "Harvests Cartosat, NavIC, INSAT, EOS, GSAT & AstroSat orbital elements", status: "ONLINE", packets: 0, active: true },
         { id: "BOT-AGENCY-02", name: "Global Agencies (NASA/ESA/CNSA)", source: "CelesTrak / Space-Track GP", role: "Ingests NOAA, Sentinel, Galileo, BeiDou, and GLONASS constellations", status: "ONLINE", packets: 0, active: true },
         { id: "BOT-CELES-03", name: "Space Stations & Constellations", source: "CelesTrak (Stations & Starlink)", role: "Streams modular labs (ISS, Tiangong) & global Starlink clusters", status: "ONLINE", packets: 0, active: true },
-        { id: "BOT-N2YO-04", name: "N2YO Real-time Telemetry Sentinel", source: "Live Telemetry Feed (wheretheiss.at)", role: "Calculates sub-satellite ground lasers & radio horizon footprints", status: "ONLINE", packets: 0, active: true }
+        { id: "BOT-N2YO-04", name: "N2YO Real-time Telemetry Sentinel", source: "Live Telemetry Feed (wheretheiss.at)", role: "Calculates sub-satellite ground lasers & radio horizon footprints", status: "ONLINE", packets: 0, active: true },
+        { id: "BOT-WIKI-INTEL", name: "Wikipedia Autonomous Intelligence Bot", source: "Wikimedia REST API v1", role: "Extracts real-time encyclopedic summaries, mission archives & imagery", status: "ONLINE", packets: 0, active: true }
       ];
 
       function logTerminal(botId, msg) {
@@ -1846,6 +2106,14 @@
               if (satelliteMeshMap.iss) {
                 satelliteMeshMap.iss.satMesh.position.copy(satVec);
               }
+              const cardCoords = document.getElementById("card-intel-coords");
+              if (cardCoords && activeTargetKey === "iss") {
+                cardCoords.innerText = `${d.latitude.toFixed(2)}°, ${d.longitude.toFixed(2)}°`;
+              }
+              const cardAlt = document.getElementById("card-intel-alt");
+              if (cardAlt && activeTargetKey === "iss") {
+                cardAlt.innerText = `${Math.round(d.altitude)} km`;
+              }
               bot.packets++;
               const pktEl = document.getElementById("bot-pkt-3");
               if (pktEl) pktEl.innerText = bot.packets;
@@ -1860,7 +2128,7 @@
         setInterval(runN2YOBot, 2500);
       }
 
-      return { init, manualHarvest: runHarvesterFleet };
+      return { init, manualHarvest: runHarvesterFleet, logTerminal, getBots: () => BOTS };
     })();
 
     function updateAgencyCounters() {
@@ -1985,7 +2253,16 @@
       minimizeCatalog();
       minimizeTelemetry();
     }
+    function closeIntelCard() {
+      const card = document.getElementById('intel-card');
+      if (card) card.classList.add('is-hidden');
+    }
     function toggleHUDPanels() {
+      const intel = document.getElementById('intel-card');
+      if (intel && !intel.classList.contains('is-hidden')) {
+        closeIntelCard();
+        return;
+      }
       const cat = document.getElementById('catalog-panel');
       if (cat.classList.contains('is-minimized')) {
         expandCatalog();
@@ -1993,6 +2270,211 @@
       } else {
         minimizeBothPanels();
       }
+    }
+
+    // --- 13B. AUTONOMOUS WIKIPEDIA INTELLIGENCE BOT & MISSION DOSSIER CARD ---
+    const WikiIntelBot = (function () {
+      const cache = {};
+
+      async function fetchSummary(wikiKey, displayName, targetObj) {
+        const botIndicator = document.getElementById("wiki-bot-indicator");
+        const wikiText = document.getElementById("wiki-text");
+        const wikiThumb = document.getElementById("wiki-thumb");
+        const wikiImgBox = document.getElementById("wiki-image-container");
+        const wikiLink = document.getElementById("wiki-link");
+
+        const queryKey = wikiKey || (displayName ? displayName.replace(/\s+/g, '_') : 'Spacecraft');
+
+        if (botIndicator) {
+          botIndicator.innerText = "Querying REST API...";
+          botIndicator.className = "text-[9px] text-cyan-400 font-mono animate-pulse";
+        }
+
+        const fallbackUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(queryKey)}`;
+        if (wikiLink) {
+          wikiLink.href = fallbackUrl;
+          wikiLink.innerText = "Read Full Dossier on Wikipedia ↗";
+        }
+
+        if (cache[queryKey]) {
+          renderData(cache[queryKey], fallbackUrl);
+          if (botIndicator) {
+            botIndicator.innerText = "CACHED INTELLIGENCE";
+            botIndicator.className = "text-[9px] text-cyan-300 font-mono";
+          }
+          return;
+        }
+
+        try {
+          const directUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryKey)}`;
+          let data = null;
+          try {
+            const resp = await fetch(directUrl, { headers: { 'Accept': 'application/json' }, mode: 'cors' });
+            if (resp.ok) data = await resp.json();
+          } catch (fetchErr) {
+            try {
+              const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
+              const proxyResp = await fetch(proxyUrl);
+              if (proxyResp.ok) data = await proxyResp.json();
+            } catch (pErr) {}
+          }
+
+          if (data && (data.extract || data.description)) {
+            cache[queryKey] = data;
+            renderData(data, data.content_urls?.desktop?.page || fallbackUrl);
+            if (botIndicator) {
+              botIndicator.innerText = "LIVE VERIFIED";
+              botIndicator.className = "text-[9px] text-emerald-400 font-mono font-bold";
+            }
+            if (typeof BotSwarm !== 'undefined' && BotSwarm.logTerminal) {
+              BotSwarm.logTerminal("BOT-WIKI-INTEL", `Synchronized dossier for ${displayName} from Wikimedia REST API.`);
+            }
+            if (typeof BotSwarm !== 'undefined' && BotSwarm.getBots) {
+              const bots = BotSwarm.getBots();
+              const wBot = bots.find(b => b.id === "BOT-WIKI-INTEL");
+              if (wBot) {
+                wBot.packets++;
+                const pktEl = document.getElementById("bot-pkt-4");
+                if (pktEl) pktEl.innerText = wBot.packets;
+              }
+            }
+          } else {
+            renderFallback(targetObj, displayName, fallbackUrl);
+          }
+        } catch (e) {
+          renderFallback(targetObj, displayName, fallbackUrl);
+        }
+      }
+
+      function renderData(data, articleUrl) {
+        const wikiText = document.getElementById("wiki-text");
+        const wikiThumb = document.getElementById("wiki-thumb");
+        const wikiImgBox = document.getElementById("wiki-image-container");
+        const wikiLink = document.getElementById("wiki-link");
+
+        if (wikiText) {
+          wikiText.innerText = data.extract || data.description || "Encyclopedic summary retrieved.";
+        }
+
+        const thumbSrc = data.thumbnail?.source || data.originalimage?.source;
+        if (thumbSrc && wikiThumb && wikiImgBox) {
+          wikiThumb.src = thumbSrc;
+          wikiImgBox.classList.remove("hidden");
+        } else if (wikiImgBox) {
+          wikiImgBox.classList.add("hidden");
+        }
+
+        if (wikiLink) {
+          wikiLink.href = articleUrl;
+        }
+      }
+
+      function renderFallback(targetObj, displayName, articleUrl) {
+        const botIndicator = document.getElementById("wiki-bot-indicator");
+        const wikiText = document.getElementById("wiki-text");
+        const wikiImgBox = document.getElementById("wiki-image-container");
+        const wikiLink = document.getElementById("wiki-link");
+
+        if (botIndicator) {
+          botIndicator.innerText = "MISSION SPEC ARCHIVE";
+          botIndicator.className = "text-[9px] text-amber-400 font-mono";
+        }
+        if (wikiImgBox) wikiImgBox.classList.add("hidden");
+
+        let summary = "";
+        if (targetObj) {
+          if (targetObj.desc) summary = targetObj.desc;
+          else if (targetObj.workingMethod) summary = targetObj.workingMethod;
+          else if (targetObj.role) {
+            summary = `${targetObj.name} is an operational spacecraft operated by ${targetObj.agency || 'agency'}. Primary mission profile: ${targetObj.role}. Currently executing scheduled science and orbital telemetry operations.`;
+          }
+        }
+        if (!summary) {
+          summary = `${displayName} orbital flight data active in God's Eye tracking telemetry matrix. Space situational ephemeris and downlink parameters verified.`;
+        }
+
+        if (wikiText) wikiText.innerText = summary;
+        if (wikiLink) wikiLink.href = articleUrl;
+
+        if (typeof BotSwarm !== 'undefined' && BotSwarm.logTerminal) {
+          BotSwarm.logTerminal("BOT-WIKI-INTEL", `Archived mission dossier loaded for ${displayName}.`);
+        }
+      }
+
+      return { fetchSummary };
+    })();
+
+    function openIntelCard(key, isOrbiter) {
+      const card = document.getElementById('intel-card');
+      if (!card) return;
+
+      minimizeBothPanels();
+      const videoPanel = document.getElementById('video-panel');
+      if (videoPanel) videoPanel.classList.add('hidden');
+
+      function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      }
+
+      if (isOrbiter || PLANETARY_ORBITERS[key]) {
+        const orb = PLANETARY_ORBITERS[key];
+        if (!orb) return;
+
+        const flag = orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : (orb.country === 'USA' ? '\u{1F1FA}\u{1F1F8} ' : (orb.country === 'ESA' ? '\u{1F1EA}\u{1F1FA} ' : ''));
+        setText('card-intel-name', orb.name);
+        setText('card-intel-subtitle', `${orb.parent.toUpperCase()} Orbiter / Deep Space Probe`);
+        setText('card-intel-badge', `${flag}${orb.agency}`);
+        setText('card-intel-alt', orb.altitude || "Orbital Station");
+        setText('card-intel-vel', orb.velocity || "Keplerian");
+        setText('card-intel-dist', `${orb.parent.toUpperCase()} Orbit`);
+        setText('card-intel-coords', `Inc: ${(orb.inc || 0).toFixed(1)}\u00B0`);
+        setText('card-intel-launch-date', orb.launchDate || "Interplanetary Mission");
+        setText('card-intel-vehicle', orb.launchVeh || "Deep Space Launcher");
+        setText('card-intel-site', orb.launchSite || "Planetary Launch Complex");
+        setText('card-intel-status', "ACTIVE SCIENCE");
+        setText('card-intel-method', orb.workingMethod || orb.role || "Deep space scientific observation.");
+        setText('card-intel-radar', orb.radarStation || "Deep Space Network (DSN)");
+
+        WikiIntelBot.fetchSummary(orb.wikiKey, orb.name, orb);
+      } else if (SATELLITES[key]) {
+        const sat = SATELLITES[key];
+        const flag = sat.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : (sat.country === 'USA' ? '\u{1F1FA}\u{1F1F8} ' : (sat.country === 'ESA' ? '\u{1F1EA}\u{1F1FA} ' : (sat.country === 'CHN' ? '\u{1F1E8}\u{1F1F3} ' : (sat.country === 'RUS' ? '\u{1F1F7}\u{1F1FA} ' : ''))));
+        setText('card-intel-name', sat.name);
+        setText('card-intel-subtitle', `${sat.orbitType || 'LEO/GEO'} Operational Satellite`);
+        setText('card-intel-badge', `${flag}${sat.agency}`);
+        setText('card-intel-alt', `${sat.altitude.toLocaleString()} km`);
+        setText('card-intel-vel', `${sat.velocity.toLocaleString()} km/h`);
+        setText('card-intel-dist', `${sat.altitude.toLocaleString()} km (Earth)`);
+        setText('card-intel-coords', `${((sat.raan * 180) / Math.PI).toFixed(1)}\u00B0 RAAN / ${(sat.inclination * 180 / Math.PI).toFixed(1)}\u00B0 Inc`);
+        setText('card-intel-launch-date', sat.launchDate || "Operational In-Orbit");
+        setText('card-intel-vehicle', sat.launchVeh || "Orbital Launch Vehicle");
+        setText('card-intel-site', sat.launchSite || "Orbital Spaceport");
+        setText('card-intel-status', "ACTIVE IN ORBIT");
+        setText('card-intel-method', sat.workingMethod || `${sat.agency} operational satellite delivering remote sensing, communication, or navigation services.`);
+        setText('card-intel-radar', sat.radarStation || "ISTRAC / Global Ground Tracking Stations");
+
+        WikiIntelBot.fetchSummary(sat.wikiKey, sat.name, sat);
+      } else if (CELESTIAL_BODIES[key]) {
+        const body = CELESTIAL_BODIES[key];
+        setText('card-intel-name', body.name);
+        setText('card-intel-subtitle', `${body.type || 'Celestial Body'} (Solar System)`);
+        setText('card-intel-badge', "SOLAR SYSTEM");
+        setText('card-intel-alt', key === 'sun' ? "Heliocentric Center" : `${body.dist.toFixed(2)} AU`);
+        setText('card-intel-vel', key === 'sun' ? "Static Reference" : `${Math.round((body.lRate || 0) * 100000).toLocaleString()} km/h`);
+        setText('card-intel-dist', key === 'sun' ? "0 AU (Center)" : `${body.dist.toFixed(2)} AU (${(body.dist * 149597870).toLocaleString()} km)`);
+        setText('card-intel-coords', `Mean Lng: ${(body.l0 || 0).toFixed(1)}°`);
+        setText('card-intel-launch-date', "~4.6 Billion Years Ago");
+        setText('card-intel-vehicle', "Solar Nebula Gravitational Accretion");
+        setText('card-intel-site', "Milky Way Galaxy (Orion Arm)");
+        setText('card-intel-status', key === 'sun' ? "STELLAR SOURCE" : "STABLE KEPLERIAN ORBIT");
+        setText('card-intel-method', body.desc || `Major celestial body with an orbital radius of ${body.dist} AU.`);
+        setText('card-intel-radar', "Global Astronomical Observatories & Deep Space Network");
+
+        WikiIntelBot.fetchSummary(body.wikiKey, body.name, body);
+      }
+
+      card.classList.remove('is-hidden');
     }
 
     function toggleCinematicCamera() {
@@ -2121,7 +2603,10 @@
       document.getElementById('target-name').innerText = orb.name;
       document.getElementById('target-name').className = "text-cyan-400 font-bold";
       document.getElementById('target-parent').innerText = `${orb.parent.toUpperCase()} Orbit`;
-      document.getElementById('target-agency').innerText = `${orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${orb.agency}`;
+      const orbTargetEl = document.getElementById('target-orbit');
+      if (orbTargetEl) orbTargetEl.innerText = `${orb.parent.toUpperCase()} Orbit`;
+      const agencyText = `${orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${orb.agency}`;
+      document.getElementById('target-agency').innerText = agencyText;
 
       // Update Telemetry Panel to Orbiter Mode
       const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Parent Body";
@@ -2130,7 +2615,9 @@
       const l4 = document.getElementById('tele-lbl-4'); if (l4) l4.innerText = "Speed";
 
       document.getElementById('tele-parent').innerText = `${orb.parent === 'mars' ? '\u{1F534}' : (orb.parent === 'jupiter' ? '\u{1F7E0}' : (orb.parent === 'saturn' ? '\u{1FA90}' : '\u26AA'))} ${orb.parent.toUpperCase()}`;
-      document.getElementById('tele-agency').innerText = `${orb.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${orb.agency}`;
+      document.getElementById('tele-agency').innerText = agencyText;
+      const teleAgencyValEl = document.getElementById('tele-agency-val');
+      if (teleAgencyValEl) teleAgencyValEl.innerText = agencyText;
       document.getElementById('tele-lat').innerText = orb.parent.toUpperCase();
       document.getElementById('tele-lng').innerText = `${orb.inc.toFixed(1)}\u00B0`;
       document.getElementById('tele-alt').innerText = orb.altitude;
@@ -2160,7 +2647,7 @@
       nadirLine.visible = false;
       footprintMesh.visible = false;
 
-      minimizeBothPanels();
+      openIntelCard(key, true);
     }
 
     function setFocusTo(key) {
@@ -2177,7 +2664,10 @@
         document.getElementById('target-name').innerText = sat.name;
         document.getElementById('target-name').className = "text-cyan-400 font-bold";
         document.getElementById('target-parent').innerText = "\u{1F30D} Earth LEO/GEO";
-        document.getElementById('target-agency').innerText = `${sat.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${sat.agency}`;
+        const orbTargetEl = document.getElementById('target-orbit');
+        if (orbTargetEl) orbTargetEl.innerText = sat.orbitType || "Earth LEO/GEO";
+        const agencyText = `${sat.country === 'IND' ? '\u{1F1EE}\u{1F1F3} ' : ''}${sat.agency}`;
+        document.getElementById('target-agency').innerText = agencyText;
 
         // Update Telemetry Panel to Satellite Mode
         const l1 = document.getElementById('tele-lbl-1'); if (l1) l1.innerText = "Latitude / Decl";
@@ -2187,6 +2677,8 @@
 
         document.getElementById('tele-parent').innerText = "\u{1F30D} Earth";
         document.getElementById('tele-agency').innerText = sat.agency;
+        const teleAgencyValEl = document.getElementById('tele-agency-val');
+        if (teleAgencyValEl) teleAgencyValEl.innerText = sat.agency;
         document.getElementById('tele-alt').innerText = `${sat.altitude.toLocaleString()} km`;
         document.getElementById('tele-vel').innerText = `${sat.velocity.toLocaleString()} km/h`;
         document.getElementById('tele-inc').innerText = sat.orbitType;
@@ -2212,13 +2704,15 @@
         nadirLine.visible = true;
         footprintMesh.visible = true;
 
-        minimizeBothPanels();
+        openIntelCard(key, false);
       } else if (CELESTIAL_BODIES[key]) {
         isTrackingPlanet = true;
         const body = CELESTIAL_BODIES[key];
         document.getElementById('target-name').innerText = body.name;
         document.getElementById('target-name').className = key === 'sun' ? "text-amber-400 font-bold" : "text-cyan-400 font-bold";
         document.getElementById('target-parent').innerText = key === 'sun' ? "Heliocentric Center" : "Solar System Body";
+        const orbTargetEl = document.getElementById('target-orbit');
+        if (orbTargetEl) orbTargetEl.innerText = key === 'sun' ? "Heliocentric Center" : "Solar System Orbit";
         document.getElementById('target-agency').innerText = body.desc || `${body.dist} AU from Sun`;
 
         // Update Telemetry Panel to Planet / Solar System Mode
@@ -2229,6 +2723,8 @@
 
         document.getElementById('tele-parent').innerText = key === 'sun' ? "Gravitational Center" : "Sun (Sol)";
         document.getElementById('tele-agency').innerText = body.type;
+        const teleAgencyValEl = document.getElementById('tele-agency-val');
+        if (teleAgencyValEl) teleAgencyValEl.innerText = body.type;
         document.getElementById('tele-lat').innerText = `${body.dist.toFixed(2)} AU`;
         document.getElementById('tele-lng').innerText = `${(body.l0 || 0).toFixed(1)}\u00B0`;
         document.getElementById('tele-alt').innerText = `${Math.round(body.lRate * 100000).toLocaleString()} km/h`;
@@ -2260,7 +2756,7 @@
         nadirLine.visible = false;
         footprintMesh.visible = false;
 
-        minimizeBothPanels();
+        openIntelCard(key, false);
       }
     }
 
@@ -2397,12 +2893,13 @@
 
     renderCatalogs();
     handleUrlTargetTracking();
-    if (!window.location.search.includes('target=')) {
+    if (!window.location.search.includes('target=') && !window.location.search.includes('track=') && !window.location.search.includes('norad=') && !window.location.search.includes('sat=')) {
       setFocusTo('sun');
+      closeIntelCard();
     }
 
     // --- 15. SCROLL, TOUCH & EVENT LISTENERS ---
-    document.querySelectorAll('#catalog-panel, #telemetry-panel, #video-panel').forEach(p => {
+    document.querySelectorAll('#catalog-panel, #telemetry-panel, #video-panel, #intel-card').forEach(p => {
       p.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
       p.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
     });
@@ -2414,7 +2911,7 @@
     const mouseVec = new THREE.Vector2();
 
     window.addEventListener('mousedown', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, button, input, select, a')) return;
       isDragging = true;
       prevMouse = { x: e.clientX, y: e.clientY };
       startClick = { x: e.clientX, y: e.clientY };
@@ -2430,7 +2927,7 @@
     });
 
     window.addEventListener('mouseup', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, button, input, select, a')) return;
       isDragging = false;
       if (Math.hypot(e.clientX - startClick.x, e.clientY - startClick.y) < 6) {
         mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -2450,7 +2947,7 @@
     });
 
     window.addEventListener('wheel', e => {
-      if (e.target.closest('aside, header, #video-panel, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, button, input, select, a')) return;
       targetCameraDistance = Math.max(1.8, Math.min(220.0, targetCameraDistance + e.deltaY * 0.015));
     }, { passive: true });
 
@@ -2462,6 +2959,7 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'Escape') closeIntelCard();
       if (e.key === 'm' || e.key === 'M') toggleHUDPanels();
       if (e.key === 'f' || e.key === 'F') toggleFullscreen();
       if ((e.key === 'c' || e.key === 'C') && !e.shiftKey) toggleCinematicCamera();
@@ -2620,6 +3118,8 @@
           const lng = ((item.angle * 180 / Math.PI) % 360) - 180;
           document.getElementById('tele-lat').innerText = `${lat.toFixed(2)}°`;
           document.getElementById('tele-lng').innerText = `${lng.toFixed(2)}°`;
+          const cardCoords = document.getElementById("card-intel-coords");
+          if (cardCoords) cardCoords.innerText = `${lat.toFixed(1)}° Node, ${(item.data.inc || 0).toFixed(1)}° Inc`;
         }
       });
 
@@ -2650,6 +3150,8 @@
           document.getElementById('tele-lat').innerText = `${lat.toFixed(2)}°`;
           document.getElementById('tele-alt').innerText = `${item.data.altitude} km`;
           document.getElementById('tele-vel').innerText = `${item.data.velocity.toLocaleString()} km/h`;
+          const cardCoords = document.getElementById("card-intel-coords");
+          if (cardCoords) cardCoords.innerText = `${lat.toFixed(2)}° Lat (${isAsc ? 'Asc' : 'Desc'})`;
           const dirEl = document.getElementById('tele-direction');
           if (dirEl) dirEl.innerText = isAsc ? `${((inc * 180) / Math.PI).toFixed(1)}° NE (Asc)` : `${((180 - (inc * 180) / Math.PI)).toFixed(1)}° SE (Desc)`;
           const incEl = document.getElementById('tele-inc');
