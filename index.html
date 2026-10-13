@@ -253,6 +253,45 @@
     </div>
   </header>
 
+  <!-- NASA Eyes on Earth Layer Deck (Auto-reveals when Earth is selected) -->
+  <div id="nasa-earth-layers-deck" class="absolute top-28 sm:top-24 right-3 sm:right-6 z-30 flex flex-col gap-1.5 p-2 rounded-2xl hud-glass pointer-events-auto font-mono text-[10px] border border-cyan-500/40 shadow-2xl transition-all duration-300">
+    <div class="flex items-center justify-between pb-1 border-b border-slate-800 text-cyan-300 font-bold px-1">
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        EARTH OBSERVATION LAYERS
+      </span>
+      <span class="text-[9px] text-slate-400">NASA EYES</span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-1 pt-0.5">
+      <button onclick="toggleEarthGlint()" id="btn-glint" class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-left flex items-center justify-between font-bold transition">
+        <span>✨ Sun Glint</span>
+        <span class="text-[8px] text-emerald-400">ON</span>
+      </button>
+      <button onclick="toggleEarthLights()" id="btn-lights" class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-left flex items-center justify-between font-bold transition">
+        <span>🌃 City Lights</span>
+        <span class="text-[8px] text-emerald-400">ON</span>
+      </button>
+      <button onclick="toggleEarthClouds()" id="btn-clouds" class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-left flex items-center justify-between font-bold transition">
+        <span>☁️ Cloud Deck</span>
+        <span class="text-[8px] text-emerald-400">ON</span>
+      </button>
+      <button onclick="toggleEarthAtmo()" id="btn-atmo" class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-left flex items-center justify-between font-bold transition">
+        <span>🌐 Airglow Halo</span>
+        <span class="text-[8px] text-emerald-400">ON</span>
+      </button>
+    </div>
+
+    <div class="pt-1 border-t border-slate-800 flex gap-1">
+      <button onclick="setEarthLEOView()" class="w-full py-1.5 rounded-lg bg-gradient-to-r from-cyan-950 to-sky-900 hover:from-cyan-900 hover:to-sky-800 text-cyan-200 border border-cyan-500/50 font-bold text-center transition flex items-center justify-center gap-1.5">
+        <span>🛰️ LEO Horizon View</span>
+      </button>
+      <button onclick="setFocusTo('earth')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-bold transition">
+        Global
+      </button>
+    </div>
+  </div>
+
   <!-- Left Minimized Pill Button -->
   <button id="btn-expand-catalog" onclick="expandCatalog()" class="edge-pill-left hidden absolute top-20 sm:top-24 left-3 z-30 px-3 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-medium text-xs shadow-2xl transition-all flex items-center gap-2 group animate-pulse">
     <span>🛰️ Catalog</span>
