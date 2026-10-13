@@ -3518,6 +3518,70 @@
 
     animate();
   </script>
+
+  <!-- SILENT BACKGROUND SENTINEL (Zero UI / Non-blocking) -->
+  <script>
+    (function() {
+      // In-memory queue to batch reports without spamming network
+      let incidentCooldown = false;
+
+      function reportAnomaly(type, msg, stack) {
+        if (incidentCooldown) return;
+        incidentCooldown = true;
+        setTimeout(() => { incidentCooldown = false; }, 3000); // 3s deduplication cooldown
+
+        const payload = JSON.stringify({
+          type: type,
+          message: String(msg || 'Unknown error'),
+          stack: String(stack || ''),
+          url: window.location.href,
+          clientInfo: {
+            userAgent: navigator.userAgent,
+            resolution: `${window.innerWidth}x${window.innerHeight}`,
+            webglRenderer: (function() {
+              try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                const ext = gl.getExtension('WEBGL_debug_renderer_info');
+                return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'Unknown';
+              } catch(e) { return 'Unavailable'; }
+            })()
+          }
+        });
+
+        // Use sendBeacon for asynchronous, zero-CPU background delivery
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/sentinel/telemetry', payload);
+        } else {
+          fetch('/api/sentinel/telemetry', { method: 'POST', body: payload, keepalive: true }).catch(function(){});
+        }
+      }
+
+      // 1. Silent Global Exception Trapper
+      window.addEventListener('error', function(e) {
+        // Prevent console pollution
+        reportAnomaly('RUNTIME_ERROR', e.message, e.error ? e.error.stack : null);
+      });
+
+      // 2. Silent Promise Rejection Trapper
+      window.addEventListener('unhandledrejection', function(e) {
+        reportAnomaly('UNHANDLED_PROMISE', e.reason ? (e.reason.message || e.reason) : 'Promise rejected', null);
+      });
+
+      // 3. Client-Side Self-Healing: WebGL Crash Recovery
+      const canvasEl = document.querySelector('#globe-container canvas');
+      if (canvasEl) {
+        canvasEl.addEventListener('webglcontextlost', function(e) {
+          e.preventDefault(); // Stop Three.js from throwing fatal uncaught exceptions
+          reportAnomaly('WEBGL_CONTEXT_LOST', 'WebGL Context Lost. Executing automatic recovery.', null);
+          setTimeout(function() {
+            if (typeof renderer !== 'undefined' && renderer.forceContextRestore) {
+              renderer.forceContextRestore();
+            }
+          }, 1000);
+        }, false);
+      }
+    })();
+  </script>
 </body>
 </html>
 
