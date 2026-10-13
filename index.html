@@ -609,8 +609,8 @@
     </div>
   </div>
 
-  <!-- Multi-Source Resilient Video Player (Error 153 Protected) -->
-  <div id="video-panel" class="absolute bottom-16 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
+  <!-- Multi-Source Live Stream (On-Demand Loading) -->
+  <div id="video-panel" class="hidden absolute bottom-16 right-3 z-30 w-80 sm:w-96 rounded-2xl hud-glass overflow-hidden pointer-events-auto transition-transform duration-300 shadow-2xl">
     <div class="flex items-center justify-between p-2.5 bg-slate-950/85 border-b border-slate-800">
       <div class="flex items-center gap-2">
         <span id="stream-status-dot" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
@@ -618,35 +618,24 @@
       </div>
       <div class="flex items-center gap-1.5">
         <select id="feed-switcher" onchange="changeLiveStream(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono cursor-pointer">
-          <option value="0">Earth Views from Space (Live HD)</option>
-          <option value="1">NASA TV Live Operations</option>
-          <option value="2">Sen 4K Ultra HD Orbit</option>
-          <option value="simulated">Simulation: LEO Live Camera</option>
+          <option value="0">NASA Live ISS Feed (awQzjn72bI0)</option>
+          <option value="1">Space Videos Earth Orbit</option>
+          <option value="2">NASA TV Live Operations</option>
+          <option value="3">Sen 4K Ultra HD Orbit</option>
         </select>
-        <a id="stream-outlink" href="https://www.youtube.com/watch?v=DDU-r6sDXdA" target="_blank" rel="noopener noreferrer" title="Open Stream directly on YouTube" class="text-slate-400 hover:text-cyan-400 text-xs px-1">↗</a>
         <button onclick="toggleVideoPanel()" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded">✕</button>
       </div>
     </div>
     <div class="aspect-video bg-black relative flex items-center justify-center overflow-hidden">
-      <!-- Simulated Live Canvas Camera (Error 153 Safe Fallback) -->
-      <canvas id="simulated-orbit-canvas" class="w-full h-full object-cover hidden"></canvas>
-
-      <!-- YouTube Iframe Embed configured with strict origin & referrer policy -->
       <iframe 
         id="iss-video-frame"
         class="w-full h-full border-0" 
-        src="https://www.youtube-nocookie.com/embed/DDU-r6sDXdA?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1" 
-        title="Live ISS Earth Views from Space (HD)"
+        src="about:blank"
+        title="NASA Live Stream"
         referrerpolicy="strict-origin-when-cross-origin"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
         allowfullscreen>
       </iframe>
-
-      <!-- Error 153 Recovery Bar -->
-      <div id="stream-error-helper" class="absolute bottom-1 inset-x-1 p-1 bg-slate-950/80 backdrop-blur rounded border border-cyan-500/30 text-[9px] text-cyan-200 flex justify-between items-center z-10">
-        <span>🛰️ Alternate feed or privacy block?</span>
-        <button onclick="changeLiveStream('simulated')" class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold hover:bg-cyan-500/30">Switch to LEO Cam</button>
-      </div>
     </div>
   </div>
 
@@ -2332,6 +2321,7 @@
 
     // --- 12. VIDEO STREAM SWITCHER & ERROR 153 PROTECTION ---
     const STREAM_FEEDS = [
+      { id: "awQzjn72bI0", title: "NASA Live ISS Feed", url: "https://www.youtube.com/watch?v=awQzjn72bI0" },
       { id: "DDU-r6sDXdA", title: "Space Videos Earth Orbit Live HD", url: "https://www.youtube.com/watch?v=DDU-r6sDXdA" },
       { id: "21X5lGlDOfg", title: "NASA TV Live Operations", url: "https://www.youtube.com/watch?v=21X5lGlDOfg" },
       { id: "k204D5g3z30", title: "Sen 4K Ultra HD Orbit", url: "https://www.youtube.com/watch?v=k204D5g3z30" }
@@ -2704,7 +2694,17 @@
 
     function toggleVideoPanel() {
       const p = document.getElementById('video-panel');
-      if (p) p.classList.toggle('hidden');
+      if (p) {
+        const isHidden = p.classList.toggle('hidden');
+        const frame = document.getElementById('iss-video-frame');
+        if (!isHidden && frame && (frame.src === 'about:blank' || !frame.src || frame.src.endsWith('about:blank'))) {
+          const switcher = document.getElementById('feed-switcher');
+          changeLiveStream(switcher ? switcher.value : '0');
+        } else if (isHidden && frame) {
+          // Unload YouTube iframe to completely stop background WebGPU/WebGL decode loops
+          frame.src = 'about:blank';
+        }
+      }
     }
 
     function switchCategory(cat) {
