@@ -3,7 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOD'S EYE // ORBITAL - Interplanetary Solar System & Multi-Agency Fleet HUD</title>
+  <title>Orbital Command & Interplanetary Spacecraft Intelligence HUD</title>
+
+  <!-- Suppress Tailwind runtime CDN production notice -->
+  <script>
+    (function() {
+      const _warn = console.warn;
+      console.warn = function(...args) {
+        if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
+          return;
+        }
+        _warn.apply(console, args);
+      };
+    })();
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN -->
