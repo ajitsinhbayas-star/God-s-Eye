@@ -1296,9 +1296,19 @@
     let cameraPhi = 0.58;
     let cameraTheta = 0.75;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    // --- 1. NASA EYES CINEMATIC LIGHTING & ACES TONE MAPPING ---
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true, 
+      powerPreference: "high-performance" 
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    
+    // NASA Eyes PBR Tone Mapping & Color Space
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild(renderer.domElement);
 
     // WebGL Context-Loss Guard
@@ -1312,7 +1322,8 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    // Deep-space cosmic ambient light (ultra-low so dark side stays pitch black)
+    const ambientLight = new THREE.AmbientLight(0x081026, 0.12);
     scene.add(ambientLight);
 
     const starPos = new Float32Array(5000 * 3);
@@ -1335,7 +1346,9 @@
     sunMesh.add(sunHit);
     clickableMeshes.push(sunHit);
 
-    const sunLight = new THREE.PointLight(0xffffff, 3.2, 900);
+    // Brilliant central solar point light at (0,0,0) with infinite reach
+    const sunLight = new THREE.PointLight(0xffffff, 3.8, 0, 0.0);
+    sunLight.position.set(0, 0, 0);
     scene.add(sunLight);
 
     // Exact Keplerian 3D Elliptical Orbit Rings
