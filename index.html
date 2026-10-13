@@ -151,7 +151,7 @@
       </div>
       <h2 class="text-lg sm:text-2xl font-bold tracking-widest uppercase text-white hud-text-glow font-mono">ORBITAL COMMAND</h2>
       <p class="text-xs text-slate-300 mt-2 font-mono leading-relaxed">
-        Real-Time Heliocentric Physics • Multi-Agency Fleets • Adaptive Engine
+        Real-Time Keplerian Physics • Physical Axial Spin • AU Coordinates
       </p>
 
       <div class="mt-6 flex flex-col gap-3">
@@ -177,20 +177,18 @@
   <header class="header-safe absolute z-30 flex flex-col md:flex-row md:items-center justify-between gap-2.5 p-2.5 sm:p-3 rounded-2xl hud-glass pointer-events-auto">
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
-        <!-- Logo with Triple-Tap Mobile DevBot Detection -->
         <div id="hud-logo-badge" class="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 hud-glow shrink-0 cursor-pointer active:scale-95" title="Triple-tap for Dev Bot">
           <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
         </div>
         <div>
           <div class="flex items-center gap-1.5 sm:gap-2">
             <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow truncate max-w-[190px] sm:max-w-none">Solar System HUD</h1>
-            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono hidden sm:inline">HELIOCENTRIC</span>
+            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono hidden sm:inline">KEPLERIAN REAL-TIME</span>
           </div>
           <p class="text-[9px] sm:text-[10px] text-slate-400 font-mono" id="live-utc-display">UTC --:--:--</p>
         </div>
       </div>
 
-      <!-- Mobile Quick Action Buttons -->
       <div class="flex items-center gap-1 md:hidden">
         <button onclick="toggleVideoPanel()" class="p-1.5 px-2 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-mono">
           Cam
@@ -221,9 +219,12 @@
       <button onclick="setFocusTo('jupiter')" class="px-2.5 py-1 rounded text-amber-200 hover:bg-amber-500/10 transition whitespace-nowrap">
         🟠 Jupiter
       </button>
+      <button onclick="setFocusTo('saturn')" class="px-2.5 py-1 rounded text-yellow-300 hover:bg-yellow-500/10 transition whitespace-nowrap">
+        🪐 Saturn
+      </button>
     </div>
 
-    <!-- Desktop Tracking & Settings -->
+    <!-- Desktop Tracking Info -->
     <div class="hidden lg:flex items-center gap-3">
       <div class="flex items-center gap-3 px-2.5 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
         <div>
@@ -277,21 +278,21 @@
         id="search-input" 
         oninput="applyCatalogFilters()" 
         type="text" 
-        placeholder="Search Cartosat, ISS, Mangalyaan, Mars..." 
+        placeholder="Search Cartosat, ISS, Mars, Jupiter..." 
         class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-500/60 font-mono"
       />
     </div>
 
     <!-- Category Tabs -->
     <div class="flex items-center gap-1 p-2 border-b border-slate-800/80 bg-slate-950/60 overflow-x-auto text-[11px] shrink-0 scroll-container">
-      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40 whitespace-nowrap">Earth Satellites</button>
+      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium bg-cyan-950 text-cyan-300 border border-cyan-500/40 whitespace-nowrap">Planets (9)</button>
+      <button onclick="switchCategory('satellites')" id="tab-satellites" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">Earth Satellites</button>
       <button onclick="switchCategory('orbiters')" id="tab-orbiters" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">🚀 Planet Probes</button>
-      <button onclick="switchCategory('solarsystem')" id="tab-solarsystem" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white whitespace-nowrap">Planets (9)</button>
       <button onclick="switchCategory('bots')" id="tab-bots" class="cat-tab px-2.5 py-1 rounded-lg font-medium text-emerald-400 hover:text-white whitespace-nowrap">🤖 Swarm Log</button>
     </div>
 
     <!-- Agency Filter Pills -->
-    <div id="agency-filter-bar" class="flex items-center gap-1.5 p-2 bg-slate-950/60 border-b border-slate-800 text-[10px] overflow-x-auto font-mono scroll-container">
+    <div id="agency-filter-bar" class="hidden flex items-center gap-1.5 p-2 bg-slate-950/60 border-b border-slate-800 text-[10px] overflow-x-auto font-mono scroll-container">
       <button onclick="filterByAgency('all')" id="btn-agency-all" class="agency-filter-btn px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 whitespace-nowrap font-bold">ALL (<span id="cnt-all">165</span>)</button>
       <button onclick="filterByAgency('isro')" id="btn-agency-isro" class="agency-filter-btn px-2 py-0.5 rounded text-amber-300 hover:bg-amber-500/10 whitespace-nowrap">🇮🇳 ISRO (<span id="cnt-isro">32</span>)</button>
       <button onclick="filterByAgency('nasa')" id="btn-agency-nasa" class="agency-filter-btn px-2 py-0.5 rounded text-cyan-300 hover:bg-cyan-500/10 whitespace-nowrap">🇺🇸 NASA (<span id="cnt-nasa">25</span>)</button>
@@ -299,16 +300,16 @@
       <button onclick="filterByAgency('constellation')" id="btn-agency-constellation" class="agency-filter-btn px-2 py-0.5 rounded text-purple-300 hover:bg-purple-500/10 whitespace-nowrap">🌐 CONSTELLATIONS (<span id="cnt-constellation">35</span>)</button>
     </div>
 
-    <!-- Scrollable Catalog Lists -->
+    <!-- Scrollable Lists -->
     <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2 text-xs">
-      <div id="panel-satellites" class="cat-panel space-y-1.5">
+      <div id="panel-solarsystem" class="cat-panel space-y-1.5">
+        <div id="planets-list-container" class="space-y-1.5"></div>
+      </div>
+      <div id="panel-satellites" class="cat-panel hidden space-y-1.5">
         <div id="sat-list-container" class="space-y-1.5"></div>
       </div>
       <div id="panel-orbiters" class="cat-panel hidden space-y-2">
         <div id="planet-orbiters-container" class="space-y-1.5"></div>
-      </div>
-      <div id="panel-solarsystem" class="cat-panel hidden space-y-2">
-        <div id="planets-list-container" class="space-y-1.5"></div>
       </div>
       <div id="panel-bots" class="cat-panel hidden space-y-3">
         <div id="bot-cards-container" class="space-y-2 font-mono text-[11px]"></div>
@@ -318,7 +319,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div id="bot-terminal-logs" class="bot-terminal h-40 overflow-y-auto p-2.5 rounded-xl text-[10px] text-emerald-400 space-y-1 scroll-container shadow-inner">
-            <div>[SYS] Adaptive Mobile & Desktop Telemetry Harvester Ready.</div>
+            <div>[SYS] Keplerian Ephemeris Engine active. Real-time heliocentric orbits synchronized.</div>
           </div>
         </div>
       </div>
@@ -331,49 +332,51 @@
     <span>Telemetry 📊</span>
   </button>
 
-  <!-- Right Side: Real-Time Telemetry HUD -->
+  <!-- Right Side: Real-Time Telemetry HUD (Live AU Coordinates) -->
   <aside id="telemetry-panel" class="panel-slide-right absolute top-20 sm:top-24 right-3 z-30 w-[calc(100vw-1.5rem)] sm:w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl hud-glass p-3.5 pointer-events-auto space-y-2.5 font-mono text-xs">
     <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
       <div class="flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span class="text-slate-400 text-[10px] uppercase tracking-wider">Target Telemetry</span>
+        <span class="text-slate-400 text-[10px] uppercase tracking-wider">Keplerian Telemetry</span>
       </div>
       <button onclick="minimizeTelemetry()" title="Minimize" class="p-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition">
         <span>Close ✕</span>
       </button>
     </div>
 
+    <!-- Live Dynamic Coordinates Grid -->
     <div class="grid grid-cols-2 gap-2">
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-1">Semi-Major Axis</span>
-        <span id="tele-lat" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00 AU</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-1">Heliocentric X</span>
+        <span id="tele-lat" class="text-emerald-400 font-bold text-xs truncate block">+0.00 AU</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-2">Mean Longitude</span>
-        <span id="tele-lng" class="text-emerald-400 font-bold text-xs sm:text-sm">0.00°</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-2">Heliocentric Y/Z</span>
+        <span id="tele-lng" class="text-emerald-400 font-bold text-xs truncate block">+0.00 AU</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
         <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-3">Orbital Velocity</span>
-        <span id="tele-alt" class="text-cyan-400 font-bold text-xs sm:text-sm">0 km/h</span>
+        <span id="tele-alt" class="text-cyan-400 font-bold text-xs truncate block">29.8 km/s</span>
       </div>
       <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-4">Axial Tilt</span>
-        <span id="tele-vel" class="text-cyan-400 font-bold text-xs sm:text-sm">0.0°</span>
+        <span class="text-slate-500 block text-[9px] uppercase" id="tele-lbl-4">Sun Distance</span>
+        <span id="tele-vel" class="text-cyan-400 font-bold text-xs truncate block">1.00 AU</span>
       </div>
     </div>
 
+    <!-- Physical Spin & Position Details -->
     <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1 text-[10px]">
       <div class="flex justify-between items-center text-slate-400">
-        <span>System Domain:</span>
-        <span id="tele-parent" class="text-amber-300 font-bold">Solar System Center</span>
+        <span>Orbit Semi-Major:</span>
+        <span id="tele-parent" class="text-amber-300 font-bold">1.000 AU</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
-        <span>Classification:</span>
-        <span id="tele-agency-val" class="text-cyan-300 font-bold">G2V Yellow Dwarf</span>
+        <span>Axial Obliquity:</span>
+        <span id="tele-agency-val" class="text-cyan-300 font-bold">23.44°</span>
       </div>
       <div class="flex justify-between items-center text-slate-400">
-        <span>Orbital Period:</span>
-        <span id="tele-period" class="text-white">Static Reference</span>
+        <span>Diurnal Spin:</span>
+        <span id="tele-period" class="text-white truncate max-w-[150px]">23.9h • 0.0°</span>
       </div>
     </div>
   </aside>
@@ -384,12 +387,12 @@
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
         <div>
-          <h2 id="card-intel-name" class="text-xs sm:text-sm font-bold text-white tracking-wide font-mono uppercase truncate max-w-[170px] sm:max-w-[210px]">Cartosat-3</h2>
-          <span id="card-intel-subtitle" class="text-[9px] text-cyan-300 font-mono block">Earth Observation Spacecraft</span>
+          <h2 id="card-intel-name" class="text-xs sm:text-sm font-bold text-white tracking-wide font-mono uppercase truncate max-w-[170px] sm:max-w-[210px]">Mars</h2>
+          <span id="card-intel-subtitle" class="text-[9px] text-cyan-300 font-mono block">Terrestrial Planet</span>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
-        <span id="card-intel-badge" class="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold border border-amber-500/40 text-amber-300 bg-amber-500/10">ISRO</span>
+        <span id="card-intel-badge" class="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold border border-amber-500/40 text-amber-300 bg-amber-500/10">SOLAR</span>
         <button onclick="closeIntelCard()" title="Close Dossier" class="w-6 h-6 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs transition">✕</button>
       </div>
     </div>
@@ -397,48 +400,43 @@
     <div class="flex-1 overflow-y-auto scroll-container p-3 sm:p-3.5 space-y-2.5 font-mono text-xs">
       <div class="grid grid-cols-2 gap-2">
         <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-          <span class="text-slate-500 block text-[9px] uppercase">Altitude / Orbit</span>
-          <span id="card-intel-alt" class="text-cyan-400 font-bold text-xs">505 km</span>
+          <span class="text-slate-500 block text-[9px] uppercase">Orbit / Distance</span>
+          <span id="card-intel-alt" class="text-cyan-400 font-bold text-xs truncate block">1.52 AU</span>
         </div>
         <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-          <span class="text-slate-500 block text-[9px] uppercase">Velocity</span>
-          <span id="card-intel-vel" class="text-cyan-400 font-bold text-xs">27,400 km/h</span>
+          <span class="text-slate-500 block text-[9px] uppercase">True Velocity</span>
+          <span id="card-intel-vel" class="text-cyan-400 font-bold text-xs truncate block">24.1 km/s</span>
         </div>
         <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
           <span class="text-slate-500 block text-[9px] uppercase">Distance From Earth</span>
-          <span id="card-intel-dist" class="text-emerald-400 font-bold text-xs">505 km</span>
+          <span id="card-intel-dist" class="text-emerald-400 font-bold text-xs truncate block">0.82 AU</span>
         </div>
         <div class="p-2 rounded-xl bg-slate-950/70 border border-slate-800">
-          <span class="text-slate-500 block text-[9px] uppercase">Period / Obliquity</span>
-          <span id="card-intel-coords" class="text-emerald-400 font-bold text-xs">97.5 min</span>
+          <span class="text-slate-500 block text-[9px] uppercase">Axial Tilt / Period</span>
+          <span id="card-intel-coords" class="text-emerald-400 font-bold text-xs truncate block">25.19° • 24.6h</span>
         </div>
       </div>
 
       <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5 text-[10px] sm:text-[11px]">
         <div class="flex justify-between items-center">
-          <span class="text-slate-400">Launch Date:</span>
-          <span id="card-intel-launch-date" class="text-slate-200 font-bold">27 November 2019</span>
+          <span class="text-slate-400">Eccentricity (e):</span>
+          <span id="card-intel-launch-date" class="text-slate-200 font-bold">0.0934</span>
         </div>
         <div class="flex justify-between items-center">
-          <span class="text-slate-400">Launch Vehicle:</span>
-          <span id="card-intel-vehicle" class="text-cyan-300 font-semibold">PSLV-C47 (XL)</span>
+          <span class="text-slate-400">Inclination (i):</span>
+          <span id="card-intel-vehicle" class="text-cyan-300 font-semibold">1.85°</span>
         </div>
         <div class="flex justify-between items-center">
-          <span class="text-slate-400">Spaceport:</span>
-          <span id="card-intel-site" class="text-slate-200 truncate max-w-[170px] text-right">SDSC SHAR, Sriharikota</span>
+          <span class="text-slate-400">Heliocentric Position:</span>
+          <span id="card-intel-site" class="text-slate-200 truncate max-w-[170px] text-right font-mono">[+1.24, -0.89, +0.02] AU</span>
         </div>
       </div>
 
       <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1 text-[11px]">
-        <span class="text-[10px] uppercase font-bold text-cyan-400 block">Working Method & Sensors:</span>
+        <span class="text-[10px] uppercase font-bold text-cyan-400 block">Physical Characteristics:</span>
         <p id="card-intel-method" class="text-slate-300 leading-relaxed text-[10px] sm:text-[11px]">
-          Panchromatic & Multispectral optical sensors with 0.25 m resolution for cartography and urban infrastructure planning.
+          Rotating on its tilted axis based on exact sidereal period with live J2000 Keplerian coordinates.
         </p>
-      </div>
-
-      <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-[10px] sm:text-[11px]">
-        <span class="text-slate-400">Tracking Station:</span>
-        <span id="card-intel-radar" class="text-white font-bold truncate max-w-[160px]">ISTRAC, Bengaluru</span>
       </div>
 
       <div class="p-2.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
@@ -450,7 +448,7 @@
           <span id="wiki-bot-indicator" class="text-[9px] text-slate-400">Synced</span>
         </div>
         <div id="wiki-image-container" class="hidden aspect-video w-full rounded-lg overflow-hidden bg-black/60">
-          <img id="wiki-thumb" src="" alt="Spacecraft" class="w-full h-full object-cover">
+          <img id="wiki-thumb" src="" alt="Target" class="w-full h-full object-cover">
         </div>
         <p id="wiki-text" class="text-[10px] sm:text-[11px] text-slate-300 leading-relaxed font-sans">
           Connecting to Wikipedia API records...
@@ -514,7 +512,7 @@
     </div>
   </div>
 
-  <!-- Primary Astronomical Simulation & UI Engine -->
+  <!-- Primary Astronomical Simulation & Engine Script -->
   <script>
     // --- 1. AUDIO & SOUNDTRACK ENGINE ---
     const audioCinematic = document.getElementById('audio-cinematic');
@@ -673,7 +671,237 @@
       return { jd, d, utcHours, date, deltaDeg, deltaRad, subsolarLngDeg, eotMin };
     }
 
-    // --- 4. DATASETS: SATELLITES & SOLAR SYSTEM ---
+    // --- 4. KEPLERIAN DATASETS & PHYSICAL ORBITAL ELEMENTS ---
+    const CELESTIAL_BODIES = {
+      sun: { 
+        name: "The Sun (Sol)", type: "G2V Star", 
+        a: 0, e: 0, I: 0, L0: 0, Lrate: 0, w: 0, node: 0,
+        baseDist: 0, radius: 3.2, color: 0xfbbf24, 
+        rotPeriod: 609.1, tilt: 7.25, 
+        desc: "Gravitational Center of the Solar System", wikiKey: "Sun" 
+      },
+      mercury: { 
+        name: "Mercury", type: "Terrestrial Planet", 
+        a: 0.387098, e: 0.205630, I: 7.005, L0: 252.25, Lrate: 4.0923344, w: 77.456, node: 48.331,
+        baseDist: 8.5, radius: 0.70, color: 0x94a3b8, 
+        rotPeriod: 1407.6, tilt: 0.034, 
+        desc: "0.39 AU • Innermost Rocky Planet • Highly Eccentric Orbit", wikiKey: "Mercury_(planet)" 
+      },
+      venus: { 
+        name: "Venus", type: "Terrestrial Planet", 
+        a: 0.723332, e: 0.006773, I: 3.395, L0: 181.98, Lrate: 1.6021305, w: 131.53, node: 76.680,
+        baseDist: 13.5, radius: 1.45, color: 0xfde047, 
+        rotPeriod: -5832.5, tilt: 177.36, 
+        desc: "0.72 AU • Swirling Acid Clouds • Retrograde Axial Spin", wikiKey: "Venus" 
+      },
+      earth: { 
+        name: "Earth (Terra)", type: "Terrestrial Planet", 
+        a: 1.000000, e: 0.016709, I: 0.000, L0: 100.46, Lrate: 0.9856091, w: 102.94, node: 0.0,
+        baseDist: 20.0, radius: 1.85, color: 0x38bdf8, 
+        rotPeriod: 23.934, tilt: 23.44, 
+        desc: "1.00 AU • Home World • 23.44° Obliquity", wikiKey: "Earth" 
+      },
+      moon: { 
+        name: "The Moon (Luna)", type: "Natural Satellite", 
+        a: 0.00257, e: 0.0549, I: 5.14, L0: 218.32, Lrate: 13.176396, w: 83.35, node: 125.08,
+        baseDist: 3.5, radius: 0.45, color: 0xcccccc, 
+        rotPeriod: 655.7, tilt: 1.54, 
+        desc: "384,400 km from Earth • Tidally Locked", wikiKey: "Moon" 
+      },
+      mars: { 
+        name: "Mars", type: "Terrestrial Planet", 
+        a: 1.523679, e: 0.093405, I: 1.850, L0: 355.45, Lrate: 0.5240208, w: 336.04, node: 49.557,
+        baseDist: 28.5, radius: 1.15, color: 0xef4444, 
+        rotPeriod: 24.623, tilt: 25.19, 
+        desc: "1.52 AU • Polar Ice Caps & Olympus Mons", wikiKey: "Mars" 
+      },
+      jupiter: { 
+        name: "Jupiter", type: "Gas Giant", 
+        a: 5.204267, e: 0.048498, I: 1.303, L0: 34.40, Lrate: 0.0830853, w: 14.754, node: 100.45,
+        baseDist: 42.0, radius: 3.00, color: 0xd97706, 
+        rotPeriod: 9.925, tilt: 3.13, 
+        desc: "5.20 AU • Rapid 9.9h Rotation & Great Red Spot", wikiKey: "Jupiter" 
+      },
+      saturn: { 
+        name: "Saturn & Rings", type: "Gas Giant & Rings", 
+        a: 9.582017, e: 0.055546, I: 2.484, L0: 49.94, Lrate: 0.0334442, w: 92.432, node: 113.67,
+        baseDist: 55.0, radius: 2.45, color: 0xfcd34d, 
+        rotPeriod: 10.556, tilt: 26.73, 
+        desc: "9.58 AU • Majestic Ring System & Hexagon Storm", wikiKey: "Saturn" 
+      },
+      uranus: { 
+        name: "Uranus", type: "Ice Giant", 
+        a: 19.189165, e: 0.047218, I: 0.773, L0: 313.23, Lrate: 0.0117283, w: 170.96, node: 74.230,
+        baseDist: 68.0, radius: 1.70, color: 0x67e8f9, 
+        rotPeriod: -17.24, tilt: 97.77, 
+        desc: "19.2 AU • 97.8° Sideways Axial Tilt", wikiKey: "Uranus" 
+      },
+      neptune: { 
+        name: "Neptune", type: "Ice Giant", 
+        a: 30.070327, e: 0.008606, I: 1.770, L0: 304.88, Lrate: 0.0059806, w: 44.971, node: 131.72,
+        baseDist: 80.0, radius: 1.65, color: 0x2563eb, 
+        rotPeriod: 16.11, tilt: 28.32, 
+        desc: "30.1 AU • Supersonic Atmospheric Winds", wikiKey: "Neptune" 
+      },
+      pluto: { 
+        name: "Pluto", type: "Dwarf Planet", 
+        a: 39.481687, e: 0.248808, I: 17.16, L0: 238.92, Lrate: 0.003960, w: 224.07, node: 110.30,
+        baseDist: 92.0, radius: 0.55, color: 0xd97706, 
+        rotPeriod: -153.29, tilt: 122.53, 
+        desc: "39.5 AU • 17.2° Inclined Eccentric Orbit", wikiKey: "Pluto" 
+      }
+    };
+
+    // --- 5. EXACT KEPLERIAN MATHEMATICAL SOLVER ---
+    function computeKeplerianOrbit(pData, d) {
+      if (pData.a === 0) {
+        return {
+          rAU: 0, xAU: 0, yAU: 0, zAU: 0,
+          xThree: 0, yThree: 0, zThree: 0,
+          velocityKmS: 0, trueAnomalyDeg: 0, eclipticLngDeg: 0
+        };
+      }
+
+      const a = pData.a;
+      const e = pData.e;
+      const I_rad = pData.I * (Math.PI / 180);
+      const w_rad = pData.w * (Math.PI / 180);
+      const node_rad = pData.node * (Math.PI / 180);
+
+      let M_deg = (pData.L0 + pData.Lrate * d - pData.w) % 360;
+      if (M_deg < 0) M_deg += 360;
+      const M_rad = M_deg * (Math.PI / 180);
+
+      // Newton-Raphson Solver for Eccentric Anomaly E
+      let E = M_rad + e * Math.sin(M_rad);
+      for (let i = 0; i < 4; i++) {
+        const dE = (E - e * Math.sin(E) - M_rad) / (1.0 - e * Math.cos(E));
+        E -= dE;
+        if (Math.abs(dE) < 1e-6) break;
+      }
+
+      // Orbital Plane Coordinates
+      const xPrime = a * (Math.cos(E) - e);
+      const yPrime = a * Math.sqrt(Math.max(0, 1.0 - e * e)) * Math.sin(E);
+      const rAU = Math.sqrt(xPrime * xPrime + yPrime * yPrime);
+      const nu = Math.atan2(yPrime, xPrime); // True anomaly
+
+      // Argument of latitude u
+      const u = nu + w_rad - node_rad;
+
+      // Heliocentric Ecliptic Coordinates in AU
+      const xAU = rAU * (Math.cos(node_rad) * Math.cos(u) - Math.sin(node_rad) * Math.sin(u) * Math.cos(I_rad));
+      const yAU = rAU * (Math.sin(node_rad) * Math.cos(u) + Math.cos(node_rad) * Math.sin(u) * Math.cos(I_rad));
+      const zAU = rAU * (Math.sin(u) * Math.sin(I_rad));
+
+      // Vis-Viva Orbital Velocity in km/s: v = sqrt(GM(2/r - 1/a))
+      const vKmS = 29.784 * Math.sqrt(Math.max(0, 2.0 / rAU - 1.0 / a));
+
+      let eclipticLng = (Math.atan2(yAU, xAU) * (180 / Math.PI)) % 360;
+      if (eclipticLng < 0) eclipticLng += 360;
+
+      // Coordinate Scaling to Three.js Scene:
+      // Preserves perihelion and aphelion ratios cleanly
+      const rViz = pData.baseDist * (rAU / a);
+      const xThree = rViz * (xAU / rAU);
+      const yThree = rViz * (zAU / rAU); // Vertical orbital inclination lift
+      const zThree = rViz * (yAU / rAU);
+
+      return {
+        rAU, xAU, yAU, zAU,
+        rViz, xThree, yThree, zThree,
+        velocityKmS: vKmS,
+        trueAnomalyDeg: (nu * 180 / Math.PI + 360) % 360,
+        eclipticLngDeg: eclipticLng
+      };
+    }
+
+    // --- 6. PROCEDURAL SURFACE TEXTURE GENERATOR (Visible Spin) ---
+    function generatePlanetCanvasTexture(planetKey) {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+
+      if (planetKey === 'mercury') {
+        ctx.fillStyle = '#8c827a';
+        ctx.fillRect(0, 0, 512, 256);
+        for (let i = 0; i < 280; i++) {
+          ctx.fillStyle = Math.random() > 0.5 ? '#686058' : '#b2a89f';
+          ctx.beginPath();
+          ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 6 + 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (planetKey === 'venus') {
+        const grad = ctx.createLinearGradient(0, 0, 0, 256);
+        grad.addColorStop(0, '#e8c878');
+        grad.addColorStop(0.5, '#f5e2a3');
+        grad.addColorStop(1, '#c9a859');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        for (let y = 30; y < 230; y += 18) {
+          ctx.fillRect(0, y + Math.sin(y) * 8, 512, 6);
+        }
+      } else if (planetKey === 'mars') {
+        ctx.fillStyle = '#c1440e';
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = '#6b2005';
+        for (let i = 0; i < 40; i++) {
+          ctx.beginPath();
+          ctx.ellipse(Math.random() * 512, 60 + Math.random() * 136, 35 + Math.random() * 40, 15 + Math.random() * 15, Math.random(), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // Polar Ice Caps
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 512, 22);
+        ctx.fillRect(0, 234, 512, 22);
+      } else if (planetKey === 'jupiter') {
+        ctx.fillStyle = '#d39c63';
+        ctx.fillRect(0, 0, 512, 256);
+        const bands = ['#8c4d22', '#f3d19e', '#a85f2b', '#ebd1b2', '#7b3e15', '#e2be95'];
+        for (let i = 0; i < bands.length; i++) {
+          ctx.fillStyle = bands[i];
+          ctx.fillRect(0, i * 42, 512, 32);
+        }
+        // Great Red Spot
+        ctx.fillStyle = '#c5381b';
+        ctx.beginPath();
+        ctx.ellipse(290, 165, 36, 20, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (planetKey === 'saturn') {
+        const grad = ctx.createLinearGradient(0, 0, 0, 256);
+        grad.addColorStop(0, '#d1b87a');
+        grad.addColorStop(0.3, '#ebd8a0');
+        grad.addColorStop(0.7, '#c9ae6a');
+        grad.addColorStop(1, '#a68c4a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 256);
+      } else if (planetKey === 'uranus') {
+        ctx.fillStyle = '#7de8ea';
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.fillRect(0, 0, 512, 50);
+      } else if (planetKey === 'neptune') {
+        ctx.fillStyle = '#274687';
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = '#4b75d6';
+        ctx.beginPath();
+        ctx.ellipse(320, 130, 32, 18, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(0, 0, 512, 256);
+        ctx.fillStyle = '#f5eedb';
+        ctx.beginPath();
+        ctx.arc(256, 128, 45, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      return new THREE.CanvasTexture(c);
+    }
+
+    // --- 7. SATELLITES & INTERPLANETARY PROBES ---
     const SATELLITES = {};
 
     function addSat(key, name, norad, agency, country, inc, alt, color, agencyCat, role, launchDate, launchVeh, launchSite, radarStation, workingMethod, wikiKey) {
@@ -700,30 +928,28 @@
       };
     }
 
-    // ISRO Fleet
-    addSat("cartosat3", "Cartosat-3", 44804, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "0.25m High-Resolution Optical Observation", "27 Nov 2019", "PSLV-C47", "SDSC SHAR, Sriharikota", "ISTRAC, Bengaluru", "Panchromatic & Multispectral optical sensors with 0.25 m ground resolution.", "Cartosat-3");
-    addSat("cartosat2f", "Cartosat-2F", 43111, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Cartographic & Defense Reconnaissance", "12 Jan 2018", "PSLV-C40", "SDSC SHAR, Sriharikota", "ISTRAC, Bengaluru", "High-resolution panchromatic & multi-spectral imaging camera.", "Cartosat-2F");
-    addSat("eos04", "EOS-04 (RISAT-1A)", 51656, "ISRO", "IND", 97.6, 529, 0x34d399, "isro", "C-band Synthetic Aperture Radar", "14 Feb 2022", "PSLV-C52", "SDSC SHAR, Sriharikota", "NRSC Shadnagar", "C-band SAR radar operating through all weather conditions.", "EOS-04");
-    addSat("eos06", "EOS-06 (Oceansat-3)", 54361, "ISRO", "IND", 98.3, 738, 0x38bdf8, "isro", "Ocean Color Monitor & Scatterometer", "26 Nov 2022", "PSLV-C54", "SDSC SHAR, Sriharikota", "NRSC Shadnagar", "13-channel Ocean Color Monitor and Ku-band scatterometer.", "Oceansat-3");
-    addSat("insat3ds", "INSAT-3DS", 58990, "ISRO", "IND", 0.1, 35786, 0xf59e0b, "isro", "Advanced Meteorological Sounder", "17 Feb 2024", "GSLV-F14", "SDSC SHAR, Sriharikota", "MCF Hassan", "6-channel Multi-Spectral Imager & 19-channel Sounder.", "INSAT-3DS");
-    addSat("navic_nvs01", "NavIC NVS-01", 56759, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "Rubidium Atomic Clock Navigation", "29 May 2023", "GSLV-F12", "SDSC SHAR, Sriharikota", "INC Byalalu", "Indigenous Rubidium clocks transmitting L1, L5, and S-band signals.", "NVS-01");
-    addSat("astrosat", "AstroSat", 40930, "ISRO", "IND", 6.0, 650, 0x818cf8, "isro", "Multi-Wavelength Cosmic Space Observatory", "28 Sep 2015", "PSLV-C30", "SDSC SHAR, Sriharikota", "IDSN Byalalu", "UVIT and LAXPC detectors for simultaneous cosmic multi-wavelength study.", "Astrosat");
+    addSat("cartosat3", "Cartosat-3", 44804, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "0.25m Optical Observation", "27 Nov 2019", "PSLV-C47", "SDSC SHAR", "ISTRAC", "Panchromatic & Multispectral optical sensors.", "Cartosat-3");
+    addSat("cartosat2f", "Cartosat-2F", 43111, "ISRO", "IND", 97.5, 505, 0xfbbf24, "isro", "Cartographic Reconnaissance", "12 Jan 2018", "PSLV-C40", "SDSC SHAR", "ISTRAC", "High-resolution camera for cartography.", "Cartosat-2F");
+    addSat("eos04", "EOS-04 (RISAT-1A)", 51656, "ISRO", "IND", 97.6, 529, 0x34d399, "isro", "Synthetic Aperture Radar", "14 Feb 2022", "PSLV-C52", "SDSC SHAR", "NRSC", "C-band SAR radar operating through clouds.", "EOS-04");
+    addSat("eos06", "EOS-06 (Oceansat-3)", 54361, "ISRO", "IND", 98.3, 738, 0x38bdf8, "isro", "Ocean Color Monitor", "26 Nov 2022", "PSLV-C54", "SDSC SHAR", "NRSC", "13-channel Ocean Color Monitor.", "Oceansat-3");
+    addSat("insat3ds", "INSAT-3DS", 58990, "ISRO", "IND", 0.1, 35786, 0xf59e0b, "isro", "Advanced Meteorological Sounder", "17 Feb 2024", "GSLV-F14", "SDSC SHAR", "MCF", "Multi-Spectral Imager & 19-channel Sounder.", "INSAT-3DS");
+    addSat("navic_nvs01", "NavIC NVS-01", 56759, "ISRO", "IND", 29.0, 35786, 0x38bdf8, "isro", "Rubidium Atomic Clock Navigation", "29 May 2023", "GSLV-F12", "SDSC SHAR", "INC", "Indigenous Rubidium clocks.", "NVS-01");
+    addSat("astrosat", "AstroSat", 40930, "ISRO", "IND", 6.0, 650, 0x818cf8, "isro", "Multi-Wavelength Observatory", "28 Sep 2015", "PSLV-C30", "SDSC SHAR", "IDSN", "UVIT and LAXPC cosmic detectors.", "Astrosat");
 
-    // Global Fleet
-    addSat("iss", "ISS (ZARYA)", 25544, "NASA / INT", "USA", 51.64, 420, 0x10b981, "nasa", "Modular Orbital Space Laboratory", "20 Nov 1998", "Proton-K / Shuttle", "Baikonur / KSC", "NASA White Sands", "Pressurized microgravity research modules powered by solar arrays.", "International_Space_Station");
-    addSat("hubble", "Hubble Space Telescope", 20580, "NASA / ESA", "USA", 28.47, 540, 0x38bdf8, "nasa", "Deep Optical Space Telescope", "24 Apr 1990", "Shuttle Discovery", "Kennedy Space Center", "NASA Goddard", "2.4-meter primary mirror Ritchey-Chrétien Cassegrain telescope.", "Hubble_Space_Telescope");
-    addSat("sentinel2a", "Sentinel-2A", 40697, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus Optical Earth Observation", "23 Jun 2015", "Vega", "Kourou, French Guiana", "ESTRACK", "Multispectral sensor with 13 bands for land and agricultural mapping.", "Sentinel-2A");
-    addSat("tiangong", "Tiangong (CSS)", 48274, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "Chinese Space Station Modular Laboratory", "29 Apr 2021", "Long March 5B", "Wenchang", "BACC Beijing", "Modular space station featuring Tianhe core and science cabins.", "Tiangong_space_station");
+    addSat("iss", "ISS (ZARYA)", 25544, "NASA / INT", "USA", 51.64, 420, 0x10b981, "nasa", "Modular Orbital Space Laboratory", "20 Nov 1998", "Proton-K", "Baikonur", "NASA", "Pressurized research modules.", "International_Space_Station");
+    addSat("hubble", "Hubble Space Telescope", 20580, "NASA / ESA", "USA", 28.47, 540, 0x38bdf8, "nasa", "Deep Optical Space Telescope", "24 Apr 1990", "Shuttle", "KSC", "NASA", "2.4m Ritchey-Chrétien Cassegrain telescope.", "Hubble_Space_Telescope");
+    addSat("sentinel2a", "Sentinel-2A", 40697, "ESA", "ESA", 98.6, 786, 0x818cf8, "esa", "Copernicus Optical Earth Observation", "23 Jun 2015", "Vega", "Kourou", "ESTRACK", "13-band multispectral optical sensor.", "Sentinel-2A");
+    addSat("tiangong", "Tiangong (CSS)", 48274, "CNSA", "CHN", 41.47, 390, 0xef4444, "cnsa", "Space Station Modular Laboratory", "29 Apr 2021", "Long March 5B", "Wenchang", "BACC", "Modular space station.", "Tiangong_space_station");
 
     for (let i = 1; i <= 15; i++) {
-      addSat(`starlink_${i}`, `Starlink-${3000 + i}`, 48000 + i, "SpaceX", "USA", 53.2, 550, 0xc084fc, "constellation", "Low-Earth Orbit Broadband Internet", "Active Batch", "Falcon 9", "Cape Canaveral", "SpaceX Gateway", "Phased array antennas and optical inter-satellite space lasers.", "Starlink");
+      addSat(`starlink_${i}`, `Starlink-${3000 + i}`, 48000 + i, "SpaceX", "USA", 53.2, 550, 0xc084fc, "constellation", "LEO Broadband Internet", "Active Batch", "Falcon 9", "Cape Canaveral", "SpaceX", "Phased array beamforming lasers.", "Starlink");
     }
 
     const PLANETARY_ORBITERS = {
       mom: { 
         name: "Mangalyaan (MOM)", parent: "mars", agency: "ISRO", country: "IND", orbitRadius: 2.4, inc: 150.0, speed: 0.0016, color: 0xfbbf24, altitude: "421 × 76,993 km", velocity: "14,800 km/h", period: "72.9 hrs",
         role: "Mars Orbiter Mission - Surface & Atmosphere", launchDate: "05 Nov 2013", launchVeh: "PSLV-XL C25", launchSite: "SDSC SHAR, Sriharikota", radarStation: "IDSN Byalalu",
-        workingMethod: "Mars Colour Camera, Lyman Alpha Photometer, and MENCA exospheric spectrometer.", wikiKey: "Mars_Orbiter_Mission"
+        workingMethod: "Mars Colour Camera, Lyman Alpha Photometer, and MENCA spectrometer.", wikiKey: "Mars_Orbiter_Mission"
       },
       mro: { 
         name: "MRO (HiRISE)", parent: "mars", agency: "NASA", country: "USA", orbitRadius: 1.65, inc: 92.8, speed: 0.0028, color: 0x38bdf8, altitude: "250 × 316 km", velocity: "12,240 km/h", period: "112 min",
@@ -742,25 +968,11 @@
       }
     };
 
-    const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", dist: 0, radius: 3.2, color: 0xfbbf24, l0: 0, lRate: 0, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
-      mercury: { name: "Mercury", type: "Terrestrial Planet", dist: 8.5, radius: 0.70, color: 0x94a3b8, l0: 252.25, lRate: 4.092334, desc: "0.39 AU • Innermost Rocky Planet", wikiKey: "Mercury_(planet)" },
-      venus: { name: "Venus", type: "Terrestrial Planet", dist: 13.5, radius: 1.45, color: 0xfde047, l0: 181.98, lRate: 1.602130, desc: "0.72 AU • Swirling Acid Clouds", wikiKey: "Venus" },
-      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", dist: 20.0, radius: 1.85, color: 0x38bdf8, l0: 100.46, lRate: 0.985609, desc: "1.00 AU • Home World • 23.44° Tilt", wikiKey: "Earth" },
-      moon: { name: "The Moon (Luna)", type: "Natural Satellite", dist: 3.5, radius: 0.45, color: 0xcccccc, l0: 218.32, lRate: 13.176396, desc: "384,400 km from Earth", wikiKey: "Moon" },
-      mars: { name: "Mars", type: "Terrestrial Planet", dist: 28.5, radius: 1.15, color: 0xef4444, l0: 355.45, lRate: 0.524033, desc: "1.52 AU • Polar Ice & Volcanoes", wikiKey: "Mars" },
-      jupiter: { name: "Jupiter", type: "Gas Giant", dist: 42.0, radius: 3.0, color: 0xd97706, l0: 34.40, lRate: 0.083085, desc: "5.20 AU • Zonal Belts & Great Red Spot", wikiKey: "Jupiter" },
-      saturn: { name: "Saturn & Rings", type: "Gas Giant & Rings", dist: 55.0, radius: 2.45, color: 0xfcd34d, l0: 49.94, lRate: 0.033444, desc: "9.58 AU • Majestic Ring System", wikiKey: "Saturn" },
-      uranus: { name: "Uranus", type: "Ice Giant", dist: 68.0, radius: 1.70, color: 0x67e8f9, l0: 313.23, lRate: 0.011728, desc: "19.2 AU • Vertical Axial Tilt", wikiKey: "Uranus" },
-      neptune: { name: "Neptune", type: "Ice Giant", dist: 80.0, radius: 1.65, color: 0x2563eb, l0: 304.88, lRate: 0.005981, desc: "30.1 AU • Outermost Primary Planet", wikiKey: "Neptune" },
-      pluto: { name: "Pluto", type: "Dwarf Planet", dist: 92.0, radius: 0.55, color: 0xd97706, l0: 238.92, lRate: 0.003960, desc: "39.5 AU • Nitrogen Ice Heart", wikiKey: "Pluto" }
-    };
-
     let activeTargetKey = "sun";
     let isTrackingPlanet = true;
     let activeAgencyFilter = "all";
 
-    // --- 5. THREE.JS VIEWPORT & CONTEXT RECOVERY ---
+    // --- 8. THREE.JS VIEWPORT & SCENE GRAPH ---
     const container = document.getElementById("globe-container");
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000208, 0.006);
@@ -815,21 +1027,46 @@
     const sunLight = new THREE.PointLight(0xffffff, 3.2, 900);
     scene.add(sunLight);
 
-    function createOrbitRing(radius, color = 0x1e293b) {
+    // Exact Keplerian 3D Elliptical Orbit Rings
+    function createKeplerianOrbitRing(pData, color) {
+      if (pData.a === 0) return null;
       const segs = 128;
       const pos = new Float32Array((segs + 1) * 3);
       for (let i = 0; i <= segs; i++) {
-        const a = (i / segs) * Math.PI * 2;
-        pos[i * 3] = Math.cos(a) * radius; pos[i * 3 + 1] = 0; pos[i * 3 + 2] = Math.sin(a) * radius;
+        const M_deg = (i / segs) * 360;
+        const M_rad = M_deg * (Math.PI / 180);
+        const a = pData.a, e = pData.e;
+        let E = M_rad + e * Math.sin(M_rad);
+        for (let iter = 0; iter < 3; iter++) {
+          E -= (E - e * Math.sin(E) - M_rad) / (1.0 - e * Math.cos(E));
+        }
+        const xP = a * (Math.cos(E) - e);
+        const yP = a * Math.sqrt(Math.max(0, 1.0 - e * e)) * Math.sin(E);
+        const rAU = Math.sqrt(xP * xP + yP * yP);
+        const nu = Math.atan2(yP, xP);
+        const u = nu + (pData.w - pData.node) * (Math.PI / 180);
+        const I_rad = pData.I * (Math.PI / 180);
+        const node_rad = pData.node * (Math.PI / 180);
+
+        const xAU = rAU * (Math.cos(node_rad) * Math.cos(u) - Math.sin(node_rad) * Math.sin(u) * Math.cos(I_rad));
+        const yAU = rAU * (Math.sin(node_rad) * Math.cos(u) + Math.cos(node_rad) * Math.sin(u) * Math.cos(I_rad));
+        const zAU = rAU * (Math.sin(u) * Math.sin(I_rad));
+
+        const rViz = pData.baseDist * (rAU / a);
+        pos[i * 3] = rViz * (xAU / rAU);
+        pos[i * 3 + 1] = rViz * (zAU / rAU); // Vertical orbital tilt
+        pos[i * 3 + 2] = rViz * (yAU / rAU);
       }
       const ringGeo = new THREE.BufferGeometry();
       ringGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      const ring = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.4 }));
+      const ring = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({
+        color: color, transparent: true, opacity: 0.35
+      }));
       scene.add(ring);
       return ring;
     }
 
-    // --- 6. EARTH & DAY/NIGHT TERMINATOR ---
+    // --- 9. EARTH & DAY/NIGHT TERMINATOR ---
     const textureLoader = new THREE.TextureLoader();
     textureLoader.crossOrigin = 'anonymous';
 
@@ -887,14 +1124,13 @@
       earthShaderMat.uniforms.uNightMap.value = tex;
     });
 
-    createOrbitRing(CELESTIAL_BODIES.earth.dist, 0x0284c7);
+    createKeplerianOrbitRing(CELESTIAL_BODIES.earth, 0x0284c7);
 
     const earthSystem = new THREE.Group();
-    earthSystem.position.x = CELESTIAL_BODIES.earth.dist;
     scene.add(earthSystem);
 
     const earthAxialGroup = new THREE.Group();
-    earthAxialGroup.rotation.z = 23.44 * (Math.PI / 180);
+    earthAxialGroup.rotation.z = CELESTIAL_BODIES.earth.tilt * (Math.PI / 180);
     earthSystem.add(earthAxialGroup);
 
     const earthRadius = CELESTIAL_BODIES.earth.radius;
@@ -914,7 +1150,7 @@
     earthBeacon.rotation.x = Math.PI / 2;
     earthSystem.add(earthBeacon);
 
-    // Cloud Layer
+    // Procedural Clouds Layer
     function createProceduralCloudsCanvas() {
       const c = document.createElement('canvas'); c.width = 1024; c.height = 512;
       const ctx = c.getContext('2d');
@@ -955,16 +1191,16 @@
     const moonPathPos = new Float32Array(65 * 3);
     for (let i = 0; i <= 64; i++) {
       const a = (i / 64) * Math.PI * 2;
-      moonPathPos[i * 3] = Math.cos(a) * CELESTIAL_BODIES.moon.dist;
+      moonPathPos[i * 3] = Math.cos(a) * CELESTIAL_BODIES.moon.baseDist;
       moonPathPos[i * 3 + 1] = 0;
-      moonPathPos[i * 3 + 2] = Math.sin(a) * CELESTIAL_BODIES.moon.dist;
+      moonPathPos[i * 3 + 2] = Math.sin(a) * CELESTIAL_BODIES.moon.baseDist;
     }
     const moonPathGeo = new THREE.BufferGeometry();
     moonPathGeo.setAttribute('position', new THREE.BufferAttribute(moonPathPos, 3));
     moonOrbitRing.add(new THREE.Line(moonPathGeo, new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 })));
 
     const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius, 24, 24), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
-    moonMesh.position.x = CELESTIAL_BODIES.moon.dist;
+    moonMesh.position.x = CELESTIAL_BODIES.moon.baseDist;
     moonOrbitRing.add(moonMesh);
 
     const moonHit = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.moon.radius * 1.5, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
@@ -994,49 +1230,65 @@
       );
     }
 
-    // --- 7. PLANETS BUILDER ---
+    // --- 10. REALISTIC PLANET BUILDER (Axial Tilt + Diurnal Spin) ---
     const planetMeshes = {};
 
     function buildPlanet(k, pData) {
       if (k === 'sun' || k === 'earth' || k === 'moon') return;
-      createOrbitRing(pData.dist, pData.color);
+      createKeplerianOrbitRing(pData, pData.color);
 
+      // System group placed in 3D orbit
       const pSys = new THREE.Group();
-      pSys.position.x = pData.dist;
       scene.add(pSys);
 
-      const pMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(pData.radius, 32, 32),
-        new THREE.MeshLambertMaterial({ color: pData.color })
-      );
-      pSys.add(pMesh);
+      // Physical Axial Tilt Group (Obliquity)
+      const axialGroup = new THREE.Group();
+      axialGroup.rotation.z = (pData.tilt || 0) * (Math.PI / 180);
+      pSys.add(axialGroup);
 
-      const beaconRing = new THREE.Mesh(
-        new THREE.RingGeometry(pData.radius + 0.35, pData.radius + 0.55, 32),
-        new THREE.MeshBasicMaterial({ color: pData.color, side: THREE.DoubleSide, transparent: true, opacity: 0.65 })
-      );
-      beaconRing.rotation.x = Math.PI / 2;
-      pSys.add(beaconRing);
+      // Planet mesh spins on its local Y axis
+      const pMat = new THREE.MeshStandardMaterial({
+        map: generatePlanetCanvasTexture(k),
+        roughness: 0.8,
+        metalness: 0.1
+      });
+      const pMesh = new THREE.Mesh(new THREE.SphereGeometry(pData.radius, 32, 32), pMat);
+      axialGroup.add(pMesh);
 
+      // Hitbox for raycasting
       const hit = new THREE.Mesh(new THREE.SphereGeometry(pData.radius * 1.8, 10, 10), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
       hit.userData = { targetKey: k };
       pMesh.add(hit);
       clickableMeshes.push(hit);
 
+      // Saturn Rings bound to its 26.73° tilted equatorial plane
       if (k === 'saturn') {
-        const ringGeo = new THREE.RingGeometry(pData.radius + 0.6, pData.radius + 2.3, 48);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0xca8a04, side: THREE.DoubleSide, transparent: true, opacity: 0.65 });
+        const ringGeo = new THREE.RingGeometry(pData.radius + 0.6, pData.radius + 2.4, 64);
+        const ringMat = new THREE.MeshStandardMaterial({
+          color: 0xd9b372,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85
+        });
         const saturnRings = new THREE.Mesh(ringGeo, ringMat);
-        saturnRings.rotation.x = Math.PI / 2.3;
-        pSys.add(saturnRings);
+        saturnRings.rotation.x = Math.PI / 2;
+        axialGroup.add(saturnRings);
       }
 
-      planetMeshes[k] = { group: pSys, mesh: pMesh, data: pData };
+      // Live 3D Orbit Position Reticle
+      const beaconRing = new THREE.Mesh(
+        new THREE.RingGeometry(pData.radius + 0.35, pData.radius + 0.55, 32),
+        new THREE.MeshBasicMaterial({ color: pData.color, side: THREE.DoubleSide, transparent: true, opacity: 0.5 })
+      );
+      beaconRing.rotation.x = Math.PI / 2;
+      pSys.add(beaconRing);
+
+      planetMeshes[k] = { group: pSys, axialGroup, mesh: pMesh, data: pData };
     }
 
     Object.keys(CELESTIAL_BODIES).forEach(k => buildPlanet(k, CELESTIAL_BODIES[k]));
 
-    // --- 8. SATELLITE 3D BUILDER & ORBITERS ---
+    // --- 11. SATELLITE 3D BUILDER & ORBITERS ---
     const satelliteMeshMap = {};
 
     function buildSatelliteOrbit(key, data) {
@@ -1122,7 +1374,7 @@
 
     Object.keys(PLANETARY_ORBITERS).forEach(k => buildPlanetaryOrbiter(k, PLANETARY_ORBITERS[k]));
 
-    // --- 9. RESILIENT WIKIPEDIA INTEL BOT (Multi-Tier Fallback) ---
+    // --- 12. WIKIPEDIA INTEL BOT ---
     const WikiIntelBot = (function() {
       const cache = {};
 
@@ -1134,7 +1386,7 @@
         const linkField = document.getElementById("wiki-link");
 
         if (indicator) indicator.innerText = "Querying...";
-        if (textField) textField.innerText = `Connecting to Wikipedia Intelligence records for ${targetTitle}...`;
+        if (textField) textField.innerText = `Connecting to Wikipedia records for ${targetTitle}...`;
 
         if (cache[targetTitle]) {
           renderResult(cache[targetTitle]);
@@ -1142,7 +1394,6 @@
         }
 
         try {
-          // Tier 1: Direct REST Summary
           const endpoint = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(targetTitle)}`;
           const response = await fetch(endpoint);
           if (!response.ok) throw new Error("Tier 1 not found");
@@ -1152,13 +1403,11 @@
           BotSwarm.logTerminal("BOT-WIKI", `Intel verified: ${data.title}`);
         } catch {
           try {
-            // Tier 2: OpenSearch MediaWiki Fallback
             const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(targetTitle)}&limit=1&namespace=0&format=json&origin=*`);
             const searchData = await searchRes.json();
             if (searchData && searchData[1] && searchData[1][0]) {
               const matchedTitle = searchData[1][0];
-              const fallbackEndpoint = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(matchedTitle)}`;
-              const fbRes = await fetch(fallbackEndpoint);
+              const fbRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(matchedTitle)}`);
               if (fbRes.ok) {
                 const fbData = await fbRes.json();
                 cache[targetTitle] = fbData;
@@ -1168,7 +1417,6 @@
             }
             throw new Error("Tier 2 not found");
           } catch {
-            // Tier 3: Local Sensor Fallback
             if (indicator) indicator.innerText = "Local Spec";
             if (textField) textField.innerText = "Detailed encyclopedic dossier not returned via live query. Displaying onboard sensor specifications.";
             if (imgContainer) imgContainer.classList.add("hidden");
@@ -1200,11 +1448,9 @@
       return { fetchSummary };
     })();
 
-    // --- 10. ADAPTIVE PANEL CONTROLLER ---
+    // --- 13. ADAPTIVE PANEL CONTROLLER ---
     function openIntelCard(key, isOrbiter = false) {
-      if (window.innerWidth < 768) {
-        minimizeBothPanels();
-      }
+      if (window.innerWidth < 768) minimizeBothPanels();
 
       const card = document.getElementById('intel-card');
       if (!card) return;
@@ -1226,7 +1472,6 @@
         document.getElementById('card-intel-vehicle').innerText = meta.launchVeh || "Heavy Rocket";
         document.getElementById('card-intel-site').innerText = meta.launchSite || "Spaceport";
         document.getElementById('card-intel-method').innerText = meta.workingMethod || meta.role;
-        document.getElementById('card-intel-radar').innerText = meta.radarStation || "Deep Space Network";
       } else if (SATELLITES[key]) {
         meta = SATELLITES[key];
         wikiSearch = meta.wikiKey || meta.name;
@@ -1241,22 +1486,20 @@
         document.getElementById('card-intel-vehicle').innerText = meta.launchVeh || "Rocket";
         document.getElementById('card-intel-site').innerText = meta.launchSite || "Spaceport";
         document.getElementById('card-intel-method').innerText = meta.workingMethod || meta.role;
-        document.getElementById('card-intel-radar').innerText = meta.radarStation || "Tracking Station";
       } else if (CELESTIAL_BODIES[key]) {
         meta = CELESTIAL_BODIES[key];
         wikiSearch = meta.wikiKey || meta.name;
         document.getElementById('card-intel-name').innerText = meta.name;
         document.getElementById('card-intel-subtitle').innerText = meta.type;
         document.getElementById('card-intel-badge').innerText = "SOLAR";
-        document.getElementById('card-intel-alt').innerText = `${meta.dist} AU`;
-        document.getElementById('card-intel-vel').innerText = `${Math.round(meta.lRate * 100000).toLocaleString()} km/h`;
-        document.getElementById('card-intel-dist').innerText = key === 'earth' ? "0 km (Home)" : `${(meta.dist * 149597870).toLocaleString()} km`;
-        document.getElementById('card-intel-coords').innerText = `${meta.tilt || 0}° Tilt`;
-        document.getElementById('card-intel-launch-date').innerText = "Primordial Era";
-        document.getElementById('card-intel-vehicle').innerText = "Accretion";
-        document.getElementById('card-intel-site').innerText = "Solar Nebula";
-        document.getElementById('card-intel-method').innerText = meta.desc || "Body orbiting the Sun.";
-        document.getElementById('card-intel-radar').innerText = "Deep Space Network";
+        document.getElementById('card-intel-alt').innerText = `${meta.a} AU Semi-Major`;
+        document.getElementById('card-intel-vel').innerText = "Keplerian Propagated";
+        document.getElementById('card-intel-dist').innerText = key === 'earth' ? "0 AU (Home)" : "Calculating AU...";
+        document.getElementById('card-intel-coords').innerText = `${meta.tilt}° Tilt • ${meta.rotPeriod}h Spin`;
+        document.getElementById('card-intel-launch-date').innerText = `e = ${meta.e}`;
+        document.getElementById('card-intel-vehicle').innerText = `i = ${meta.I}°`;
+        document.getElementById('card-intel-site').innerText = `[Live AU Coordinates]`;
+        document.getElementById('card-intel-method').innerText = meta.desc || "Heliocentric body orbiting the Sun.";
       }
 
       card.classList.remove('is-hidden');
@@ -1318,7 +1561,7 @@
       if (e.key === 'Escape') closeIntelCard();
     });
 
-    // --- 11. STREAM ON-DEMAND LOADER ---
+    // --- 14. STREAM ON-DEMAND LOADER ---
     const STREAM_FEEDS = [
       { id: "awQzjn72bI0", title: "NASA Official ISS Live Feed" },
       { id: "DDU-r6sDXdA", title: "Space Videos Orbit" },
@@ -1427,12 +1670,6 @@
         if (tName) tName.innerText = body.name;
         if (tAgency) tAgency.innerText = key === 'sun' ? "Heliocentric" : "Solar System";
 
-        document.getElementById('tele-parent').innerText = key === 'sun' ? "Solar Center" : "Sun (Sol)";
-        document.getElementById('tele-lat').innerText = `${body.dist.toFixed(2)} AU`;
-        document.getElementById('tele-lng').innerText = `${(body.l0 || 0).toFixed(1)}°`;
-        document.getElementById('tele-alt').innerText = `${Math.round(body.lRate * 100000).toLocaleString()} km/h`;
-        document.getElementById('tele-vel').innerText = `${(body.tilt || 0).toFixed(1)}°`;
-
         if (key === 'sun') targetCameraDistance = 115.0;
         else if (key === 'earth') targetCameraDistance = 5.2;
         else if (key === 'mars') targetCameraDistance = 4.2;
@@ -1468,7 +1705,7 @@
       setFocusTo('sun');
     }
 
-    // --- 12. CATALOG POPULATOR ---
+    // --- 15. CATALOG POPULATOR ---
     function renderCatalogs() {
       const planetCont = document.getElementById('planets-list-container');
       if (planetCont) {
@@ -1558,7 +1795,7 @@
 
     renderCatalogs();
 
-    // --- 13. CROSS-PLATFORM TOUCH & GESTURE ENGINE ---
+    // --- 16. CROSS-PLATFORM TOUCH & GESTURE CONTROLS ---
     let isDragging = false;
     let prevMouse = { x: 0, y: 0 };
     let startClick = { x: 0, y: 0 };
@@ -1566,7 +1803,6 @@
     const raycaster = new THREE.Raycaster();
     const mouseVec = new THREE.Vector2();
 
-    // Desktop Mouse
     window.addEventListener('mousedown', e => {
       if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       isDragging = true;
@@ -1591,7 +1827,6 @@
       }
     });
 
-    // Mobile / Tablet Touch
     window.addEventListener('touchstart', e => {
       if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #sentinel-dev-panel, button, input, select, a')) return;
       if (e.touches.length === 1) {
@@ -1654,7 +1889,6 @@
       targetCameraDistance = Math.max(1.8, Math.min(260.0, targetCameraDistance + e.deltaY * 0.02));
     }, { passive: true });
 
-    // Dynamic Visual Viewport & Orientation Resize
     function handleViewportResize() {
       const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
       const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -1667,7 +1901,7 @@
     window.addEventListener('resize', handleViewportResize);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', handleViewportResize);
 
-    // --- 14. RESILIENT BOT SWARM ---
+    // --- 17. RESILIENT BOT SWARM ---
     const BotSwarm = (function () {
       const BOTS = [
         { id: "BOT-ISRO-01", name: "ISRO Telemetry Harvester", source: "Embedded NORAD Engine", role: "Propagates INSAT, GSAT, Cartosat, and AstroSat vectors", status: "ONLINE", packets: 165, active: true },
@@ -1753,7 +1987,7 @@
         setInterval(runISSSentinel, 3000);
       }
 
-            return { 
+      return { 
         init, 
         logTerminal,
         manualHarvest: () => {
@@ -1791,7 +2025,7 @@
 
     BotSwarm.init();
 
-    // --- 15. MAIN RENDER LOOP ---
+    // --- 18. MAIN KEPLERIAN ASTRONOMICAL RENDER LOOP ---
     function animate() {
       requestAnimationFrame(animate);
 
@@ -1821,7 +2055,10 @@
       const utcEl = document.getElementById('live-utc-display');
       if (utcEl) utcEl.innerText = `${astro.date.toISOString().replace('T', ' ').substring(0, 19)} UTC`;
 
-      // Solar Terminator
+      // 1. Solve Earth's Keplerian Orbit & Solar Terminator
+      const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
+      earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
+
       const subsolarLngRad = astro.subsolarLngDeg * (Math.PI / 180);
       earthShaderMat.uniforms.uSunDirLocal.value.set(
         Math.cos(astro.deltaRad) * Math.cos(subsolarLngRad),
@@ -1829,29 +2066,33 @@
         -Math.cos(astro.deltaRad) * Math.sin(subsolarLngRad)
       ).normalize();
 
-      // Earth & Moon Motion
-      const earthLRad = ((CELESTIAL_BODIES.earth.l0 + CELESTIAL_BODIES.earth.lRate * astro.d) % 360) * (Math.PI / 180);
-      earthSystem.position.x = Math.cos(earthLRad) * CELESTIAL_BODIES.earth.dist;
-      earthSystem.position.z = Math.sin(earthLRad) * CELESTIAL_BODIES.earth.dist;
-
-      const sunAngleInEcliptic = earthLRad + Math.PI;
+      // Earth & Moon Diurnal Spin
+      const sunAngleInEcliptic = (earthOrbit.eclipticLngDeg * Math.PI / 180) + Math.PI;
       earthMesh.rotation.y = sunAngleInEcliptic + (astro.subsolarLngDeg * Math.PI / 180);
       cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.12);
 
-      const moonLRad = ((CELESTIAL_BODIES.moon.l0 + CELESTIAL_BODIES.moon.lRate * astro.d) % 360) * (Math.PI / 180);
-      moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.dist;
-      moonMesh.position.z = Math.sin(moonLRad) * CELESTIAL_BODIES.moon.dist;
+      const moonLRad = ((CELESTIAL_BODIES.moon.L0 + CELESTIAL_BODIES.moon.Lrate * astro.d) % 360) * (Math.PI / 180);
+      moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.baseDist;
+      moonMesh.position.z = Math.sin(moonLRad) * CELESTIAL_BODIES.moon.baseDist;
 
-      // Planets Heliocentric Orbit
+      // 2. Solve All Planets: Keplerian Orbit Position + Physical Axial Rotation
+      const planetOrbitCache = { earth: earthOrbit };
+
       Object.keys(planetMeshes).forEach(pk => {
         const pObj = planetMeshes[pk];
-        const pLRad = ((pObj.data.l0 + pObj.data.lRate * astro.d) % 360) * (Math.PI / 180);
-        pObj.group.position.x = Math.cos(pLRad) * pObj.data.dist;
-        pObj.group.position.z = Math.sin(pLRad) * pObj.data.dist;
-        pObj.mesh.rotation.y += 0.002 * timeScale;
+        const pData = pObj.data;
+
+        // Compute Keplerian Orbital Position in AU & Three.js 3D space
+        const orbit = computeKeplerianOrbit(pData, astro.d);
+        planetOrbitCache[pk] = orbit;
+        pObj.group.position.set(orbit.xThree, orbit.yThree, orbit.zThree);
+
+        // Compute Diurnal Spin on Tilted Axis according to sidereal period
+        const spinAngle = (astro.d * (24.0 / pData.rotPeriod) * Math.PI * 2) % (Math.PI * 2);
+        pObj.mesh.rotation.y = spinAngle;
       });
 
-      // Spacecraft Orbits
+      // 3. Update Interplanetary Probes
       Object.keys(orbiterMeshes).forEach(ok => {
         const item = orbiterMeshes[ok];
         item.angle += (item.data.speed * (deltaRealMs / 1000) * timeScale);
@@ -1859,7 +2100,7 @@
         item.probeMesh.position.z = Math.sin(item.angle) * item.data.orbitRadius;
       });
 
-      // Satellites
+      // 4. Update Earth Satellites
       const isSat = !!(SATELLITES[activeTargetKey] && satelliteMeshMap[activeTargetKey]);
       nadirLine.visible = isSat;
       footprintMesh.visible = isSat;
@@ -1890,7 +2131,48 @@
         }
       });
 
-      // Camera Lerp
+      // 5. Update Real-Time AU Coordinates in Telemetry Panel for Targeted Planet
+      if (CELESTIAL_BODIES[activeTargetKey]) {
+        const targetBody = CELESTIAL_BODIES[activeTargetKey];
+        const targetOrbit = planetOrbitCache[activeTargetKey] || computeKeplerianOrbit(targetBody, astro.d);
+
+        // Distance from Earth in AU
+        const deltaX = targetOrbit.xAU - earthOrbit.xAU;
+        const deltaY = targetOrbit.yAU - earthOrbit.yAU;
+        const deltaZ = targetOrbit.zAU - earthOrbit.zAU;
+        const distFromEarthAU = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+        const el1 = document.getElementById('tele-lat');
+        const el2 = document.getElementById('tele-lng');
+        const el3 = document.getElementById('tele-alt');
+        const el4 = document.getElementById('tele-vel');
+
+        if (el1) el1.innerText = `X: ${targetOrbit.xAU >= 0 ? '+' : ''}${targetOrbit.xAU.toFixed(2)} AU`;
+        if (el2) el2.innerText = `Y: ${targetOrbit.yAU >= 0 ? '+' : ''}${targetOrbit.yAU.toFixed(2)} AU`;
+        if (el3) el3.innerText = `${targetOrbit.velocityKmS.toFixed(1)} km/s`;
+        if (el4) el4.innerText = `${targetOrbit.rAU.toFixed(2)} AU (${(targetOrbit.rAU * 149.6).toFixed(1)}M km)`;
+
+        const elParent = document.getElementById('tele-parent');
+        const elTilt = document.getElementById('tele-agency-val');
+        const elSpin = document.getElementById('tele-period');
+
+        if (elParent) elParent.innerText = `${targetBody.a} AU (e=${targetBody.e})`;
+        if (elTilt) elTilt.innerText = `${targetBody.tilt}° Obliquity`;
+        if (elSpin) {
+          const spinDeg = ((astro.d * (24.0 / targetBody.rotPeriod) * 360) % 360 + 360) % 360;
+          elSpin.innerText = `${targetBody.rotPeriod}h • ${spinDeg.toFixed(0)}° Phase`;
+        }
+
+        // Update Dossier Card If Open
+        const distCard = document.getElementById('card-intel-dist');
+        const siteCard = document.getElementById('card-intel-site');
+        const velCard = document.getElementById('card-intel-vel');
+        if (distCard) distCard.innerText = `${distFromEarthAU.toFixed(2)} AU (${(distFromEarthAU * 149.6).toFixed(1)}M km)`;
+        if (siteCard) siteCard.innerText = `[${targetOrbit.xAU.toFixed(2)}, ${targetOrbit.yAU.toFixed(2)}, ${targetOrbit.zAU.toFixed(2)}] AU`;
+        if (velCard) velCard.innerText = `${targetOrbit.velocityKmS.toFixed(1)} km/s`;
+      }
+
+      // 6. Camera Tracking & Lerp
       let focusWorldPos = new THREE.Vector3(0, 0, 0);
       if (PLANETARY_ORBITERS[activeTargetKey]) {
         const orb = PLANETARY_ORBITERS[activeTargetKey];
@@ -1984,7 +2266,7 @@
             <span>Mobile: <b class="text-cyan-400">3x Logo Tap</b></span>
           </div>
           <div class="max-h-44 overflow-y-auto space-y-1.5 scroll-container pr-1">
-            ${incidents.length === 0 ? '<div class="text-slate-500 py-3 text-center">No anomalies detected. Mobile & Desktop system healthy.</div>' : ''}
+            ${incidents.length === 0 ? '<div class="text-slate-500 py-3 text-center">No anomalies detected. Keplerian coordinates online.</div>' : ''}
             ${incidents.map(i => `
               <div class="p-2 rounded bg-slate-900/90 border border-slate-800 text-[10px]">
                 <div class="flex justify-between text-slate-400">
@@ -2003,12 +2285,10 @@
         document.body.appendChild(div);
       };
 
-      // Desktop Shortcut: Shift + D
       window.addEventListener("keydown", e => {
         if (e.shiftKey && (e.key === "D" || e.key === "d")) window.openDevBot();
       });
 
-      // Mobile Touch Shortcut: Triple-Tap Logo (#hud-logo-badge)
       let tapCount = 0;
       let lastTapTime = 0;
       const logoEl = document.getElementById("hud-logo-badge");
@@ -2017,7 +2297,7 @@
           const now = Date.now();
           if (now - lastTapTime < 450) {
             tapCount++;
-            if (tapCount >= 2) { // 3 rapid clicks total
+            if (tapCount >= 2) {
               window.openDevBot();
               tapCount = 0;
             }
@@ -2028,7 +2308,6 @@
         });
       }
 
-      // URL Dev Key Check
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("dev_key") === "my_dev_master_key") {
         document.addEventListener("DOMContentLoaded", window.openDevBot);
