@@ -4,6 +4,7 @@
   "description": "Real-time 3D Earth, Satellite Swarm, and Heliocentric Planetary Tracking HUD",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

@@ -166,7 +166,7 @@
     </div>
 
         <!-- 1-Click Perspective Director -->
-    <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-mono">
+    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] sm:text-[11px] font-mono shrink-0 overflow-x-auto max-w-[280px] sm:max-w-none">
       <button onclick="setFocusTo('sun'); updatePerspectiveButtons('sun');" id="view-btn-sun" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1">
         <span>&#9728;&#65039; Solar System</span>
       </button>
@@ -580,6 +580,16 @@
         </div>
       </div>
 
+      <!-- Quick Perspective Navigation -->
+      <div class="pt-1 flex gap-2">
+        <button onclick="setFocusTo('sun')" class="flex-1 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[10px] font-bold transition flex items-center justify-center gap-1">
+          ☀️ View in Solar System Context
+        </button>
+        <button onclick="setFocusTo('earth')" class="flex-1 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono text-[10px] font-bold transition flex items-center justify-center gap-1">
+          🌍 Earth Fleet
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -626,7 +636,14 @@
   </div>
 
       <!-- Floating Bottom Mission Dock (Controls Bar) -->
-  <div id="dock-bar" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto transition-all">
+  <div id="dock-bar" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 p-2 rounded-2xl hud-glass pointer-events-auto transition-all max-w-[95vw] overflow-x-auto">
+    <!-- Quick System Perspective Shortcuts -->
+    <button onclick="resetCameraView()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-mono transition flex items-center gap-1 font-bold whitespace-nowrap" title="Reset View to Full Solar System">
+      <span>☀️</span><span class="hidden sm:inline">Solar System</span>
+    </button>
+    <button onclick="setFocusTo('earth')" class="px-2.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-mono transition flex items-center gap-1 font-bold whitespace-nowrap" title="Focus Earth Fleet">
+      <span>🌍</span><span class="hidden sm:inline">Earth Fleet</span>
+    </button>
     <!-- Astronomical Time Warp Bar -->
     <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] font-mono">
       <span class="text-slate-400 px-1 hidden sm:inline">WARP:</span>
@@ -636,18 +653,27 @@
       <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
     </div>
     <!-- Cinematic Drift with Multi-Stage Audio Sequence -->
-    <button onclick="startCinematicDriftExperience()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5" title="Toggle Cinematic Drift Tour (Shortcut: C)">
+    <button onclick="startCinematicDriftExperience()" id="btn-cinematic-cam" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition flex items-center gap-1.5 whitespace-nowrap" title="Toggle Cinematic Drift Tour (Shortcut: C)">
       <span class="w-2 h-2 rounded-full bg-slate-500" id="dot-cinematic"></span>
       <span id="txt-cinematic">Cinematic Drift</span>
     </button>
     <!-- Master HUD Visibility -->
-    <button onclick="toggleHUDPanels()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition" title="Toggle Panels (Shortcut: M)">
+    <button onclick="toggleHUDPanels()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition whitespace-nowrap" title="Toggle Panels (Shortcut: M)">
       HUD (M)
     </button>
     <!-- Fullscreen Toggle -->
-    <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition" title="Toggle Fullscreen (Shortcut: F)">
+    <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono transition whitespace-nowrap" title="Toggle Fullscreen (Shortcut: F)">
       ⛶ Fullscreen
     </button>
+  </div>
+
+  <!-- Interactive 3D Canvas Hover HUD Tooltip -->
+  <div id="hud-3d-tooltip" class="pointer-events-none fixed z-50 hidden px-2.5 py-1.5 rounded-xl hud-glass border border-cyan-500/50 text-[11px] font-mono shadow-2xl transition-opacity duration-150 backdrop-blur-md">
+    <div class="flex items-center gap-1.5 font-bold text-white">
+      <span id="tt-dot" class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+      <span id="tt-name" class="tracking-wide">Target</span>
+    </div>
+    <div id="tt-sub" class="text-[9px] text-cyan-300 font-mono">Telemetry Data</div>
   </div>
 
   <!-- Three.js Astronomical Engine & Interplanetary Physics -->
@@ -864,7 +890,7 @@
       const alphaRad = Math.atan2(Math.sin(lambdaRad) * Math.cos(epsilon), Math.cos(lambdaRad));
       const alphaDeg = (alphaRad * 180 / Math.PI + 360) % 360;
 
-      const deltaRad = Math.asin(Math.sin(epsilon) * Math.sin(lambdaRad));
+      const deltaRad = Math.asin(Math.max(-1.0, Math.min(1.0, Math.sin(epsilon) * Math.sin(lambdaRad))));
       const deltaDeg = deltaRad * (180 / Math.PI);
 
       const eotMin = 4 * ((L - alphaDeg + 360) % 360);
@@ -893,7 +919,7 @@
       const hourAngleDeg = (astro.utcHours - solarNoonUTC) * 15.0;
       const hourAngleRad = hourAngleDeg * (Math.PI / 180);
       const sinAlt = Math.sin(phiRad) * Math.sin(deltaRad) + Math.cos(phiRad) * Math.cos(deltaRad) * Math.cos(hourAngleRad);
-      const sunAltDeg = Math.asin(sinAlt) * (180 / Math.PI);
+      const sunAltDeg = Math.asin(Math.max(-1.0, Math.min(1.0, sinAlt))) * (180 / Math.PI);
 
       return {
         sunAltDeg,
@@ -1591,6 +1617,115 @@
 
     const clickableMeshes = [];
 
+    // --- 3D INTERACTIVE BILLBOARD TEXT BADGE ENGINE ---
+    function createBillboardTextSprite(mainText, subText, colorHex) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 72;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = 'rgba(6, 11, 25, 0.82)';
+      ctx.strokeStyle = colorHex || '#38bdf8';
+      ctx.lineWidth = 2.5;
+
+      const x = 4, y = 4, w = 248, h = 64, r = 12;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(mainText, 128, subText ? 26 : 36);
+
+      if (subText) {
+        ctx.fillStyle = colorHex || '#38bdf8';
+        ctx.font = 'bold 12px "JetBrains Mono", monospace';
+        ctx.fillText(subText, 128, 48);
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const spriteMat = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false
+      });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(3.8, 1.1, 1);
+      return sprite;
+    }
+
+    // Active Satellite / Target 3D Floating Name Callout
+    const activeCalloutCanvas = document.createElement('canvas');
+    activeCalloutCanvas.width = 320;
+    activeCalloutCanvas.height = 80;
+    const calloutTexture = new THREE.CanvasTexture(activeCalloutCanvas);
+    const calloutMat = new THREE.SpriteMaterial({
+      map: calloutTexture,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false
+    });
+    const activeCalloutSprite = new THREE.Sprite(calloutMat);
+    activeCalloutSprite.scale.set(3.4, 0.85, 1);
+    activeCalloutSprite.visible = false;
+    scene.add(activeCalloutSprite);
+
+    function updateActiveCalloutBadge(title, sub, colorStr) {
+      if (!activeCalloutSprite) return;
+      if (!title || activeTargetKey === 'sun') {
+        activeCalloutSprite.visible = false;
+        return;
+      }
+      const ctx = activeCalloutCanvas.getContext('2d');
+      ctx.clearRect(0, 0, 320, 80);
+
+      ctx.fillStyle = 'rgba(4, 10, 24, 0.90)';
+      ctx.strokeStyle = colorStr || '#38bdf8';
+      ctx.lineWidth = 2.5;
+
+      const x = 4, y = 4, w = 312, h = 72, r = 14;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(title, 160, 28);
+
+      ctx.fillStyle = colorStr || '#38bdf8';
+      ctx.font = 'bold 12px "JetBrains Mono", monospace';
+      ctx.fillText(sub || 'ACTIVE TRACK', 160, 52);
+
+      calloutTexture.needsUpdate = true;
+      activeCalloutSprite.visible = true;
+    }
+
     // Central Sun
     const sunMesh = new THREE.Mesh(
       new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius, 32, 32),
@@ -1611,6 +1746,11 @@
     sunHit.userData = { targetKey: 'sun' };
     sunMesh.add(sunHit);
     clickableMeshes.push(sunHit);
+
+    const sunSprite = createBillboardTextSprite("☀️ THE SUN (SOL)", "HELIOCENTRIC CENTER", "#fbbf24");
+    sunSprite.scale.set(6.8, 1.8, 1);
+    sunSprite.position.y = CELESTIAL_BODIES.sun.radius + 1.8;
+    sunMesh.add(sunSprite);
 
     const sunLight = new THREE.PointLight(0xffffff, 3.0, 800);
     scene.add(sunLight);
@@ -1657,6 +1797,7 @@
         }
       `,
       fragmentShader: `
+        precision highp float;
         uniform sampler2D uDayMap;
         uniform sampler2D uNightMap;
         uniform vec3 uSunDirLocal;
@@ -1719,6 +1860,10 @@
       new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.14, side: THREE.BackSide, blending: THREE.AdditiveBlending })
     ));
 
+    const earthSprite = createBillboardTextSprite("EARTH (TERRA)", "1.00 AU // 165+ SATS", "#38bdf8");
+    earthSprite.position.y = earthRadius + 1.45;
+    earthSystem.add(earthSprite);
+
     const moonOrbitGroup = new THREE.Group();
     moonOrbitGroup.rotation.x = 5.14 * (Math.PI / 180);
     earthSystem.add(moonOrbitGroup);
@@ -1734,6 +1879,11 @@
     moonHit.userData = { targetKey: 'moon' };
     moonMesh.add(moonHit);
     clickableMeshes.push(moonHit);
+
+    const moonSprite = createBillboardTextSprite("THE MOON", "384k km", "#cccccc");
+    moonSprite.scale.set(2.4, 0.65, 1);
+    moonSprite.position.y = CELESTIAL_BODIES.moon.radius + 0.65;
+    moonMesh.add(moonSprite);
 
     // Laser & Footprint for Active Earth Satellite
     const nadirLineGeo = new THREE.BufferGeometry();
@@ -1835,6 +1985,15 @@
         uRing.rotation.y = Math.PI / 2;
         tiltGroup.add(uRing);
       }
+
+      // 3D Billboard Name Badge so planet name is visible in Solar System
+      const planetSprite = createBillboardTextSprite(
+        pData.name.toUpperCase(),
+        `${pData.dist ? pData.dist.toFixed(1) + ' AU' : ''}`,
+        '#' + pData.color.toString(16).padStart(6, '0')
+      );
+      planetSprite.position.y = pData.radius + 1.35;
+      pSys.add(planetSprite);
 
       planetSystems[k] = { group: pSys, tiltGroup, mesh: pMesh, data: pData };
     }
@@ -2091,6 +2250,7 @@
       }
 
       async function runN2YOBot() {
+        if (document.hidden) return; // Background tab throttle
         const bot = BOTS[3];
         if (!bot.active) return;
         if (activeTargetKey === "iss") {
@@ -2283,7 +2443,11 @@
         const wikiImgBox = document.getElementById("wiki-image-container");
         const wikiLink = document.getElementById("wiki-link");
 
-        const queryKey = wikiKey || (displayName ? displayName.replace(/\s+/g, '_') : 'Spacecraft');
+        let queryKey = wikiKey;
+        if (!queryKey && displayName) {
+          queryKey = displayName.replace(/\s*\([^)]*\)/g, '').trim().replace(/\s+/g, '_');
+        }
+        if (!queryKey) queryKey = 'Spacecraft';
 
         if (botIndicator) {
           botIndicator.innerText = "Querying REST API...";
@@ -2644,6 +2808,8 @@
 
       updatePerspectiveButtons(orb.parent);
 
+      updateActiveCalloutBadge("🚀 " + orb.name.toUpperCase(), orb.agency + " • " + orb.parent.toUpperCase() + " ORBIT", "#" + (orb.color ? orb.color.toString(16).padStart(6, '0') : '38bdf8'));
+
       nadirLine.visible = false;
       footprintMesh.visible = false;
 
@@ -2693,6 +2859,8 @@
 
         targetCameraDistance = sat.radius > 3.0 ? 8.5 : 5.2;
         updatePerspectiveButtons('earth');
+
+        updateActiveCalloutBadge("🛰️ " + sat.name.toUpperCase(), sat.agency + " • " + sat.altitude + " km (" + (sat.orbitType || "LEO") + ")", "#" + (sat.color ? sat.color.toString(16).padStart(6, '0') : '38bdf8'));
 
         Object.keys(satelliteMeshMap).forEach(k => {
           satelliteMeshMap[k].orbitRing.opacity = k === key ? 0.95 : 0.08;
@@ -2752,6 +2920,12 @@
         else targetCameraDistance = 5.0;
 
         updatePerspectiveButtons(key);
+
+        if (key === 'sun') {
+          updateActiveCalloutBadge('', '', '');
+        } else {
+          updateActiveCalloutBadge((body.name === 'Moon' ? '🌙 ' : '🪐 ') + body.name.toUpperCase(), (body.type || 'PLANET').toUpperCase() + ' • ' + (body.dist !== undefined ? body.dist.toFixed(2) + ' AU' : 'ORBIT'), '#' + (body.color ? body.color.toString(16).padStart(6, '0') : '38bdf8'));
+        }
 
         nadirLine.visible = false;
         footprintMesh.visible = false;
@@ -2918,12 +3092,71 @@
     });
 
     window.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      const dx = e.clientX - prevMouse.x;
-      const dy = e.clientY - prevMouse.y;
-      cameraTheta -= dx * 0.006;
-      cameraPhi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraPhi + dy * 0.005));
-      prevMouse = { x: e.clientX, y: e.clientY };
+      const tt = document.getElementById('hud-3d-tooltip');
+      if (isDragging) {
+        const dx = e.clientX - prevMouse.x;
+        const dy = e.clientY - prevMouse.y;
+        cameraTheta -= dx * 0.006;
+        cameraPhi = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraPhi + dy * 0.005));
+        prevMouse = { x: e.clientX, y: e.clientY };
+        if (tt) tt.classList.add('hidden');
+        return;
+      }
+
+      // Hover Raycasting for 3D Tooltip & Pointer Cursor
+      if (e.target.closest('aside, header, #video-panel, #intel-card, button, input, select, a')) {
+        if (tt) tt.classList.add('hidden');
+        document.body.style.cursor = 'default';
+        return;
+      }
+
+      mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouseVec, camera);
+      const hits = raycaster.intersectObjects(clickableMeshes, true);
+
+      if (hits.length > 0) {
+        const hitObj = hits[0].object;
+        let tName = '', tSub = '', tCol = '#38bdf8';
+        if (hitObj.userData.orbiterKey && PLANETARY_ORBITERS[hitObj.userData.orbiterKey]) {
+          const o = PLANETARY_ORBITERS[hitObj.userData.orbiterKey];
+          tName = '🚀 ' + o.name;
+          tSub = o.agency + ' • ' + o.parent.toUpperCase();
+          tCol = '#' + (o.color ? o.color.toString(16).padStart(6, '0') : '38bdf8');
+        } else if (hitObj.userData.targetKey) {
+          const tk = hitObj.userData.targetKey;
+          if (SATELLITES[tk]) {
+            const s = SATELLITES[tk];
+            tName = '🛰️ ' + s.name;
+            tSub = s.agency + ' • ' + s.altitude + ' km';
+            tCol = '#' + (s.color ? s.color.toString(16).padStart(6, '0') : '38bdf8');
+          } else if (CELESTIAL_BODIES[tk]) {
+            const b = CELESTIAL_BODIES[tk];
+            tName = (b.name === 'Moon' ? '🌙 ' : (tk === 'sun' ? '☀️ ' : '🪐 ')) + b.name;
+            tSub = (b.type || 'SOLAR BODY').toUpperCase() + ' • ' + (b.dist !== undefined ? b.dist.toFixed(2) + ' AU' : 'ORBIT');
+            tCol = '#' + (b.color ? b.color.toString(16).padStart(6, '0') : '38bdf8');
+          }
+        }
+
+        if (tName && tt) {
+          document.body.style.cursor = 'pointer';
+          const nameEl = document.getElementById('tt-name');
+          if (nameEl) nameEl.innerText = tName;
+          const subEl = document.getElementById('tt-sub');
+          if (subEl) subEl.innerText = tSub;
+          const dot = document.getElementById('tt-dot');
+          if (dot) dot.style.background = tCol;
+          tt.style.left = Math.min(window.innerWidth - 240, e.clientX + 14) + 'px';
+          tt.style.top = Math.min(window.innerHeight - 80, e.clientY + 14) + 'px';
+          tt.classList.remove('hidden');
+        } else {
+          document.body.style.cursor = 'default';
+          if (tt) tt.classList.add('hidden');
+        }
+      } else {
+        document.body.style.cursor = 'default';
+        if (tt) tt.classList.add('hidden');
+      }
     });
 
     window.addEventListener('mouseup', e => {
@@ -2957,6 +3190,19 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
+    let animFrameId = null;
+
+    renderer.domElement.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      console.warn("WebGL Context Lost. Pausing animation loop...");
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+    }, false);
+
+    renderer.domElement.addEventListener('webglcontextrestored', () => {
+      console.info("WebGL Context Restored. Resuming render loop...");
+      animate();
+    }, false);
+
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'Escape') closeIntelCard();
@@ -2981,7 +3227,7 @@
 
     // --- 16. MASTER ANIMATION & ASTRONOMICAL MOTION LOOP ---
     function animate() {
-      requestAnimationFrame(animate);
+      animFrameId = requestAnimationFrame(animate);
 
       // Smooth Cinematic Camera Zoom Interpolation (Opening Glide & Fly-Tos)
       cameraDistance += (targetCameraDistance - cameraDistance) * 0.06;
@@ -3144,7 +3390,7 @@
 
         if (k === activeTargetKey && activeTargetKey !== 'iss') {
           const inc = item.data.inclination;
-          const lat = Math.asin(Math.sin(inc) * Math.sin(item.angle)) * (180 / Math.PI);
+          const lat = Math.asin(Math.max(-1.0, Math.min(1.0, Math.sin(inc) * Math.sin(item.angle)))) * (180 / Math.PI);
           const isAsc = Math.cos(item.angle) >= 0;
 
           document.getElementById('tele-lat').innerText = `${lat.toFixed(2)}°`;
@@ -3187,6 +3433,45 @@
           const groundInEarth = earthMesh.worldToLocal(satWorldPos.clone()).normalize().multiplyScalar(earthRadius * 1.002);
           footprintMesh.position.copy(groundInEarth);
           footprintMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), groundInEarth.clone().normalize());
+        }
+      }
+
+      // Real-Time 3D Active Entity Callout Badge Tracking
+      if (activeCalloutSprite && activeCalloutSprite.visible) {
+        let badgeFound = false;
+        if (isEarthSat && satelliteMeshMap[activeTargetKey]) {
+          const satWorldPos = new THREE.Vector3();
+          satelliteMeshMap[activeTargetKey].satMesh.getWorldPosition(satWorldPos);
+          activeCalloutSprite.position.set(satWorldPos.x, satWorldPos.y + 0.38, satWorldPos.z);
+          badgeFound = true;
+        } else if (PLANETARY_ORBITERS[activeTargetKey] && orbiterMeshes[activeTargetKey]) {
+          const orbWorldPos = new THREE.Vector3();
+          orbiterMeshes[activeTargetKey].probeMesh.getWorldPosition(orbWorldPos);
+          activeCalloutSprite.position.set(orbWorldPos.x, orbWorldPos.y + 0.50, orbWorldPos.z);
+          badgeFound = true;
+        } else if (activeTargetKey === 'earth') {
+          const eWorldPos = new THREE.Vector3();
+          earthSystem.getWorldPosition(eWorldPos);
+          activeCalloutSprite.position.set(eWorldPos.x, eWorldPos.y + earthRadius + 0.75, eWorldPos.z);
+          badgeFound = true;
+        } else if (activeTargetKey === 'moon') {
+          const mWorldPos = new THREE.Vector3();
+          moonMesh.getWorldPosition(mWorldPos);
+          activeCalloutSprite.position.set(mWorldPos.x, mWorldPos.y + 0.65, mWorldPos.z);
+          badgeFound = true;
+        } else if (planetSystems[activeTargetKey]) {
+          const pWorldPos = new THREE.Vector3();
+          planetSystems[activeTargetKey].group.getWorldPosition(pWorldPos);
+          const r = (CELESTIAL_BODIES[activeTargetKey] ? CELESTIAL_BODIES[activeTargetKey].radius : 1.0);
+          activeCalloutSprite.position.set(pWorldPos.x, pWorldPos.y + r + 0.85, pWorldPos.z);
+          badgeFound = true;
+        }
+        if (badgeFound) {
+          const camDist = camera.position.distanceTo(activeCalloutSprite.position);
+          const badgeScale = Math.max(0.45, Math.min(6.0, camDist * 0.16));
+          activeCalloutSprite.scale.set(badgeScale * 3.4, badgeScale * 0.85, 1);
+        } else {
+          activeCalloutSprite.visible = false;
         }
       }
 
