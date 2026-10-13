@@ -1524,6 +1524,103 @@
     // --- 10. REALISTIC PLANET BUILDER (Axial Tilt + Diurnal Spin) ---
     const planetMeshes = {};
 
+    // --- 3. ATMOSPHERIC LIMB HALO (RAYLEIGH SCATTERING) ---
+    function createAtmosphereHalo(radius, hexColor, opacity) {
+      const atmoMat = new THREE.ShaderMaterial({
+        uniforms: {
+          uSunDir: { value: new THREE.Vector3(1, 0, 0) },
+          uColor:  { value: new THREE.Color(hexColor) },
+          uOpacity:{ value: opacity }
+        },
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vWorldPos;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uSunDir;
+          uniform vec3 uColor;
+          uniform float uOpacity;
+          varying vec3 vNormal;
+          varying vec3 vWorldPos;
+          void main() {
+            vec3 viewDir = normalize(-vWorldPos);
+            vec3 sunDirNorm = normalize(uSunDir);
+            
+            // Fresnel rim effect
+            float rim = 1.0 - max(0.0, dot(viewDir, vNormal));
+            rim = pow(rim, 2.8);
+            
+            // Sunlit crescent factor
+            float sunFacing = max(0.0, dot(vNormal, sunDirNorm));
+            float intensity = rim * (sunFacing * 1.4 + 0.15) * uOpacity;
+            
+            gl_FragColor = vec4(uColor, intensity);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        depthWrite: false
+      });
+
+      return new THREE.Mesh(new THREE.SphereGeometry(radius * 1.05, 48, 48), atmoMat);
+    }
+
+    // --- 4. NASA EYES SATURN RING SYSTEM (TRANSPARENT WITH CASSINI DIVISION) ---
+    function createSaturnRingsNASA(innerR, outerR) {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 1;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 512, 0);
+      
+      // Photorealistic Ring Opacity & Color Gradient
+      grad.addColorStop(0.00, 'rgba(0,0,0,0)');
+      grad.addColorStop(0.12, 'rgba(168,142,106,0.25)'); // C Ring
+      grad.addColorStop(0.32, 'rgba(215,188,143,0.92)'); // B Ring (Dense)
+      grad.addColorStop(0.58, 'rgba(224,198,154,0.95)'); 
+      grad.addColorStop(0.61, 'rgba(10,8,6,0.05)');      // Cassini Division
+      grad.addColorStop(0.66, 'rgba(195,170,128,0.75)'); // A Ring
+      grad.addColorStop(0.92, 'rgba(180,155,115,0.65)'); 
+      grad.addColorStop(0.95, 'rgba(0,0,0,0)');          // Encke Gap
+      grad.addColorStop(1.00, 'rgba(140,118,85,0.20)');  // F Ring
+      
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 1);
+      
+      const ringTex = new THREE.CanvasTexture(c);
+      ringTex.rotation = -Math.PI / 2;
+
+      // UV Radial Planar Ring Geometry
+      const ringGeo = new THREE.RingGeometry(innerR, outerR, 96);
+      const pos = ringGeo.attributes.position;
+      const uvs = ringGeo.attributes.uv;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const dist = Math.sqrt(x * x + y * y);
+        const u = (dist - innerR) / (outerR - innerR);
+        uvs.setXY(i, u, 0.5);
+      }
+      uvs.needsUpdate = true;
+
+      const ringMat = new THREE.MeshStandardMaterial({
+        map: ringTex,
+        side: THREE.DoubleSide,
+        transparent: true,
+        roughness: 0.6,
+        metalness: 0.1
+      });
+
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = Math.PI / 2;
+      return ringMesh;
+    }
+
     function buildPlanet(k, pData) {
       if (k === 'sun' || k === 'earth' || k === 'moon') return;
       createKeplerianOrbitRing(pData, pData.color);
