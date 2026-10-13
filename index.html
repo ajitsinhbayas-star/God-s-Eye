@@ -1603,6 +1603,66 @@
       }
     );
 
+    // --- 4. NASA EYES ON EARTH INTERACTIVE CONTROLLER ---
+    let isGlintEnabled = true;
+    let isLightsEnabled = true;
+    let isCloudsEnabled = true;
+    let isAtmoEnabled = true;
+
+    function toggleEarthGlint() {
+      isGlintEnabled = !isGlintEnabled;
+      earthShaderMat.uniforms.uShowGlint.value = isGlintEnabled ? 1.0 : 0.0;
+      updateLayerBtnState('btn-glint', isGlintEnabled);
+    }
+
+    function toggleEarthLights() {
+      isLightsEnabled = !isLightsEnabled;
+      earthShaderMat.uniforms.uShowLights.value = isLightsEnabled ? 1.0 : 0.0;
+      updateLayerBtnState('btn-lights', isLightsEnabled);
+    }
+
+    function toggleEarthClouds() {
+      isCloudsEnabled = !isCloudsEnabled;
+      cloudsMesh.visible = isCloudsEnabled;
+      updateLayerBtnState('btn-clouds', isCloudsEnabled);
+    }
+
+    function toggleEarthAtmo() {
+      isAtmoEnabled = !isAtmoEnabled;
+      earthOuterAtmoMesh.visible = isAtmoEnabled;
+      updateLayerBtnState('btn-atmo', isAtmoEnabled);
+    }
+
+    function updateLayerBtnState(btnId, isActive) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      const statusSpan = btn.children[1];
+      if (isActive) {
+        btn.className = "px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-left flex items-center justify-between font-bold transition";
+        if (statusSpan) { statusSpan.innerText = "ON"; statusSpan.className = "text-[8px] text-emerald-400"; }
+      } else {
+        btn.className = "px-2 py-1 rounded-lg bg-slate-900/60 text-slate-500 border border-slate-800 text-left flex items-center justify-between font-bold transition";
+        if (statusSpan) { statusSpan.innerText = "OFF"; statusSpan.className = "text-[8px] text-rose-400"; }
+      }
+    }
+
+    // --- 5. LEO HORIZON CAMERA PERSPECTIVE (ISS / SUOMI-NPP VIEW) ---
+    function setEarthLEOView() {
+      setFocusTo('earth');
+      // Low-Earth Orbit vantage point: tight radius hugging the surface
+      targetCameraDistance = 2.45; // ~450 km orbital altitude
+      cameraPhi = 0.08;            // Glancing horizon pitch
+      cameraTheta = earthMesh.rotation.y + 0.35; // Frame the daylit ocean curve and terminator
+    }
+
+    function syncEarthLayersDeckVisibility() {
+      const deck = document.getElementById('nasa-earth-layers-deck');
+      if (!deck) return;
+      // Show layers deck when Earth or an Earth-orbiting satellite is targeted
+      const isEarthFocused = (activeTargetKey === 'earth' || !!(SATELLITES[activeTargetKey]));
+      deck.style.display = isEarthFocused ? 'flex' : 'none';
+    }
+
     // The Moon
     const moonOrbitRing = new THREE.Group();
     moonOrbitRing.rotation.x = 5.14 * (Math.PI / 180);
@@ -2695,7 +2755,22 @@
       // Earth & Moon Diurnal Spin
       const sunAngleInEcliptic = (earthOrbit.eclipticLngDeg * Math.PI / 180) + Math.PI;
       earthMesh.rotation.y = sunAngleInEcliptic + (astro.subsolarLngDeg * Math.PI / 180);
-      cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.12);
+
+      // 1. Transform Camera Position to Earth Local Coordinates for Specular Glint
+      earthMesh.updateMatrixWorld();
+      const invEarthMatrix = new THREE.Matrix4().copy(earthMesh.matrixWorld).invert();
+      const camLocal = camera.position.clone().applyMatrix4(invEarthMatrix);
+      earthShaderMat.uniforms.uCamPosLocal.value.copy(camLocal);
+
+      // 2. Pass Sun Vector to Outer Atmosphere Halo
+      const sunWorldDir = new THREE.Vector3().subVectors(new THREE.Vector3(0,0,0), earthSystem.position).normalize();
+      earthOuterAtmoMat.uniforms.uSunDir.value.copy(sunWorldDir);
+
+      // 3. Clouds Real-Time Dynamic Rotation (rotates slightly faster than Earth)
+      cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.16);
+
+      // 4. Update Layer Deck Visibility
+      syncEarthLayersDeckVisibility();
 
       const moonLRad = ((CELESTIAL_BODIES.moon.L0 + CELESTIAL_BODIES.moon.Lrate * astro.d) % 360) * (Math.PI / 180);
       moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.baseDist;
@@ -2821,16 +2896,6 @@
       camera.position.y = cameraTarget.y + cameraDistance * Math.sin(cameraPhi);
       camera.position.z = cameraTarget.z + cameraDistance * Math.cos(cameraPhi) * Math.cos(cameraTheta);
       camera.lookAt(cameraTarget);
-
-      // Update Earth local camera position for specular ocean glint & outer atmosphere sunlight direction
-      const earthCamLocal = camera.position.clone();
-      earthMesh.worldToLocal(earthCamLocal);
-      earthShaderMat.uniforms.uCamPosLocal.value.copy(earthCamLocal);
-
-      if (typeof earthOuterAtmoMat !== 'undefined' && earthOuterAtmoMat.uniforms && earthOuterAtmoMat.uniforms.uSunDir) {
-        const sunDirEarth = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), earthSystem.position).normalize();
-        earthOuterAtmoMat.uniforms.uSunDir.value.copy(sunDirEarth);
-      }
 
       // 1. Adaptive Orbit Trail Fading (Hides orbit lines when close to a planet)
       const distToActive = camera.position.distanceTo(cameraTarget);
