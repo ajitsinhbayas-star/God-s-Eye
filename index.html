@@ -1365,18 +1365,24 @@
     const fNightCtx = fallbackNightCanvas.getContext('2d');
     fNightCtx.fillStyle = '#01040a'; fNightCtx.fillRect(0, 0, 1024, 512);
 
+    // --- 1. NASA EYES PHOTOREALISTIC EARTH SHADER (SUN GLINT + TWILIGHT + BLACK MARBLE) ---
     const earthShaderMat = new THREE.ShaderMaterial({
       uniforms: {
-        uDayMap: { value: new THREE.CanvasTexture(fallbackDayCanvas) },
-        uNightMap: { value: new THREE.CanvasTexture(fallbackNightCanvas) },
-        uSunDirLocal: { value: new THREE.Vector3(1, 0, 0) }
+        uDayMap:      { value: new THREE.CanvasTexture(fallbackDayCanvas) },
+        uNightMap:    { value: new THREE.CanvasTexture(fallbackNightCanvas) },
+        uSunDirLocal: { value: new THREE.Vector3(1, 0, 0) },
+        uCamPosLocal: { value: new THREE.Vector3(0, 0, 5) },
+        uShowGlint:   { value: 1.0 }, // 1.0 = Active, 0.0 = Off
+        uShowLights:  { value: 1.0 }
       },
       vertexShader: `
         varying vec2 vUv;
         varying vec3 vNormalLocal;
+        varying vec3 vPositionLocal;
         void main() {
           vUv = uv;
           vNormalLocal = normalize(normal);
+          vPositionLocal = position;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
@@ -1384,29 +1390,66 @@
         uniform sampler2D uDayMap;
         uniform sampler2D uNightMap;
         uniform vec3 uSunDirLocal;
+        uniform vec3 uCamPosLocal;
+        uniform float uShowGlint;
+        uniform float uShowLights;
+
         varying vec2 vUv;
         varying vec3 vNormalLocal;
+        varying vec3 vPositionLocal;
+
         void main() {
-          float cosZenith = dot(vNormalLocal, normalize(uSunDirLocal));
-          float dayFactor = smoothstep(-0.14, 0.18, cosZenith);
+          vec3 N = normalize(vNormalLocal);
+          vec3 L = normalize(uSunDirLocal);
+          vec3 V = normalize(uCamPosLocal - vPositionLocal);
+          vec3 R = reflect(-L, N);
+
+          float cosZenith = dot(N, L);
+
+          // 1. Photometric Day/Night Blend (Smooth Twilight Terminator)
+          float dayFactor = smoothstep(-0.16, 0.18, cosZenith);
+
+          // 2. Sample Blue Marble Day and Black Marble Night textures
           vec4 dayColor = texture2D(uDayMap, vUv);
           vec4 nightColor = texture2D(uNightMap, vUv);
-          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.35 + 0.12);
-          vec3 litNight = nightColor.rgb * 1.85 * (1.0 - dayFactor);
-          float sunsetFactor = 1.0 - abs(cosZenith * 4.5);
-          vec3 sunsetGlow = vec3(0.95, 0.45, 0.1) * max(0.0, sunsetFactor) * 0.25;
-          gl_FragColor = vec4(mix(litNight, litDay, dayFactor) + sunsetGlow, 1.0);
+
+          // 3. Ocean Mask Detection & Specular Sun-Glint
+          // Detect oceans by checking blue channel dominance over green & red
+          float oceanMask = clamp((dayColor.b - dayColor.r * 0.95) * 3.5, 0.0, 1.0);
+          
+          // Blinn-Phong specular glint on water surfaces
+          float specAngle = max(0.0, dot(V, R));
+          float specularGlint = pow(specAngle, 38.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
+          vec3 glintColor = vec3(1.0, 0.96, 0.82) * specularGlint * 2.2;
+
+          // 4. Rayleigh Twilight Sunset/Sunrise Edge (Amber/Red band at terminator)
+          float twilightBand = smoothstep(-0.12, 0.04, cosZenith) * (1.0 - smoothstep(0.04, 0.22, cosZenith));
+          vec3 sunsetGlow = vec3(1.0, 0.42, 0.12) * twilightBand * 0.38;
+
+          // 5. Daylight & Night-Side City Lights
+          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.35 + 0.08) + glintColor;
+          vec3 litNight = nightColor.rgb * 2.2 * (1.0 - dayFactor) * uShowLights;
+
+          // 6. Fresnel Atmospheric Horizon Rim
+          float rim = 1.0 - max(0.0, dot(V, N));
+          vec3 airglow = vec3(0.25, 0.65, 1.0) * pow(rim, 3.2) * (max(0.0, cosZenith) * 0.75 + 0.15);
+
+          gl_FragColor = vec4(mix(litNight, litDay, dayFactor) + sunsetGlow + airglow, 1.0);
         }
       `
     });
 
+    // High-resolution NASA Blue Marble & Black Marble texture streaming
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg', tex => {
-      tex.anisotropy = 8;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       earthShaderMat.uniforms.uDayMap.value = tex;
+      earthShaderMat.uniforms.uDayMap.value.needsUpdate = true;
     });
+
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg', tex => {
-      tex.anisotropy = 8;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       earthShaderMat.uniforms.uNightMap.value = tex;
+      earthShaderMat.uniforms.uNightMap.value.needsUpdate = true;
     });
 
     createKeplerianOrbitRing(CELESTIAL_BODIES.earth, 0x0284c7);
@@ -1422,6 +1465,55 @@
     const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMesh = new THREE.Mesh(earthGeo, earthShaderMat);
     earthAxialGroup.add(earthMesh);
+
+    // --- 2. NASA EYES DUAL-SHELL RAYLEIGH AIRGLOW ATMOSPHERE ---
+    const earthOuterAtmoMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uSunDir: { value: new THREE.Vector3(1, 0, 0) }
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uSunDir;
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        void main() {
+          vec3 viewDir = normalize(-vWorldPos);
+          vec3 sunDir = normalize(uSunDir);
+
+          // Outer horizon Fresnel curve
+          float fresnel = 1.0 - max(0.0, dot(viewDir, vNormal));
+          fresnel = pow(fresnel, 3.2);
+
+          // Atmospheric lighting from Sun
+          float sunFacing = dot(vNormal, sunDir);
+          float dayTerm = smoothstep(-0.2, 0.4, sunFacing);
+          
+          // Pure NASA Cyan-Blue Rayleigh Hue
+          vec3 atmoCyan = vec3(0.22, 0.68, 1.0) * (dayTerm * 1.5 + 0.12);
+          float alpha = fresnel * (dayTerm * 0.95 + 0.08);
+
+          gl_FragColor = vec4(atmoCyan, alpha);
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+
+    const earthOuterAtmoMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(earthRadius + 0.095, 64, 64),
+      earthOuterAtmoMat
+    );
+    earthSystem.add(earthOuterAtmoMesh);
 
     const earthHit = new THREE.Mesh(new THREE.SphereGeometry(earthRadius * 1.05, 16, 16), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
     earthHit.userData = { targetKey: 'earth' };
@@ -1449,24 +1541,28 @@
       return new THREE.CanvasTexture(c);
     }
 
+    // --- 3. CLOUD DECK WITH GROUND SHADOW DEPTH ---
     const cloudsMat = new THREE.MeshStandardMaterial({
       map: createProceduralCloudsCanvas(),
-      transparent: true, opacity: 0.55, blending: THREE.NormalBlending
+      transparent: true,
+      opacity: 0.62,
+      blending: THREE.NormalBlending,
+      roughness: 0.95,
+      metalness: 0.0
     });
-    const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.025, 64, 64), cloudsMat);
+
+    // Clouds orbit 0.035 units above surface
+    const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.035, 64, 64), cloudsMat);
     earthAxialGroup.add(cloudsMesh);
 
     textureLoader.load(
       'https://cdn.jsdelivr.net/npm/three-globe/example/clouds/clouds.png',
-      tex => { cloudsMat.map = tex; cloudsMat.needsUpdate = true; },
-      undefined,
-      () => {}
+      tex => { 
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        cloudsMat.map = tex; 
+        cloudsMat.needsUpdate = true; 
+      }
     );
-
-    earthAxialGroup.add(new THREE.Mesh(
-      new THREE.SphereGeometry(earthRadius + 0.045, 64, 64),
-      new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.14, side: THREE.BackSide, blending: THREE.AdditiveBlending })
-    ));
 
     // The Moon
     const moonOrbitRing = new THREE.Group();
@@ -2686,6 +2782,16 @@
       camera.position.y = cameraTarget.y + cameraDistance * Math.sin(cameraPhi);
       camera.position.z = cameraTarget.z + cameraDistance * Math.cos(cameraPhi) * Math.cos(cameraTheta);
       camera.lookAt(cameraTarget);
+
+      // Update Earth local camera position for specular ocean glint & outer atmosphere sunlight direction
+      const earthCamLocal = camera.position.clone();
+      earthMesh.worldToLocal(earthCamLocal);
+      earthShaderMat.uniforms.uCamPosLocal.value.copy(earthCamLocal);
+
+      if (typeof earthOuterAtmoMat !== 'undefined' && earthOuterAtmoMat.uniforms && earthOuterAtmoMat.uniforms.uSunDir) {
+        const sunDirEarth = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), earthSystem.position).normalize();
+        earthOuterAtmoMat.uniforms.uSunDir.value.copy(sunDirEarth);
+      }
 
       // 1. Adaptive Orbit Trail Fading (Hides orbit lines when close to a planet)
       const distToActive = camera.position.distanceTo(cameraTarget);
