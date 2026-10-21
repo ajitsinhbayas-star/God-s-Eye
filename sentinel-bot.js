@@ -47,8 +47,8 @@ export class SentinelBot {
         incident.proposedPatch = patch.solution;
       }
 
-      // 2. Save incident to persistent local database
-      this.saveToDatabase(incident);
+     // 2. Save incident to persistent local database asynchronously
+        await this.saveToDatabase(incident);
 
       // 3. If critical and GitHub is configured, file an automated GitHub Issue
       if (!incident.resolvedByBot && this.githubToken && this.repo) {
@@ -107,21 +107,28 @@ export class SentinelBot {
     };
   }
 
-  saveToDatabase(incident) {
-    try {
-      const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
-      data.incidents.unshift(incident);
+  /**
+   * Serialized async write queue to prevent JSON corruption on concurrent beacons
+   */
+  async saveToDatabase(incident) {
+    this._writeQueue = (this._writeQueue || Promise.resolve()).then(async () => {
+      try {
+        const fileContent = await fs.promises.readFile(DB_FILE, 'utf-8');
+        const data = JSON.parse(fileContent);
+        data.incidents.unshift(incident);
 
-      // Keep database lightweight (last 500 incidents max)
-      if (data.incidents.length > 500) data.incidents = data.incidents.slice(0, 500);
+        if (data.incidents.length > 500) {
+          data.incidents = data.incidents.slice(0, 500);
+        }
 
-      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-    } catch (e) {}
+        await fs.promises.writeFile(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      } catch (e) {
+        console.error('[Sentinel DB Error]', e.message);
+      }
+    });
+    return this._writeQueue;
   }
 
-  /**
-   * Directly posts the issue to your GitHub repository so it's waiting for you
-   */
   async syncToGitHub(incident) {
     try {
       const body = {
@@ -138,7 +145,7 @@ export class SentinelBot {
       await fetch(`https://api.github.com/repos/${this.repo}/issues`, {
         method: 'POST',
         headers: {
-          'Authorization': `token ${this.githubToken}`,
+          'Authorization': `Bearer ${this.githubToken}`,
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': 'Sentinel-Bot'
         },
@@ -149,13 +156,14 @@ export class SentinelBot {
     }
   }
 
-  getDiagnosticSummary() {
+  async getDiagnosticSummary() {
     try {
-      return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      const raw = await fs.promises.readFile(DB_FILE, 'utf-8');
+      return JSON.parse(raw);
     } catch (e) {
       return { incidents: [], autoPatches: [] };
     }
   }
-}
+} // <-- Fixes missing class closing brace
 
 export const sentinel = new SentinelBot();

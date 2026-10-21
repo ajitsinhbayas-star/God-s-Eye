@@ -295,6 +295,9 @@
         <button onclick="toggleHUDPanels()" class="p-1.5 px-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-mono">
           HUD
         </button>
+        <a href="orbitalert.html" title="Open OrbitAlert" aria-label="Open OrbitAlert" class="p-1.5 px-2 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono whitespace-nowrap">
+          🔔
+        </a>
       </div>
     </div>
 
@@ -321,6 +324,9 @@
       <button onclick="switchViewDomain('deepsky')" class="px-2.5 py-1 rounded text-fuchsia-300 hover:bg-fuchsia-500/10 border border-fuchsia-500/30 font-bold transition whitespace-nowrap">
         🌌 Universe
       </button>
+      <a href="orbitalert.html" title="Open OrbitAlert space event centre" class="px-2.5 py-1 rounded text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/30 font-bold transition whitespace-nowrap">
+        🔔 OrbitAlert
+      </a>
     </div>
 
     <!-- Desktop Tracking Info -->
@@ -944,17 +950,39 @@
       }
     }
 
+// Keep track of active blob URLs so they can be freed from memory
+let activeCinematicBlobUrl = null;
+let activeIntroBlobUrl = null;
+
     function handleCustomAudioUpload(evt) {
-      const files = evt.target.files;
-      if (!files || !files.length) return;
-      if (files[0]) audioCinematic.src = URL.createObjectURL(files[0]);
-      if (files[1]) audioIntro.src = URL.createObjectURL(files[1]);
-      const lbl = document.getElementById('audio-status-label');
-      if (lbl) lbl.innerText = `Custom MP3 Loaded ✓`;
-      if (isMasterAudioEnabled) {
-        playAudioTrack(isCinematicMode ? audioCinematic : audioIntro);
-      }
+  const files = evt.target.files;
+  if (!files || !files.length) return;
+
+  // 1. Release previous cinematic audio blob if one exists
+  if (files[0]) {
+    if (activeCinematicBlobUrl) {
+      URL.revokeObjectURL(activeCinematicBlobUrl);
     }
+    activeCinematicBlobUrl = URL.createObjectURL(files[0]);
+    audioCinematic.src = activeCinematicBlobUrl;
+  }
+
+  // 2. Release previous intro ambient audio blob if one exists
+  if (files[1]) {
+    if (activeIntroBlobUrl) {
+      URL.revokeObjectURL(activeIntroBlobUrl);
+    }
+    activeIntroBlobUrl = URL.createObjectURL(files[1]);
+    audioIntro.src = activeIntroBlobUrl;
+  }
+
+  const lbl = document.getElementById('audio-status-label');
+  if (lbl) lbl.innerText = `Custom MP3 Loaded ✓`;
+
+  if (isMasterAudioEnabled) {
+    playAudioTrack(isCinematicMode ? audioCinematic : audioIntro);
+  }
+}
 
     // --- 2. CINEMATIC DRIFT SEQUENCER ---
     let isCinematicMode = false;
@@ -1066,14 +1094,14 @@
 
     // --- 6. NASA DEEP-SKY TARGETS ---
     const DEEP_SKY_CATALOG = {
-      ngc253: { id: "ngc253", name: "NGC 253 (Sculptor Galaxy)", type: "Starburst Spiral (SABc)", distMly: 11.4, redshift: 0.00081, scale3D: 3.8, pos: new THREE.Vector3(120, -45, 110), coreColor: 0xffffff, diskColor: 0x38bdf8, outflowColor: 0xf43f5e, observatories: "Webb (MIRI) + Chandra + ESO", description: "Star-forming engine driving multi-phase superwinds heated to 10M Kelvin." },
-      sgrA_irs3: { id: "sgrA_irs3", name: "IRS 3 / Sagittarius A* Core", type: "Galactic Nuclear Cluster", distMly: 0.0267, redshift: 0.00000, scale3D: 2.4, pos: new THREE.Vector3(0, 5, -80), coreColor: 0xfbbf24, diskColor: 0xf97316, outflowColor: 0x818cf8, observatories: "JWST (NIRCam + MIRI)", description: "Dense star field 0.5 ly from our supermassive black hole with water/dust shells." },
-      centaurusA: { id: "centaurusA", name: "Centaurus A (NGC 5128)", type: "Peculiar Elliptical / AGN Jet", distMly: 12.0, redshift: 0.00183, scale3D: 4.2, pos: new THREE.Vector3(-140, 60, -90), coreColor: 0xffffff, diskColor: 0x9333ea, outflowColor: 0x38bdf8, hasJet: true, jetVector: new THREE.Vector3(1.2, 1.8, 0.4).normalize(), observatories: "Chandra + IXPE + Webb + Hubble", description: "Collimated relativistic plasma jet blasting tens of thousands of light-years." },
-      m82: { id: "m82", name: "Messier 82 (Cigar Galaxy)", type: "Prototype Starburst Galaxy", distMly: 12.0, redshift: 0.00068, scale3D: 4.0, pos: new THREE.Vector3(150, 80, -60), coreColor: 0xffedd5, diskColor: 0x38bdf8, outflowColor: 0xe11d48, hasBipolarOutflow: true, observatories: "Chandra + NuSTAR + Hubble + Webb", description: "Bipolar galactic superwinds expelling hot matter thousands of light-years out." },
-      m104: { id: "m104", name: "Messier 104 (Sombrero Galaxy)", type: "Unbarred Spiral / Giant Halo", distMly: 30.0, redshift: 0.00341, scale3D: 5.0, pos: new THREE.Vector3(160, -90, -140), coreColor: 0xffedd5, diskColor: 0xd97706, outflowColor: 0x60a5fa, hasDustRing: true, observatories: "Webb (MIRI) + Chandra + Hubble", description: "Colossal stellar bulge and razor-sharp dust ring wrapped in a million-degree X-ray halo." },
-      gn_z11: { id: "gn_z11", name: "GN-z11 (Cosmic Dawn)", type: "Primordial Galaxy", distMly: 13400.0, redshift: 10.603, scale3D: 2.2, pos: new THREE.Vector3(70, 220, -260), coreColor: 0xffedd5, diskColor: 0xef4444, outflowColor: 0xfacc15, isPrimordial: true, observatories: "JWST (NIRCam/NIRSpec) + Hubble", description: "Primordial galaxy seen 430 million years after the Big Bang with ionized gas envelope." },
-      horsehead: { id: "horsehead", name: "Horsehead Nebula (Barnard 33)", type: "Dark Molecular Cloud / PDR", distMly: 0.001375, redshift: 0.00000, scale3D: 3.2, pos: new THREE.Vector3(-110, -50, 180), coreColor: 0xfbbf24, diskColor: 0x92400e, outflowColor: 0x38bdf8, isNebulaPillar: true, observatories: "JWST (NIRCam/MIRI) + Euclid", description: "Dense interstellar dust pillar shaped by UV radiation from nearby massive stars." },
-      ring_m57: { id: "ring_m57", name: "Ring Nebula (Messier 57)", type: "Planetary Nebula Shell", distMly: 0.00257, redshift: -0.00007, scale3D: 3.5, pos: new THREE.Vector3(30, -130, 190), coreColor: 0x67e8f9, diskColor: 0x22c55e, outflowColor: 0xf43f5e, isPlanetaryNebula: true, observatories: "JWST (MIRI/NIRCam) + Hubble", description: "Glowing shroud of dying star with concentric outer halos and central white dwarf bubble." }
+      ngc253: { id: "ngc253", wikiKey: "Sculptor_Galaxy", name: "NGC 253 (Sculptor Galaxy)", type: "Starburst Spiral (SABc)", distMly: 11.4, redshift: 0.00081, scale3D: 3.8, pos: new THREE.Vector3(120, -45, 110), coreColor: 0xffffff, diskColor: 0x38bdf8, outflowColor: 0xf43f5e, observatories: "Webb (MIRI) + Chandra + ESO", description: "Star-forming engine driving multi-phase superwinds heated to 10M Kelvin." },
+      sgrA_irs3: { id: "sgrA_irs3", wikiKey: "Sagittarius_A*", name: "IRS 3 / Sagittarius A* Core", type: "Galactic Nuclear Cluster", distMly: 0.0267, redshift: 0.00000, scale3D: 2.4, pos: new THREE.Vector3(0, 5, -80), coreColor: 0xfbbf24, diskColor: 0xf97316, outflowColor: 0x818cf8, observatories: "JWST (NIRCam + MIRI)", description: "Dense star field 0.5 ly from our supermassive black hole with water/dust shells." },
+      centaurusA: { id: "centaurusA", wikiKey: "Centaurus_A", name: "Centaurus A (NGC 5128)", type: "Peculiar Elliptical / AGN Jet", distMly: 12.0, redshift: 0.00183, scale3D: 4.2, pos: new THREE.Vector3(-140, 60, -90), coreColor: 0xffffff, diskColor: 0x9333ea, outflowColor: 0x38bdf8, hasJet: true, jetVector: new THREE.Vector3(1.2, 1.8, 0.4).normalize(), observatories: "Chandra + IXPE + Webb + Hubble", description: "Collimated relativistic plasma jet blasting tens of thousands of light-years." },
+      m82: { id: "m82", wikiKey: "Messier_82", name: "Messier 82 (Cigar Galaxy)", type: "Prototype Starburst Galaxy", distMly: 12.0, redshift: 0.00068, scale3D: 4.0, pos: new THREE.Vector3(150, 80, -60), coreColor: 0xffedd5, diskColor: 0x38bdf8, outflowColor: 0xe11d48, hasBipolarOutflow: true, observatories: "Chandra + NuSTAR + Hubble + Webb", description: "Bipolar galactic superwinds expelling hot matter thousands of light-years out." },
+      m104: { id: "m104", wikiKey: "Sombrero_Galaxy", name: "Messier 104 (Sombrero Galaxy)", type: "Unbarred Spiral / Giant Halo", distMly: 30.0, redshift: 0.00341, scale3D: 5.0, pos: new THREE.Vector3(160, -90, -140), coreColor: 0xffedd5, diskColor: 0xd97706, outflowColor: 0x60a5fa, hasDustRing: true, observatories: "Webb (MIRI) + Chandra + Hubble", description: "Colossal stellar bulge and razor-sharp dust ring wrapped in a million-degree X-ray halo." },
+      gn_z11: { id: "gn_z11", wikiKey: "GN-z11", name: "GN-z11 (Cosmic Dawn)", type: "Primordial Galaxy", distMly: 13400.0, redshift: 10.603, scale3D: 2.2, pos: new THREE.Vector3(70, 220, -260), coreColor: 0xffedd5, diskColor: 0xef4444, outflowColor: 0xfacc15, isPrimordial: true, observatories: "JWST (NIRCam/NIRSpec) + Hubble", description: "Primordial galaxy seen 430 million years after the Big Bang with ionized gas envelope." },
+      horsehead: { id: "horsehead", wikiKey: "Horsehead_Nebula", name: "Horsehead Nebula (Barnard 33)", type: "Dark Molecular Cloud / PDR", distMly: 0.001375, redshift: 0.00000, scale3D: 3.2, pos: new THREE.Vector3(-110, -50, 180), coreColor: 0xfbbf24, diskColor: 0x92400e, outflowColor: 0x38bdf8, isNebulaPillar: true, observatories: "JWST (NIRCam/MIRI) + Euclid", description: "Dense interstellar dust pillar shaped by UV radiation from nearby massive stars." },
+      ring_m57: { id: "ring_m57", wikiKey: "Ring_Nebula", name: "Ring Nebula (Messier 57)", type: "Planetary Nebula Shell", distMly: 0.00257, redshift: -0.00007, scale3D: 3.5, pos: new THREE.Vector3(30, -130, 190), coreColor: 0x67e8f9, diskColor: 0x22c55e, outflowColor: 0xf43f5e, isPlanetaryNebula: true, observatories: "JWST (MIRI/NIRCam) + Hubble", description: "Glowing shroud of dying star with concentric outer halos and central white dwarf bubble." }
     };
 
     // --- 7. SATELLITE ENGINE SETUP ---
@@ -1311,11 +1339,10 @@
       };
     }
 
-    // --- 9. EARTH & DAY/NIGHT TERMINATOR ---
+    // --- 9. EARTH HOLOGRAPHIC RADAR GLOBE & TACTICAL LAYERS ---
     const textureLoader = new THREE.TextureLoader();
     textureLoader.crossOrigin = 'anonymous';
 
-    // --- NASA EYES PHOTOGRAPHIC TEXTURE ENGINE WITH FALLBACKS ---
     const NASA_TEXTURE_MAPS = {
       mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
       venus:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
@@ -1345,34 +1372,25 @@
     function loadNASAPlanetTexture(planetKey, material) {
       const url = NASA_TEXTURE_MAPS[planetKey];
       if (!url) return;
-
-      textureLoader.load(
-        url,
-        (tex) => {
-          if (typeof renderer !== 'undefined' && renderer && renderer.capabilities) {
-            tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-          }
-          tex.encoding = THREE.sRGBEncoding;
-          material.map = tex;
-          material.needsUpdate = true;
-        },
-        undefined,
-        () => {
-          console.warn('[Texture Engine] Fallback procedural map retained for ' + planetKey);
-        }
-      );
+      textureLoader.load(url, (tex) => {
+        if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tex.encoding = THREE.sRGBEncoding;
+        material.map = tex;
+        material.needsUpdate = true;
+      });
     }
 
     const fallbackDayCanvas = document.createElement('canvas');
     fallbackDayCanvas.width = 1024; fallbackDayCanvas.height = 512;
     const fDayCtx = fallbackDayCanvas.getContext('2d');
-    fDayCtx.fillStyle = '#051b3d'; fDayCtx.fillRect(0, 0, 1024, 512);
+    fDayCtx.fillStyle = '#03182e'; fDayCtx.fillRect(0, 0, 1024, 512);
 
     const fallbackNightCanvas = document.createElement('canvas');
     fallbackNightCanvas.width = 1024; fallbackNightCanvas.height = 512;
     const fNightCtx = fallbackNightCanvas.getContext('2d');
-    fNightCtx.fillStyle = '#01040a'; fNightCtx.fillRect(0, 0, 1024, 512);
+    fNightCtx.fillStyle = '#010612'; fNightCtx.fillRect(0, 0, 1024, 512);
 
+    // GOD'S EYE Holographic Tactical Radar Earth Shader
     const earthShaderMat = new THREE.ShaderMaterial({
       uniforms: {
         uDayMap:      { value: new THREE.CanvasTexture(fallbackDayCanvas) },
@@ -1412,38 +1430,53 @@
           vec3 R = reflect(-L, N);
 
           float cosZenith = dot(N, L);
-          float dayFactor = smoothstep(-0.16, 0.18, cosZenith);
+          float dayFactor = smoothstep(-0.18, 0.15, cosZenith);
 
           vec4 dayColor = texture2D(uDayMap, vUv);
           vec4 nightColor = texture2D(uNightMap, vUv);
 
-          float oceanMask = clamp((dayColor.b - dayColor.r * 0.95) * 3.5, 0.0, 1.0);
+          float oceanMask = clamp((dayColor.b - dayColor.r * 0.9) * 4.0, 0.0, 1.0);
           float specAngle = max(0.0, dot(V, R));
-          float specularGlint = pow(specAngle, 38.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
-          vec3 glintColor = vec3(1.0, 0.96, 0.82) * specularGlint * 2.2;
+          float specularGlint = pow(specAngle, 48.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
+          vec3 glintColor = vec3(1.0, 0.95, 0.8) * specularGlint * 2.5;
 
-          float twilightBand = smoothstep(-0.12, 0.04, cosZenith) * (1.0 - smoothstep(0.04, 0.22, cosZenith));
-          vec3 sunsetGlow = vec3(1.0, 0.42, 0.12) * twilightBand * 0.38;
+          float twilight = smoothstep(-0.15, 0.05, cosZenith) * (1.0 - smoothstep(0.05, 0.25, cosZenith));
+          vec3 twilightGlow = vec3(1.0, 0.45, 0.15) * twilight * 0.4;
 
-          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.35 + 0.08) + glintColor;
-          vec3 litNight = nightColor.rgb * 2.2 * (1.0 - dayFactor) * uShowLights;
+          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.25 + 0.05) + glintColor;
+          vec3 litNight = nightColor.rgb * 3.2 * (1.0 - dayFactor) * uShowLights;
 
           float rim = 1.0 - max(0.0, dot(V, N));
-          vec3 airglow = vec3(0.25, 0.65, 1.0) * pow(rim, 3.2) * (max(0.0, cosZenith) * 0.75 + 0.15);
+          vec3 atmoRim = vec3(0.2, 0.55, 1.0) * pow(rim, 3.5) * (max(0.0, cosZenith) * 0.8 + 0.2);
 
-          gl_FragColor = vec4(mix(litNight, litDay, dayFactor) + sunsetGlow + airglow, 1.0);
+          vec3 finalColor = mix(litNight, litDay, dayFactor) + twilightGlow + atmoRim;
+          gl_FragColor = vec4(finalColor, 1.0);
         }
-      `
+      `,
+      transparent: false, // Fully solid rendering
+      depthTest: true,    // Enforce depth buffer testing
+      depthWrite: true    // Force back-face occlusion
     });
 
+    // Load NASA Blue Marble Day Map
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg', tex => {
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tex.encoding = THREE.sRGBEncoding;
       earthShaderMat.uniforms.uDayMap.value = tex;
     });
 
+    // Load NASA Earth Night Lights Map
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg', tex => {
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tex.encoding = THREE.sRGBEncoding;
       earthShaderMat.uniforms.uNightMap.value = tex;
+    });
+
+    // Load NASA Cloud Map
+    textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/clouds/clouds.png', tex => { 
+      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      cloudsMat.map = tex; 
+      cloudsMat.needsUpdate = true; 
     });
 
     createKeplerianOrbitRing(CELESTIAL_BODIES.earth, 0x0284c7);
@@ -1459,6 +1492,7 @@
     const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMesh = new THREE.Mesh(earthGeo, earthShaderMat);
     earthAxialGroup.add(earthMesh);
+
 
     const earthOuterAtmoMat = new THREE.ShaderMaterial({
       uniforms: {
@@ -1482,18 +1516,9 @@
         void main() {
           vec3 N = normalize(vWorldNormal);
           vec3 V = normalize(uCameraPos - vWorldPos);
-          vec3 L = normalize(uSunDir);
-
-          float fresnel = 1.0 - max(0.0, dot(V, N));
-          fresnel = pow(fresnel, 3.2);
-
-          float sunFacing = dot(N, L);
-          float dayTerm = smoothstep(-0.2, 0.4, sunFacing);
-          
-          vec3 atmoCyan = vec3(0.22, 0.68, 1.0) * (dayTerm * 1.5 + 0.12);
-          float alpha = fresnel * (dayTerm * 0.95 + 0.08);
-
-          gl_FragColor = vec4(atmoCyan, alpha);
+          float fresnel = pow(1.0 - max(0.0, dot(V, N)), 2.6);
+          vec3 atmoCyan = vec3(0.08, 0.88, 1.0) * 1.35;
+          gl_FragColor = vec4(atmoCyan, fresnel * 0.75);
         }
       `,
       transparent: true,
@@ -1503,7 +1528,7 @@
     });
 
     const earthOuterAtmoMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(earthRadius + 0.095, 64, 64),
+      new THREE.SphereGeometry(earthRadius + 0.11, 64, 64),
       earthOuterAtmoMat
     );
     earthSystem.add(earthOuterAtmoMesh);
@@ -1513,40 +1538,12 @@
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
-    // Procedural Clouds Layer
-    function createProceduralCloudsCanvas() {
-      const c = document.createElement('canvas'); c.width = 1024; c.height = 512;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-      for (let i = 0; i < 200; i++) {
-        const x = Math.random() * 1024, y = 80 + Math.random() * 352;
-        ctx.beginPath();
-        ctx.ellipse(x, y, 20 + Math.random() * 55, 6 + Math.random() * 18, (Math.random() - 0.5) * 0.4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      return new THREE.CanvasTexture(c);
-    }
-
-    const cloudsMat = new THREE.MeshStandardMaterial({
-      map: createProceduralCloudsCanvas(),
-      transparent: true,
-      opacity: 0.62,
-      blending: THREE.NormalBlending,
-      roughness: 0.95,
-      metalness: 0.0
-    });
-
-    const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadius + 0.035, 64, 64), cloudsMat);
-    earthAxialGroup.add(cloudsMesh);
-
-    textureLoader.load(
-      'https://cdn.jsdelivr.net/npm/three-globe/example/clouds/clouds.png',
-      tex => { 
-        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        cloudsMat.map = tex; 
-        cloudsMat.needsUpdate = true; 
-      }
+    // Subtle Holographic Wireframe Overlay Shell (Clouds / Grid Toggle)
+    const cloudsMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(earthRadius + 0.02, 36, 18),
+      new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.08 })
     );
+    earthAxialGroup.add(cloudsMesh);
 
     let isGlintEnabled = true;
     let isLightsEnabled = true;
@@ -1561,16 +1558,20 @@
     function toggleEarthLights() {
       isLightsEnabled = !isLightsEnabled;
       earthShaderMat.uniforms.uShowLights.value = isLightsEnabled ? 1.0 : 0.0;
+      if (typeof satOrbitRingsGroup !== 'undefined') satOrbitRingsGroup.visible = isLightsEnabled;
       updateLayerBtnState('btn-lights', isLightsEnabled);
     }
     function toggleEarthClouds() {
       isCloudsEnabled = !isCloudsEnabled;
       cloudsMesh.visible = isCloudsEnabled;
+      earthShaderMat.uniforms.uShowGrid.value = isCloudsEnabled ? 1.0 : 0.0;
+      if (typeof satSwathGroup !== 'undefined') satSwathGroup.visible = isCloudsEnabled;
       updateLayerBtnState('btn-clouds', isCloudsEnabled);
     }
     function toggleEarthAtmo() {
       isAtmoEnabled = !isAtmoEnabled;
       earthOuterAtmoMesh.visible = isAtmoEnabled;
+      if (typeof groundNodesGroup !== 'undefined') groundNodesGroup.visible = isAtmoEnabled;
       updateLayerBtnState('btn-atmo', isAtmoEnabled);
     }
 
@@ -1772,12 +1773,21 @@
 
     Object.keys(CELESTIAL_BODIES).forEach(k => buildPlanet(k, CELESTIAL_BODIES[k]));
 
-    // --- 11. INERTIAL SATELLITE GROUP & INSTANCED MESH ---
-    // INITIALIZED AFTER earthSystem IS CREATED TO AVOID CRASHES
+    // --- 11. INERTIAL SATELLITE BEACONS, ORBIT RINGS, SWATH CONES & RADAR NODES ---
     const satelliteInertialGroup = new THREE.Group();
     earthSystem.add(satelliteInertialGroup);
 
+    const satOrbitRingsGroup = new THREE.Group();
+    satelliteInertialGroup.add(satOrbitRingsGroup);
+
+    const satSwathGroup = new THREE.Group();
+    satelliteInertialGroup.add(satSwathGroup);
+
+    const groundNodesGroup = new THREE.Group();
+    earthMesh.add(groundNodesGroup);
+
     let instancedSatMesh = null;
+    const activeSwathMeshes = [];
     const dummyMat4 = new THREE.Matrix4();
     const dummyVec3 = new THREE.Vector3();
     const dummyQuat = new THREE.Quaternion();
@@ -1785,12 +1795,18 @@
     const massiveSatKeys = Object.keys(MASSIVE_SATELLITE_CATALOG);
     const totalMassiveCount = massiveSatKeys.length;
 
-    
+    const FLAGSHIP_BEACON_KEYS = [
+      'cartosat3', 'cartosat2f', 'eos04', 'eos06', 'insat3ds',
+      'astrosat', 'iss', 'hubble', 'sentinel2a', 'tiangong',
+      'starlink_s1_1', 'starlink_s1_15', 'oneweb_1', 'gps_1', 'galileo_1'
+    ];
+    const FLAGSHIP_SET = new Set(FLAGSHIP_BEACON_KEYS);
+
     function getSatellitePosition(sat, timeSec) {
       if (!sat) return new THREE.Vector3();
       const rE = CELESTIAL_BODIES.earth.radius;
-      const aKm = 6378.137 + (sat.altKm || 500);
-      const n = Math.sqrt(398600.44 / Math.pow(aKm, 3));
+      const aKm = 6378.137 + Math.min(sat.altKm || 550, 4500); // Clamped visual altitude for crisp radar shell framing
+      const n = Math.sqrt(398600.44 / Math.pow(6378.137 + (sat.altKm || 550), 3));
       const iRad = (sat.incDeg || 0) * (Math.PI / 180);
       const raanDot = -1.5 * n * 1.08263e-3 * Math.pow(6378.137 / aKm, 2) * Math.cos(iRad);
       const raan = ((sat.raan0 || 0) * Math.PI / 180 + raanDot * timeSec) % (Math.PI * 2);
@@ -1803,20 +1819,119 @@
       return new THREE.Vector3(x, y, z);
     }
 
+    function buildSatelliteOrbitRing(sat, opacity = 0.55) {
+      const segs = 96;
+      const pts = new Float32Array((segs + 1) * 3);
+      const rE = CELESTIAL_BODIES.earth.radius;
+      const aKm = 6378.137 + Math.min(sat.altKm || 550, 4500);
+      const r3D = rE * (aKm / 6378.137);
+      const iRad = (sat.incDeg || 0) * (Math.PI / 180);
+      const raan = (sat.raan0 || 0) * (Math.PI / 180);
+
+      for (let j = 0; j <= segs; j++) {
+        const u = (j / segs) * Math.PI * 2;
+        pts[j * 3]     = r3D * (Math.cos(raan) * Math.cos(u) - Math.sin(raan) * Math.sin(u) * Math.cos(iRad));
+        pts[j * 3 + 1] = r3D * (Math.sin(u) * Math.sin(iRad));
+        pts[j * 3 + 2] = r3D * (Math.sin(raan) * Math.cos(u) + Math.cos(raan) * Math.sin(u) * Math.cos(iRad));
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+      const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: sat.color || 0x00f0ff,
+        transparent: true,
+        opacity
+      }));
+      satOrbitRingsGroup.add(line);
+    }
+
+    function buildSensorSwathCone(sat) {
+      const coneGroup = new THREE.Group();
+      const coneHeight = 0.42;
+      const coneRadius = 0.28;
+      const coneGeo = new THREE.ConeGeometry(coneRadius, coneHeight, 32, 1, true);
+      coneGeo.translate(0, -coneHeight / 2, 0);
+      const coneMat = new THREE.MeshBasicMaterial({
+        color: sat.color || 0x00f0ff,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      coneGroup.add(new THREE.Mesh(coneGeo, coneMat));
+
+      // Glowing elliptical swath footprint disc
+      const discGeo = new THREE.RingGeometry(0.02, coneRadius, 32);
+      const discMat = new THREE.MeshBasicMaterial({
+        color: sat.color || 0x00f0ff,
+        transparent: true,
+        opacity: 0.32,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      const disc = new THREE.Mesh(discGeo, discMat);
+      disc.position.y = -coneHeight;
+      disc.rotation.x = Math.PI / 2;
+      coneGroup.add(disc);
+
+      satSwathGroup.add(coneGroup);
+      activeSwathMeshes.push({ sat, group: coneGroup });
+    }
+
+    function buildGroundRadarNodes() {
+      const stations = [
+        { name: 'ISTRAC Bengaluru', lat: 13.03, lon: 77.51, color: 0xfbbf24 },
+        { name: 'SDSC Sriharikota', lat: 13.72, lon: 80.23, color: 0x00f0ff },
+        { name: 'DSN Goldstone',    lat: 35.43, lon: -116.89, color: 0x10b981 },
+        { name: 'DSN Madrid',       lat: 40.43, lon: -4.25, color: 0x38bdf8 },
+        { name: 'DSN Canberra',     lat: -35.40, lon: 148.98, color: 0xc084fc },
+        { name: 'Svalbard KSAT',    lat: 78.23, lon: 15.40, color: 0xf43f5e }
+      ];
+      const rE = CELESTIAL_BODIES.earth.radius + 0.015;
+      stations.forEach(st => {
+        const phi = (90 - st.lat) * (Math.PI / 180);
+        const theta = (st.lon + 180) * (Math.PI / 180);
+        const x = -(rE * Math.sin(phi) * Math.cos(theta));
+        const z = (rE * Math.sin(phi) * Math.sin(theta));
+        const y = (rE * Math.cos(phi));
+
+        const dot = new THREE.Mesh(
+          new THREE.SphereGeometry(0.032, 10, 10),
+          new THREE.MeshBasicMaterial({ color: st.color })
+        );
+        dot.position.set(x, y, z);
+        groundNodesGroup.add(dot);
+      });
+    }
+
     function buildInstancedSatellites() {
-      const geom = new THREE.BoxGeometry(0.045, 0.02, 0.08);
-      const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.8 });
+      // Glowing spherical beacon geometry + unlit MeshBasicMaterial so beacons pop vividly on both day & night sides
+      const geom = new THREE.SphereGeometry(0.052, 12, 12);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
       instancedSatMesh = new THREE.InstancedMesh(geom, mat, totalMassiveCount);
       instancedSatMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
       for (let i = 0; i < totalMassiveCount; i++) {
-        const s = MASSIVE_SATELLITE_CATALOG[massiveSatKeys[i]];
-        instancedSatMesh.setColorAt(i, new THREE.Color(s.color || 0x38bdf8));
+        const key = massiveSatKeys[i];
+        const s = MASSIVE_SATELLITE_CATALOG[key];
+        instancedSatMesh.setColorAt(i, new THREE.Color(s.color || 0x00f0ff));
+
+        if (FLAGSHIP_SET.has(key)) {
+          buildSatelliteOrbitRing(s, 0.65);
+        }
       }
       instancedSatMesh.instanceColor.needsUpdate = true;
       satelliteInertialGroup.add(instancedSatMesh);
+      clickableMeshes.push(instancedSatMesh);
 
-      // Update badge counts in UI
+      // Add translucent sensor swath cones to key reconnaissance/station satellites
+      ['cartosat3', 'eos04', 'iss', 'sentinel2a'].forEach(k => {
+        if (MASSIVE_SATELLITE_CATALOG[k]) buildSensorSwathCone(MASSIVE_SATELLITE_CATALOG[k]);
+      });
+
+      buildGroundRadarNodes();
+
       const countBadge = document.getElementById('sat-count-badge');
       if (countBadge) countBadge.innerText = `${totalMassiveCount.toLocaleString()}+`;
       const badgeArt = document.getElementById('badge-count-artificial');
@@ -1866,7 +1981,7 @@
       const cache = {};
       async function fetchSummary(targetTitle) {
         const indicator = document.getElementById("wiki-bot-indicator");
-        const textField = document.getElementById("wiki-text");
+        const textField = document.getElementById("card-intel-method");
         const linkField = document.getElementById("wiki-link");
 
         if (indicator) indicator.innerText = "Querying...";
@@ -1891,14 +2006,17 @@
         }
       }
 
+     
       function renderResult(data) {
         const indicator = document.getElementById("wiki-bot-indicator");
-        const textField = document.getElementById("wiki-text");
+        const textField = document.getElementById("card-intel-method");
         const linkField = document.getElementById("wiki-link");
 
         if (indicator) indicator.innerText = "Verified ✓";
-        if (textField) textField.innerText = data.extract || "No extract available.";
-        if (linkField) linkField.href = data.content_urls ? data.content_urls.desktop.page : `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
+        if (textField && data.extract) textField.innerText = data.extract;
+        if (linkField) {
+          linkField.href = data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`;
+        }
       }
 
       return { fetchSummary };
@@ -2290,7 +2408,7 @@
           centaurusA: 'https://images-assets.nasa.gov/image/PIA00054/PIA00054~thumb.jpg',
           ngc253: 'https://images-assets.nasa.gov/image/PIA15416/PIA15416~thumb.jpg',
           m104: 'https://images-assets.nasa.gov/image/PIA04215/PIA04215~thumb.jpg',
-          m57: 'https://images-assets.nasa.gov/image/PIA14445/PIA14445~thumb.jpg',
+          ring_m57: 'https://images-assets.nasa.gov/image/PIA14445/PIA14445~thumb.jpg',
           horsehead: 'https://images-assets.nasa.gov/image/PIA15417/PIA15417~thumb.jpg',
           gn_z11: 'https://images-assets.nasa.gov/image/PIA20570/PIA20570~thumb.jpg'
         };
@@ -2953,11 +3071,35 @@
     window.BotSwarm = BotSwarm;
 
     // --- INITIALIZATION ---
-    renderCatalogs();
+   renderCatalogs();
     buildDeepSkyUniverseObjects();
     buildUnifiedNestedUniverse();
     setCosmicTier(2);
+setFocusTo('earth');
     BotSwarm.init();
+
+    function handleHashRoute() {
+      const rawHash = window.location.hash.replace(/^#\/?/, '').trim();
+      if (!rawHash) return;
+      const lowerHash = rawHash.toLowerCase();
+
+      // Match Deep-Sky Objects (case-insensitive check for keys like centaurusA / sgrA_irs3)
+      const matchedDeepKey = DEEP_SKY_KEYS.find(k => k.toLowerCase() === lowerHash);
+      if (matchedDeepKey) {
+        switchViewDomain('deepsky');
+        flyToDeepSkyNASA(matchedDeepKey);
+        return;
+      }
+
+      // Match Planets, Satellites, or Interplanetary Orbiters
+      if (CELESTIAL_BODIES[lowerHash] || MASSIVE_SATELLITE_CATALOG[lowerHash] || PLANETARY_ORBITERS[lowerHash]) {
+        setFocusTo(lowerHash);
+      } else if (lowerHash === 'gps') {
+        setFocusTo('gps_1');
+      }
+    }
+    window.addEventListener('hashchange', handleHashRoute);
+    handleHashRoute();
 
     // --- CONTROLS & INTERACTION ---
     let isDragging = false;
@@ -3038,8 +3180,13 @@
 
       const hits = raycaster.intersectObjects(visibleCandidates, false);
       if (hits.length > 0) {
-        const hitObj = hits[0].object;
-        if (hitObj.userData.deepSkyKey && currentViewDomain === 'deepsky') {
+        const hit = hits[0];
+        const hitObj = hit.object;
+
+        if (hitObj === instancedSatMesh && hit.instanceId !== undefined && currentViewDomain === 'solar') {
+          const satKey = massiveSatKeys[hit.instanceId];
+          if (satKey) setFocusTo(satKey);
+        } else if (hitObj.userData.deepSkyKey && currentViewDomain === 'deepsky') {
           flyToDeepSkyNASA(hitObj.userData.deepSkyKey);
         } else if (hitObj.userData.targetKey && currentViewDomain === 'solar') {
           setFocusTo(hitObj.userData.targetKey);
@@ -3065,8 +3212,26 @@
 
     // --- MAIN RENDER LOOP ---
     
-    const activeSatLocalPos = new THREE.Vector3();
-    const activeSatWorldPos = new THREE.Vector3();
+    // --- PRE-ALLOCATED MATH HELPERS (Allocated once, zero GC pressure) ---
+const activeSatLocalPos = new THREE.Vector3();
+const activeSatWorldPos = new THREE.Vector3();
+
+// ADD THESE:
+const _vSun = new THREE.Vector3();
+const _vEarth = new THREE.Vector3();
+const _vSunDir = new THREE.Vector3();
+const _vSunDirLocal = new THREE.Vector3();
+const _qEarth = new THREE.Quaternion();
+const _mInvEarth = new THREE.Matrix4();
+const _vCamLocal = new THREE.Vector3();
+    const _vActivePos = new THREE.Vector3();
+    const _vPlanetWorld = new THREE.Vector3();
+
+    const planetKeys = Object.keys(planetMeshes);
+    const orbiterKeys = Object.keys(orbiterMeshes);
+    const DRIFT_TOUR_TARGETS = ['sun', 'earth', 'iss', 'mars', 'mom', 'jupiter', 'saturn', 'neptune'];
+
+    let satFrameCounter = 0;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -3091,24 +3256,27 @@
       earthMesh.rotation.y = sunAngleInEcliptic + (astro.subsolarLngDeg * Math.PI / 180);
       earthMesh.updateMatrixWorld(true);
 
-      const sunWorldPos = new THREE.Vector3();
-      sunMesh.getWorldPosition(sunWorldPos);
+      sunMesh.getWorldPosition(_vSun);
+earthMesh.getWorldPosition(_vEarth);
 
-      const earthWorldPos = new THREE.Vector3();
-      earthMesh.getWorldPosition(earthWorldPos);
+// Direction vector from Earth to Sun
+_vSunDir.subVectors(_vSun, _vEarth).normalize();
 
-      const sunDirWorld = new THREE.Vector3().subVectors(sunWorldPos, earthWorldPos).normalize();
-      const earthWorldQuat = new THREE.Quaternion();
-      earthMesh.getWorldQuaternion(earthWorldQuat);
-      const sunDirLocal = sunDirWorld.clone().applyQuaternion(earthWorldQuat.clone().invert()).normalize();
-      earthShaderMat.uniforms.uSunDirLocal.value.copy(sunDirLocal);
+// Compute local sun direction without using .clone()
+earthMesh.getWorldQuaternion(_qEarth);
+_vSunDirLocal.copy(_vSunDir).applyQuaternion(_qEarth.invert()).normalize();
+earthShaderMat.uniforms.uSunDirLocal.value.copy(_vSunDirLocal);
 
-      const invEarthMatrix = new THREE.Matrix4().copy(earthMesh.matrixWorld).invert();
-      const camLocal = camera.position.clone().applyMatrix4(invEarthMatrix);
-      earthShaderMat.uniforms.uCamPosLocal.value.copy(camLocal);
+// Invert matrix directly into our pre-allocated matrix variable
+_mInvEarth.copy(earthMesh.matrixWorld).invert();
 
-      earthOuterAtmoMat.uniforms.uSunDir.value.copy(sunDirWorld);
-      earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
+// Compute camera local position without camera.position.clone()
+_vCamLocal.copy(camera.position).applyMatrix4(_mInvEarth);
+earthShaderMat.uniforms.uCamPosLocal.value.copy(_vCamLocal);
+
+// Atmosphere shaders
+earthOuterAtmoMat.uniforms.uSunDir.value.copy(_vSunDir);
+earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
 
       cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.16);
       syncEarthLayersDeckVisibility();
@@ -3117,56 +3285,91 @@
       moonMesh.position.x = Math.cos(moonLRad) * CELESTIAL_BODIES.moon.baseDist;
       moonMesh.position.z = Math.sin(moonLRad) * CELESTIAL_BODIES.moon.baseDist;
 
-      // 2. Solve Planets Orbit & Axial Spin
-      Object.keys(planetMeshes).forEach(pk => {
-        const pObj = planetMeshes[pk];
+      // 2. Solve Planets Orbit, Axial Spin & Dynamic Sun-Facing Atmosphere Halos
+      for (let i = 0; i < planetKeys.length; i++) {
+        const pObj = planetMeshes[planetKeys[i]];
         const orbit = computeKeplerianOrbit(pObj.data, astro.d);
         pObj.group.position.set(orbit.xThree, orbit.yThree, orbit.zThree);
         pObj.mesh.rotation.y = (astro.d * (24.0 / pObj.data.rotPeriod) * Math.PI * 2) % (Math.PI * 2);
-      });
+
+        if (pObj.atmoHalo) {
+          pObj.group.getWorldPosition(_vPlanetWorld);
+          pObj.atmoHalo.material.uniforms.uSunDir.value.subVectors(_vSun, _vPlanetWorld).normalize();
+        }
+      }
 
       // 3. Update Planetary Probes
-      Object.keys(orbiterMeshes).forEach(ok => {
-        const item = orbiterMeshes[ok];
+      for (let i = 0; i < orbiterKeys.length; i++) {
+        const item = orbiterMeshes[orbiterKeys[i]];
         item.angle += (item.data.speed * (deltaRealMs / 1000) * timeScale);
         item.probeMesh.position.x = Math.cos(item.angle) * item.data.orbitRadius;
         item.probeMesh.position.z = Math.sin(item.angle) * item.data.orbitRadius;
-      });
+      }
 
-      // 4. Update Instanced Satellites (3,200+ Objects in 1 Draw Call)
-      if (instancedSatMesh && satelliteInertialGroup.visible) {
+      // 3b. Advance Cinematic Drift Tour
+      if (isCinematicMode) {
+        cameraTheta += (deltaRealMs / 1000) * 0.16;
+        cinematicTimer += deltaRealMs;
+        if (cinematicTimer > 12000) {
+          cinematicTimer = 0;
+          cinematicStage = (cinematicStage + 1) % DRIFT_TOUR_TARGETS.length;
+          setFocusTo(DRIFT_TOUR_TARGETS[cinematicStage]);
+        }
+      }
+
+     // 4. Update Instanced Satellites, Flagship Beacons & Sensor Swath Cones
+      if (instancedSatMesh && satelliteInertialGroup.visible && currentViewDomain === 'solar') {
+        satFrameCounter++;
+        const shouldUpdateAllSats = (timeScale > 1.0) || (satFrameCounter % 2 === 0);
         const rE = CELESTIAL_BODIES.earth.radius;
         const timeSec = virtualEpochTime / 1000;
 
-        for (let i = 0; i < totalMassiveCount; i++) {
-          const sat = MASSIVE_SATELLITE_CATALOG[massiveSatKeys[i]];
-          const aKm = 6378.137 + sat.altKm;
-          const n = Math.sqrt(398600.44 / Math.pow(aKm, 3));
-          const iRad = sat.incDeg * (Math.PI / 180);
-          
-          const raanDot = -1.5 * n * 1.08263e-3 * Math.pow(6378.137 / aKm, 2) * Math.cos(iRad);
-          const raan = (sat.raan0 * Math.PI / 180 + raanDot * timeSec) % (Math.PI * 2);
-          const u = (sat.M0 * Math.PI / 180 + n * timeSec) % (Math.PI * 2);
+        if (shouldUpdateAllSats) {
+          for (let i = 0; i < totalMassiveCount; i++) {
+            const key = massiveSatKeys[i];
+            const sat = MASSIVE_SATELLITE_CATALOG[key];
+            const aKm = 6378.137 + Math.min(sat.altKm || 550, 4500);
+            const n = Math.sqrt(398600.44 / Math.pow(6378.137 + (sat.altKm || 550), 3));
+            const iRad = sat.incDeg * (Math.PI / 180);
 
-          const r3D = rE * (aKm / 6378.137);
-          const x = r3D * (Math.cos(raan) * Math.cos(u) - Math.sin(raan) * Math.sin(u) * Math.cos(iRad));
-          const y = r3D * (Math.sin(u) * Math.sin(iRad));
-          const z = r3D * (Math.sin(raan) * Math.cos(u) + Math.cos(raan) * Math.sin(u) * Math.cos(iRad));
+            const raanDot = -1.5 * n * 1.08263e-3 * Math.pow(6378.137 / aKm, 2) * Math.cos(iRad);
+            const raan = (sat.raan0 * Math.PI / 180 + raanDot * timeSec) % (Math.PI * 2);
+            const u = (sat.M0 * Math.PI / 180 + n * timeSec) % (Math.PI * 2);
 
-          dummyVec3.set(x, y, z);
-          if (sat.id === activeTargetKey) {
-            dummyScale.set(2.8, 2.8, 2.8);
-            activeSatLocalPos.set(x, y, z);
-            activeSatWorldPos.copy(activeSatLocalPos);
-            satelliteInertialGroup.localToWorld(activeSatWorldPos);
-          } else {
-            dummyScale.set(1.0, 1.0, 1.0);
+            const r3D = rE * (aKm / 6378.137);
+            const x = r3D * (Math.cos(raan) * Math.cos(u) - Math.sin(raan) * Math.sin(u) * Math.cos(iRad));
+            const y = r3D * (Math.sin(u) * Math.sin(iRad));
+            const z = r3D * (Math.sin(raan) * Math.cos(u) + Math.cos(raan) * Math.sin(u) * Math.cos(iRad));
+
+            dummyVec3.set(x, y, z);
+
+            if (sat.id === activeTargetKey) {
+              dummyScale.set(2.4, 2.4, 2.4);
+              activeSatLocalPos.set(x, y, z);
+              activeSatWorldPos.copy(activeSatLocalPos);
+              satelliteInertialGroup.localToWorld(activeSatWorldPos);
+            } else if (FLAGSHIP_SET.has(key)) {
+              // Prominent glowing radar beacon size for flagship missions
+              dummyScale.set(1.45, 1.45, 1.45);
+            } else {
+              // Subtle constellation dots so the globe isn't cluttered
+              dummyScale.set(0.32, 0.32, 0.32);
+            }
+
+            dummyMat4.compose(dummyVec3, dummyQuat, dummyScale);
+            instancedSatMesh.setMatrixAt(i, dummyMat4);
           }
-
-          dummyMat4.compose(dummyVec3, dummyQuat, dummyScale);
-          instancedSatMesh.setMatrixAt(i, dummyMat4);
+          instancedSatMesh.instanceMatrix.needsUpdate = true;
         }
-        instancedSatMesh.instanceMatrix.needsUpdate = true;
+
+        // Orient active sensor swath cones toward Earth's center
+        for (let sIdx = 0; sIdx < activeSwathMeshes.length; sIdx++) {
+          const sw = activeSwathMeshes[sIdx];
+          const pos = getSatellitePosition(sw.sat, timeSec);
+          sw.group.position.copy(pos);
+          sw.group.lookAt(0, 0, 0);
+          sw.group.rotateX(-Math.PI / 2);
+        }
       }
 
       // 5. Camera Tracking Target
@@ -3210,44 +3413,18 @@
       camera.position.z = cameraTarget.z + cameraDistance * Math.cos(cameraPhi) * Math.cos(cameraTheta);
       camera.lookAt(cameraTarget);
 
-      // 6. Update 3D XYZ Gizmo & Ecliptic Drop-Lines
+      // 6. Update 3D XYZ Gizmo & Ecliptic Drop-Lines (Zero-Allocation)
       if (isXYZGizmoEnabled && targetXYZGizmoGroup) {
-        const activePos = new THREE.Vector3();
-        if (currentViewDomain === 'solar') {
-          if (MASSIVE_SATELLITE_CATALOG[activeTargetKey]) {
-            activePos.copy(activeSatWorldPos);
-          } else if (PLANETARY_ORBITERS[activeTargetKey]) {
-            if (orbiterMeshes[activeTargetKey] && orbiterMeshes[activeTargetKey].probeMesh) {
-              orbiterMeshes[activeTargetKey].probeMesh.getWorldPosition(activePos);
-            } else {
-              earthSystem.getWorldPosition(activePos);
-            }
-          } else if (activeTargetKey === 'sun') {
-            sunMesh.getWorldPosition(activePos);
-          } else if (activeTargetKey === 'earth') {
-            earthSystem.getWorldPosition(activePos);
-          } else if (planetMeshes[activeTargetKey]) {
-            planetMeshes[activeTargetKey].group.getWorldPosition(activePos);
-          } else if (activeTargetKey === 'moon') {
-            moonMesh.getWorldPosition(activePos);
-          } else {
-            earthSystem.getWorldPosition(activePos);
-          }
-        } else if (currentViewDomain === 'deepsky') {
-          if (deepSkyMeshes[activeGalaxyKey]) {
-            deepSkyMeshes[activeGalaxyKey].group.getWorldPosition(activePos);
-          }
-        }
-
-        targetXYZGizmoGroup.position.copy(activePos);
+        _vActivePos.copy(focusWorldPos);
+        targetXYZGizmoGroup.position.copy(_vActivePos);
 
         const dropPosArr = xyzDropLine.geometry.attributes.position.array;
-        dropPosArr[0] = activePos.x; dropPosArr[1] = activePos.y; dropPosArr[2] = activePos.z;
-        dropPosArr[3] = activePos.x; dropPosArr[4] = 0;           dropPosArr[5] = activePos.z;
+        dropPosArr[0] = _vActivePos.x; dropPosArr[1] = _vActivePos.y; dropPosArr[2] = _vActivePos.z;
+        dropPosArr[3] = _vActivePos.x; dropPosArr[4] = 0;             dropPosArr[5] = _vActivePos.z;
         xyzDropLine.geometry.attributes.position.needsUpdate = true;
         xyzDropLine.computeLineDistances();
 
-        xyzFootprintRing.position.set(activePos.x, 0.01, activePos.z);
+        xyzFootprintRing.position.set(_vActivePos.x, 0.01, _vActivePos.z);
       }
 
       // 7. Live Telemetry Panel Real-Time Synchronization
@@ -3316,13 +3493,25 @@
       }
 
       function recordIncident(incident) {
-        try {
-          const records = getStoredIncidents();
-          records.unshift(incident);
-          if (records.length > 200) records.pop();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-        } catch(e) {}
-      }
+  try {
+    const records = getStoredIncidents();
+    records.unshift(incident);
+    if (records.length > 200) records.pop();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+    // Forward to backend Sentinel Bot
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/sentinel/telemetry', JSON.stringify(incident));
+    } else {
+      fetch('/api/sentinel/telemetry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(incident),
+        keepalive: true
+      }).catch(() => {});
+    }
+  } catch(e) {}
+}
 
       window.addEventListener("error", function(evt) {
         recordIncident({

@@ -7,7 +7,14 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- Solar System: Planets -->
+  <!-- OrbitAlert: Space Event Monitoring -->
+  <url>
+    <loc>https://your-domain.com/orbitalert</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Solar System: Planets & Moon -->
   <url><loc>https://your-domain.com/#/sun</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://your-domain.com/#/mercury</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://your-domain.com/#/venus</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -18,20 +25,24 @@
   <url><loc>https://your-domain.com/#/saturn</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://your-domain.com/#/uranus</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://your-domain.com/#/neptune</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/pluto</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 
-  <!-- Earth Satellites -->
+  <!-- Flagship Earth Satellites & Interplanetary Orbiters -->
   <url><loc>https://your-domain.com/#/iss</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://your-domain.com/#/cartosat3</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://your-domain.com/#/eos04</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://your-domain.com/#/astrosat</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://your-domain.com/#/hubble</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://your-domain.com/#/jwst</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://your-domain.com/#/gps</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/mom</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://your-domain.com/#/juno</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 
   <!-- Deep-Sky Objects -->
-  <url><loc>https://your-domain.com/#/m31</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://your-domain.com/#/m82</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://your-domain.com/#/m51</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://your-domain.com/#/m104</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://your-domain.com/#/m33</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://your-domain.com/#/stephans-quintet</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://your-domain.com/#/cartwheel</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://your-domain.com/#/pillars-of-creation</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://your-domain.com/#/ngc253</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/centaurusA</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/m104</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/sgrA_irs3</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://your-domain.com/#/gn_z11</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://your-domain.com/#/horsehead</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://your-domain.com/#/ring_m57</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
