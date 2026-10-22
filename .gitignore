@@ -1,4 +1,5 @@
 node_modules/
 diagnostics-db.json
+space-db.json
 .env
 .DS_Store

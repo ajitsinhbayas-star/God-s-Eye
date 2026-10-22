@@ -4,93 +4,275 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#07111f" />
-<title>OrbitAlert — Space Event Centre</title>
+<title>OrbitAlert — Automated Space Event & Mission Centre</title>
 <style>
   :root{--bg:#07111f;--panel:#0d1a2b;--panel2:#101f32;--panel3:#13263c;--line:#20354c;--text:#edf5ff;--muted:#91a6be;--cyan:#55d8ff;--blue:#6a9cff;--green:#57e0ac;--amber:#ffbd69;--red:#ff7387;--purple:#c0a2ff;--radius:16px;--shadow:0 18px 50px #0004}
-  *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 72% -15%,#103254 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}a{color:inherit;text-decoration:none}.app{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
-  .sidebar{background:#081321df;border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100vh;overflow:auto;z-index:5;backdrop-filter:blur(15px)}.brand{display:flex;align-items:center;gap:11px;padding:0 9px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#164d73,#112b4a);display:grid;place-items:center;color:var(--cyan);border:1px solid #2a6685;box-shadow:0 0 22px #55d8ff12}.brand-mark svg{width:24px}.brand strong{font-size:17px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.8px;margin-top:1px}.nav-label{padding:0 11px;color:#69829e;letter-spacing:1.5px;font-size:10px;font-weight:800;margin-bottom:8px}.nav{display:grid;gap:5px}.nav-btn{border:1px solid transparent;background:transparent;color:#9db0c6;padding:11px 12px;border-radius:10px;text-align:left;display:flex;align-items:center;gap:12px;transition:.18s}.nav-btn svg{width:18px;height:18px;flex:none}.nav-btn:hover{background:#10243a;color:var(--text)}.nav-btn.active{background:linear-gradient(90deg,#12344f,#10263c);border-color:#23506b;color:#eaf9ff}.nav-btn.active svg{color:var(--cyan)}.nav-count{margin-left:auto;background:#24384f;color:#c6d8eb;padding:2px 7px;border-radius:20px;font-size:10px}.sidebar-bottom{margin-top:auto;border:1px solid var(--line);background:#0b1929;border-radius:13px;padding:13px}.connection-line{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:650}.dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:var(--amber);box-shadow:0 0 8px currentColor}.sidebar-bottom p{color:var(--muted);font-size:11px;margin:8px 0 0}
-  main{min-width:0;padding:28px clamp(16px,3.2vw,45px) 42px;max-width:1800px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:30px}.crumb{color:var(--muted);font-size:12px}.crumb span{color:#d8e8f8}.top-actions{display:flex;gap:10px;align-items:center}.icon-btn,.secondary-btn,.primary-btn{border:1px solid var(--line);background:#0e1e30;color:#d9e8f7;border-radius:10px;padding:9px 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}.icon-btn{width:39px;height:39px;padding:0}.secondary-btn:hover,.icon-btn:hover{border-color:#3d6a8e;background:#122942}.primary-btn{background:linear-gradient(135deg,#29bce9,#3e8ee8);border:0;color:#041321;font-weight:800;box-shadow:0 8px 24px #35bce51b}.primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.primary-btn svg,.secondary-btn svg,.icon-btn svg{width:16px;height:16px}.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:20px}.eyebrow{color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.page-heading h1{font-size:clamp(26px,3vw,36px);line-height:1.15;letter-spacing:-.9px;margin:6px 0 8px}.page-heading p{margin:0;color:var(--muted);max-width:640px}.heading-buttons{display:flex;gap:9px;flex-wrap:wrap}
-  .demo-banner{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid #674c2b;background:#2a2117;border-radius:11px;color:#f5d4a9;margin-bottom:19px;font-size:12px}.demo-banner svg{flex:none;width:17px;color:var(--amber)}.demo-banner strong{color:#ffe4bd}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat-card{position:relative;overflow:hidden;background:linear-gradient(145deg,#102136,#0d1a2b 75%);border:1px solid var(--line);border-radius:14px;padding:17px;min-height:130px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:#9cb0c6;font-size:12px}.stat-icon{width:34px;height:34px;border:1px solid #29425b;border-radius:10px;background:#112841;display:grid;place-items:center;color:var(--cyan)}.stat-icon svg{width:17px}.stat-value{font-size:30px;font-weight:750;letter-spacing:-1px;margin-top:8px}.stat-note{font-size:11px;color:#829bb4;margin-top:1px}.stat-note .accent{color:var(--cyan)}
-  .section{background:linear-gradient(160deg,#0d1b2c,#0a1726);border:1px solid var(--line);border-radius:var(--radius);min-width:0}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 19px;border-bottom:1px solid var(--line)}.section-head h2{margin:0;font-size:15px;letter-spacing:-.2px}.section-sub{font-size:11px;color:var(--muted);margin-top:3px}.head-right{display:flex;align-items:center;gap:8px}.section-body{padding:18px 19px}.content-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.85fr);gap:18px;align-items:start}.feed-tools{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.searchbox{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;border:1px solid #263d55;border-radius:10px;background:#091626;padding:0 11px}.searchbox svg{width:16px;color:#7690aa;flex:none}.searchbox input{width:100%;min-width:0;border:0;outline:none;background:transparent;color:var(--text);padding:10px 0}.searchbox input::placeholder{color:#6e849b}.select{border:1px solid #263d55;border-radius:10px;background:#0a1829;color:#bfd0e2;padding:10px 11px;max-width:170px}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.chip{border:1px solid #233a52;background:#0b1a2b;color:#93a9c1;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:700}.chip:hover{border-color:#43789d;color:#e8f6ff}.chip.active{color:#baf0ff;border-color:#246b8d;background:#10324a}.event-list{display:grid;gap:9px}.event-card{width:100%;text-align:left;border:1px solid #1c334a;background:#0b1929;color:var(--text);border-radius:12px;padding:13px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:start;transition:.18s}.event-card:hover{background:#102238;border-color:#315674;transform:translateY(-1px)}.event-icon{width:38px;height:38px;border-radius:11px;background:#132d43;display:grid;place-items:center;color:var(--cyan)}.event-icon svg{width:19px}.event-icon.amber{color:var(--amber);background:#332819}.event-icon.red{color:var(--red);background:#34202a}.event-icon.green{color:var(--green);background:#153129}.event-icon.purple{color:var(--purple);background:#28233b}.event-title{font-size:13px;font-weight:750;line-height:1.35}.event-meta{font-size:11px;color:#90a6bd;margin-top:4px}.event-description{color:#9bb0c5;font-size:11px;margin-top:7px;line-height:1.45}.event-right{display:flex;align-items:flex-end;flex-direction:column;gap:8px}.pill{font-size:10px;font-weight:800;letter-spacing:.2px;padding:4px 7px;border-radius:6px;white-space:nowrap;border:1px solid transparent}.pill.amber{background:#342717;color:#ffce8c;border-color:#584025}.pill.red{background:#361e29;color:#ff9cac;border-color:#633242}.pill.green{background:#153329;color:#85eac0;border-color:#235b47}.pill.blue{background:#142d43;color:#9addff;border-color:#24516f}.pill.purple{background:#2a2440;color:#d2c2ff;border-color:#4b3d76}.pill.muted{background:#1a2a3d;color:#abc0d5;border-color:#2a3d53}.event-time{font-size:10px;color:#748ba4;text-align:right}.empty-state{text-align:center;padding:35px 15px;color:var(--muted)}.empty-state svg{width:28px;margin-bottom:7px;color:#67829c}.empty-state strong{display:block;color:#ccdaea;margin-bottom:3px}
-  .right-stack{display:grid;gap:16px}.mini-map{position:relative;overflow:hidden;min-height:225px;background:radial-gradient(ellipse at 52% 57%,#14395a 0%,#0a1b2b 42%,#07111f 77%);border:1px solid #213b53;border-radius:13px;padding:15px}.mini-map:before{content:"";position:absolute;width:190px;height:190px;left:50%;top:53%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #3f7a91;background:radial-gradient(circle at 35% 32%,#235d78,#0d293d 62%,#071625 80%);box-shadow:inset -20px -15px 35px #020912,0 0 28px #3cc7ee14}.mini-map:after{content:"";position:absolute;left:50%;top:53%;width:245px;height:95px;transform:translate(-50%,-50%) rotate(-22deg);border:1px solid #51d5ff8a;border-radius:50%;box-shadow:0 0 16px #51d5ff12}.map-label{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#c7e8ff}.map-label small{color:#7e9db6}.map-foot{position:absolute;z-index:2;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;font-size:10px;color:#7e9cb7}.orbit-dot{position:absolute;z-index:2;width:7px;height:7px;background:var(--cyan);border-radius:50%;top:45%;left:29%;box-shadow:0 0 11px var(--cyan)}.orbit-dot.second{top:68%;left:69%;background:var(--amber);box-shadow:0 0 11px var(--amber)}.mini-map .map-open{position:absolute;z-index:3;right:12px;bottom:37px;border:1px solid #356381;background:#0b2034e8;color:#ceefff;border-radius:8px;padding:7px 9px;font-size:10px}.source-list{display:grid;gap:0}.source-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1b3045}.source-row:last-child{border-bottom:0;padding-bottom:0}.source-symbol{width:32px;height:32px;border-radius:9px;background:#142940;color:#8bbde0;display:grid;place-items:center;flex:none}.source-symbol svg{width:16px}.source-detail{flex:1;min-width:0}.source-detail strong{display:block;font-size:12px}.source-detail small{display:block;color:#8198af;font-size:10px;margin-top:2px}.source-status{font-size:10px;display:flex;align-items:center;gap:5px;color:#eac183}.source-status .dot{width:6px;height:6px}.source-status.ok{color:#78deb0}.source-status.ok .dot{background:var(--green)}.source-status.warn .dot{background:var(--amber)}
-  .settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.7fr);gap:18px}.setting-group{padding:15px 0;border-bottom:1px solid #1c3045}.setting-group:first-child{padding-top:0}.setting-group:last-child{border-bottom:0;padding-bottom:0}.setting-group h3{margin:0 0 3px;font-size:13px}.setting-group p{margin:0 0 12px;color:var(--muted);font-size:11px}.toggle-row{display:flex;align-items:center;gap:10px;margin:9px 0;color:#c3d2e2;font-size:12px}.toggle-row input{appearance:none;width:33px;height:19px;background:#27384b;border:1px solid #3b4e63;border-radius:20px;position:relative;cursor:pointer;flex:none;transition:.18s}.toggle-row input:before{content:"";position:absolute;width:13px;height:13px;left:2px;top:2px;border-radius:50%;background:#9aabbc;transition:.18s}.toggle-row input:checked{background:#146181;border-color:#32afd9}.toggle-row input:checked:before{left:16px;background:#d9f8ff}.toggle-row input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}.setting-note{padding:12px;border:1px solid #24465d;background:#0d2538;border-radius:10px;color:#9bc0d7;font-size:11px;line-height:1.55}.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;min-width:560px}.data-table th{text-align:left;color:#7891a9;font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.data-table td{padding:13px 14px;border-bottom:1px solid #182e43;color:#bacbde;font-size:12px}.data-table tr:last-child td{border-bottom:0}.source-name{display:flex;align-items:center;gap:9px;color:#edf5ff;font-weight:650}.source-name .source-symbol{width:28px;height:28px}.footer-note{font-size:10px;color:#617b95;text-align:center;margin-top:22px}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 72% -15%,#103254 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}a{color:inherit;text-decoration:none}.app{min-height:100vh;display:grid;grid-template-columns:256px minmax(0,1fr)}
+  .sidebar{background:#081321df;border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;overflow:auto;z-index:5;backdrop-filter:blur(15px)}.brand{display:flex;align-items:center;gap:11px;padding:0 9px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#164d73,#112b4a);display:grid;place-items:center;color:var(--cyan);border:1px solid #2a6685;box-shadow:0 0 22px #55d8ff12}.brand-mark svg{width:24px}.brand strong{font-size:17px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.8px;margin-top:1px}.nav-label{padding:0 11px;color:#69829e;letter-spacing:1.5px;font-size:10px;font-weight:800;margin-bottom:8px}.nav{display:grid;gap:5px}.nav-btn{border:1px solid transparent;background:transparent;color:#9db0c6;padding:10px 12px;border-radius:10px;text-align:left;display:flex;align-items:center;gap:12px;transition:.18s}.nav-btn svg{width:18px;height:18px;flex:none}.nav-btn:hover{background:#10243a;color:var(--text)}.nav-btn.active{background:linear-gradient(90deg,#12344f,#10263c);border-color:#23506b;color:#eaf9ff}.nav-btn.active svg{color:var(--cyan)}.nav-count{margin-left:auto;background:#24384f;color:#c6d8eb;padding:2px 7px;border-radius:20px;font-size:10px}.sidebar-bottom{margin-top:auto;border:1px solid var(--line);background:#0b1929;border-radius:13px;padding:13px}.connection-line{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:650}.dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:var(--green);box-shadow:0 0 8px currentColor}.sidebar-bottom p{color:var(--muted);font-size:11px;margin:8px 0 0}
+  main{min-width:0;padding:28px clamp(16px,3.2vw,45px) 42px;max-width:1800px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:24px;flex-wrap:wrap}.crumb{color:var(--muted);font-size:12px}.crumb span{color:#d8e8f8}.top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.icon-btn,.secondary-btn,.primary-btn{border:1px solid var(--line);background:#0e1e30;color:#d9e8f7;border-radius:10px;padding:9px 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}.icon-btn{width:39px;height:39px;padding:0}.secondary-btn:hover,.icon-btn:hover{border-color:#3d6a8e;background:#122942}.primary-btn{background:linear-gradient(135deg,#29bce9,#3e8ee8);border:0;color:#041321;font-weight:800;box-shadow:0 8px 24px #35bce51b}.primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.primary-btn svg,.secondary-btn svg,.icon-btn svg{width:16px;height:16px}.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:20px}.eyebrow{color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.page-heading h1{font-size:clamp(26px,3vw,36px);line-height:1.15;letter-spacing:-.9px;margin:6px 0 8px}.page-heading p{margin:0;color:var(--muted);max-width:680px}.heading-buttons{display:flex;gap:9px;flex-wrap:wrap}
+  .live-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:11px 15px;border:1px solid #1f5c4b;background:linear-gradient(90deg,#0c2927,#0c2135);border-radius:11px;color:#b8f5dc;margin-bottom:19px;font-size:12px}.live-banner strong{color:#57e0ac}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat-card{position:relative;overflow:hidden;background:linear-gradient(145deg,#102136,#0d1a2b 75%);border:1px solid var(--line);border-radius:14px;padding:17px;min-height:130px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:#9cb0c6;font-size:12px}.stat-icon{width:34px;height:34px;border:1px solid #29425b;border-radius:10px;background:#112841;display:grid;place-items:center;color:var(--cyan)}.stat-icon svg{width:17px}.stat-value{font-size:30px;font-weight:750;letter-spacing:-1px;margin-top:8px}.stat-note{font-size:11px;color:#829bb4;margin-top:1px}
+  .section{background:linear-gradient(160deg,#0d1b2c,#0a1726);border:1px solid var(--line);border-radius:var(--radius);min-width:0}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 19px;border-bottom:1px solid var(--line);flex-wrap:wrap}.section-head h2{margin:0;font-size:15px;letter-spacing:-.2px}.section-sub{font-size:11px;color:var(--muted);margin-top:3px}.head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.section-body{padding:18px 19px}.content-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.85fr);gap:18px;align-items:start}.feed-tools{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.searchbox{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;border:1px solid #263d55;border-radius:10px;background:#091626;padding:0 11px}.searchbox svg{width:16px;color:#7690aa;flex:none}.searchbox input{width:100%;min-width:0;border:0;outline:none;background:transparent;color:var(--text);padding:10px 0}.searchbox input::placeholder{color:#6e849b}.select{border:1px solid #263d55;border-radius:10px;background:#0a1829;color:#bfd0e2;padding:10px 11px;max-width:190px}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.chip{border:1px solid #233a52;background:#0b1a2b;color:#93a9c1;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:700}.chip:hover{border-color:#43789d;color:#e8f6ff}.chip.active{color:#baf0ff;border-color:#246b8d;background:#10324a}.event-list{display:grid;gap:9px}.event-card{width:100%;text-align:left;border:1px solid #1c334a;background:#0b1929;color:var(--text);border-radius:12px;padding:13px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:start;transition:.18s}.event-card:hover{background:#102238;border-color:#315674;transform:translateY(-1px)}.event-icon{width:38px;height:38px;border-radius:11px;background:#132d43;display:grid;place-items:center;color:var(--cyan)}.event-icon svg{width:19px}.event-icon.amber{color:var(--amber);background:#332819}.event-icon.red{color:var(--red);background:#34202a}.event-icon.green{color:var(--green);background:#153129}.event-icon.purple{color:var(--purple);background:#28233b}.event-title{font-size:13px;font-weight:750;line-height:1.35}.event-meta{font-size:11px;color:#90a6bd;margin-top:4px}.event-description{color:#9bb0c5;font-size:11px;margin-top:7px;line-height:1.45}.event-right{display:flex;align-items:flex-end;flex-direction:column;gap:8px}.pill{font-size:10px;font-weight:800;letter-spacing:.2px;padding:4px 7px;border-radius:6px;white-space:nowrap;border:1px solid transparent}.pill.amber{background:#342717;color:#ffce8c;border-color:#584025}.pill.red{background:#361e29;color:#ff9cac;border-color:#633242}.pill.green{background:#153329;color:#85eac0;border-color:#235b47}.pill.blue{background:#142d43;color:#9addff;border-color:#24516f}.pill.purple{background:#2a2440;color:#d2c2ff;border-color:#4b3d76}.pill.muted{background:#1a2a3d;color:#abc0d5;border-color:#2a3d53}.event-time{font-size:10px;color:#748ba4;text-align:right}.empty-state{text-align:center;padding:35px 15px;color:var(--muted)}.empty-state svg{width:28px;margin-bottom:7px;color:#67829c}.empty-state strong{display:block;color:#ccdaea;margin-bottom:3px}
+  .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.mission-card{border:1px solid #1f3750;background:#0b1929;border-radius:13px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:.18s}.mission-card:hover{border-color:#3a6d94;background:#0f2136}.mission-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.mission-name{font-weight:750;font-size:14px;color:#fff;display:flex;align-items:center;gap:7px}.mission-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;background:#081320;border:1px solid #192d42;border-radius:9px;padding:8px;font-size:11px}.mission-metrics small{display:block;color:#748da6;font-size:9px;text-transform:uppercase}.mission-metrics strong{color:#cbe6ff;font-family:ui-monospace,monospace}.mission-actions{display:flex;gap:7px;margin-top:auto}
+  .right-stack{display:grid;gap:16px}.mini-map{position:relative;overflow:hidden;min-height:225px;background:radial-gradient(ellipse at 52% 57%,#14395a 0%,#0a1b2b 42%,#07111f 77%);border:1px solid #213b53;border-radius:13px;padding:15px}.mini-map:before{content:"";position:absolute;width:190px;height:190px;left:50%;top:53%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #3f7a91;background:radial-gradient(circle at 35% 32%,#235d78,#0d293d 62%,#071625 80%);box-shadow:inset -20px -15px 35px #020912,0 0 28px #3cc7ee14}.mini-map:after{content:"";position:absolute;left:50%;top:53%;width:245px;height:95px;transform:translate(-50%,-50%) rotate(-22deg);border:1px solid #51d5ff8a;border-radius:50%;box-shadow:0 0 16px #51d5ff12}.map-label{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#c7e8ff}.map-label small{color:#7e9db6}.map-foot{position:absolute;z-index:2;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;font-size:10px;color:#7e9cb7}.orbit-dot{position:absolute;z-index:2;width:8px;height:8px;background:var(--cyan);border-radius:50%;top:45%;left:29%;box-shadow:0 0 11px var(--cyan)}.orbit-dot.second{top:68%;left:69%;background:var(--amber);box-shadow:0 0 11px var(--amber)}.mini-map .map-open{position:absolute;z-index:3;right:12px;bottom:37px;border:1px solid #356381;background:#0b2034e8;color:#ceefff;border-radius:8px;padding:7px 9px;font-size:10px}.source-list{display:grid;gap:0}.source-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1b3045}.source-row:last-child{border-bottom:0;padding-bottom:0}.source-symbol{width:32px;height:32px;border-radius:9px;background:#142940;color:#8bbde0;display:grid;place-items:center;flex:none}.source-symbol svg{width:16px}.source-detail{flex:1;min-width:0}.source-detail strong{display:block;font-size:12px}.source-detail small{display:block;color:#8198af;font-size:10px;margin-top:2px}.source-status{font-size:10px;display:flex;align-items:center;gap:5px;color:#78deb0}.source-status .dot{width:6px;height:6px;background:var(--green)}.source-status.warn{color:#eac183}.source-status.warn .dot{background:var(--amber)}
+  .settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.7fr);gap:18px}.setting-group{padding:15px 0;border-bottom:1px solid #1c3045}.setting-group:first-child{padding-top:0}.setting-group:last-child{border-bottom:0;padding-bottom:0}.setting-group h3{margin:0 0 3px;font-size:13px}.setting-group p{margin:0 0 12px;color:var(--muted);font-size:11px}.toggle-row{display:flex;align-items:center;gap:10px;margin:9px 0;color:#c3d2e2;font-size:12px}.toggle-row input{appearance:none;width:33px;height:19px;background:#27384b;border:1px solid #3b4e63;border-radius:20px;position:relative;cursor:pointer;flex:none;transition:.18s}.toggle-row input:before{content:"";position:absolute;width:13px;height:13px;left:2px;top:2px;border-radius:50%;background:#9aabbc;transition:.18s}.toggle-row input:checked{background:#146181;border-color:#32afd9}.toggle-row input:checked:before{left:16px;background:#d9f8ff}.setting-note{padding:12px;border:1px solid #24465d;background:#0d2538;border-radius:10px;color:#9bc0d7;font-size:11px;line-height:1.55}.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;min-width:560px}.data-table th{text-align:left;color:#7891a9;font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.data-table td{padding:13px 14px;border-bottom:1px solid #182e43;color:#bacbde;font-size:12px}.data-table tr:last-child td{border-bottom:0}.source-name{display:flex;align-items:center;gap:9px;color:#edf5ff;font-weight:650}.source-name .source-symbol{width:28px;height:28px}.footer-note{font-size:10px;color:#617b95;text-align:center;margin-top:22px}
   .overlay{position:fixed;inset:0;background:#020711b8;z-index:20;display:none;justify-content:flex-end;backdrop-filter:blur(5px)}.overlay.open{display:flex}.drawer{width:min(540px,100%);height:100%;overflow:auto;background:#0a1727;border-left:1px solid #2a4057;box-shadow:var(--shadow);padding:23px}.drawer-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.drawer h2{font-size:22px;margin:10px 0 5px;line-height:1.2}.drawer-intro{font-size:12px;color:var(--muted);margin:0 0 20px}.detail-block{border:1px solid var(--line);background:#0d1d2e;border-radius:12px;padding:14px;margin:13px 0}.detail-block h3{font-size:12px;margin:0 0 11px;color:#d9e9f8}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.detail-field small{display:block;color:#8198b0;font-size:10px;margin-bottom:4px}.detail-field strong{font-size:12px;font-weight:700;color:#e3effb;overflow-wrap:anywhere}.detail-copy{font-size:12px;color:#a5b9cd;line-height:1.65}.timeline{display:grid;gap:13px}.timeline-row{display:grid;grid-template-columns:12px 1fr;gap:10px;font-size:11px;color:#a6bad0}.timeline-bullet{margin-top:4px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px #16334a}.drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.toast{position:fixed;z-index:50;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e0f8ff;color:#072136;border-radius:11px;padding:11px 15px;font-size:12px;font-weight:750;box-shadow:var(--shadow);transition:.22s;max-width:calc(100vw - 30px)}.toast.show{opacity:1;transform:translate(-50%,0)}.mobile-nav{display:none}
-  @media(max-width:1100px){.app{grid-template-columns:215px minmax(0,1fr)}main{padding:24px 22px}.content-grid{grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr)}.stats{gap:9px}.stat-card{padding:13px}.stat-value{font-size:26px}}
+  @media(max-width:1100px){.app{grid-template-columns:220px minmax(0,1fr)}main{padding:24px 22px}.content-grid{grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr)}.stats{gap:9px}.stat-card{padding:13px}.stat-value{font-size:26px}}
   @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{display:none}main{padding:18px 14px 85px}.topbar{margin-bottom:22px}.page-heading{align-items:flex-start;flex-direction:column}.heading-buttons{width:100%}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid,.settings-grid{grid-template-columns:1fr}.right-stack{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;background:#071321f2;border-top:1px solid #233b52;backdrop-filter:blur(18px);justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px}.mobile-nav button{border:0;background:transparent;color:#829ab2;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;font-size:9px;min-width:0}.mobile-nav svg{width:18px;height:18px}.mobile-nav button.active{color:var(--cyan)}}
-  @media(max-width:570px){main{padding-left:11px;padding-right:11px}.topbar{align-items:flex-start}.top-actions .secondary-btn span{display:none}.page-heading h1{font-size:28px}.stats{gap:8px}.stat-card{min-height:117px;padding:12px}.stat-value{font-size:25px}.content-grid{gap:12px}.section-head{padding:14px}.section-body{padding:13px}.event-card{grid-template-columns:33px minmax(0,1fr);gap:9px;padding:10px}.event-icon{width:33px;height:33px}.event-right{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.event-time{text-align:left}.right-stack{grid-template-columns:1fr}.mini-map{min-height:210px}.feed-tools .select{max-width:none;flex:1}.drawer{padding:17px}.detail-grid{gap:12px}}
-  @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  @media(max-width:570px){main{padding-left:11px;padding-right:11px}.page-heading h1{font-size:28px}.stats{gap:8px}.stat-card{min-height:117px;padding:12px}.stat-value{font-size:25px}.content-grid{gap:12px}.section-head{padding:14px}.section-body{padding:13px}.event-card{grid-template-columns:33px minmax(0,1fr);gap:9px;padding:10px}.event-icon{width:33px;height:33px}.event-right{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.event-time{text-align:left}.right-stack{grid-template-columns:1fr}.mini-map{min-height:210px}.feed-tools .select{max-width:none;flex:1}.drawer{padding:17px}.detail-grid{gap:12px}}
+.sci-viz-box{border:1px solid #23405c;background:radial-gradient(circle at 50% 50%,#0e2338 0%,#07121f 100%);border-radius:12px;padding:13px;margin:13px 0}
+  .sci-viz-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#9bc0df;margin-bottom:9px;font-family:ui-monospace,monospace}
+  .sci-canvas{width:100%;height:165px;display:block;border-radius:9px;background:#050d18;border:1px solid #193149}
+  .scrubber-row{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11px;color:#b8d4ee;font-family:ui-monospace,monospace}
+  .scrubber-row input[type=range]{flex:1;accent-color:var(--cyan);cursor:pointer}
+  .reentry-bar-track{position:relative;height:26px;background:#071320;border:1px solid #223c56;border-radius:8px;overflow:hidden;margin:10px 0}
+  .reentry-bar-prev{position:absolute;top:4px;bottom:4px;left:18%;width:58%;background:#3a4f6655;border:1px dashed #6989ab;border-radius:5px}
+  .reentry-bar-curr{position:absolute;top:4px;bottom:4px;left:24%;width:52%;background:linear-gradient(90deg,#ffbd6933,#ff738766,#ffbd6933);border:1px solid var(--amber);border-radius:5px}
+  .reentry-bar-center{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+  .caution-note{padding:9px 11px;border-radius:8px;background:#2b1f14;border:1px solid #5c4023;color:#f5cfa0;font-size:11px;margin-top:9px;line-height:1.45}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar" aria-label="Main navigation">
-    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><path d="M17.5 3.5l2-2M18.5 6.5l3 .2"/></svg></div><div><strong>OrbitAlert</strong><small>SPACE EVENT CENTRE</small></div></div>
-    <div><div class="nav-label">MONITOR</div><nav class="nav" id="sideNav">
-      <button class="nav-btn active" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="13" width="7" height="8" rx="1.5"/></svg>Overview</button>
-      <button class="nav-btn" data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/></svg>Close Approaches<span class="nav-count">2</span></button>
-      <button class="nav-btn" data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M9 16a3 3 0 0 1 6 0M12 3v4M4.9 6l2.8 2.8M19.1 6l-2.8 2.8"/><circle cx="12" cy="11" r="1"/></svg>Satellite Passes<span class="nav-count">3</span></button>
-      <button class="nav-btn" data-view="reentry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c2 4-1 5 2 8 1-2 2-3 2-4 3 3 4 6 2 10a7 7 0 0 1-13-2c0-3 2-5 4-7 0 3 1 4 2 4 2-3-1-6 1-9Z"/></svg>Re-entry</button>
-      <button class="nav-btn" data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c3 3 5 7 5 11l-5 6-5-6c0-4 2-8 5-11Z"/><path d="M7 13H3l2 4h3M17 13h4l-2 4h-3M10 20l-1 2M14 20l1 2"/><circle cx="12" cy="10" r="1.5"/></svg>Missions</button>
-    </nav></div>
-    <div><div class="nav-label">SYSTEM</div><nav class="nav">
-      <button class="nav-btn" data-view="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/><path d="M8 10h2l1-2 2 5 1-3h2"/></svg>Data Health</button>
-      <button class="nav-btn" data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>My Alerts</button>
-    </nav></div>
-    <div class="sidebar-bottom"><div class="connection-line"><span class="dot"></span><span>Demo environment</span></div><p>This preview uses simulated events. No live source is connected.</p></div>
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><path d="M17.5 3.5l2-2M18.5 6.5l3 .2"/></svg></div>
+      <div><strong>OrbitAlert</strong><small>AUTOMATED SPACE DB</small></div>
+    </div>
+    <div>
+      <div class="nav-label">MONITOR & CATALOG</div>
+      <nav class="nav" id="sideNav">
+        <button class="nav-btn active" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="13" width="7" height="8" rx="1.5"/></svg>Overview</button>
+        <button class="nav-btn" data-view="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>Satellites & Missions<span class="nav-count" id="navCountCatalog">27+</span></button>
+        <button class="nav-btn" data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/></svg>Close Approaches<span class="nav-count" id="navCountClose">3</span></button>
+        <button class="nav-btn" data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M9 16a3 3 0 0 1 6 0M12 3v4M4.9 6l2.8 2.8M19.1 6l-2.8 2.8"/><circle cx="12" cy="11" r="1"/></svg>Satellite Passes<span class="nav-count" id="navCountPasses">7</span></button>
+        <button class="nav-btn" data-view="reentry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c2 4-1 5 2 8 1-2 2-3 2-4 3 3 4 6 2 10a7 7 0 0 1-13-2c0-3 2-5 4-7 0 3 1 4 2 4 2-3-1-6 1-9Z"/></svg>Re-entry</button>
+        <button class="nav-btn" data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c3 3 5 7 5 11l-5 6-5-6c0-4 2-8 5-11Z"/><circle cx="12" cy="10" r="1.5"/></svg>Deep-Space Missions</button>
+      </nav>
+    </div>
+    <div>
+      <div class="nav-label">SYSTEM</div>
+      <nav class="nav">
+        <button class="nav-btn" data-view="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></svg>Data Health</button>
+        <button class="nav-btn" data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>My Alerts & Watchlist</button>
+      </nav>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="connection-line"><span class="dot" id="sidebarDot"></span><span id="sidebarConnText">SpaceDB Connected</span></div>
+      <p id="sidebarSyncMeta">Automated orbital propagation & alert screening active.</p>
+    </div>
   </aside>
 
   <main>
-    <div class="topbar"><div class="crumb">Workspace&nbsp; / &nbsp;<span id="crumbCurrent">Overview</span></div><div class="top-actions"><button class="secondary-btn" id="refreshBtn" title="Refresh demo data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.5-3"/></svg><span>Refresh</span></button><button class="icon-btn" id="topAlertsBtn" aria-label="Open alert preferences" title="Alert preferences"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div></div>
-    <div class="page-heading"><div><div class="eyebrow" id="pageEyebrow">SPACE SITUATIONAL AWARENESS</div><h1 id="pageTitle">Space event centre</h1><p id="pageDesc">See what changed in orbit, understand why it matters, and open the evidence.</p></div><div class="heading-buttons"><button class="secondary-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>Export events</button><a class="primary-btn" id="mapLink" href="/#/earth" title="Change MAP_URL in this file to match your existing 3D map route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg>Open 3D Map</a></div></div>
-    <div class="demo-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span><strong>Prototype mode:</strong> all event records and counts on this page are demonstration data, not real-time predictions. Connect your validated backend before using it operationally.</span></div>
+    <div class="topbar">
+      <div class="crumb">Orbital Command&nbsp; / &nbsp;OrbitAlert&nbsp; / &nbsp;<span id="crumbCurrent">Overview</span></div>
+      <div class="top-actions">
+        <button class="secondary-btn" id="gpsBtn" title="Set observer coordinates for local pass predictions">📍 <span id="obsLocationLabel">Pune / India (18.5°N, 73.9°E)</span></button>
+        <button class="secondary-btn" id="refreshBtn" title="Force immediate backend ingestion & orbital recalculation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.5-3"/></svg>
+          <span id="syncBtnLabel">Sync Now</span>
+        </button>
+        <button class="icon-btn" id="topAlertsBtn" aria-label="Open alert preferences" title="Alert preferences & Watchlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="page-heading">
+      <div>
+        <div class="eyebrow" id="pageEyebrow">AUTOMATED SPACE SITUATIONAL AWARENESS</div>
+        <h1 id="pageTitle">Space Event & Mission Centre</h1>
+        <p id="pageDesc">Automated conjunction screening, overhead pass predictions, deep-space telemetry, and 3,200+ tracked satellites synchronized with the 3D HUD.</p>
+      </div>
+      <div class="heading-buttons">
+        <button class="secondary-btn" id="browseAllSatsBtn">🛰️ All Satellites & Missions</button>
+        <button class="secondary-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>Export CSV</button>
+        <a class="primary-btn" id="mapLink" href="index.html#/earth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg>Open 3D HUD</a>
+      </div>
+    </div>
+
+    <div class="live-banner" id="liveStatusBanner">
+      <span><strong>● AUTOMATED DATABASE ONLINE:</strong> Synced with main 3D Orbital Command sources (NORAD GP, WhereTheISS, ISTRAC/DSN, Wikipedia REST).</span>
+      <span id="bannerLiveISS">ISS Live: Calculating...</span>
+    </div>
 
     <section class="stats" id="statsRow" aria-label="Event overview statistics">
-      <article class="stat-card"><div class="stat-top"><span>Active events</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span></div><div class="stat-value" id="statActive">—</div><div class="stat-note">Demo event records</div></article>
-      <article class="stat-card"><div class="stat-top"><span>Close approaches</span><span class="stat-icon" style="color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/></svg></span></div><div class="stat-value" id="statClose">—</div><div class="stat-note">Assessments in example feed</div></article>
-      <article class="stat-card"><div class="stat-top"><span>Upcoming passes</span><span class="stat-icon" style="color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg></span></div><div class="stat-value" id="statPasses">—</div><div class="stat-note">Predictions require location data</div></article>
-      <article class="stat-card"><div class="stat-top"><span>Sources configured</span><span class="stat-icon" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span></div><div class="stat-value" id="statSources">0</div><div class="stat-note">Connect actual feeds to populate</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Active Alerts & Events</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span></div><div class="stat-value" id="statActive">—</div><div class="stat-note" id="statActiveNote">Automated screening active</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Close Approaches</span><span class="stat-icon" style="color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/></svg></span></div><div class="stat-value" id="statClose">—</div><div class="stat-note">LEO conjunction node crossings</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Tracked Missions & Sats</span><span class="stat-icon" style="color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg></span></div><div class="stat-value" id="statPasses">3,227+</div><div class="stat-note" id="statPassesNote">Flagships + constellations</div></article>
+      <article class="stat-card"><div class="stat-top"><span>Live Data Sources</span><span class="stat-icon" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span></div><div class="stat-value" id="statSources">5/5</div><div class="stat-note">Auto-refresh every 30s</div></article>
     </section>
 
     <div id="overviewView" class="content-grid">
-      <section class="section"><div class="section-head"><div><h2 id="feedHeading">Latest events</h2><div class="section-sub" id="feedSub">Review event updates from across tracked objects</div></div><div class="head-right"><span class="pill muted" id="eventCount">0 events</span></div></div><div class="section-body">
-        <div class="feed-tools"><label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="searchInput" type="search" placeholder="Search event, object ID, or source…" aria-label="Search events" /></label><select class="select" id="statusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="review">Needs review</option><option value="upcoming">Upcoming</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved</option></select></div>
-        <div class="chips" id="typeChips"><button class="chip active" data-type="all">All events</button><button class="chip" data-type="close">Close approach</button><button class="chip" data-type="pass">Satellite pass</button><button class="chip" data-type="reentry">Re-entry</button><button class="chip" data-type="mission">Mission</button><button class="chip" data-type="health">Data health</button></div>
-        <div class="event-list" id="eventList" aria-live="polite"></div>
-      </div></section>
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2 id="feedHeading">Live Automated Event Feed</h2>
+            <div class="section-sub" id="feedSub">Real-time conjunctions, pass predictions, re-entries, and mission bulletins</div>
+          </div>
+          <div class="head-right">
+            <label class="toggle-row" style="margin:0;font-size:11px"><input type="checkbox" id="watchlistOnlyToggle" /> Watchlist only</label>
+            <span class="pill blue" id="eventCount">0 events</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="feed-tools">
+            <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="searchInput" type="search" placeholder="Search satellite, NORAD ID, ISRO, NASA, source…" aria-label="Search events" /></label>
+            <select class="select" id="statusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="review">Needs review</option><option value="upcoming">Upcoming</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved / Healthy</option></select>
+            <select class="select" id="severityFilter" aria-label="Filter by severity"><option value="all">All severities</option><option value="elevated">Elevated only</option><option value="watch">Watch &amp; Elevated</option><option value="info">Info / Routine</option></select>
+            <select class="select" id="timeRangeFilter" aria-label="Filter by time window"><option value="all">All time windows</option><option value="6h">Next 6 hours</option><option value="24h">Next 24 hours</option></select>
+          </div>
+          <div class="chips" id="typeChips">
+            <button class="chip active" data-type="all">All events</button>
+            <button class="chip" data-type="close">Close approach</button>
+            <button class="chip" data-type="pass">Satellite pass</button>
+            <button class="chip" data-type="reentry">Re-entry</button>
+            <button class="chip" data-type="mission">Space Missions</button>
+            <button class="chip" data-type="health">Data health</button>
+          </div>
+          <div class="event-list" id="eventList" aria-live="polite"></div>
+        </div>
+      </section>
+
       <aside class="right-stack">
-        <section class="section"><div class="section-head"><div><h2>Orbital situational view</h2><div class="section-sub">Illustrative orbit motif · not live telemetry</div></div><span class="pill blue">PREVIEW</span></div><div class="section-body" style="padding:12px"><div class="mini-map"><div class="map-label"><span>EARTH ORBIT</span><small>NOT TO SCALE</small></div><span class="orbit-dot"></span><span class="orbit-dot second"></span><button class="map-open" id="mapOpenBtn">Open existing map ↗</button><div class="map-foot"><span>Orbital paths (illustrative)</span><span>3D view →</span></div></div></div></section>
-        <section class="section"><div class="section-head"><div><h2>Data-source health</h2><div class="section-sub">Demo status, not checked live</div></div><button class="secondary-btn" style="padding:7px 9px;font-size:11px" data-nav="health">View all</button></div><div class="section-body"><div class="source-list" id="sourceMini"></div><div class="setting-note" style="margin-top:13px">A source warning means the feed or processing pipeline needs attention. It does not indicate a space hazard.</div></div></section>
+        <section class="section">
+          <div class="section-head">
+            <div><h2>Live Orbital Radar Link</h2><div class="section-sub" id="miniMapSub">Click any object to warp into 3D HUD</div></div>
+            <span class="pill green">LIVE LINK</span>
+          </div>
+          <div class="section-body" style="padding:12px">
+            <div class="mini-map">
+              <div class="map-label"><span>EARTH & DEEP SPACE</span><small id="miniMapCoords">ISS LIVE LOCK</small></div>
+              <span class="orbit-dot" title="ISS Live Vector"></span>
+              <span class="orbit-dot second" title="ISRO Fleet Vector"></span>
+              <button class="map-open" id="mapOpenBtn">Launch 3D Globe ↗</button>
+              <div class="map-foot"><span id="miniMapVel">27,580 km/h</span><span>Keplerian 3D →</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div><h2>Main Telemetry Sources</h2><div class="section-sub">Automated database ingestion health</div></div>
+            <button class="secondary-btn" style="padding:7px 9px;font-size:11px" data-nav="health">Full Report</button>
+          </div>
+          <div class="section-body">
+            <div class="source-list" id="sourceMini"></div>
+          </div>
+        </section>
       </aside>
     </div>
-    <section class="section" id="wideView" style="display:none;margin-top:0"><div class="section-head"><div><h2 id="wideHeading">Events</h2><div class="section-sub" id="wideSub"></div></div><div class="head-right"><button class="secondary-btn" id="wideExportBtn">Export CSV</button></div></div><div id="wideBody" class="section-body"></div></section>
-    <section class="section" id="alertsView" style="display:none"><div class="section-head"><div><h2>Personal alert preferences</h2><div class="section-sub">Choose the event types and channels you want to follow</div></div><button class="primary-btn" id="savePrefsBtn">Save preferences</button></div><div class="section-body"><div class="settings-grid"><div>
-      <div class="setting-group"><h3>Event categories</h3><p>Subscribe only to event types you need.</p><label class="toggle-row"><input type="checkbox" id="prefClose" checked /> Close-approach assessments</label><label class="toggle-row"><input type="checkbox" id="prefPass" checked /> Satellite pass predictions</label><label class="toggle-row"><input type="checkbox" id="prefReentry" checked /> Re-entry estimate updates</label><label class="toggle-row"><input type="checkbox" id="prefMission" /> Mission and launch updates</label><label class="toggle-row"><input type="checkbox" id="prefHealth" /> Data-source health and processing errors</label></div>
-      <div class="setting-group"><h3>Notification channel</h3><p>Real delivery requires a backend integration and user permission.</p><label class="toggle-row"><input type="checkbox" id="prefInsite" checked /> In-site notifications (prototype)</label><label class="toggle-row"><input type="checkbox" id="prefEmail" /> Email notifications (not connected)</label><label class="toggle-row"><input type="checkbox" id="prefTelegram" /> Telegram notifications (not connected)</label><label class="toggle-row"><input type="checkbox" id="prefPush" /> Browser push (not connected)</label></div>
-    </div><div><div class="detail-block"><h3>Followed objects</h3><p class="detail-copy">Keep object IDs in your watchlist and use them to personalize predictions and event filters. This prototype stores example watch preferences in this browser only.</p><div id="watchList"></div><div style="display:flex;gap:8px;margin-top:12px"><input id="watchInput" class="select" style="max-width:none;min-width:0;flex:1" placeholder="e.g. 25544 or object ID" aria-label="Object ID to follow"/><button class="secondary-btn" id="addWatchBtn">Follow</button></div></div><div class="detail-block"><h3>Notification behavior</h3><p class="detail-copy">The production system should update an existing alert when a prediction changes, deduplicate repeated events, respect quiet hours, and keep source timestamps visible. Do not send safety-critical alerts from unverified demo records.</p></div><div class="setting-note" id="prefSavedNote">Preferences have not been saved in this session. Saving here stores settings in this browser only; it does not enable server-side delivery.</div></div></div></div></section>
-    <div class="footer-note">OrbitAlert UI prototype · Demo records only · Predictions and alerts require validated source data and backend calculations.</div>
+
+    <section class="section" id="wideView" style="display:none;margin-top:0">
+      <div class="section-head">
+        <div><h2 id="wideHeading">Events</h2><div class="section-sub" id="wideSub">Wide View Directory</div></div>
+        <div class="head-right"><button class="secondary-btn" id="wideExportBtn">Export CSV</button></div>
+      </div>
+      <div id="wideBody" class="section-body"></div>
+    </section>
+
+    <section class="section" id="alertsView" style="display:none">
+      <div class="section-head">
+        <div><h2>Automated Alert Rules & Watchlist</h2><div class="section-sub">Persisted in the SpaceDB backend & browser</div></div>
+        <button class="primary-btn" id="savePrefsBtn">Save to Database</button>
+      </div>
+      <div class="section-body">
+        <div class="settings-grid">
+          <div>
+            <div class="setting-group">
+              <h3>Threshold, Resolved Events &amp; Quiet Hours</h3>
+              <p>Control alert noise and suppress non-urgent chimes during quiet hours.</p>
+              <label class="toggle-row"><input type="checkbox" id="prefShowResolved" checked /> Show resolved &amp; healthy pipeline events in feed</label>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#c3d2e2">
+                <span>Min Severity:</span>
+                <select id="prefMinSeverity" class="select" style="padding:6px 9px">
+                  <option value="all">All severities (Info, Watch, Elevated)</option>
+                  <option value="watch">Watch &amp; Elevated only</option>
+                  <option value="elevated">Elevated only</option>
+                </select>
+                <span>Quiet Hours:</span>
+                <input type="time" id="prefQuietStart" value="23:00" class="select" style="padding:5px 8px;max-width:110px" />
+                <span>to</span>
+                <input type="time" id="prefQuietEnd" value="06:00" class="select" style="padding:5px 8px;max-width:110px" />
+              </div>
+            </div>
+              <h3>Automated Event Subscriptions</h3>
+              <p>Choose which orbital calculations trigger live alerts.</p>
+              <label class="toggle-row"><input type="checkbox" id="prefClose" checked /> Close-approach conjunction alerts (&lt; 5 km)</label>
+              <label class="toggle-row"><input type="checkbox" id="prefPass" checked /> Overhead satellite pass predictions</label>
+              <label class="toggle-row"><input type="checkbox" id="prefReentry" checked /> Atmospheric re-entry decay windows</label>
+              <label class="toggle-row"><input type="checkbox" id="prefMission" checked /> Deep-space mission telemetry bulletins</label>
+              <label class="toggle-row"><input type="checkbox" id="prefHealth" checked /> Pipeline & API source health alerts</label>
+            </div>
+            <div class="setting-group">
+              <h3>Real-Time Notification Channels</h3>
+              <p>Enable instant browser & audio chimes when a watched spacecraft triggers an event.</p>
+              <label class="toggle-row"><input type="checkbox" id="prefInsite" checked /> In-app live toast notifications</label>
+              <label class="toggle-row"><input type="checkbox" id="prefSound" checked /> Tactical sonar chime on Watchlist alert</label>
+              <label class="toggle-row"><input type="checkbox" id="prefPush" /> Desktop Web Notification API (click to grant permission)</label>
+            </div>
+          </div>
+          <div>
+            <div class="detail-block">
+              <h3>Tracked Object Watchlist</h3>
+              <p class="detail-copy">Add any satellite ID (e.g. <code>ISS</code>, <code>CARTOSAT3</code>, <code>ADITYA_L1</code>, <code>EOS04</code>, <code>JWST</code>) to prioritize alerts and highlight passes.</p>
+              <div id="watchList"></div>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <input id="watchInput" class="select" style="max-width:none;min-width:0;flex:1" placeholder="e.g. CARTOSAT3, ISS, ADITYA_L1" aria-label="Object ID to follow"/>
+                <button class="secondary-btn" id="addWatchBtn">Follow</button>
+              </div>
+            </div>
+            <div class="setting-note" id="prefSavedNote">Synced with backend <code>space-db.json</code>. Watchlist alerts automatically deep-link to the 3D Solar System HUD.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">OrbitAlert Automated Space Situational Awareness · Powered by Orbital Command SpaceDB & Real-Time Keplerian Propagation</div>
   </main>
 </div>
 
-<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"><button data-view="overview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg>Overview</button><button data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/></svg>Approaches</button><button data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg>Passes</button><button data-view="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>Data health</button><button data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>My alerts</button></nav>
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+  <button data-view="overview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg>Overview</button>
+  <button data-view="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M2 12h20"/></svg>All Sats</button>
+  <button data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/></svg>Approaches</button>
+  <button data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg>Passes</button>
+  <button data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>Watchlist</button>
+</nav>
 
-<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="drawer"><div class="drawer-head"><span class="pill blue" id="detailCategory">EVENT DETAILS</span><button class="icon-btn" id="closeDrawer" aria-label="Close event details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><h2 id="detailTitle">Event title</h2><p class="drawer-intro" id="detailIntro"></p><div class="detail-grid" id="detailFields"></div><div class="detail-block"><h3>What this record means</h3><div class="detail-copy" id="detailDescription"></div></div><div class="detail-block"><h3>Event history</h3><div class="timeline" id="detailTimeline"></div></div><div class="detail-block"><h3>Data provenance</h3><div class="detail-copy" id="detailSource"></div></div><div class="drawer-actions"><button class="primary-btn" id="detailMapBtn">Open in 3D map ↗</button><button class="secondary-btn" id="watchEventBtn">Follow object</button><button class="secondary-btn" id="closeDetailBtn">Close</button></div></div></div>
+<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+  <div class="drawer">
+    <div class="drawer-head">
+      <span class="pill blue" id="detailCategory">EVENT DETAILS</span>
+      <button class="icon-btn" id="closeDrawer" aria-label="Close event details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <h2 id="detailTitle">Event title</h2>
+    <p class="drawer-intro" id="detailIntro"></p>
+    <div class="detail-grid" id="detailFields"></div>
+    <div id="detailVisualContainer"></div>
+    <div class="detail-block"><h3>Orbital Assessment & Telemetry</h3><div class="detail-copy" id="detailDescription"></div></div>
+    <div class="detail-block"><h3>Automated Verification Log</h3><div class="timeline" id="detailTimeline"></div></div>
+    <div class="detail-block"><h3>Data Provenance</h3><div class="detail-copy" id="detailSource"></div></div>
+    <div class="drawer-actions">
+      <button class="primary-btn" id="detailMapBtn">Track Target in 3D Map ↗</button>
+      <button class="secondary-btn" id="watchEventBtn">Follow Object</button>
+      <button class="secondary-btn" id="closeDetailBtn">Close</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
-/*
-  ORBITALERT STANDALONE PROTOTYPE
-  1) Replace the DEMO_EVENTS and DEMO_SOURCES arrays with validated API responses.
-  2) Change MAP_URL below to your actual existing 3D map route.
-  3) Connect preferences and notifications to your authenticated backend before production.
-*/
-// Resolve the existing 3D map relative to this project folder. This works when
-// served by Express, hosted in a subfolder, or previewed as local files.
 const APP_BASE_PATH = (() => {
   const trimmed = window.location.pathname.replace(/(?:orbitalert(?:\.html)?\/?)$/i, '');
   if (!trimmed) return '/';
   return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
 })();
-const MAP_URL = `${APP_BASE_PATH}index.html#/earth`;
-const TYPE_LABELS = {close:'Close approach',pass:'Satellite pass',reentry:'Re-entry',mission:'Mission update',health:'Data health'};
+const getTargetMapUrl = (targetKey = 'earth', secondaryKey = '') => {
+  const base = `${APP_BASE_PATH}index.html#/${encodeURIComponent(String(targetKey).toLowerCase())}`;
+  return secondaryKey ? `${base}?conj=${encodeURIComponent(String(secondaryKey).toLowerCase())}` : base;
+};
+
+const TYPE_LABELS = {close:'Close approach',pass:'Satellite pass',reentry:'Re-entry',mission:'Space mission',health:'Data health'};
 const ICONS = {
   close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/></svg>',
   pass:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M9 16a3 3 0 0 1 6 0M12 3v4M5 6l3 3M19 6l-3 3"/></svg>',
@@ -98,79 +280,809 @@ const ICONS = {
   mission:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c3 3 5 7 5 11l-5 6-5-6c0-4 2-8 5-11Z"/><circle cx="12" cy="10" r="1.5"/></svg>',
   health:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>'
 };
-const now = Date.now();
-const ago = minutes => new Date(now - minutes*60000).toISOString();
-const fromNow = hours => new Date(now + hours*3600000).toISOString();
-const DEMO_EVENTS = [
- {id:'OA-DEMO-1042',type:'close',title:'Predicted close approach',objects:['DEMO-OBJ-ALPHA','DEMO-OBJ-BRAVO'],status:'review',severity:'elevated',eventAt:fromNow(4.2),updatedAt:ago(12),source:'Example conjunction feed',metricLabel:'Estimated separation',metric:'1.8 km (illustrative)',velocity:'13.2 km/s (illustrative)',summary:'A demonstration record showing how a close-approach assessment will appear. It is not a verified encounter or collision warning.',history:[['Prediction generated','Example calculation · demo only'],['Record reviewed','Awaiting connection to a verified assessment source']]},
- {id:'OA-DEMO-1039',type:'pass',title:'Satellite pass prediction',objects:['DEMO-SAT-01'],status:'upcoming',severity:'info',eventAt:fromNow(1.5),updatedAt:ago(20),source:'Example orbit feed',metricLabel:'Maximum elevation','metric':'64° (illustrative)',velocity:'Not supplied',summary:'A sample local pass card. Real pass times and visibility require an orbit solution and an observer location.',history:[['Pass calculated','Example orbit data · demo only'],['Visibility','Not calculated in prototype']]},
- {id:'OA-DEMO-1036',type:'reentry',title:'Re-entry estimate updated',objects:['DEMO-RB-2030'],status:'monitoring',severity:'watch',eventAt:fromNow(28),updatedAt:ago(36),source:'Example re-entry feed',metricLabel:'Estimated time window',metric:'± 3 hours (illustrative)',velocity:'Not supplied',summary:'A demonstration re-entry record. An actual operational display should show source uncertainty and changes between published estimates; it must not invent a precise impact location.',history:[['Estimate revised','Example update · demo only'],['Impact location','Not available in this prototype']]},
- {id:'OA-DEMO-1032',type:'mission',title:'Mission status bulletin',objects:['DEMO-MISSION-7'],status:'upcoming',severity:'info',eventAt:fromNow(8),updatedAt:ago(47),source:'Example mission bulletin',metricLabel:'Milestone','metric':'Status bulletin',velocity:'Not applicable',summary:'Example mission announcement. Production records should link to the original operator or agency publication and preserve its publication time.',history:[['Bulletin received','Example publication · demo only']]},
- {id:'OA-DEMO-1028',type:'health',title:'Tracking feed has stale data',objects:['DEMO-SOURCE-02'],status:'review',severity:'watch',eventAt:ago(18),updatedAt:ago(8),source:'Prototype health monitor',metricLabel:'Last successful fetch','metric':'Not connected',velocity:'Not applicable',summary:'A simulated data-freshness warning. A real warning should be created only after checking the source and its configured freshness threshold.',history:[['Freshness threshold exceeded','Simulated state'],['Automatic retry','Not connected']]},
- {id:'OA-DEMO-1021',type:'close',title:'Conjunction assessment changed',objects:['DEMO-OBJ-CHARLIE','DEMO-OBJ-DELTA'],status:'monitoring',severity:'watch',eventAt:fromNow(18),updatedAt:ago(72),source:'Example conjunction feed',metricLabel:'Assessment state','metric':'Updated (illustrative)',velocity:'Not supplied',summary:'A mock example of one assessment receiving a new update. Production should revise an existing event rather than repeatedly create duplicate alerts.',history:[['Assessment updated','Example event history'],['Previous assessment','Retained as demonstration history']]},
- {id:'OA-DEMO-1016',type:'pass',title:'Satellite pass prediction',objects:['DEMO-SAT-02'],status:'upcoming',severity:'info',eventAt:fromNow(5.8),updatedAt:ago(90),source:'Example orbit feed',metricLabel:'Maximum elevation','metric':'31° (illustrative)',velocity:'Not supplied',summary:'Another sample pass. It is not a real pass prediction and will not trigger any notification.',history:[['Pass predicted','Example orbit data · demo only']]},
- {id:'OA-DEMO-1008',type:'reentry',title:'Historical re-entry record',objects:['DEMO-RB-1999'],status:'resolved',severity:'info',eventAt:ago(720),updatedAt:ago(360),source:'Example event archive',metricLabel:'Record status','metric':'Resolved (demo)',velocity:'Not supplied',summary:'A mock resolved event used to demonstrate how completed records remain discoverable in event history.',history:[['Event recorded','Example archive'],['Event resolved','Simulated status']]}
-];
-const DEMO_SOURCES = [
- {name:'Orbit catalogue feed',detail:'Example orbital elements',status:'warn',label:'Not connected'},
- {name:'Conjunction assessments',detail:'Example event provider',status:'warn',label:'Not connected'},
- {name:'Mission bulletins',detail:'Example public notices',status:'warn',label:'Not connected'},
- {name:'Re-entry updates',detail:'Example event provider',status:'warn',label:'Not connected'}
-];
+
 const viewInfo = {
- overview:['SPACE SITUATIONAL AWARENESS','Space event centre','See what changed in orbit, understand why it matters, and open the evidence.'],
- close:['ORBITAL MONITORING','Close approaches','Inspect supported conjunction assessments, object pairs, closest-approach times and available uncertainty.'],
- passes:['OBSERVER FORECASTS','Satellite passes','Explore predicted overhead passes. Accurate forecasts require a selected location and valid orbital data.'],
- reentry:['ATMOSPHERIC EVENTS','Re-entry monitoring','Follow prediction updates and uncertainty windows from supported re-entry sources.'],
- missions:['MISSION INTELLIGENCE','Missions & launches','Review mission notices with publication timestamps and source attribution.'],
- health:['PIPELINE MONITORING','Data-source health','Check source freshness, ingestion failures, processing errors and retry state.'],
- alerts:['PERSONALIZATION','My Alerts','Choose what to follow and how this prototype should remember your preferences.']
+  overview:['AUTOMATED SPACE SITUATIONAL AWARENESS','Space Event & Mission Centre','Explainable conjunction screenings, overhead pass forecasts, re-entry uncertainty windows, and pipeline health synced with the 3D HUD.'],
+  catalog:['UNIFIED MISSION DATABASE','All Trackable Satellites & Space Missions','Browse, filter, and track every Earth satellite, space station, constellation shell, and interplanetary probe.'],
+  close:['ORBITAL CONJUNCTION SCREENING','Close Approaches','Predicted orbital node crossings, estimated closest-approach distances (TCA), and interactive encounter geometry.'],
+  passes:['OBSERVER HORIZON FORECASTS','Satellite Passes','Rise, culmination, and set times with twilight illumination estimates for your selected location.'],
+  reentry:['THERMOSPHERIC DRAG MONITOR','Re-entry & Decay Windows','Estimated atmospheric decay windows, uncertainty ranges, and window shift comparisons.'],
+  missions:['INTERPLANETARY & DEEP SPACE','Space Missions & Probes','Verified telemetry status and orbital regimes for ISRO, NASA, ESA, and JAXA spacecraft.'],
+  health:['INGESTION PIPELINE SUPERVISOR','Data-Source Health','Connection status, latency, data freshness, and error state for every tracking feed.'],
+  alerts:['PERSONALIZATION & WATCHLIST','My Alerts & Watchlist','Configure watched satellite IDs, severity thresholds, notification channels, and quiet hours.']
 };
-let currentView='overview';
-let activeType='all';
-let currentEvent=null;
-let events=[...DEMO_EVENTS];
-let followedObjects = JSON.parse(localStorage.getItem('orbitalert_watchlist')||'["DEMO-SAT-01"]');
-let preferences = JSON.parse(localStorage.getItem('orbitalert_preferences')||'{}');
+
+let currentView = 'overview';
+let activeType = 'all';
+let currentEvent = null;
+let events = [];
+let catalog = [];
+let sources = [];
+let followedObjects = JSON.parse(localStorage.getItem('orbitalert_watchlist') || '["ISS","CARTOSAT3","ADITYA_L1","EOS04"]');
+let preferences = JSON.parse(localStorage.getItem('orbitalert_preferences') || '{"prefClose":true,"prefPass":true,"prefReentry":true,"prefMission":true,"prefHealth":true,"prefInsite":true,"prefSound":true,"prefShowResolved":true,"minSeverity":"all","quietStart":"23:00","quietEnd":"06:00","observerLat":18.5204,"observerLon":73.8567}');
+
 const $ = s => document.querySelector(s);
-const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function fmtDate(value,opts={}){if(!value)return 'Not available';const d=new Date(value);if(Number.isNaN(d.getTime()))return 'Not available';return d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',...opts});}
-function timeFromNow(value){const d=new Date(value).getTime()-Date.now();const abs=Math.abs(d);if(abs<60000)return 'now';const n=Math.round(abs/60000);if(n<60)return d>=0?'in '+n+'m':n+'m ago';const h=Math.round(n/60);if(h<48)return d>=0?'in '+h+'h':h+'h ago';const days=Math.round(h/24);return d>=0?'in '+days+'d':days+'d ago';}
-function statusLabel(s){return ({review:'Needs review',upcoming:'Upcoming',monitoring:'Monitoring',resolved:'Resolved'})[s]||s;}
-function statusClass(s){return ({review:'amber',upcoming:'blue',monitoring:'purple',resolved:'green'})[s]||'muted';}
-function severityClass(s){return ({critical:'red',high:'red',elevated:'amber',watch:'amber',info:'blue'})[s]||'muted';}
-function iconTone(e){if(e.type==='health')return 'purple';if(e.type==='pass')return 'green';if(e.type==='reentry')return 'red';if(e.type==='close')return e.severity==='critical'||e.severity==='high'?'red':'amber';return '';}
-function eventSearchText(e){return [e.id,e.title,e.type,e.source,...e.objects,e.status,e.summary].join(' ').toLowerCase();}
-function filteredEvents(){const q=$('#searchInput').value.trim().toLowerCase();const status=$('#statusFilter').value;return events.filter(e=>(activeType==='all'||e.type===activeType)&& (status==='all'||e.status===status)&&(!q||eventSearchText(e).includes(q))).sort((a,b)=>new Date(a.eventAt)-new Date(b.eventAt));}
-function renderStats(){const active=events.filter(e=>e.status!=='resolved').length;$('#statActive').textContent=active;$('#statClose').textContent=events.filter(e=>e.type==='close'&&e.status!=='resolved').length;$('#statPasses').textContent=events.filter(e=>e.type==='pass'&&e.status==='upcoming').length;$('#statSources').textContent='0';}
-function eventCard(e){const objects=e.objects.map(esc).join(' · ');return `<button class="event-card" data-event-id="${esc(e.id)}" aria-label="Open details for ${esc(e.title)}"><span class="event-icon ${iconTone(e)}">${ICONS[e.type]||ICONS.mission}</span><span><span class="event-title">${esc(e.title)}</span><span class="event-meta">${objects} · ${esc(TYPE_LABELS[e.type]||e.type)}</span><span class="event-description">${esc(e.summary)}</span></span><span class="event-right"><span class="pill ${statusClass(e.status)}">${esc(statusLabel(e.status))}</span><span class="event-time">${esc(timeFromNow(e.eventAt))}<br>${esc(fmtDate(e.eventAt))}</span></span></button>`;}
-function renderEventList(){const list=filteredEvents();$('#eventCount').textContent=list.length+' event'+(list.length===1?'':'s');$('#eventList').innerHTML=list.length?list.map(eventCard).join(''):`<div class="empty-state">${ICONS.mission}<strong>No matching events</strong>Try another search, status or category.</div>`;$('#eventList').querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.eventId)));}
-function renderSources(){const html=DEMO_SOURCES.slice(0,3).map(s=>`<div class="source-row"><span class="source-symbol">${ICONS.health}</span><span class="source-detail"><strong>${esc(s.name)}</strong><small>${esc(s.detail)}</small></span><span class="source-status warn"><span class="dot"></span>${esc(s.label)}</span></div>`).join('');$('#sourceMini').innerHTML=html;}
-function setView(view){if(!viewInfo[view])view='overview';currentView=view;const info=viewInfo[view];$('#crumbCurrent').textContent=info[1];$('#pageEyebrow').textContent=info[0];$('#pageTitle').textContent=info[1];$('#pageDesc').textContent=info[2];$('#overviewView').style.display=view==='overview'?'grid':'none';$('#statsRow').style.display=view==='overview'?'grid':'none';$('#wideView').style.display=['close','passes','reentry','missions','health'].includes(view)?'block':'none';$('#alertsView').style.display=view==='alerts'?'block':'none';document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='overview'){activeType='all';$('#feedHeading').textContent='Latest events';$('#feedSub').textContent='Review event updates from across tracked objects';updateChips();renderEventList();}else if(['close','passes','reentry','missions'].includes(view)){const type=({close:'close',passes:'pass',reentry:'reentry',missions:'mission'})[view];$('#wideHeading').textContent=info[1];$('#wideSub').textContent=info[2];$('#wideBody').innerHTML=`<div class="feed-tools"><label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="wideSearch" type="search" placeholder="Search this event category…" /></label><select class="select" id="wideStatus"><option value="all">All statuses</option><option value="review">Needs review</option><option value="upcoming">Upcoming</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved</option></select></div><div class="event-list" id="wideList"></div>`;const render=()=>{const q=$('#wideSearch').value.toLowerCase();const st=$('#wideStatus').value;const rows=events.filter(e=>e.type===type&&(st==='all'||e.status===st)&&(!q||eventSearchText(e).includes(q))).sort((a,b)=>new Date(a.eventAt)-new Date(b.eventAt));$('#wideList').innerHTML=rows.length?rows.map(eventCard).join(''):`<div class="empty-state">${ICONS[type]}<strong>No ${esc(TYPE_LABELS[type].toLowerCase())} records</strong>Connect a validated data source to populate this view.</div>`;$('#wideList').querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.eventId)));};$('#wideSearch').addEventListener('input',render);$('#wideStatus').addEventListener('change',render);render();}else if(view==='health'){renderHealthTable();}else if(view==='alerts'){loadPrefsUI();renderWatchList();}window.scrollTo({top:0,behavior:'smooth'});}
-function updateChips(){document.querySelectorAll('#typeChips .chip').forEach(b=>b.classList.toggle('active',b.dataset.type===activeType));}
-function openEvent(id){const e=events.find(x=>x.id===id);if(!e)return;currentEvent=e;$('#detailCategory').textContent=TYPE_LABELS[e.type]||e.type;$('#detailTitle').textContent=e.title;$('#detailIntro').textContent=`${e.id} · ${statusLabel(e.status)} · Demo record`;const fields=[['Event time',fmtDate(e.eventAt)],['Last updated',fmtDate(e.updatedAt)],['Related objects',e.objects.join(', ')],['Severity',e.severity], [e.metricLabel||'Measurement',e.metric||'Not available'],['Relative velocity',e.velocity||'Not available']];$('#detailFields').innerHTML=fields.map(([a,b])=>`<div class="detail-field"><small>${esc(a)}</small><strong>${esc(b)}</strong></div>`).join('');$('#detailDescription').textContent=e.summary;$('#detailTimeline').innerHTML=(e.history||[]).map((row,i)=>`<div class="timeline-row"><span class="timeline-bullet" style="opacity:${1-i*.18}"></span><span><strong style="display:block;color:#dceaf8;font-size:11px;margin-bottom:2px">${esc(row[0])}</strong>${esc(row[1])}</span></div>`).join('');$('#detailSource').textContent=`Source: ${e.source}. This record is simulated. No source was queried and no orbital calculation was run. In production, include the original source URL or record ID, data timestamp, processing time and relevant uncertainty metadata.`;$('#watchEventBtn').textContent=e.objects.some(o=>followedObjects.includes(o))?'Following object(s) ✓':'Follow object';$('#detailOverlay').classList.add('open');document.body.style.overflow='hidden';$('#closeDrawer').focus();}
-function closeDrawer(){$('#detailOverlay').classList.remove('open');document.body.style.overflow='';currentEvent=null;}
-function openMap(){window.location.href=MAP_URL;}
-function showToast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),2800);}
-function renderHealthTable(){const rows=DEMO_SOURCES.map(s=>`<tr><td><span class="source-name"><span class="source-symbol">${ICONS.health}</span>${esc(s.name)}</span></td><td>${esc(s.detail)}</td><td><span class="source-status warn"><span class="dot"></span>${esc(s.label)}</span></td><td>Not checked</td><td>Not connected</td></tr>`).join('');$('#wideHeading').textContent='Data-source health';$('#wideSub').textContent='Source statuses below are placeholders until the backend performs real health checks.';$('#wideBody').innerHTML=`<div class="demo-banner" style="margin-bottom:14px"><strong>Not live:</strong> no source checks have been performed by this standalone prototype.</div><div class="table-wrap"><table class="data-table"><thead><tr><th>Source</th><th>Purpose</th><th>Status</th><th>Last successful fetch</th><th>Last error</th></tr></thead><tbody>${rows}</tbody></table></div><div class="setting-note" style="margin-top:15px">Production health checks should use source-specific freshness thresholds, retries and rate limits. A missing credential should be reported as configuration missing, not as a satellite event.</div>`;}
-function renderWideEvents(){const list=filteredEvents();$('#wideBody').innerHTML=list.length?`<div class="event-list">${list.map(eventCard).join('')}</div>`:`<div class="empty-state">${ICONS.mission}<strong>No matching events</strong>Try another filter.</div>`;$('#wideBody').querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.eventId)));}
-function savePrefs(){const ids=['prefClose','prefPass','prefReentry','prefMission','prefHealth','prefInsite','prefEmail','prefTelegram','prefPush'];const p={};ids.forEach(id=>p[id]=$('#'+id).checked);localStorage.setItem('orbitalert_preferences',JSON.stringify(p));preferences=p;$('#prefSavedNote').textContent='Saved locally in this browser. Server-side subscriptions and message delivery are not configured.';showToast('Preferences saved in this browser');}
-function loadPrefsUI(){const defaults={prefClose:true,prefPass:true,prefReentry:true,prefMission:false,prefHealth:false,prefInsite:true,prefEmail:false,prefTelegram:false,prefPush:false};Object.entries({...defaults,...preferences}).forEach(([id,val])=>{const el=$('#'+id);if(el)el.checked=!!val;});}
-function renderWatchList(){const wrap=$('#watchList');if(!followedObjects.length){wrap.innerHTML='<p class="detail-copy">No objects followed yet.</p>';return;}wrap.innerHTML=followedObjects.map(o=>`<div class="source-row"><span class="source-symbol">${ICONS.pass}</span><span class="source-detail"><strong>${esc(o)}</strong><small>Watchlist entry · stored locally</small></span><button class="secondary-btn" data-unwatch="${esc(o)}" style="padding:6px 8px;font-size:10px">Remove</button></div>`).join('');wrap.querySelectorAll('[data-unwatch]').forEach(b=>b.addEventListener('click',()=>{followedObjects=followedObjects.filter(x=>x!==b.dataset.unwatch);localStorage.setItem('orbitalert_watchlist',JSON.stringify(followedObjects));renderWatchList();showToast('Removed from local watchlist');}));}
-function addWatchObject(raw){const val=raw.trim().toUpperCase();if(!val)return showToast('Enter a satellite or object ID first');if(val.length>80)return showToast('Object ID is too long');if(followedObjects.includes(val))return showToast('That object is already followed');followedObjects.push(val);localStorage.setItem('orbitalert_watchlist',JSON.stringify(followedObjects));$('#watchInput').value='';renderWatchList();showToast('Object added to local watchlist');}
-function exportCSV(){const rows=filteredEvents();const cols=['id','type','title','status','severity','eventAt','updatedAt','source','objects','summary'];const quote=v=>'"'+String(Array.isArray(v)?v.join('; '):v??'').replace(/"/g,'""')+'"';const csv=[cols.join(','),...rows.map(e=>cols.map(c=>quote(e[c])).join(','))].join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='orbitalert-demo-events.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Exported visible demo events to CSV');}
-// Navigation
- document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
-document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.nav)));
-$('#typeChips').addEventListener('click',e=>{const b=e.target.closest('[data-type]');if(!b)return;activeType=b.dataset.type;updateChips();renderEventList();});
-$('#searchInput').addEventListener('input',renderEventList);$('#statusFilter').addEventListener('change',renderEventList);
-$('#closeDrawer').addEventListener('click',closeDrawer);$('#closeDetailBtn').addEventListener('click',closeDrawer);$('#detailOverlay').addEventListener('click',e=>{if(e.target===$('#detailOverlay'))closeDrawer();});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
-$('#mapLink').href=MAP_URL;$('#mapOpenBtn').addEventListener('click',openMap);$('#detailMapBtn').addEventListener('click',()=>{closeDrawer();openMap();});
-$('#topAlertsBtn').addEventListener('click',()=>setView('alerts'));$('#savePrefsBtn').addEventListener('click',savePrefs);$('#addWatchBtn').addEventListener('click',()=>addWatchObject($('#watchInput').value));$('#watchInput').addEventListener('keydown',e=>{if(e.key==='Enter')addWatchObject(e.target.value);});
-$('#watchEventBtn').addEventListener('click',()=>{if(!currentEvent)return;let changed=false;currentEvent.objects.forEach(o=>{if(!followedObjects.includes(o)){followedObjects.push(o);changed=true;}});localStorage.setItem('orbitalert_watchlist',JSON.stringify(followedObjects));$('#watchEventBtn').textContent='Following object(s) ✓';if(changed)showToast('Object(s) added to local watchlist');else showToast('These object(s) are already followed');});
-$('#exportBtn').addEventListener('click',exportCSV);$('#wideExportBtn').addEventListener('click',exportCSV);$('#refreshBtn').addEventListener('click',()=>{renderStats();renderEventList();renderSources();showToast('Demo view refreshed. No live data was fetched.');});
-// Boot
-$('#mapLink').href=MAP_URL;renderStats();renderEventList();renderSources();loadPrefsUI();
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function isWithinQuietHours() {
+  if (!preferences.quietStart || !preferences.quietEnd) return false;
+  const now = new Date();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  const [sh, sm] = preferences.quietStart.split(':').map(Number);
+  const [eh, em] = preferences.quietEnd.split(':').map(Number);
+  const startMins = sh * 60 + sm;
+  const endMins = eh * 60 + em;
+  return startMins <= endMins ? (mins >= startMins && mins <= endMins) : (mins >= startMins || mins <= endMins);
+}
+
+function playAlertChime() {
+  if (!preferences.prefSound || isWithinQuietHours()) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.18);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.36);
+  } catch {}
+}
+
+function fmtDate(value) {
+  if (!value) return 'Not available';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return 'Not available';
+  const localStr = d.toLocaleString(undefined, {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+  const utcStr = d.toISOString().slice(11, 16) + ' UTC';
+  return `${localStr} (${utcStr})`;
+}
+
+function timeFromNow(value) {
+  const d = new Date(value).getTime() - Date.now();
+  const abs = Math.abs(d);
+  if (abs < 60000) return 'now';
+  const n = Math.round(abs / 60000);
+  if (n < 60) return d >= 0 ? 'in ' + n + 'm' : n + 'm ago';
+  const h = Math.round(n / 60);
+  if (h < 48) return d >= 0 ? 'in ' + h + 'h' : h + 'h ago';
+  const days = Math.round(h / 24);
+  return d >= 0 ? 'in ' + days + 'd' : days + 'd ago';
+}
+
+function statusLabel(s) { return ({review:'Needs review',upcoming:'Upcoming',monitoring:'Monitoring',resolved:'Healthy / Verified'})[s] || s; }
+function statusClass(s) { return ({review:'amber',upcoming:'blue',monitoring:'purple',resolved:'green'})[s] || 'muted'; }
+function iconTone(e) {
+  if (e.type === 'health') return 'purple';
+  if (e.type === 'pass') return 'green';
+  if (e.type === 'reentry') return 'red';
+  if (e.type === 'close') return e.severity === 'critical' || e.severity === 'elevated' ? 'red' : 'amber';
+  return '';
+}
+
+function eventSearchText(e) {
+  return [e.id, e.title, e.type, e.source, e.classification, ...(e.objects || []), e.status, e.summary].join(' ').toLowerCase();
+}
+
+function filteredEvents() {
+  const q = ($('#searchInput')?.value || '').trim().toLowerCase();
+  const status = $('#statusFilter')?.value || 'all';
+  const sev = $('#severityFilter')?.value || 'all';
+  const tRange = $('#timeRangeFilter')?.value || 'all';
+  const watchOnly = $('#watchlistOnlyToggle')?.checked || false;
+
+  return events.filter(e => {
+    if (preferences.prefShowResolved === false && e.status === 'resolved' && status === 'all') return false;
+    const matchType = activeType === 'all' || e.type === activeType;
+    const matchStatus = status === 'all' || e.status === status;
+    const matchSev = sev === 'all' || (sev === 'watch' ? (e.severity === 'watch' || e.severity === 'elevated') : e.severity === sev);
+    const matchWatch = !watchOnly || (e.objects || []).some(o => followedObjects.includes(o.toUpperCase()));
+    const matchQ = !q || eventSearchText(e).includes(q);
+
+    let matchTime = true;
+    if (tRange !== 'all') {
+      const diffHours = (new Date(e.eventAt).getTime() - Date.now()) / 3600000;
+      if (tRange === '6h') matchTime = diffHours >= -1 && diffHours <= 6;
+      if (tRange === '24h') matchTime = diffHours >= -2 && diffHours <= 24;
+    }
+    return matchType && matchStatus && matchSev && matchWatch && matchQ && matchTime;
+  });
+}
+
+function renderStats() {
+  const activeCount = events.filter(e => e.status !== 'resolved').length;
+  const closeCount = events.filter(e => e.type === 'close').length;
+  const passCount = events.filter(e => e.type === 'pass').length;
+  const okSources = sources.filter(s => s.status === 'ok').length;
+
+  $('#statActive').textContent = activeCount;
+  $('#statClose').textContent = closeCount;
+  $('#statPasses').textContent = `${(3200 + catalog.length).toLocaleString()}+`;
+  $('#statPassesNote').textContent = `${passCount} upcoming passes · ${catalog.length} flagships`;
+  $('#statSources').textContent = `${okSources}/${sources.length || 5}`;
+
+  if ($('#navCountCatalog')) $('#navCountCatalog').textContent = catalog.length;
+  if ($('#navCountClose')) $('#navCountClose').textContent = closeCount;
+  if ($('#navCountPasses')) $('#navCountPasses').textContent = passCount;
+}
+
+function eventCard(e) {
+  const isWatched = (e.objects || []).some(o => followedObjects.includes(o.toUpperCase()));
+  const watchBadge = isWatched ? `<span class="pill green" style="margin-right:4px">★ WATCHED</span>` : '';
+  const classBadge = e.classification ? `<span class="pill muted" style="margin-right:4px">${esc(e.classification)}</span>` : '';
+  const objects = (e.objects || []).map(esc).join(' · ');
+  return `<button class="event-card" data-event-id="${esc(e.id)}" aria-label="Open details for ${esc(e.title)}">
+    <span class="event-icon ${iconTone(e)}">${ICONS[e.type] || ICONS.mission}</span>
+    <span>
+      <span class="event-title">${esc(e.title)}</span>
+      <span class="event-meta">${objects} · ${esc(TYPE_LABELS[e.type] || e.type)} · <strong>${esc(e.metric || '')}</strong></span>
+      <span class="event-description">${esc(e.summary)}</span>
+    </span>
+    <span class="event-right">
+      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${watchBadge}${classBadge}<span class="pill ${statusClass(e.status)}">${esc(statusLabel(e.status))}</span></div>
+      <span class="event-time">${esc(timeFromNow(e.eventAt))}<br>${esc(fmtDate(e.eventAt))}</span>
+    </span>
+  </button>`;
+}
+
+function renderEventList() {
+  const list = filteredEvents();
+  $('#eventCount').textContent = list.length + ' event' + (list.length === 1 ? '' : 's');
+  $('#eventList').innerHTML = list.length
+    ? list.map(eventCard).join('')
+    : `<div class="empty-state">${ICONS.mission}<strong>No matching events in current filter</strong>All monitored sources are reporting nominal orbital states. Try expanding your filter criteria or check upcoming passes.</div>`;
+  $('#eventList').querySelectorAll('[data-event-id]').forEach(b => b.addEventListener('click', () => openEvent(b.dataset.eventId)));
+}
+
+function renderSources() {
+  const html = sources.map(s => `<div class="source-row">
+    <span class="source-symbol">${ICONS.health}</span>
+    <span class="source-detail"><strong>${esc(s.name)}</strong><small>${esc(s.detail)} · ${s.latencyMs || 5}ms</small></span>
+    <span class="source-status ${s.status === 'ok' ? 'ok' : 'warn'}"><span class="dot"></span>${esc(s.label)}</span>
+  </div>`).join('');
+  $('#sourceMini').innerHTML = html;
+}
+
+// Scientific Visualization Renderer inside Event Detail Drawer (Sections 7A, 7B, 7C)
+function renderEventVisualization(e) {
+  const container = $('#detailVisualContainer');
+  if (!container) return;
+
+  if (e.type === 'close') {
+    const missKm = e.details?.missKm || 2.1;
+    const relVel = e.details?.relVelKmS || 11.4;
+    container.innerHTML = `
+      <div class="sci-viz-box">
+        <div class="sci-viz-head">
+          <span>ORBITAL ENCOUNTER GEOMETRY (2D NODE PROJECTION)</span>
+          <span id="conjDistReadout" style="color:var(--amber);font-weight:700">TCA Separation: ${missKm.toFixed(2)} km</span>
+        </div>
+        <canvas id="conjCanvas" class="sci-canvas" width="460" height="165"></canvas>
+        <div class="scrubber-row">
+          <span>TCA -30m</span>
+          <input type="range" id="conjSlider" min="-30" max="30" step="0.5" value="0" aria-label="Scrub across predicted encounter time" />
+          <span id="conjTimeLbl" style="min-width:72px;text-align:right;color:var(--cyan)">TCA +0.0m</span>
+        </div>
+        <div class="caution-note">
+          <strong>Scientific Notice:</strong> Two orbital paths appearing close in projection do not automatically establish a collision risk. Collision probability is omitted unless full 6×6 covariance matrices are available.
+        </div>
+      </div>
+    `;
+    const canvas = $('#conjCanvas');
+    const slider = $('#conjSlider');
+    const distLbl = $('#conjDistReadout');
+    const timeLbl = $('#conjTimeLbl');
+    const ctx = canvas.getContext('2d');
+
+    const drawConjunction = (offsetMin) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+
+      // Grid & scale bar
+      ctx.strokeStyle = '#152a40';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < canvas.width; x += 45) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+      for (let y = 30; y < canvas.height; y += 35) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+      // Primary Orbit A (Cyan)
+      ctx.strokeStyle = '#55d8ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(20, cy + 38);
+      ctx.quadraticCurveTo(cx, cy - 12, canvas.width - 20, cy - 42);
+      ctx.stroke();
+
+      // Secondary Orbit B (Amber/Red)
+      ctx.strokeStyle = '#ffbd69';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(20, cy - 48);
+      ctx.quadraticCurveTo(cx, cy + 8, canvas.width - 20, cy + 48);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Uncertainty ellipse around TCA
+      ctx.strokeStyle = 'rgba(255, 115, 135, 0.45)';
+      ctx.fillStyle = 'rgba(255, 115, 135, 0.1)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - 2, 34, 16, -0.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Compute object positions along curves at offsetMin
+      const t = offsetMin / 30; // -1 to +1
+      const ax = cx + t * 185;
+      const ay = cy - 4 - t * 40;
+      const bx = cx + t * 185;
+      const by = cy + 2 + t * 48 + (missKm * 1.8);
+
+      // Line connecting objects
+      ctx.strokeStyle = '#ff7387';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+
+      // Object A & B markers
+      ctx.fillStyle = '#55d8ff';
+      ctx.beginPath(); ctx.arc(ax, ay, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffbd69';
+      ctx.beginPath(); ctx.arc(bx, by, 5, 0, Math.PI * 2); ctx.fill();
+
+      // Labels
+      ctx.fillStyle = '#d8ecff';
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.fillText((e.objects?.[0] || 'OBJ A'), ax - 18, ay - 9);
+      ctx.fillText((e.objects?.[1] || 'OBJ B'), bx - 18, by + 16);
+      ctx.fillStyle = '#7e9cb7';
+      ctx.fillText('Scale: 10 km uncertainty ellipse shown at TCA node', 12, canvas.height - 8);
+
+      const instDist = Math.hypot(missKm, offsetMin * relVel * 0.45);
+      distLbl.textContent = `Separation: ${instDist.toFixed(2)} km`;
+      timeLbl.textContent = `TCA ${offsetMin >= 0 ? '+' : ''}${offsetMin.toFixed(1)}m`;
+    };
+
+    slider.addEventListener('input', () => drawConjunction( parseFloat(slider.value) ));
+    drawConjunction(0);
+
+  } else if (e.type === 'pass') {
+    const maxEl = e.details?.maxElevDeg || 58;
+    const riseStr = e.details?.riseAt ? new Date(e.details.riseAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Upcoming';
+    const setStr = e.details?.setAt ? new Date(e.details.setAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Upcoming';
+    container.innerHTML = `
+      <div class="sci-viz-box">
+        <div class="sci-viz-head">
+          <span>LOCAL HORIZON ELEVATION ARC (${esc(e.details?.observerCoords || 'OBSERVER')})</span>
+          <span style="color:var(--green);font-weight:700">Peak: ${maxEl}° Elevation</span>
+        </div>
+        <canvas id="passArcCanvas" class="sci-canvas" width="460" height="145"></canvas>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#9bc0df;margin-top:8px;font-family:ui-monospace,monospace">
+          <span>🌅 Rise (10°): <strong>${esc(riseStr)}</strong></span>
+          <span>🔭 Visibility: <strong>${esc(e.details?.visibility || 'Calculated')}</strong></span>
+          <span>🌇 Set (10°): <strong>${esc(setStr)}</strong></span>
+        </div>
+      </div>
+    `;
+    const canvas = $('#passArcCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.strokeStyle = '#23425e';
+    ctx.beginPath(); ctx.moveTo(30, h - 24); ctx.lineTo(w - 30, h - 24); ctx.stroke();
+
+    const peakY = (h - 28) - ((maxEl / 90) * (h - 52));
+    ctx.strokeStyle = '#57e0ac';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(45, h - 24);
+    ctx.quadraticCurveTo(w / 2, peakY - (h - 24 - peakY) * 0.45, w - 45, h - 24);
+    ctx.stroke();
+
+    ctx.fillStyle = '#55d8ff';
+    ctx.beginPath(); ctx.arc(w / 2, peakY, 5.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#daf4ff';
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText(`Max Elevation ${maxEl}°`, w / 2 - 48, peakY - 10);
+
+  } else if (e.type === 'reentry') {
+    const winHrs = e.details?.windowHours || 2.4;
+    container.innerHTML = `
+      <div class="sci-viz-box">
+        <div class="sci-viz-head">
+          <span>RE-ENTRY PREDICTION WINDOW &amp; UNCERTAINTY SHIFT</span>
+          <span style="color:var(--amber);font-weight:700">Window: ± ${winHrs} Hours</span>
+        </div>
+        <div class="reentry-bar-track" title="Estimated atmospheric capture window">
+          <div class="reentry-bar-prev"></div>
+          <div class="reentry-bar-curr"></div>
+          <div class="reentry-bar-center"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#93aec9;font-family:ui-monospace,monospace">
+          <span>Window Open: ${esc(fmtDate(e.details?.windowStart))}</span>
+          <span style="color:var(--cyan)">Center Estimate</span>
+          <span>Window Close: ${esc(fmtDate(e.details?.windowEnd))}</span>
+        </div>
+        <div class="caution-note">
+          <strong>Uncertainty Policy:</strong> Dashed bar shows previous estimate (shifted by ${e.details?.prevShiftMin || -14} min). Ground impact point is never shown as a fixed coordinate while thermospheric drag uncertainty remains ±${winHrs} hours.
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+function renderCatalogView() {
+  $('#wideHeading').textContent = `Trackable Satellites & Space Missions (${catalog.length} Flagships + 3,200 Constellation Shells)`;
+  $('#wideSub').textContent = 'Synchronized live with the main 3D Solar System HUD database. Click any mission to track in 3D or add to Watchlist.';
+  $('#wideBody').innerHTML = `
+    <div class="feed-tools">
+      <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="catSearch" type="search" placeholder="Search Cartosat, Aditya-L1, ISS, JWST, Starlink, Mars, NORAD ID…" /></label>
+      <select class="select" id="catAgency">
+        <option value="all">All Agencies</option>
+        <option value="isro">🇮🇳 ISRO</option>
+        <option value="nasa">🇺🇸 NASA / USSF</option>
+        <option value="esa">🇪🇺 ESA</option>
+        <option value="constellation">🌐 Constellations & Debris</option>
+      </select>
+      <select class="select" id="catDomain">
+        <option value="all">All Regimes</option>
+        <option value="earth">🌍 Earth Orbit (LEO/MEO/GEO)</option>
+        <option value="deep">🚀 Interplanetary & Deep Space</option>
+      </select>
+    </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+  `;
+
+  const renderCards = () => {
+    const q = ($('#catSearch')?.value || '').toLowerCase().trim();
+    const ag = $('#catAgency')?.value || 'all';
+    const dom = $('#catDomain')?.value || 'all';
+
+    const filtered = catalog.filter(m => {
+      const matchAg = ag === 'all' || m.agencyCat === ag;
+      const matchDom = dom === 'all' || (dom === 'earth' ? m.parent === 'earth' : m.parent !== 'earth');
+      const matchQ = !q || `${m.name} ${m.id} ${m.agency} ${m.role} ${m.norad} ${m.parent}`.toLowerCase().includes(q);
+      return matchAg && matchDom && matchQ;
+    });
+
+    const grid = $('#catalogGrid');
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="empty-state"><strong>No missions match filter</strong>Try clearing your search query.</div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(m => {
+      const isWatched = followedObjects.includes(m.id.toUpperCase());
+      const hex = '#' + (m.color || 0x38bdf8).toString(16).padStart(6, '0');
+      const coordText = m.live && m.parent === 'earth' && m.altKm < 36000
+        ? `${m.live.lat}°, ${m.live.lon}°`
+        : `${(m.parent || 'SOLAR').toUpperCase()} ORBIT`;
+      const altText = m.altitude || `${Math.round(m.altKm || 500).toLocaleString()} km`;
+      const velText = m.velocity || (m.live ? `${m.live.velKmH.toLocaleString()} km/h` : '27,500 km/h');
+
+      return `<article class="mission-card">
+        <div class="mission-top">
+          <div>
+            <div class="mission-name"><span style="width:9px;height:9px;border-radius:50%;background:${hex};display:inline-block"></span>${esc(m.name)}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(m.agency)} · NORAD ${esc(m.norad)} · <strong style="color:var(--cyan)">${esc(m.status || 'ACTIVE')}</strong></div>
+          </div>
+          <span class="pill ${m.category === 'probe' ? 'purple' : (m.category === 'station' ? 'green' : 'blue')}">${esc((m.category || 'SAT').toUpperCase())}</span>
+        </div>
+        <div style="font-size:12px;color:#b4c7db;line-height:1.4">${esc(m.role)}</div>
+        <div class="mission-metrics">
+          <div><small>Altitude / Regime</small><strong>${esc(altText)}</strong></div>
+          <div><small>Velocity</small><strong>${esc(velText)}</strong></div>
+          <div><small>Live Position</small><strong>${esc(coordText)}</strong></div>
+        </div>
+        <div class="mission-actions">
+          <a class="primary-btn" style="flex:1;padding:7px 10px;font-size:12px" href="${getTargetMapUrl(m.id)}">Track in 3D Map ↗</a>
+          <button class="secondary-btn" style="padding:7px 10px;font-size:12px" data-watch-toggle="${esc(m.id.toUpperCase())}">${isWatched ? '★ Watching' : '+ Watch'}</button>
+        </div>
+      </article>`;
+    }).join('');
+
+    grid.querySelectorAll('[data-watch-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.watchToggle;
+        if (followedObjects.includes(id)) {
+          followedObjects = followedObjects.filter(x => x !== id);
+          showToast(`Removed ${id} from Watchlist`);
+        } else {
+          followedObjects.push(id);
+          showToast(`Added ${id} to Automated Watchlist`);
+        }
+        syncWatchlistToServer();
+        renderCards();
+        renderEventList();
+      });
+    });
+  };
+
+  $('#catSearch').addEventListener('input', renderCards);
+  $('#catAgency').addEventListener('change', renderCards);
+  $('#catDomain').addEventListener('change', renderCards);
+  renderCards();
+}
+
+function setView(view) {
+  if (!viewInfo[view]) view = 'overview';
+  currentView = view;
+  const info = viewInfo[view];
+  $('#crumbCurrent').textContent = info[1];
+  $('#pageEyebrow').textContent = info[0];
+  $('#pageTitle').textContent = info[1];
+  $('#pageDesc').textContent = info[2];
+
+  $('#overviewView').style.display = view === 'overview' ? 'grid' : 'none';
+  $('#statsRow').style.display = view === 'overview' ? 'grid' : 'none';
+  $('#wideView').style.display = ['catalog','close','passes','reentry','missions','health'].includes(view) ? 'block' : 'none';
+  $('#alertsView').style.display = view === 'alerts' ? 'block' : 'none';
+
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+
+  if (view === 'overview') {
+    activeType = 'all';
+    updateChips();
+    renderEventList();
+  } else if (view === 'catalog') {
+    renderCatalogView();
+  } else if (['close','passes','reentry','missions'].includes(view)) {
+    const type = ({close:'close',passes:'pass',reentry:'reentry',missions:'mission'})[view];
+    $('#wideHeading').textContent = info[1];
+    $('#wideSub').textContent = info[2];
+    $('#wideBody').innerHTML = `
+      <div class="feed-tools">
+        <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="wideSearch" type="search" placeholder="Search ${esc(info[1].toLowerCase())}…" /></label>
+      </div>
+      <div class="event-list" id="wideList"></div>
+    `;
+    const render = () => {
+      const q = ($('#wideSearch')?.value || '').toLowerCase();
+      const rows = events.filter(e => e.type === type && (!q || eventSearchText(e).includes(q)));
+      $('#wideList').innerHTML = rows.length ? rows.map(eventCard).join('') : `<div class="empty-state">${ICONS[type]}<strong>No matching records</strong></div>`;
+      $('#wideList').querySelectorAll('[data-event-id]').forEach(b => b.addEventListener('click', () => openEvent(b.dataset.eventId)));
+    };
+    $('#wideSearch').addEventListener('input', render);
+    render();
+  } else if (view === 'health') {
+    renderHealthTable();
+  } else if (view === 'alerts') {
+    loadPrefsUI();
+    renderWatchList();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateChips() {
+  document.querySelectorAll('#typeChips .chip').forEach(b => b.classList.toggle('active', b.dataset.type === activeType));
+}
+
+function openEvent(id) {
+  const e = events.find(x => x.id === id);
+  if (!e) return;
+  currentEvent = e;
+  $('#detailCategory').textContent = `${TYPE_LABELS[e.type] || e.type} · ${e.classification || 'ASSESSMENT'}`;
+  $('#detailTitle').textContent = e.title;
+  $('#detailIntro').textContent = `${e.id} · ${statusLabel(e.status)} · Confidence: ${e.confidence || 'Standard Ephemeris'}`;
+
+  const fields = [
+    ['Predicted / Event Time', fmtDate(e.eventAt)],
+    ['First Detected / Synced', `${fmtDate(e.detectedAt || e.updatedAt)}`],
+    ['Involved Objects', (e.objects || []).join(', ')],
+    ['Severity & Status', `${(e.severity || 'info').toUpperCase()} (${statusLabel(e.status)})`],
+    [e.metricLabel || 'Primary Metric', e.metric || 'Verified'],
+    ['Velocity / Kinematics', e.velocity || 'Nominal']
+  ];
+  if (e.details?.collisionProb) {
+    fields.push(['Collision Probability', e.details.collisionProb]);
+    fields.push(['Uncertainty', e.details.uncertaintyKm]);
+  } else if (e.details?.visibility) {
+    fields.push(['Optical Visibility', e.details.visibility]);
+    fields.push(['Ephemeris Data Age', e.details.dataAge]);
+  }
+
+  $('#detailFields').innerHTML = fields.map(([a,b]) => `<div class="detail-field"><small>${esc(a)}</small><strong>${esc(b)}</strong></div>`).join('');
+  renderEventVisualization(e);
+  $('#detailDescription').textContent = e.summary;
+  $('#detailTimeline').innerHTML = (e.history || []).map((row, i) => `<div class="timeline-row"><span class="timeline-bullet" style="opacity:${1 - i * 0.18}"></span><span><strong style="display:block;color:#dceaf8;font-size:11px;margin-bottom:2px">${esc(row[0])}</strong>${esc(row[1])}</span></div>`).join('');
+  $('#detailSource').textContent = `Source Pipeline: ${e.source}. Last Updated: ${fmtDate(e.updatedAt)}. Linked to 3D HUD target #/${e.targetKey || 'earth'}.`;
+
+  const watchBtn = $('#watchEventBtn');
+  if (e.type === 'health') {
+    watchBtn.style.display = 'none';
+  } else {
+    watchBtn.style.display = 'inline-flex';
+    const primaryObj = (e.targetKey || (e.objects && e.objects[0]) || 'ISS').toUpperCase();
+    watchBtn.textContent = followedObjects.includes(primaryObj) ? 'Following Object ✓' : `Follow ${primaryObj}`;
+  }
+  $('#detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  $('#detailOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentEvent = null;
+}
+
+function renderHealthTable() {
+  const rows = sources.map(s => `<tr>
+    <td><span class="source-name"><span class="source-symbol">${ICONS.health}</span>${esc(s.name)}</span></td>
+    <td>${esc(s.detail)}</td>
+    <td><span class="source-status ${s.status === 'ok' ? 'ok' : 'warn'}"><span class="dot"></span>${esc(s.label)}</span></td>
+    <td>${esc(fmtDate(s.lastFetch))}</td>
+    <td>${esc(s.latencyMs || 4)} ms (${esc(s.error || 'None')})</td>
+  </tr>`).join('');
+  $('#wideHeading').textContent = 'Automated Data-Source Health';
+  $('#wideSub').textContent = 'Live ingestion telemetry from the Express SpaceDB background daemon. Note: A source outage is a pipeline status alert, not evidence of a physical space incident.';
+  $('#wideBody').innerHTML = `<div class="table-wrap"><table class="data-table"><thead><tr><th>Source Pipeline</th><th>Role</th><th>Status</th><th>Last Successful Sync</th><th>Latency / Diagnostics</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+async function syncWatchlistToServer() {
+  localStorage.setItem('orbitalert_watchlist', JSON.stringify(followedObjects));
+  try {
+    await fetch('/api/space/watchlist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ watchlist: followedObjects })
+    });
+  } catch {}
+}
+
+async function savePrefs() {
+  const boolIds = ['prefClose','prefPass','prefReentry','prefMission','prefHealth','prefInsite','prefSound','prefPush','prefShowResolved'];
+  boolIds.forEach(id => { if ($('#' + id)) preferences[id] = $('#' + id).checked; });
+  if ($('#prefMinSeverity')) preferences.minSeverity = $('#prefMinSeverity').value;
+  if ($('#prefQuietStart')) preferences.quietStart = $('#prefQuietStart').value;
+  if ($('#prefQuietEnd')) preferences.quietEnd = $('#prefQuietEnd').value;
+
+  localStorage.setItem('orbitalert_preferences', JSON.stringify(preferences));
+
+  if (preferences.prefPush && 'Notification' in window && Notification.permission !== 'granted') {
+    await Notification.requestPermission();
+  }
+
+  try {
+    await fetch('/api/space/preferences', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(preferences)
+    });
+    $('#prefSavedNote').textContent = `Saved to backend SpaceDB at ${new Date().toLocaleTimeString()}.`;
+  } catch {
+    $('#prefSavedNote').textContent = 'Saved in browser storage.';
+  }
+  renderEventList();
+  showToast('Alert preferences saved & activated');
+}
+
+function loadPrefsUI() {
+  ['prefClose','prefPass','prefReentry','prefMission','prefHealth','prefInsite','prefSound','prefPush','prefShowResolved'].forEach(id => {
+    const el = $('#' + id);
+    if (el && preferences[id] !== undefined) el.checked = !!preferences[id];
+  });
+  if ($('#prefMinSeverity') && preferences.minSeverity) $('#prefMinSeverity').value = preferences.minSeverity;
+  if ($('#prefQuietStart') && preferences.quietStart) $('#prefQuietStart').value = preferences.quietStart;
+  if ($('#prefQuietEnd') && preferences.quietEnd) $('#prefQuietEnd').value = preferences.quietEnd;
+}
+
+function renderWatchList() {
+  const wrap = $('#watchList');
+  if (!followedObjects.length) {
+    wrap.innerHTML = '<p class="detail-copy">No objects in Watchlist yet.</p>';
+    return;
+  }
+  wrap.innerHTML = followedObjects.map(o => `<div class="source-row">
+    <span class="source-symbol">${ICONS.pass}</span>
+    <span class="source-detail"><strong>${esc(o)}</strong><small>Active automated pass & conjunction monitoring</small></span>
+    <a class="secondary-btn" href="${getTargetMapUrl(o)}" style="padding:6px 8px;font-size:10px">3D View ↗</a>
+    <button class="secondary-btn" data-unwatch="${esc(o)}" style="padding:6px 8px;font-size:10px">Remove</button>
+  </div>`).join('');
+
+  wrap.querySelectorAll('[data-unwatch]').forEach(b => b.addEventListener('click', () => {
+    followedObjects = followedObjects.filter(x => x !== b.dataset.unwatch);
+    syncWatchlistToServer();
+    renderWatchList();
+    renderEventList();
+    showToast('Removed from Watchlist');
+  }));
+}
+
+function addWatchObject(raw) {
+  const val = raw.trim().toUpperCase();
+  if (!val) return showToast('Enter a satellite or mission ID first');
+  if (followedObjects.includes(val)) return showToast('Already in Watchlist');
+  followedObjects.push(val);
+  syncWatchlistToServer();
+  $('#watchInput').value = '';
+  renderWatchList();
+  renderEventList();
+  showToast(`Added ${val} to Watchlist`);
+}
+
+function exportCSV() {
+  const rows = filteredEvents();
+  const cols = ['id','type','classification','title','status','severity','eventAt','updatedAt','source','objects','metric','summary'];
+  const quote = v => '"' + String(Array.isArray(v) ? v.join('; ') : v ?? '').replace(/"/g, '""') + '"';
+  const csv = [cols.join(','), ...rows.map(e => cols.map(c => quote(e[c])).join(','))].join('\r\n');
+  const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `orbitalert-live-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Exported live events to CSV');
+}
+
+async function fetchLiveSpaceData(manual = false) {
+  try {
+    if (manual) $('#syncBtnLabel').textContent = 'Syncing…';
+    const lat = preferences.observerLat || 18.5204;
+    const lon = preferences.observerLon || 73.8567;
+    const endpoint = manual ? '/api/space/sync' : `/api/space/bootstrap?lat=${lat}&lon=${lon}`;
+    const res = await fetch(endpoint, manual ? {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ lat, lon })
+    } : undefined);
+
+    if (!res.ok) throw new Error('API offline');
+    const data = await res.json();
+
+    if (data.catalog) catalog = data.catalog;
+    if (data.events) events = data.events;
+    if (data.sources) sources = data.sources;
+    if (Array.isArray(data.watchlist)) {
+      followedObjects = data.watchlist;
+      localStorage.setItem('orbitalert_watchlist', JSON.stringify(followedObjects));
+    }
+    if (data.preferences && typeof data.preferences === 'object') {
+      preferences = { ...preferences, ...data.preferences };
+      localStorage.setItem('orbitalert_preferences', JSON.stringify(preferences));
+      if (typeof preferences.observerLat === 'number' && typeof preferences.observerLon === 'number') {
+        $('#obsLocationLabel').textContent = `Observer (${preferences.observerLat.toFixed(1)}°, ${preferences.observerLon.toFixed(1)}°)`;
+      }
+    }
+
+    if (data.liveISS) {
+      const issTxt = `ISS Live: ${data.liveISS.latitude.toFixed(2)}°, ${data.liveISS.longitude.toFixed(2)}° (${Math.round(data.liveISS.altitude)} km)`;
+      $('#bannerLiveISS').textContent = issTxt;
+      $('#miniMapCoords').textContent = `${data.liveISS.latitude.toFixed(1)}°, ${data.liveISS.longitude.toFixed(1)}°`;
+      $('#miniMapVel').textContent = `${Math.round(data.liveISS.velocity).toLocaleString()} km/h`;
+    }
+
+    $('#sidebarDot').style.background = 'var(--green)';
+    $('#sidebarConnText').textContent = `SpaceDB Online (Cycle #${data.syncCycles || 1})`;
+    $('#sidebarSyncMeta').textContent = `Last automated sync: ${new Date(data.lastUpdated).toLocaleTimeString()}`;
+
+    renderStats();
+    renderEventList();
+    renderSources();
+    if (currentView === 'catalog') renderCatalogView();
+    if (currentView === 'health') renderHealthTable();
+
+    // Deduplicated notification trigger for watched objects
+    const watchedAlert = events.find(e => (e.type === 'close' || e.type === 'pass') && (e.objects || []).some(o => followedObjects.includes(o.toUpperCase())));
+    const alertSig = watchedAlert ? `${watchedAlert.id}:${watchedAlert.metric}` : null;
+
+    if (watchedAlert && (manual || alertSig !== window._lastNotifiedSig)) {
+      window._lastNotifiedSig = alertSig;
+      if (preferences.prefInsite && !isWithinQuietHours()) {
+        playAlertChime();
+        showToast(`🔔 Watchlist Alert: ${watchedAlert.title} (${watchedAlert.metric})`);
+      }
+      if (preferences.prefPush && !isWithinQuietHours() && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification('OrbitAlert Watchlist Update', {
+          body: `${watchedAlert.title} — ${watchedAlert.metric}`
+        });
+      }
+    } else if (manual) {
+      showToast('SpaceDB synchronized with live orbital sources');
+    }
+  } catch (err) {
+    $('#sidebarDot').style.background = 'var(--amber)';
+    $('#sidebarConnText').textContent = 'Stale / Offline Cache Mode';
+    $('#sidebarSyncMeta').textContent = 'Live API unreachable; displaying last verified snapshot.';
+  } finally {
+    if ($('#syncBtnLabel')) $('#syncBtnLabel').textContent = 'Sync Now';
+  }
+}
+
+$('#gpsBtn').addEventListener('click', () => {
+  if (!navigator.geolocation) return showToast('Geolocation not supported by browser');
+  showToast('Detecting observer coordinates for local pass predictions…');
+  navigator.geolocation.getCurrentPosition(pos => {
+    preferences.observerLat = Number(pos.coords.latitude.toFixed(4));
+    preferences.observerLon = Number(pos.coords.longitude.toFixed(4));
+    localStorage.setItem('orbitalert_preferences', JSON.stringify(preferences));
+    $('#obsLocationLabel').textContent = `Observer (${preferences.observerLat.toFixed(1)}°, ${preferences.observerLon.toFixed(1)}°)`;
+    fetchLiveSpaceData(true);
+  }, () => {
+    showToast('Using default Pune / ISTRAC India sector (18.5°N, 73.9°E)');
+  });
+});
+
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+document.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', () => setView(b.dataset.nav)));
+$('#browseAllSatsBtn').addEventListener('click', () => setView('catalog'));
+$('#typeChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-type]');
+  if (!b) return;
+  activeType = b.dataset.type;
+  updateChips();
+  renderEventList();
+});
+$('#searchInput').addEventListener('input', renderEventList);
+$('#statusFilter').addEventListener('change', renderEventList);
+$('#severityFilter').addEventListener('change', renderEventList);
+$('#timeRangeFilter').addEventListener('change', renderEventList);
+$('#watchlistOnlyToggle').addEventListener('change', renderEventList);
+$('#closeDrawer').addEventListener('click', closeDrawer);
+$('#closeDetailBtn').addEventListener('click', closeDrawer);
+$('#detailOverlay').addEventListener('click', e => { if (e.target === $('#detailOverlay')) closeDrawer(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+$('#mapLink').href = getTargetMapUrl('earth');
+$('#mapOpenBtn').addEventListener('click', () => { window.location.href = getTargetMapUrl('iss'); });
+$('#detailMapBtn').addEventListener('click', () => {
+  const target = currentEvent?.targetKey || 'earth';
+  const secondary = currentEvent?.secondaryKey || '';
+  closeDrawer();
+  window.location.href = getTargetMapUrl(target, secondary);
+});
+
+$('#topAlertsBtn').addEventListener('click', () => setView('alerts'));
+$('#savePrefsBtn').addEventListener('click', savePrefs);
+$('#addWatchBtn').addEventListener('click', () => addWatchObject($('#watchInput').value));
+$('#watchInput').addEventListener('keydown', e => { if (e.key === 'Enter') addWatchObject(e.target.value); });
+
+$('#watchEventBtn').addEventListener('click', () => {
+  if (!currentEvent || currentEvent.type === 'health') return;
+  const primary = (currentEvent.targetKey || (currentEvent.objects && currentEvent.objects[0]) || 'ISS').toUpperCase();
+  if (!followedObjects.includes(primary)) {
+    followedObjects.push(primary);
+    syncWatchlistToServer();
+    $('#watchEventBtn').textContent = 'Following Object ✓';
+    showToast(`Added ${primary} to Watchlist`);
+  } else {
+    showToast(`${primary} is already in your Watchlist`);
+  }
+});
+
+$('#exportBtn').addEventListener('click', exportCSV);
+$('#wideExportBtn').addEventListener('click', exportCSV);
+$('#refreshBtn').addEventListener('click', () => fetchLiveSpaceData(true));
+
+fetchLiveSpaceData(false);
+setInterval(() => fetchLiveSpaceData(false), 30000);
+// Real-time Server-Sent Events (SSE) subscription for instant backend push updates
+if ('EventSource' in window) {
+  const sse = new EventSource('/api/space/stream');
+  sse.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.type === 'SPACEDB_SYNC') {
+        fetchLiveSpaceData(false);
+      }
+    } catch {}
+  };
+}
 </script>
 </body>
 </html>

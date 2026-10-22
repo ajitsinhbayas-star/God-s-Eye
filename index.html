@@ -1109,16 +1109,24 @@ let activeIntroBlobUrl = null;
 
     function generateMassiveConstellations() {
       const flagships = [
-        { id: "cartosat3", name: "Cartosat-3", norad: 44804, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 505, incDeg: 97.5, color: 0xfbbf24, role: "0.25m High-Resolution Optical Reconnaissance" },
+        { id: "cartosat3", name: "Cartosat-3", norad: 44804, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 509, incDeg: 97.5, color: 0xfbbf24, role: "0.25m High-Resolution Optical Reconnaissance" },
         { id: "cartosat2f", name: "Cartosat-2F", norad: 43111, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 505, incDeg: 97.5, color: 0xfbbf24, role: "Cartographic Satellite" },
         { id: "eos04", name: "EOS-04 (RISAT-1A)", norad: 51656, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 529, incDeg: 97.6, color: 0x34d399, role: "C-Band Synthetic Aperture Radar" },
-        { id: "eos06", name: "EOS-06 (Oceansat-3)", norad: 54361, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 738, incDeg: 98.3, color: 0x38bdf8, role: "13-Channel Ocean Colour Monitor" },
+        { id: "eos06", name: "EOS-06 (Oceansat-3)", norad: 54361, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 742, incDeg: 98.3, color: 0x38bdf8, role: "13-Channel Ocean Colour Monitor" },
+        { id: "eos08", name: "EOS-08 (Microsat)", norad: 60451, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 475, incDeg: 37.4, color: 0xf59e0b, role: "Electro-Optical Infrared & GNSS-Reflectometry" },
+        { id: "nisar", name: "NISAR (NASA-ISRO SAR)", norad: 63102, agency: "ISRO / NASA", country: "IND", agencyCat: "isro", altKm: 747, incDeg: 98.4, color: 0x22d3ee, role: "Dual-Frequency L & S Band Radar Earth Observatory" },
         { id: "insat3ds", name: "INSAT-3DS", norad: 58990, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 35786, incDeg: 0.05, color: 0xf59e0b, role: "Geostationary Weather Sounder" },
         { id: "astrosat", name: "AstroSat", norad: 40930, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 650, incDeg: 6.0, color: 0xa855f7, role: "Multi-Wavelength Space Observatory" },
-        { id: "iss", name: "ISS (Zarya)", norad: 25544, agency: "NASA / INT", country: "USA", agencyCat: "nasa", altKm: 420, incDeg: 51.64, color: 0x10b981, role: "International Space Station" },
+        { id: "xposat", name: "XPoSat (X-Ray Polarimeter)", norad: 58694, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 650, incDeg: 6.0, color: 0xe879f9, role: "Cosmic X-Ray Polarization Observatory" },
+        { id: "navic_irnss1i", name: "NavIC (IRNSS-1I / NVS-01)", norad: 56759, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 35786, incDeg: 29.0, color: 0xfbbf24, role: "Indian Regional Navigation Satellite System" },
+        { id: "iss", name: "ISS (Zarya)", norad: 25544, agency: "NASA / INT", country: "USA", agencyCat: "nasa", altKm: 418, incDeg: 51.64, color: 0x10b981, role: "International Space Station" },
         { id: "hubble", name: "Hubble Space Telescope", norad: 20580, agency: "NASA / ESA", country: "USA", agencyCat: "nasa", altKm: 535, incDeg: 28.47, color: 0x06b6d4, role: "Optical/UV Deep Universe Telescope" },
         { id: "sentinel2a", name: "Sentinel-2A", norad: 40697, agency: "ESA", country: "ESA", agencyCat: "esa", altKm: 786, incDeg: 98.62, color: 0x818cf8, role: "Copernicus Multispectral Earth Observation" },
-        { id: "tiangong", name: "Tiangong Space Station", norad: 48274, agency: "CNSA", country: "CHN", agencyCat: "cnsa", altKm: 390, incDeg: 41.47, color: 0xef4444, role: "Modular Orbital Space Station" }
+        { id: "sentinel6a", name: "Sentinel-6 Michael Freilich", norad: 46984, agency: "ESA / NASA", country: "ESA", agencyCat: "esa", altKm: 1336, incDeg: 66.0, color: 0x60a5fa, role: "High-Precision Radar Ocean Altimetry" },
+        { id: "landsat9", name: "Landsat 9", norad: 49260, agency: "NASA / USGS", country: "USA", agencyCat: "nasa", altKm: 705, incDeg: 98.2, color: 0x34d399, role: "Global Land Surface & Thermal Infrared Imaging" },
+        { id: "noaa21", name: "NOAA-21 (JPSS-2)", norad: 54234, agency: "NOAA / NASA", country: "USA", agencyCat: "nasa", altKm: 824, incDeg: 98.7, color: 0x38bdf8, role: "Polar-Orbiting Weather & Atmospheric Sounder" },
+        { id: "tiangong", name: "Tiangong Space Station", norad: 48274, agency: "CNSA", country: "CHN", agencyCat: "cnsa", altKm: 392, incDeg: 41.47, color: 0xef4444, role: "Modular Orbital Space Station" },
+        { id: "debris_1", name: "COSMOS-1408 Fragment / RB", norad: 49863, agency: "Tracked Debris", country: "CIS", agencyCat: "constellation", altKm: 485, incDeg: 82.5, color: 0xf43f5e, role: "High-Priority Tracked Orbital Debris" }
       ];
 
       flagships.forEach(f => {
@@ -1430,24 +1438,29 @@ let activeIntroBlobUrl = null;
           vec3 R = reflect(-L, N);
 
           float cosZenith = dot(N, L);
-          float dayFactor = smoothstep(-0.18, 0.15, cosZenith);
+          // Crisp, natural twilight terminator band
+          float dayFactor = smoothstep(-0.08, 0.08, cosZenith);
 
           vec4 dayColor = texture2D(uDayMap, vUv);
           vec4 nightColor = texture2D(uNightMap, vUv);
 
-          float oceanMask = clamp((dayColor.b - dayColor.r * 0.9) * 4.0, 0.0, 1.0);
+          // Realistic ocean specular sun glint
+          float oceanMask = clamp((dayColor.b - dayColor.r * 0.85) * 5.0, 0.0, 1.0);
           float specAngle = max(0.0, dot(V, R));
-          float specularGlint = pow(specAngle, 48.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
-          vec3 glintColor = vec3(1.0, 0.95, 0.8) * specularGlint * 2.5;
+          float specularGlint = pow(specAngle, 64.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
+          vec3 glintColor = vec3(1.0, 0.96, 0.88) * specularGlint * 3.2;
 
-          float twilight = smoothstep(-0.15, 0.05, cosZenith) * (1.0 - smoothstep(0.05, 0.25, cosZenith));
-          vec3 twilightGlow = vec3(1.0, 0.45, 0.15) * twilight * 0.4;
+          // Warm golden-orange atmospheric scatter along terminator
+          float twilight = smoothstep(-0.12, 0.0, cosZenith) * (1.0 - smoothstep(0.0, 0.15, cosZenith));
+          vec3 twilightGlow = vec3(1.0, 0.52, 0.2) * twilight * 0.65;
 
-          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.25 + 0.05) + glintColor;
-          vec3 litNight = nightColor.rgb * 3.2 * (1.0 - dayFactor) * uShowLights;
+          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.3 + 0.04) + glintColor;
+          // Vivid city lights bloom exclusively on the night side
+          vec3 litNight = nightColor.rgb * 5.0 * (1.0 - dayFactor) * uShowLights;
 
+          // Atmospheric Rayleigh scattering rim glow
           float rim = 1.0 - max(0.0, dot(V, N));
-          vec3 atmoRim = vec3(0.2, 0.55, 1.0) * pow(rim, 3.5) * (max(0.0, cosZenith) * 0.8 + 0.2);
+          vec3 atmoRim = vec3(0.15, 0.5, 1.0) * pow(rim, 3.0) * (max(0.0, cosZenith) * 0.7 + 0.3);
 
           vec3 finalColor = mix(litNight, litDay, dayFactor) + twilightGlow + atmoRim;
           gl_FragColor = vec4(finalColor, 1.0);
@@ -1458,26 +1471,25 @@ let activeIntroBlobUrl = null;
       depthWrite: true    // Force back-face occlusion
     });
 
-    // Load NASA Blue Marble Day Map
+   // Load NASA Blue Marble Day Map with high-anisotropy filtering
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg', tex => {
       if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       tex.encoding = THREE.sRGBEncoding;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = THREE.LinearFilter;
       earthShaderMat.uniforms.uDayMap.value = tex;
     });
 
-    // Load NASA Earth Night Lights Map
+    // Load NASA Earth Night Lights Map with crisp filtering
     textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg', tex => {
       if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       tex.encoding = THREE.sRGBEncoding;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = THREE.LinearFilter;
       earthShaderMat.uniforms.uNightMap.value = tex;
     });
 
-    // Load NASA Cloud Map
-    textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/clouds/clouds.png', tex => { 
-      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      cloudsMat.map = tex; 
-      cloudsMat.needsUpdate = true; 
-    });
+   // Holographic wireframe cloud/grid shell is procedural; no external PNG fetch needed
 
     createKeplerianOrbitRing(CELESTIAL_BODIES.earth, 0x0284c7);
 
@@ -1562,12 +1574,14 @@ let activeIntroBlobUrl = null;
       updateLayerBtnState('btn-lights', isLightsEnabled);
     }
     function toggleEarthClouds() {
-      isCloudsEnabled = !isCloudsEnabled;
-      cloudsMesh.visible = isCloudsEnabled;
-      earthShaderMat.uniforms.uShowGrid.value = isCloudsEnabled ? 1.0 : 0.0;
-      if (typeof satSwathGroup !== 'undefined') satSwathGroup.visible = isCloudsEnabled;
-      updateLayerBtnState('btn-clouds', isCloudsEnabled);
-    }
+  isCloudsEnabled = !isCloudsEnabled;
+  cloudsMesh.visible = isCloudsEnabled;
+  if (earthShaderMat.uniforms.uShowGrid) {
+    earthShaderMat.uniforms.uShowGrid.value = isCloudsEnabled ? 1.0 : 0.0;
+  }
+  if (typeof satSwathGroup !== 'undefined') satSwathGroup.visible = isCloudsEnabled;
+  updateLayerBtnState('btn-clouds', isCloudsEnabled);
+}
     function toggleEarthAtmo() {
       isAtmoEnabled = !isAtmoEnabled;
       earthOuterAtmoMesh.visible = isAtmoEnabled;
@@ -1796,8 +1810,9 @@ let activeIntroBlobUrl = null;
     const totalMassiveCount = massiveSatKeys.length;
 
     const FLAGSHIP_BEACON_KEYS = [
-      'cartosat3', 'cartosat2f', 'eos04', 'eos06', 'insat3ds',
-      'astrosat', 'iss', 'hubble', 'sentinel2a', 'tiangong',
+      'cartosat3', 'cartosat2f', 'eos04', 'eos06', 'eos08', 'nisar', 'insat3ds',
+      'astrosat', 'xposat', 'navic_irnss1i', 'iss', 'hubble', 'sentinel2a',
+      'sentinel6a', 'landsat9', 'noaa21', 'tiangong', 'debris_1',
       'starlink_s1_1', 'starlink_s1_15', 'oneweb_1', 'gps_1', 'galileo_1'
     ];
     const FLAGSHIP_SET = new Set(FLAGSHIP_BEACON_KEYS);
@@ -1943,9 +1958,11 @@ let activeIntroBlobUrl = null;
     // Interplanetary Probes
     const orbiterMeshes = {};
     function buildPlanetaryOrbiter(k, orb) {
+      if (orbiterMeshes[k]) return; // Prevent duplicate meshes on re-sync
       let parentGroup = null;
       if (orb.parent === 'earth') parentGroup = earthSystem;
       else if (orb.parent === 'moon') parentGroup = moonOrbitRing;
+      else if (orb.parent === 'sun') parentGroup = sunMesh;
       else if (planetMeshes[orb.parent]) parentGroup = planetMeshes[orb.parent].group;
       if (!parentGroup) return;
 
@@ -3081,7 +3098,20 @@ setFocusTo('earth');
     function handleHashRoute() {
       const rawHash = window.location.hash.replace(/^#\/?/, '').trim();
       if (!rawHash) return;
-      const lowerHash = rawHash.toLowerCase();
+      const [pathPart, queryPart] = rawHash.split('?');
+      const lowerHash = (pathPart || '').toLowerCase();
+      const params = new URLSearchParams(queryPart || '');
+      const conjKey = (params.get('conj') || '').toLowerCase();
+
+      // If arriving from an OrbitAlert Close-Approach link, activate 3D conjunction laser
+      if (conjKey && typeof window.focusAlertIn3D === 'function') {
+        window.focusAlertIn3D({
+          type: 'close',
+          targetKey: lowerHash,
+          objects: [lowerHash.toUpperCase(), conjKey.toUpperCase()]
+        });
+        return;
+      }
 
       // Match Deep-Sky Objects (case-insensitive check for keys like centaurusA / sgrA_irs3)
       const matchedDeepKey = DEEP_SKY_KEYS.find(k => k.toLowerCase() === lowerHash);
@@ -3248,12 +3278,13 @@ const _vCamLocal = new THREE.Vector3();
       const utcEl = document.getElementById('live-utc-display');
       if (utcEl) utcEl.innerText = `${astro.date.toISOString().replace('T', ' ').substring(0, 19)} UTC`;
 
-      // 1. Solve Earth Orbit & Diurnal Spin
+     // 1. Solve Earth Orbit & Precise UTC Diurnal Spin
       const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
       earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
 
-      const sunAngleInEcliptic = (earthOrbit.eclipticLngDeg * Math.PI / 180) + Math.PI;
-      earthMesh.rotation.y = sunAngleInEcliptic + (astro.subsolarLngDeg * Math.PI / 180);
+      // Precise sidereal diurnal rotation synchronized with UTC time and subsolar longitude
+      const solarRotationAngle = (astro.utcHours / 24.0) * Math.PI * 2.0;
+      earthMesh.rotation.y = -solarRotationAngle - (Math.PI / 2.0) + (astro.subsolarLngDeg * Math.PI / 180);
       earthMesh.updateMatrixWorld(true);
 
       sunMesh.getWorldPosition(_vSun);
@@ -3276,8 +3307,7 @@ earthShaderMat.uniforms.uCamPosLocal.value.copy(_vCamLocal);
 
 // Atmosphere shaders
 earthOuterAtmoMat.uniforms.uSunDir.value.copy(_vSunDir);
-earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
-
+earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
       cloudsMesh.rotation.y = earthMesh.rotation.y + (astro.d * 0.16);
       syncEarthLayersDeckVisibility();
 
@@ -3379,6 +3409,10 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
           deepSkyMeshes[activeGalaxyKey].group.getWorldPosition(focusWorldPos);
         }
       } else if (MASSIVE_SATELLITE_CATALOG[activeTargetKey]) {
+        const satPosNow = getSatellitePosition(MASSIVE_SATELLITE_CATALOG[activeTargetKey], virtualEpochTime / 1000);
+        activeSatLocalPos.copy(satPosNow);
+        activeSatWorldPos.copy(satPosNow);
+        satelliteInertialGroup.localToWorld(activeSatWorldPos);
         focusWorldPos.copy(activeSatWorldPos);
       } else if (PLANETARY_ORBITERS[activeTargetKey]) {
         if (orbiterMeshes[activeTargetKey] && orbiterMeshes[activeTargetKey].probeMesh) {
@@ -3386,6 +3420,8 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
         } else {
           const orb = PLANETARY_ORBITERS[activeTargetKey];
           if (orb.parent === 'earth') earthSystem.getWorldPosition(focusWorldPos);
+          else if (orb.parent === 'moon') moonMesh.getWorldPosition(focusWorldPos);
+          else if (orb.parent === 'sun') sunMesh.getWorldPosition(focusWorldPos);
           else if (planetMeshes[orb.parent]) planetMeshes[orb.parent].group.getWorldPosition(focusWorldPos);
         }
       } else if (activeTargetKey === 'sun') {
@@ -3464,16 +3500,16 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
           if (elCMag) elCMag.innerText = Math.round(sData.altKm) + ' km';
         }
       } else if (CELESTIAL_BODIES[activeTargetKey]) {
-        const bData = CELESTIAL_BODIES[activeTargetKey];
-        const bOrbit = (activeTargetKey === 'earth') ? earthOrbit : computeKeplerianOrbit(bData, astro.d);
+        } else if (PLANETARY_ORBITERS[activeTargetKey]) {
+        const oData = PLANETARY_ORBITERS[activeTargetKey];
         const el1 = document.getElementById('tele-lat');
         const el2 = document.getElementById('tele-lng');
         const el3 = document.getElementById('tele-alt');
         const el4 = document.getElementById('tele-vel');
-        if (el1) el1.innerText = `X: ${bOrbit.xAU >= 0 ? '+' : ''}${bOrbit.xAU.toFixed(2)} AU`;
-        if (el2) el2.innerText = `Y: ${bOrbit.yAU >= 0 ? '+' : ''}${bOrbit.yAU.toFixed(2)} AU`;
-        if (el3) el3.innerText = `${bOrbit.velocityKmS.toFixed(1)} km/s`;
-        if (el4) el4.innerText = `${bOrbit.rAU.toFixed(2)} AU`;
+        if (el1) el1.innerText = `X: ${focusWorldPos.x >= 0 ? '+' : ''}${focusWorldPos.x.toFixed(2)}`;
+        if (el2) el2.innerText = `Z: ${focusWorldPos.z >= 0 ? '+' : ''}${focusWorldPos.z.toFixed(2)}`;
+        if (el3) el3.innerText = oData.velocity || 'Active';
+        if (el4) el4.innerText = oData.altitude || `${oData.altKm || 0} km`;
       }
 
       renderer.render(scene, camera);
@@ -3598,5 +3634,201 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);;
       }
     })();
   </script>
+
+  <!-- Live SpaceDB Sync + 3D Conjunction Laser & Tactical Alert Ticker HUD -->
+<script>
+  (function initLiveSpaceDBBridge() {
+    // 1. Fix cloudsMat and uShowGrid runtime safety in index.html
+    if (typeof earthShaderMat !== 'undefined' && earthShaderMat.uniforms && !earthShaderMat.uniforms.uShowGrid) {
+      earthShaderMat.uniforms.uShowGrid = { value: 1.0 };
+    }
+
+    // 2. Create 3D Conjunction Warning Line inside the Earth Inertial Group
+    let conjunctionLine = null;
+    let activeConjunctionPair = null;
+
+    if (typeof THREE !== 'undefined' && typeof satelliteInertialGroup !== 'undefined') {
+      const conjGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, 0)
+      ]);
+      const conjMat = new THREE.LineBasicMaterial({
+        color: 0xf43f5e,
+        transparent: true,
+        opacity: 0.95
+      });
+      conjunctionLine = new THREE.Line(conjGeo, conjMat);
+      conjunctionLine.visible = false;
+      satelliteInertialGroup.add(conjunctionLine);
+    }
+
+    // 3. Inject Floating Tactical Alert Ticker into index.html HUD
+    const tickerEl = document.createElement('div');
+    tickerEl.id = 'hud-live-alert-ticker';
+    tickerEl.className = 'fixed bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-emerald-500/40 font-mono text-[10px] sm:text-xs text-slate-200 shadow-2xl pointer-events-auto max-w-[calc(100vw-1.5rem)] transition-all duration-300';
+    tickerEl.style.display = 'none';
+    tickerEl.innerHTML = `
+      <span id="ticker-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
+      <span id="ticker-badge" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase shrink-0">ALERT</span>
+      <button id="ticker-msg" class="truncate max-w-[200px] sm:max-w-[380px] text-left hover:text-cyan-300 transition font-bold">Synchronizing SpaceDB...</button>
+      <a href="orbitalert.html" class="px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold shrink-0">Centre ↗</a>
+      <button onclick="document.getElementById('hud-live-alert-ticker').style.display='none'" class="text-slate-400 hover:text-white px-1">✕</button>
+    `;
+    document.body.appendChild(tickerEl);
+
+    let liveEvents = [];
+    let tickerIdx = 0;
+
+    // 4. Focus camera & draw 3D conjunction vector when an alert is clicked
+    window.focusAlertIn3D = function(evtObj) {
+      if (!evtObj) return;
+      const targetKey = (evtObj.targetKey || 'earth').toLowerCase();
+
+      if (evtObj.type === 'close' && Array.isArray(evtObj.objects) && evtObj.objects.length >= 2) {
+        const keyA = evtObj.objects[0].toLowerCase();
+        const keyB = evtObj.objects[1].toLowerCase();
+        if (MASSIVE_SATELLITE_CATALOG[keyA] && MASSIVE_SATELLITE_CATALOG[keyB]) {
+          activeConjunctionPair = [MASSIVE_SATELLITE_CATALOG[keyA], MASSIVE_SATELLITE_CATALOG[keyB]];
+          if (conjunctionLine) conjunctionLine.visible = true;
+        }
+      } else if (conjunctionLine) {
+        conjunctionLine.visible = false;
+        activeConjunctionPair = null;
+      }
+
+      if (typeof setFocusTo === 'function') {
+        setFocusTo(targetKey);
+      }
+    };
+
+    // Update 3D conjunction laser line every frame if active
+    function updateConjunctionLaser() {
+      requestAnimationFrame(updateConjunctionLaser);
+      if (conjunctionLine && conjunctionLine.visible && activeConjunctionPair && typeof getSatellitePosition === 'function') {
+        const tSec = (typeof virtualEpochTime !== 'undefined' ? virtualEpochTime : Date.now()) / 1000;
+        const posA = getSatellitePosition(activeConjunctionPair[0], tSec);
+        const posB = getSatellitePosition(activeConjunctionPair[1], tSec);
+        const arr = conjunctionLine.geometry.attributes.position.array;
+        arr[0] = posA.x; arr[1] = posA.y; arr[2] = posA.z;
+        arr[3] = posB.x; arr[4] = posB.y; arr[5] = posB.z;
+        conjunctionLine.geometry.attributes.position.needsUpdate = true;
+      }
+    }
+    updateConjunctionLaser();
+
+    // Rotate ticker message every 7 seconds
+    setInterval(() => {
+      if (!liveEvents.length) return;
+      tickerIdx = (tickerIdx + 1) % liveEvents.length;
+      const ev = liveEvents[tickerIdx];
+      const badgeEl = document.getElementById('ticker-badge');
+      const msgEl = document.getElementById('ticker-msg');
+      const dotEl = document.getElementById('ticker-dot');
+      if (!badgeEl || !msgEl) return;
+
+      const isClose = ev.type === 'close';
+      badgeEl.innerText = isClose ? 'CONJUNCTION' : ev.type.toUpperCase();
+      badgeEl.className = isClose
+        ? 'px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold uppercase shrink-0'
+        : 'px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold uppercase shrink-0';
+      if (dotEl) {
+        dotEl.className = isClose
+          ? 'w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0'
+          : 'w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0';
+      }
+      msgEl.innerText = `${ev.title} (${ev.metric || 'LIVE'})`;
+      msgEl.onclick = () => window.focusAlertIn3D(ev);
+    }, 7000);
+
+    // 5. Fetch & Synchronize Catalog + Alerts from /api/space/bootstrap
+    async function pullSpaceDatabase() {
+      try {
+        const res = await fetch('/api/space/bootstrap');
+        if (!res.ok) return;
+        const data = await res.json();
+
+       // Merge all backend satellites & deep-space probes into 3D scene
+        if (Array.isArray(data.catalog)) {
+          let probesUpdated = false;
+          data.catalog.forEach(item => {
+            if (item.category === 'probe') {
+              if (!PLANETARY_ORBITERS[item.id]) {
+                PLANETARY_ORBITERS[item.id] = item;
+                if (typeof buildPlanetaryOrbiter === 'function') {
+                  buildPlanetaryOrbiter(item.id, item);
+                }
+                if (typeof orbiterKeys !== 'undefined' && !orbiterKeys.includes(item.id)) {
+                  orbiterKeys.push(item.id);
+                }
+                probesUpdated = true;
+              }
+            } else if (item.parent === 'earth') {
+              if (MASSIVE_SATELLITE_CATALOG[item.id]) {
+                // Update existing satellite with live CelesTrak orbital elements
+                Object.assign(MASSIVE_SATELLITE_CATALOG[item.id], {
+                  altKm: item.altKm ?? MASSIVE_SATELLITE_CATALOG[item.id].altKm,
+                  incDeg: item.incDeg ?? MASSIVE_SATELLITE_CATALOG[item.id].incDeg,
+                  raan0: item.raan0 ?? MASSIVE_SATELLITE_CATALOG[item.id].raan0,
+                  M0: item.M0 ?? MASSIVE_SATELLITE_CATALOG[item.id].M0
+                });
+              } else {
+                MASSIVE_SATELLITE_CATALOG[item.id] = {
+                  ...item,
+                  raan0: item.raan0 ?? 45,
+                  argP: item.argP ?? 90,
+                  M0: item.M0 ?? 120,
+                  ecc: item.ecc ?? 0.001
+                };
+                if (typeof massiveSatKeys !== 'undefined' && !massiveSatKeys.includes(item.id)) {
+                  massiveSatKeys.push(item.id);
+                }
+                if (typeof buildSatelliteOrbitRing === 'function') {
+                  buildSatelliteOrbitRing(MASSIVE_SATELLITE_CATALOG[item.id], 0.55);
+                }
+              }
+            }
+          });
+
+          if (probesUpdated && typeof renderCatalogs === 'function') {
+            renderCatalogs();
+          }
+          if (typeof applyMasterCatalogFilter === 'function') {
+            applyMasterCatalogFilter();
+          }
+        }
+
+        // Update live alerts & header badge count
+        if (Array.isArray(data.events) && data.events.length > 0) {
+          liveEvents = data.events.filter(e => e.status !== 'resolved');
+          tickerEl.style.display = 'flex';
+
+          // Update OrbitAlert button badge in header
+          document.querySelectorAll('a[href="orbitalert.html"]').forEach(link => {
+            if (link.innerText.includes('OrbitAlert')) {
+              link.innerHTML = `🔔 OrbitAlert <span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/50 text-[9px]">${liveEvents.length}</span>`;
+            }
+          });
+
+          // Show first alert immediately
+          const firstEv = liveEvents[0];
+          const msgEl = document.getElementById('ticker-msg');
+          if (firstEv && msgEl) {
+            msgEl.innerText = `${firstEv.title} (${firstEv.metric || 'LIVE'})`;
+            msgEl.onclick = () => window.focusAlertIn3D(firstEv);
+          }
+        }
+
+        // Only trigger initial deep-link hash route once after first SpaceDB catalog hydration
+        if (!window._initialHashRouted && typeof handleHashRoute === 'function') {
+          window._initialHashRouted = true;
+          handleHashRoute();
+        }
+      } catch (e) {}
+    }
+
+    pullSpaceDatabase();
+    setInterval(pullSpaceDatabase, 30000);
+  })();
+</script>
 </body>
 </html>
