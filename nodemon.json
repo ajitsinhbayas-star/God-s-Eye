@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "server.js",
+    "sentinel-supervisor.js",
+    "sentinel-registry.js",
+    "sentinel-bot.js",
+    "index.html",
+    "orbitalert.html",
+    "sentinel.html"
+  ],
+  "ext": "js,html,json",
+  "ignore": [
+    "space-db.json",
+    "diagnostics-db.json",
+    "*.db",
+    "*.db-journal",
+    "node_modules/**"
+  ],
+  "delay": "1000"
+}

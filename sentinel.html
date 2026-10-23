@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL — Autonomous Space Intelligence Bot &amp; Supervisor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: { 900: '#020612', 800: '#0b1628', 700: '#152438', 600: '#20354e', 500: '#64748b', 400: '#94a3b8', 300: '#cbd5e1' },
+                        sentinel: { 500: '#06b6d4', 600: '#0891b2', 400: '#22d3ee' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background-color: #020612; color: #f8fafc; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b1628; }
+        ::-webkit-scrollbar-thumb { background: #20354e; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+        :focus-visible { outline: 2px solid #38bdf8 !important; outline-offset: 2px !important; }
+    </style>
+</head>
+<body class="bg-space-900 text-space-300 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-space-800/90 backdrop-blur border-b border-space-700 sticky top-0 z-50 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 hover:border-cyan-400 transition" title="Return to 3D Orbit Explorer">
+                <i data-lucide="shield-alert" class="w-6 h-6 animate-pulse"></i>
+            </a>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-lg text-white tracking-wider font-mono">SENTINEL BOT</h1>
+                    <span class="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">AUTONOMOUS DAEMON</span>
+                </div>
+                <p class="text-xs text-space-400 font-sans">Official Provider Ingestion, Normalization &amp; Quality Supervisor</p>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex space-x-1 bg-space-900/80 p-1 rounded-xl border border-space-700">
+            <button onclick="switchTab('map')" id="nav-map" class="px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition bg-cyan-500 text-space-900 shadow-md flex items-center space-x-1.5">
+                <i data-lucide="globe" class="w-4 h-4"></i><span>Radar Vector Mesh</span>
+            </button>
+            <button onclick="switchTab('workers')" id="nav-workers" class="px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition text-space-300 hover:text-white hover:bg-space-800 flex items-center space-x-1.5">
+                <i data-lucide="cpu" class="w-4 h-4"></i><span>Workers</span>
+            </button>
+            <button onclick="switchTab('sources')" id="nav-sources" class="px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition text-space-300 hover:text-white hover:bg-space-800 flex items-center space-x-1.5">
+                <i data-lucide="database" class="w-4 h-4"></i><span>Source Matrix</span>
+            </button>
+            <button onclick="switchTab('diagnostics')" id="nav-diagnostics" class="px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition text-space-300 hover:text-white hover:bg-space-800 flex items-center space-x-1.5">
+                <i data-lucide="terminal" class="w-4 h-4"></i><span>Incident Logs</span>
+            </button>
+        </nav>
+
+        <div class="flex items-center space-x-2 font-mono text-xs">
+            <a href="index.html" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 transition flex items-center space-x-1">
+                <span>🌍</span><span class="hidden sm:inline">3D Explorer</span>
+            </a>
+            <a href="orbitalert.html" class="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center space-x-1">
+                <span>🔔</span><span class="hidden sm:inline">OrbitAlert</span>
+            </a>
+            <div id="ws-indicator" class="flex items-center space-x-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>DAEMON ACTIVE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Views -->
+    <main class="flex-1 relative flex flex-col">
+        <!-- TAB 1: RADAR VECTOR MESH & OBJECT INVENTORY -->
+        <section id="tab-map" class="flex-1 relative flex flex-col md:flex-row">
+            <div id="canvas-container" class="flex-1 relative min-h-[500px]">
+                <div class="absolute top-4 left-4 z-10 bg-space-800/85 backdrop-blur p-4 rounded-xl border border-space-700 shadow-2xl max-w-sm font-mono text-xs">
+                    <h2 class="text-sm font-semibold text-white flex items-center space-x-2 mb-2">
+                        <i data-lucide="radar" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Autonomous Ingestion Mesh</span>
+                    </h2>
+                    <p class="text-space-400 font-sans mb-3 text-[11px] leading-relaxed">
+                        Background daemons normalize official provider telemetry directly into SQLite. Model-derived vectors are never mislabeled as measured observations.
+                    </p>
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between"><span>Active Inventory:</span><span id="stat-sats" class="text-cyan-400 font-bold">Querying…</span></div>
+                        <div class="flex justify-between"><span>Database:</span><span class="text-white">sentinel_command.db</span></div>
+                        <div class="flex justify-between"><span>Telemetry Pipe:</span><span class="text-emerald-400 font-bold">WebSocket + SSE Stream</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingested Objects Panel -->
+            <div class="w-full md:w-96 bg-space-800/90 border-l border-space-700 p-4 flex flex-col space-y-4 overflow-y-auto">
+                <div class="flex items-center justify-between border-b border-space-700 pb-3 font-mono">
+                    <h3 class="font-bold text-white text-xs flex items-center space-x-2 uppercase">
+                        <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Normalized Records</span>
+                    </h3>
+                    <button onclick="fetchSatellites()" class="text-xs bg-space-700 hover:bg-space-600 px-2 py-1 rounded text-cyan-300 border border-space-600 transition">Refresh</button>
+                </div>
+                <div id="satellite-list" class="space-y-2 flex-1 overflow-y-auto max-h-[600px] font-mono text-xs"></div>
+            </div>
+        </section>
+
+        <!-- TAB 2: AUTONOMOUS WORKER SUPERVISORS -->
+        <section id="tab-workers" class="hidden flex-1 p-6 space-y-6 max-w-7xl mx-auto w-full font-mono">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Autonomous Worker Supervisors</h2>
+                    <p class="text-xs text-space-400 font-sans mt-0.5">State machine management for headless Node.js background daemons.</p>
+                </div>
+                <button onclick="loadWorkers()" class="bg-cyan-500 hover:bg-cyan-600 text-space-900 px-4 py-2 rounded-lg font-bold text-xs flex items-center space-x-2 transition">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i><span>Sync Workers</span>
+                </button>
+            </div>
+            <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- TAB 3: OFFICIAL PROVIDER STATUS MATRIX -->
+        <section id="tab-sources" class="hidden flex-1 p-6 space-y-6 max-w-7xl mx-auto w-full font-mono text-xs">
+            <div>
+                <h2 class="text-xl font-bold text-white font-mono">Official Provider Matrix</h2>
+                <p class="text-xs text-space-400 font-sans mt-0.5">Truthful status tracking across official satellite catalogs, planetary ephemerides, and space weather feeds.</p>
+            </div>
+            <div class="bg-space-800 rounded-xl border border-space-700 overflow-hidden shadow-xl">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-space-900/60 border-b border-space-700 text-[11px] text-space-400 uppercase">
+                            <th class="p-3.5">Provider Service</th>
+                            <th class="p-3.5">Classification</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5">Latency</th>
+                            <th class="p-3.5">Attribution &amp; Terms</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sources-table-body" class="divide-y divide-space-700 text-[11px]"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 4: SYSTEM INCIDENT & DIAGNOSTIC LOGS -->
+        <section id="tab-diagnostics" class="hidden flex-1 p-6 space-y-4 max-w-7xl mx-auto w-full font-mono text-xs">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">System Diagnostics &amp; Telemetry Trace</h2>
+                    <p class="text-xs text-space-400 font-sans mt-0.5">Incident reports, schema validation checks, and automatic circuit-breaker transitions.</p>
+                </div>
+                <select id="log-level-filter" onchange="loadLogs()" class="bg-space-800 border border-space-700 rounded-lg px-3 py-1.5 text-xs text-white">
+                    <option value="ALL">All Levels</option>
+                    <option value="INFO">INFO</option>
+                    <option value="WARN">WARN</option>
+                    <option value="ERROR">ERROR</option>
+                </select>
+            </div>
+            <div class="bg-space-800 rounded-xl border border-space-700 p-4 overflow-y-auto max-h-[550px] shadow-xl space-y-1.5" id="logs-console"></div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Keyboard Navigation (Escape returns to 3D Orbit Explorer)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function switchTab(tabId) {
+            ['map', 'workers', 'sources', 'diagnostics'].forEach(id => {
+                document.getElementById('tab-' + id).classList.add('hidden');
+                document.getElementById('nav-' + id).classList.remove('bg-cyan-500', 'text-space-900', 'shadow-md');
+                document.getElementById('nav-' + id).classList.add('text-space-300', 'hover:text-white', 'hover:bg-space-800');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).classList.add('bg-cyan-500', 'text-space-900', 'shadow-md');
+            document.getElementById('nav-' + tabId).classList.remove('text-space-300', 'hover:text-white', 'hover:bg-space-800');
+
+            if (tabId === 'workers') loadWorkers();
+            if (tabId === 'sources') loadSources();
+            if (tabId === 'diagnostics') loadLogs();
+        }
+
+        async function loadWorkers() {
+            try {
+                const res = await fetch('/api/sentinel/workers');
+                const data = await res.json();
+                if (data.success) {
+                    const container = document.getElementById('workers-grid');
+                    container.innerHTML = data.workers.map(w => `
+                        <div class="bg-space-800 border border-space-700 rounded-xl p-4 space-y-3 shadow-xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-bold text-white text-xs">${w.name}</h3>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${w.state === 'running' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">${w.state.toUpperCase()}</span>
+                            </div>
+                            <div class="space-y-1 text-[11px] text-space-400">
+                                <div class="flex justify-between"><span>Success Count:</span><span class="text-cyan-400 font-bold">${w.success_count}</span></div>
+                                <div class="flex justify-between"><span>Duration:</span><span class="text-white">${w.duration_ms} ms</span></div>
+                                <div class="flex justify-between"><span>Last Sync:</span><span class="text-white">${new Date(w.last_run).toLocaleTimeString()}</span></div>
+                            </div>
+                            <div class="flex space-x-2 pt-2 border-t border-space-700">
+                                <button onclick="controlWorker('${w.worker_id}', '${w.state === 'running' ? 'pause' : 'resume'}')" class="flex-1 py-1 rounded bg-space-700 hover:bg-space-600 text-[11px] text-white transition">${w.state === 'running' ? 'Pause' : 'Resume'}</button>
+                                <button onclick="controlWorker('${w.worker_id}', 'sync')" class="px-3 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-[11px] text-cyan-300 border border-cyan-500/30 transition">Trigger</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function controlWorker(workerId, action) {
+            try {
+                await fetch('/api/sentinel/workers/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ worker_id: workerId, action })
+                });
+                loadWorkers();
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadSources() {
+            try {
+                const res = await fetch('/api/sentinel/sources');
+                const data = await res.json();
+                if (data.success) {
+                    const tbody = document.getElementById('sources-table-body');
+                    const badgeStyles = {
+                        ACTIVE: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                        NEEDS_CREDENTIALS: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                        NEEDS_AUTHORIZATION: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                        DEGRADED: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+                        DISABLED: 'bg-slate-700/50 text-slate-400 border-slate-600'
+                    };
+
+                    tbody.innerHTML = data.sources.map(s => `
+                        <tr class="hover:bg-space-700/40 transition">
+                            <td class="p-3.5 font-bold text-white">${s.name}</td>
+                            <td class="p-3.5 text-cyan-400 font-mono text-[10px]">${s.data_class || 'CATALOGUE'}</td>
+                            <td class="p-3.5">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyles[s.status] || badgeStyles.DISABLED}">${s.status}</span>
+                            </td>
+                            <td class="p-3.5 text-white">${s.latency_ms ? s.latency_ms + ' ms' : '--'}</td>
+                            <td class="p-3.5 text-space-400 text-[10px] flex items-center justify-between">
+                                <span>${s.attribution || 'Official Documentation'}</span>
+                                ${s.source_id === 'space_track' && s.status !== 'ACTIVE' ? `
+                                    <button onclick="simulateAuthTest('${s.source_id}')" class="ml-2 px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold transition">
+                                        Test Ingest 🧪
+                                    </button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+async function simulateAuthTest(providerId) {
+            try {
+                const res = await fetch('/api/sentinel/test/simulate-auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider_id: providerId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadSources();
+                    loadWorkers();
+                    loadLogs();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        async function loadLogs() {
+            try {
+                const level = document.getElementById('log-level-filter').value;
+                const res = await fetch(`/api/sentinel/logs?level=${level}&limit=100`);
+                const data = await res.json();
+                if (data.success) {
+                    const consoleEl = document.getElementById('logs-console');
+                    consoleEl.innerHTML = data.logs.map(l => `
+                        <div class="py-1 border-b border-space-700/40 flex space-x-3 text-[11px]">
+                            <span class="text-space-400">[${new Date(l.timestamp).toLocaleTimeString()}]</span>
+                            <span class="px-1.5 rounded text-[9px] font-bold ${l.level === 'ERROR' ? 'bg-rose-500/20 text-rose-400' : l.level === 'WARN' ? 'bg-amber-500/20 text-amber-400' : 'bg-cyan-500/20 text-cyan-400'}">${l.level}</span>
+                            <span class="text-white font-bold">${l.service}:</span>
+                            <span class="text-space-300 flex-1">${l.message}</span>
+                        </div>
+                    `).join('') || '<div class="text-space-500 text-center py-4">No logged incidents found.</div>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function fetchSatellites() {
+            try {
+                const res = await fetch('/api/sentinel/satellites');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('stat-sats').innerText = `${data.count} Objects Verified`;
+                    const listEl = document.getElementById('satellite-list');
+                    listEl.innerHTML = data.satellites.map(sat => `
+                        <div class="p-2.5 rounded-lg bg-space-900 border border-space-700 hover:border-cyan-500/40 transition">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white text-xs">${sat.name}</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">${sat.data_class}</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-1 text-[11px] text-space-400">
+                                <span>Alt: ${Math.round(sat.alt_km)} km</span>
+                                <span class="text-emerald-400">${Number(sat.velocity_kms).toFixed(2)} km/s</span>
+                            </div>
+                            <div class="text-[10px] text-space-500 mt-1 truncate">Source: ${sat.source_provider}</div>
+                        </div>
+                    `).join('') || '<div class="text-space-500 text-center py-4">Ingesting initial ephemeris…</div>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Three.js Radar Mesh Visualization
+        let scene, camera, renderer, earthMesh, satGroup = [];
+        function initRadarMap() {
+            const container = document.getElementById('canvas-container');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 16);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambientLight);
+
+            const earthGeo = new THREE.SphereGeometry(4.8, 48, 48);
+            const earthMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true, transparent: true, opacity: 0.22 });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            scene.add(earthMesh);
+
+            const satGeo = new THREE.SphereGeometry(0.12, 12, 12);
+            const satMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            for (let i = 0; i < 8; i++) {
+                const mesh = new THREE.Mesh(satGeo, satMat);
+                mesh.userData = { angle: (i / 8) * Math.PI * 2, radius: 6.8 + (i * 0.25), speed: 0.005 + (i * 0.001) };
+                scene.add(mesh);
+                satGroup.push(mesh);
+            }
+
+            window.addEventListener('resize', () => {
+                if (!container || container.clientWidth === 0 || container.clientHeight === 0) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            function renderLoop() {
+                requestAnimationFrame(renderLoop);
+                earthMesh.rotation.y += 0.0015;
+                satGroup.forEach(s => {
+                    s.userData.angle += s.userData.speed;
+                    s.position.set(Math.cos(s.userData.angle) * s.userData.radius, Math.sin(s.userData.angle * 2) * 1.2, Math.sin(s.userData.angle) * s.userData.radius);
+                });
+                renderer.render(scene, camera);
+            }
+            renderLoop();
+        }
+
+        // Resilient WebSocket Client Connection
+        let socket = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 20;
+
+        function connectSentinelWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            socket = new WebSocket(wsProtocol + '//' + window.location.host);
+
+            socket.onopen = function() {
+                reconnectAttempts = 0;
+                const ind = document.getElementById('ws-indicator');
+                if (ind) {
+                    ind.className = 'flex items-center space-x-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full text-emerald-400';
+                    ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span>DAEMON ACTIVE</span>';
+                }
+            };
+
+            socket.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'ORBITAL_TICK') fetchSatellites();
+                    if (data.type === 'WORKER_UPDATE') loadWorkers();
+                    if (data.type === 'SOURCE_UPDATE') loadSources();
+                } catch(e) {}
+            };
+
+            socket.onclose = function() {
+                const ind = document.getElementById('ws-indicator');
+                if (ind) {
+                    ind.className = 'flex items-center space-x-1.5 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full text-amber-400';
+                    ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>RECONNECTING</span>';
+                }
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    const timeout = Math.min(10000, 1000 * Math.pow(1.5, reconnectAttempts));
+                    reconnectAttempts++;
+                    setTimeout(connectSentinelWebSocket, timeout);
+                }
+            };
+
+            socket.onerror = function() {
+                socket.close();
+            };
+        }
+
+        window.onload = function() {
+            initRadarMap();
+            loadWorkers();
+            loadSources();
+            loadLogs();
+            fetchSatellites();
+            connectSentinelWebSocket();
+        };
+    </script>
+</body>
+</html>
