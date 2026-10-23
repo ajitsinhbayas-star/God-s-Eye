@@ -1,11 +1,16 @@
 services:
   - type: web
     name: orbital-command-hud
-    env: node
+    runtime: node
     plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NASA_API_KEY
+        value: DEMO_KEY

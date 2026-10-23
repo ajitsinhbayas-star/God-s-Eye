@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app); // <-- Wrap app with HTTP server
-const PORT = process.env.PORT || 3000;;
+const PORT = process.env.PORT || 3000;
 const SPACE_DB_FILE = path.join(__dirname, 'space-db.json');
 
 // 1. Cap incoming JSON/beacon payloads to 32kb
