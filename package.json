@@ -2,15 +2,15 @@
   "name": "orbital-command-hud",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
+  "main": "src/server.js",
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "start": "node --env-file=.env server.js",
-    "dev": "nodemon --env-file=.env server.js",
-    "test:system": "node verify-system.js"
+    "start": "node --env-file=.env src/server.js",
+    "dev": "nodemon --env-file=.env src/server.js",
+    "test:system": "node tests/verify-system.js"
   },
   "dependencies": {
     "express": "^4.19.2",
