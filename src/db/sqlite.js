@@ -1,6 +1,7 @@
-﻿import path from 'path';
+﻿import fs from 'fs';
+import path from 'path';
 import sqlite3Pkg from 'sqlite3';
-import { SQLITE_DB_FILE } from '../config/constants.js';
+import { SQLITE_DB_FILE, DATA_DIR } from '../config/constants.js';
 import { providerRegistry } from '../supervisor/registry.js';
 
 const sqlite3 = sqlite3Pkg.verbose();
@@ -8,6 +9,10 @@ let dbInstance = null;
 
 export function getDatabase() {
   if (dbInstance) return dbInstance;
+
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
 
   dbInstance = new sqlite3.Database(SQLITE_DB_FILE, (err) => {
     if (err) {

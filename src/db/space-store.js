@@ -1,11 +1,20 @@
 ﻿import fs from 'fs';
-import { SPACE_DB_FILE } from '../config/constants.js';
+import path from 'path';
+import { SPACE_DB_FILE, DATA_DIR } from '../config/constants.js';
 
 let dbCache = null;
 let dbWriteQueue = Promise.resolve();
 
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+}
+
 export function getSpaceStore() {
   if (dbCache) return dbCache;
+
+  ensureDataDir();
 
   const defaultStore = {
     lastUpdated: new Date().toISOString(),
@@ -54,6 +63,7 @@ export function getSpaceStore() {
 
 export function saveSpaceStore() {
   if (!dbCache) return Promise.resolve();
+  ensureDataDir();
   dbWriteQueue = dbWriteQueue.then(async () => {
     try {
       await fs.promises.writeFile(SPACE_DB_FILE, JSON.stringify(dbCache, null, 2), 'utf-8');
