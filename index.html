@@ -119,13 +119,20 @@
     }
 
     .intel-card-slide {
-      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
       will-change: transform, opacity;
     }
     .intel-card-slide.is-hidden {
-      transform: translateX(calc(100% + 36px)) scale(0.96) !important;
+      transform: translateX(calc(100% + 40px)) scale(0.96) !important;
       opacity: 0 !important;
       pointer-events: none !important;
+    }
+    .edge-pill-right {
+      transition: all 0.25s ease;
+    }
+    .edge-pill-right:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-50%) translateX(-2px);
     }
 
     .header-safe {
@@ -443,8 +450,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <audio id="audio-intro" loop preload="auto" src="intro-ambient.mp3"></audio>
 
  
-  <!-- Top Command Bar (Section 3B) -->
-  <header class="header-safe absolute z-30 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-3.5 rounded-2xl hud-glass pointer-events-auto">
+ <!-- Top Command Bar (Elevated z-50 to keep dropdowns and overlays unobstructed) -->
+  <header class="header-safe absolute z-50 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-3.5 rounded-2xl hud-glass pointer-events-auto">
     <!-- Left: Brand Identity, Simulation Clock & Data Freshness Status -->
     <div class="flex items-center gap-2.5 min-w-0">
       <button onclick="returnToLastValid3DView()" id="hud-logo-badge" class="relative flex items-center gap-2.5 text-left group focus:outline-none" title="Return to 3D Explorer">
@@ -500,7 +507,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <button onclick="toggleHeaderMoreMenu()" id="btn-header-more" class="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition font-bold" title="Guided Stories, Share, Media & Missions">
           More ▾
         </button>
-        <div id="header-more-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-2xl hud-glass border border-cyan-500/40 p-2 shadow-2xl z-50 space-y-1 text-[11px]">
+        <div id="header-more-dropdown" class="hidden absolute right-0 top-full mt-2 w-60 rounded-2xl bg-[#081024]/95 backdrop-blur-2xl border border-cyan-500/40 p-2 shadow-2xl z-[60] space-y-1 text-[11px]">
           <button onclick="toggleHeaderMoreMenu(); window.NASAEyesApp.toggleStoriesDrawer();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-amber-300 flex items-center justify-between">
             <span>📖 Guided Stories</span>
             <span class="text-[9px] text-slate-500">Tours</span>
@@ -708,10 +715,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <span id="tele-parent"></span><span id="tele-agency-val"></span><span id="tele-period"></span>
   </div>
 
+  <!-- Right Minimized Edge Tab: Inspector Re-expand Pill -->
+  <button id="btn-expand-intel" onclick="expandIntelCard()" class="edge-pill-right hidden fixed top-1/2 -translate-y-1/2 right-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
+    <span class="text-xs group-hover:-translate-x-0.5 transition-transform">❮</span>
+    <span id="btn-expand-intel-label">🎯 Target Inspector</span>
+  </button>
+
   <!-- Right Drawer: Unified Selected-Object Inspector (Section 3D) -->
-  <aside id="intel-card" aria-label="Selected-Object Inspector" class="intel-card-slide is-hidden absolute top-20 sm:top-24 right-3 bottom-20 sm:bottom-24 z-40 w-[calc(100vw-1.5rem)] sm:w-88 md:w-96 max-h-[calc(100dvh-10rem)] rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden font-mono text-xs">
+  <aside id="intel-card" aria-label="Selected-Object Inspector" class="intel-card-slide is-hidden fixed top-16 sm:top-20 right-3 bottom-16 sm:bottom-20 z-40 w-[calc(100vw-1.5rem)] sm:w-88 md:w-96 rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden font-mono text-xs">
     <!-- Inspector Header -->
-    <div class="p-3 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+    <div class="p-3 bg-slate-950/95 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
       <div class="flex items-center gap-2 min-w-0">
         <span id="card-status-dot" class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
         <div class="min-w-0">
@@ -719,6 +732,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <span id="card-intel-subtitle" class="text-[10px] text-cyan-300 block truncate">Terrestrial Planet</span>
         </div>
       </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span id="card-intel-badge" class="text-[9px] px-1.5 py-0.5 rounded font-bold border border-cyan-500/40 text-cyan-300 bg-cyan-500/10">SOLAR</span>
+        <button onclick="toggleInspectorWatchlist()" id="btn-inspector-watch" title="Pin / Add to OrbitAlert Watchlist" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px] font-bold transition">
+          ☆ Watch
+        </button>
+        <button onclick="closeIntelCard()" title="Collapse / Close Inspector (Esc)" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px] font-bold transition flex items-center gap-1">
+          <span>Collapse</span><span>▶</span>
+        </button>
+      </div>
+    </div>
       <div class="flex items-center gap-1.5 shrink-0">
         <span id="card-intel-badge" class="text-[9px] px-1.5 py-0.5 rounded font-bold border border-cyan-500/40 text-cyan-300 bg-cyan-500/10">SOLAR</span>
         <button onclick="toggleInspectorWatchlist()" id="btn-inspector-watch" title="Pin / Add to OrbitAlert Watchlist" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px] font-bold transition">
@@ -736,8 +759,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <button onclick="switchInspectorTab('sources')" id="insp-tab-btn-sources" class="py-1 px-1 rounded-lg text-slate-400 hover:text-white text-center transition">Sources</button>
     </div>
 
-    <!-- Tab Body Container -->
-    <div class="flex-1 overflow-y-auto scroll-container p-3 space-y-2.5">
+    <!-- Tab Body Container (With pb-8 to prevent cutting off bottom preset buttons) -->
+    <div class="flex-1 overflow-y-auto scroll-container p-3 pb-8 space-y-2.5">
       <!-- TAB 1: OVERVIEW -->
       <div id="insp-panel-overview" class="space-y-2.5">
         <div id="card-image-wrapper" class="rounded-xl overflow-hidden border border-slate-800 bg-black/80 aspect-video relative group">
@@ -2327,19 +2350,23 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
 
    // --- 12. WIKIPEDIA INTEL BOT (WITH LIVE THUMBNAIL HYDRATION & FALLBACK) ---
     function createFallbackMissionBanner(title, subtitle, accentHex = '#22d3ee') {
+      // Clean diagrammatic graphic without baked bottom text (prevents collision with #card-img-caption)
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
         <defs>
           <radialGradient id="bg" cx="50%" cy="50%" r="75%">
-            <stop offset="0%" stop-color="#0f2942"/>
+            <stop offset="0%" stop-color="#0c2238"/>
             <stop offset="100%" stop-color="#020612"/>
           </radialGradient>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
         </defs>
         <rect width="640" height="360" fill="url(#bg)"/>
-        <circle cx="320" cy="165" r="95" fill="none" stroke="${accentHex}" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="6 4"/>
-        <ellipse cx="320" cy="165" rx="170" ry="52" fill="none" stroke="${accentHex}" stroke-opacity="0.45" stroke-width="2" transform="rotate(-18 320 165)"/>
-        <circle cx="320" cy="165" r="14" fill="${accentHex}"/>
-        <text x="320" y="295" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="20" font-weight="bold">${String(title).replace(/[<>&"']/g, '')}</text>
-        <text x="320" y="322" text-anchor="middle" fill="${accentHex}" font-family="monospace" font-size="13">${String(subtitle).replace(/[<>&"']/g, '')}</text>
+        <circle cx="320" cy="170" r="105" fill="none" stroke="${accentHex}" stroke-opacity="0.2" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <ellipse cx="320" cy="170" rx="190" ry="60" fill="none" stroke="${accentHex}" stroke-opacity="0.55" stroke-width="2" transform="rotate(-18 320 170)"/>
+        <circle cx="320" cy="170" r="18" fill="${accentHex}" filter="url(#glow)"/>
+        <circle cx="320" cy="170" r="12" fill="#ffffff"/>
       </svg>`;
       return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     }
@@ -2393,7 +2420,40 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     function closeIntelCard() {
       const card = document.getElementById('intel-card');
       if (card) card.classList.add('is-hidden');
+      const expandBtn = document.getElementById('btn-expand-intel');
+      const name = document.getElementById('card-intel-name')?.textContent || 'Target';
+      if (expandBtn) {
+        expandBtn.classList.remove('hidden');
+        const lbl = document.getElementById('btn-expand-intel-label');
+        if (lbl) lbl.textContent = `🎯 ${name}`;
+      }
     }
+
+    function expandIntelCard() {
+      const card = document.getElementById('intel-card');
+      if (card) card.classList.remove('is-hidden');
+      const expandBtn = document.getElementById('btn-expand-intel');
+      if (expandBtn) expandBtn.classList.add('hidden');
+
+      // Close the More dropdown and conflicting drawers when info card expands
+      document.getElementById('header-more-dropdown')?.classList.add('hidden');
+      document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+
+      if (window.innerWidth <= 1024) {
+        minimizeCatalog();
+      }
+    }
+
+    // Auto-close Header More dropdown when clicking anywhere else
+    document.addEventListener('click', (e) => {
+      const moreBtn = document.getElementById('btn-header-more');
+      const moreDropdown = document.getElementById('header-more-dropdown');
+      if (moreDropdown && !moreDropdown.classList.contains('hidden')) {
+        if (!e.target.closest('#btn-header-more, #header-more-dropdown')) {
+          moreDropdown.classList.add('hidden');
+        }
+      }
+    });
     function minimizeCatalog() {
       document.getElementById('catalog-panel').classList.add('is-minimized');
       document.getElementById('btn-expand-catalog').classList.remove('hidden');
@@ -2882,6 +2942,8 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       }
 
       card.classList.remove('is-hidden');
+      const expandBtn = document.getElementById('btn-expand-intel');
+      if (expandBtn) expandBtn.classList.add('hidden');
 
       if (window.WikiIntelBot && typeof WikiIntelBot.fetchSummary === 'function') {
         WikiIntelBot.fetchSummary(wikiQuery);
@@ -5698,8 +5760,10 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         toggleLayersDrawer: () => {
           document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
           document.getElementById('nasa-date-modal')?.classList.add('hidden');
+          document.getElementById('header-more-dropdown')?.classList.add('hidden');
+          if (typeof closeIntelCard === 'function') closeIntelCard();
           document.getElementById('nasa-layers-drawer')?.classList.toggle('hidden');
-        },
+        },},
         openDatePickerModal: () => {
           document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
           document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
@@ -6579,10 +6643,26 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         updateTimeSemanticsUI(0);
       };
 
-      // 9. More Menu, Video Lazy Loader & Share Clipboard Helper (Section 3B & 3G)
+      // 9. More Menu, Video Lazy Loader & Share Clipboard Helper (Auto-collapsing overlapping cards)
       window.toggleHeaderMoreMenu = function () {
         const menu = document.getElementById('header-more-dropdown');
-        if (menu) menu.classList.toggle('hidden');
+        if (!menu) return;
+        const isOpening = menu.classList.contains('hidden');
+
+        if (isOpening) {
+          // 1. Automatically collapse the Info Card so it never covers the More menu
+          if (typeof closeIntelCard === 'function') {
+            closeIntelCard();
+          }
+
+          // 2. Close any conflicting drawers or modals on the right side
+          document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+          document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
+          document.getElementById('nasa-date-modal')?.classList.add('hidden');
+          document.getElementById('video-panel')?.classList.add('hidden');
+        }
+
+        menu.classList.toggle('hidden');
       };
 
       const origToggleVideo = window.toggleVideoPanel;
