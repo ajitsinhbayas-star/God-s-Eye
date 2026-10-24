@@ -1,4 +1,9 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
+Allow: /orbitalert
+Allow: /sentinel
+Disallow: /api/
+Disallow: /.env
+Disallow: /data/
 
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://god-s-eye-ah3d.onrender.com/sitemap.xml
