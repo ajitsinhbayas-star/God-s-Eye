@@ -742,14 +742,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </button>
       </div>
     </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <span id="card-intel-badge" class="text-[9px] px-1.5 py-0.5 rounded font-bold border border-cyan-500/40 text-cyan-300 bg-cyan-500/10">SOLAR</span>
-        <button onclick="toggleInspectorWatchlist()" id="btn-inspector-watch" title="Pin / Add to OrbitAlert Watchlist" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px] font-bold transition">
-          ☆ Watch
-        </button>
-        <button onclick="closeIntelCard()" title="Close Inspector (Esc)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs transition">✕</button>
-      </div>
-    </div>
 
     <!-- 4 Inspector Tabs -->
     <div class="grid grid-cols-4 gap-1 p-1.5 bg-slate-950/80 border-b border-slate-800 text-[10px] shrink-0">
@@ -1691,15 +1683,15 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     textureLoader.crossOrigin = 'anonymous';
 
     const NASA_TEXTURE_MAPS = {
-      mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
-      venus:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
-      moon:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/moonmap1k.jpg',
-      mars:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
-      jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
-      saturn:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
-      uranus:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
-      neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg',
-      pluto:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/plutomap1k.jpg'
+      mercury: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mercury.jpg',
+      venus:   'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/venus_atmosphere.jpg',
+      moon:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg',
+      mars:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mars_1k_color.jpg',
+      jupiter: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/jupiter.jpg',
+      saturn:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/saturn.jpg',
+      uranus:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/uranus.jpg',
+      neptune: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/neptune.jpg',
+      pluto:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
     };
 
     function createProceduralFallback(planetKey) {
@@ -1730,103 +1722,52 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     const fallbackDayCanvas = document.createElement('canvas');
     fallbackDayCanvas.width = 1024; fallbackDayCanvas.height = 512;
     const fDayCtx = fallbackDayCanvas.getContext('2d');
-    fDayCtx.fillStyle = '#03182e'; fDayCtx.fillRect(0, 0, 1024, 512);
+    fDayCtx.fillStyle = '#0a2342'; fDayCtx.fillRect(0, 0, 1024, 512);
 
-    const fallbackNightCanvas = document.createElement('canvas');
-    fallbackNightCanvas.width = 1024; fallbackNightCanvas.height = 512;
-    const fNightCtx = fallbackNightCanvas.getContext('2d');
-    fNightCtx.fillStyle = '#010612'; fNightCtx.fillRect(0, 0, 1024, 512);
+    // 100% Solid Opaque Earth Material (Guarantees Total Depth Occlusion & Clean Globe)
+    const earthShaderMat = new THREE.MeshStandardMaterial({
+      map: new THREE.CanvasTexture(fallbackDayCanvas),
+      roughness: 0.75,
+      metalness: 0.05,
+      depthTest: true,
+      depthWrite: true,
+      transparent: false
+    });
 
-    // GOD'S EYE Holographic Tactical Radar Earth Shader
-    const earthShaderMat = new THREE.ShaderMaterial({
-      uniforms: {
-        uDayMap:      { value: new THREE.CanvasTexture(fallbackDayCanvas) },
-        uNightMap:    { value: new THREE.CanvasTexture(fallbackNightCanvas) },
-        uSunDirLocal: { value: new THREE.Vector3(1, 0, 0) },
-        uCamPosLocal: { value: new THREE.Vector3(0, 0, 5) },
-        uShowGlint:   { value: 1.0 },
-        uShowLights:  { value: 1.0 }
+    // Load NASA Blue Marble Day Map with automatic fallback
+    textureLoader.load(
+      'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg',
+      tex => {
+        if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tex.encoding = THREE.sRGBEncoding;
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        earthShaderMat.map = tex;
+        earthShaderMat.needsUpdate = true;
       },
-      vertexShader: `
-        varying vec2 vUv;
-        varying vec3 vNormalLocal;
-        varying vec3 vPositionLocal;
-        void main() {
-          vUv = uv;
-          vNormalLocal = normalize(normal);
-          vPositionLocal = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D uDayMap;
-        uniform sampler2D uNightMap;
-        uniform vec3 uSunDirLocal;
-        uniform vec3 uCamPosLocal;
-        uniform float uShowGlint;
-        uniform float uShowLights;
+      undefined,
+      () => {
+        // Fallback CDN if primary mirror is unreachable
+        textureLoader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg', tex => {
+          tex.encoding = THREE.sRGBEncoding;
+          earthShaderMat.map = tex;
+          earthShaderMat.needsUpdate = true;
+        });
+      }
+    );
 
-        varying vec2 vUv;
-        varying vec3 vNormalLocal;
-        varying vec3 vPositionLocal;
-
-        void main() {
-          vec3 N = normalize(vNormalLocal);
-          vec3 L = normalize(uSunDirLocal);
-          vec3 V = normalize(uCamPosLocal - vPositionLocal);
-          vec3 R = reflect(-L, N);
-
-          float cosZenith = dot(N, L);
-          // Crisp, natural twilight terminator band
-          float dayFactor = smoothstep(-0.08, 0.08, cosZenith);
-
-          vec4 dayColor = texture2D(uDayMap, vUv);
-          vec4 nightColor = texture2D(uNightMap, vUv);
-
-          // Realistic ocean specular sun glint
-          float oceanMask = clamp((dayColor.b - dayColor.r * 0.85) * 5.0, 0.0, 1.0);
-          float specAngle = max(0.0, dot(V, R));
-          float specularGlint = pow(specAngle, 64.0) * oceanMask * max(0.0, cosZenith) * uShowGlint;
-          vec3 glintColor = vec3(1.0, 0.96, 0.88) * specularGlint * 3.2;
-
-          // Warm golden-orange atmospheric scatter along terminator
-          float twilight = smoothstep(-0.12, 0.0, cosZenith) * (1.0 - smoothstep(0.0, 0.15, cosZenith));
-          vec3 twilightGlow = vec3(1.0, 0.52, 0.2) * twilight * 0.65;
-
-          vec3 litDay = dayColor.rgb * (max(0.0, cosZenith) * 1.3 + 0.04) + glintColor;
-          // Vivid city lights bloom exclusively on the night side
-          vec3 litNight = nightColor.rgb * 5.0 * (1.0 - dayFactor) * uShowLights;
-
-          // Atmospheric Rayleigh scattering rim glow
-          float rim = 1.0 - max(0.0, dot(V, N));
-          vec3 atmoRim = vec3(0.15, 0.5, 1.0) * pow(rim, 3.0) * (max(0.0, cosZenith) * 0.7 + 0.3);
-
-          vec3 finalColor = mix(litNight, litDay, dayFactor) + twilightGlow + atmoRim;
-          gl_FragColor = vec4(finalColor, 1.0);
-        }
-      `,
-      transparent: false, // Fully solid rendering
-      depthTest: true,    // Enforce depth buffer testing
-      depthWrite: true    // Force back-face occlusion
-    });
-
-   // Load NASA Blue Marble Day Map with high-anisotropy filtering
-    textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg', tex => {
-      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      tex.encoding = THREE.sRGBEncoding;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-      earthShaderMat.uniforms.uDayMap.value = tex;
-    });
-
-    // Load NASA Earth Night Lights Map with crisp filtering
-    textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg', tex => {
-      if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      tex.encoding = THREE.sRGBEncoding;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-      earthShaderMat.uniforms.uNightMap.value = tex;
-    });
+    // Load NASA Earth Night Lights Map
+    textureLoader.load(
+      'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+      tex => {
+        if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tex.encoding = THREE.sRGBEncoding;
+        earthShaderMat.emissiveMap = tex;
+        earthShaderMat.emissive = new THREE.Color(0xffffff);
+        earthShaderMat.emissiveIntensity = 0.85;
+        earthShaderMat.needsUpdate = true;
+      }
+    );
 
    // Holographic wireframe cloud/grid shell is procedural; no external PNG fetch needed
 
@@ -1845,55 +1786,67 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     earthAxialGroup.add(earthMesh);
 
 
+    // Soft Blue Atmospheric Halo with Native Logarithmic Depth
     const earthOuterAtmoMat = new THREE.ShaderMaterial({
       uniforms: {
         uSunDir:    { value: new THREE.Vector3(1, 0, 0) },
         uCameraPos: { value: new THREE.Vector3(0, 0, 5) }
       },
       vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
         varying vec3 vWorldNormal;
         varying vec3 vWorldPos;
         void main() {
           vWorldNormal = normalize(mat3(modelMatrix) * normal);
           vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          #include <logdepthbuf_vertex>
         }
       `,
       fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
         uniform vec3 uSunDir;
         uniform vec3 uCameraPos;
         varying vec3 vWorldNormal;
         varying vec3 vWorldPos;
         void main() {
+          #include <logdepthbuf_fragment>
           vec3 N = normalize(vWorldNormal);
           vec3 V = normalize(uCameraPos - vWorldPos);
-          float fresnel = pow(1.0 - max(0.0, dot(V, N)), 2.6);
-          vec3 atmoCyan = vec3(0.08, 0.88, 1.0) * 1.35;
-          gl_FragColor = vec4(atmoCyan, fresnel * 0.75);
+          float rim = 1.0 - max(0.0, dot(V, N));
+          float fresnel = pow(rim, 4.2);
+
+          float sunFacing = max(0.0, dot(N, normalize(uSunDir)));
+          vec3 atmoColor = mix(vec3(0.06, 0.22, 0.60), vec3(0.35, 0.80, 1.0), sunFacing * 0.7 + 0.3);
+
+          gl_FragColor = vec4(atmoColor, fresnel * 0.50);
         }
       `,
       transparent: true,
       blending: THREE.AdditiveBlending,
-      side: THREE.BackSide,
+      side: THREE.FrontSide,
       depthWrite: false
     });
 
     const earthOuterAtmoMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(earthRadius + 0.11, 64, 64),
+      new THREE.SphereGeometry(earthRadius + 0.035, 64, 64),
       earthOuterAtmoMat
     );
     earthSystem.add(earthOuterAtmoMesh);
 
-    const earthHit = new THREE.Mesh(new THREE.SphereGeometry(earthRadius * 1.05, 16, 16), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+    const earthHit = new THREE.Mesh(new THREE.SphereGeometry(earthRadius * 1.02, 16, 16), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
     earthHit.userData = { targetKey: 'earth' };
     earthMesh.add(earthHit);
     clickableMeshes.push(earthHit);
 
-    // Subtle Holographic Wireframe Overlay Shell (Clouds / Grid Toggle)
+    // Subtle Optional Lat/Lon Grid Shell (Disabled by default to avoid cage appearance)
     const cloudsMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(earthRadius + 0.02, 36, 18),
-      new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.08 })
+      new THREE.SphereGeometry(earthRadius + 0.008, 36, 18),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.02 })
     );
+    cloudsMesh.visible = false;
     earthAxialGroup.add(cloudsMesh);
 
     let isGlintEnabled = true;
@@ -1903,12 +1856,14 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
 
     function toggleEarthGlint() {
       isGlintEnabled = !isGlintEnabled;
-      earthShaderMat.uniforms.uShowGlint.value = isGlintEnabled ? 1.0 : 0.0;
+      earthShaderMat.roughness = isGlintEnabled ? 0.65 : 0.95;
+      earthShaderMat.needsUpdate = true;
       updateLayerBtnState('btn-glint', isGlintEnabled);
     }
     function toggleEarthLights() {
       isLightsEnabled = !isLightsEnabled;
-      earthShaderMat.uniforms.uShowLights.value = isLightsEnabled ? 1.0 : 0.0;
+      earthShaderMat.emissiveIntensity = isLightsEnabled ? 0.85 : 0.0;
+      earthShaderMat.needsUpdate = true;
       if (typeof satOrbitRingsGroup !== 'undefined') satOrbitRingsGroup.visible = isLightsEnabled;
       updateLayerBtnState('btn-lights', isLightsEnabled);
     }
@@ -2964,35 +2919,41 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       }
     }
 function updateOrbitAndGizmoVisibility(selectedKey) {
-      // 1. Planets and Sun orbits: ALWAYS keep active and visible
-      Object.keys(planetMeshes).forEach(k => {
-        if (planetMeshes[k].orbitRing) planetMeshes[k].orbitRing.visible = true;
-      });
-      if (earthOrbitRing) earthOrbitRing.visible = true;
+      const currentMode = window.OrbitalCommandState?.viewMode || 'earth';
+      const isEarthMode = currentMode === 'earth' || Boolean(MASSIVE_SATELLITE_CATALOG[selectedKey]) || selectedKey === 'earth';
 
-      // 2. Earth satellites: Hide all other satellite orbits except the focused one
+      // 1. In Earth Orbit mode: HIDE distant planets, the Sun mesh, and planetary orbit rings
+      Object.keys(planetMeshes).forEach(k => {
+        if (planetMeshes[k].orbitRing) planetMeshes[k].orbitRing.visible = !isEarthMode;
+        if (planetMeshes[k].group) planetMeshes[k].group.visible = !isEarthMode;
+      });
+      if (typeof earthOrbitRing !== 'undefined' && earthOrbitRing) earthOrbitRing.visible = !isEarthMode;
+      if (typeof sunMesh !== 'undefined' && sunMesh) sunMesh.visible = !isEarthMode;
+
+      // 2. Earth satellites: Keep only active target orbit or all if none selected
       const isSat = Boolean(MASSIVE_SATELLITE_CATALOG[selectedKey]);
       Object.keys(satOrbitLines).forEach(satId => {
-        satOrbitLines[satId].visible = isSat && (satId === selectedKey);
+        satOrbitLines[satId].visible = isEarthMode && (!isSat || satId === selectedKey);
       });
       if (isSat && !satOrbitLines[selectedKey]) {
         const ring = buildSatelliteOrbitRing(MASSIVE_SATELLITE_CATALOG[selectedKey], 0.85);
         if (ring) ring.visible = true;
       }
 
-      // 3. Interplanetary Probes: Hide all other probe rings except the focused one
+      // 3. Interplanetary Probes
       const isProbe = Boolean(PLANETARY_ORBITERS[selectedKey]);
       Object.keys(orbiterMeshes).forEach(orbId => {
         if (orbiterMeshes[orbId].ringLine) {
-          orbiterMeshes[orbId].ringLine.visible = isProbe && (orbId === selectedKey);
+          orbiterMeshes[orbId].ringLine.visible = !isEarthMode || (isProbe && orbId === selectedKey);
         }
       });
 
-      // 4. XYZ Gizmo & Drop-Lines: Show exclusively for the active target (guard against early invoke)
+      // 4. XYZ Gizmo & Ecliptic Drop-Lines: Hide drop-line in Earth Orbit mode so it never slices Earth
       if (typeof isXYZGizmoEnabled !== 'undefined' && isXYZGizmoEnabled && typeof targetXYZGizmoGroup !== 'undefined' && targetXYZGizmoGroup) {
         targetXYZGizmoGroup.visible = true;
-        if (typeof xyzDropLine !== 'undefined' && xyzDropLine) xyzDropLine.visible = (selectedKey !== 'sun');
-        if (typeof xyzFootprintRing !== 'undefined' && xyzFootprintRing) xyzFootprintRing.visible = (selectedKey !== 'sun');
+        const showDrop = !isEarthMode && selectedKey !== 'sun';
+        if (typeof xyzDropLine !== 'undefined' && xyzDropLine) xyzDropLine.visible = showDrop;
+        if (typeof xyzFootprintRing !== 'undefined' && xyzFootprintRing) xyzFootprintRing.visible = showDrop;
       }
     }
     function setFocusTo(key) {
@@ -3906,18 +3867,6 @@ earthMesh.getWorldPosition(_vEarth);
 // Direction vector from Earth to Sun
 _vSunDir.subVectors(_vSun, _vEarth).normalize();
 
-// Compute local sun direction without using .clone()
-earthMesh.getWorldQuaternion(_qEarth);
-_vSunDirLocal.copy(_vSunDir).applyQuaternion(_qEarth.invert()).normalize();
-earthShaderMat.uniforms.uSunDirLocal.value.copy(_vSunDirLocal);
-
-// Invert matrix directly into our pre-allocated matrix variable
-_mInvEarth.copy(earthMesh.matrixWorld).invert();
-
-// Compute camera local position without camera.position.clone()
-_vCamLocal.copy(camera.position).applyMatrix4(_mInvEarth);
-earthShaderMat.uniforms.uCamPosLocal.value.copy(_vCamLocal);
-
 // Atmosphere shaders
 earthOuterAtmoMat.uniforms.uSunDir.value.copy(_vSunDir);
 earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
@@ -3994,18 +3943,19 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
             dummyVec3.set(x, y, z);
 
             if (sat.id === activeTargetKey) {
-              // Hide the active target's dot (since the 3D model is shown instead)
               dummyScale.set(0, 0, 0);
               activeSatLocalPos.set(x, y, z);
               activeSatWorldPos.copy(activeSatLocalPos);
               satelliteInertialGroup.localToWorld(activeSatWorldPos);
             } else if (isASatelliteFocused) {
-              // Hide all other satellite dots when any satellite is focused
               dummyScale.set(0, 0, 0);
             } else if (FLAGSHIP_SET.has(key)) {
-              dummyScale.set(1.45, 1.45, 1.45);
+              dummyScale.set(1.15, 1.15, 1.15);
+            } else if (activeTargetKey === 'earth') {
+              // Subtle point representation so Earth remains clean and visible
+              dummyScale.set(0.15, 0.15, 0.15);
             } else {
-              dummyScale.set(0.32, 0.32, 0.32);
+              dummyScale.set(0.22, 0.22, 0.22);
             }
 
             dummyMat4.compose(dummyVec3, dummyQuat, dummyScale);
@@ -4014,13 +3964,17 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
           instancedSatMesh.instanceMatrix.needsUpdate = true;
         }
 
-        // Orient active sensor swath cones toward Earth's center
+        // Only display sensor swath cone when its specific satellite is selected
         for (let sIdx = 0; sIdx < activeSwathMeshes.length; sIdx++) {
           const sw = activeSwathMeshes[sIdx];
-          const pos = getSatellitePosition(sw.sat, timeSec);
-          sw.group.position.copy(pos);
-          sw.group.lookAt(0, 0, 0);
-          sw.group.rotateX(-Math.PI / 2);
+          const isThisSatActive = (sw.sat.id === activeTargetKey);
+          sw.group.visible = isThisSatActive;
+          if (isThisSatActive) {
+            const pos = getSatellitePosition(sw.sat, timeSec);
+            sw.group.position.copy(pos);
+            sw.group.lookAt(0, 0, 0);
+            sw.group.rotateX(-Math.PI / 2);
+          }
         }
       }
 
@@ -5486,10 +5440,16 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
       }
 
       const _projVec = new THREE.Vector3();
+      const _earthPosVec = new THREE.Vector3();
+      const _camToObjVec = new THREE.Vector3();
+      const _camToEarthVec = new THREE.Vector3();
+
       function updateFloatingLabelsFrame() {
         const layer = document.getElementById('nasa-3d-labels-layer');
         if (!layer) return;
-        if (!show3DLabels || currentViewDomain !== 'solar') {
+
+        const currentMode = window.OrbitalCommandState?.viewMode || 'earth';
+        if (!show3DLabels || currentMode === 'deepsky') {
           layer.style.display = 'none';
           return;
         }
@@ -5497,10 +5457,11 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
 
         const halfW = window.innerWidth / 2;
         const halfH = window.innerHeight / 2;
-
-        // Performance: Frustum culling & screen boundary decluttering (Section 9)
         let visibleCount = 0;
         const maxVisibleLabels = 10;
+
+        earthSystem.getWorldPosition(_earthPosVec);
+        const distCamToEarth = camera.position.distanceTo(_earthPosVec);
 
         labelRegistry.forEach(item => {
           const obj = item.getObj();
@@ -5508,10 +5469,29 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
             item.el.style.display = 'none';
             return;
           }
+
+          // In Earth Orbit view: ONLY label Earth and Moon; suppress distant solar labels
+          if (currentMode === 'earth' && item.key !== 'earth' && item.key !== 'moon') {
+            item.el.style.display = 'none';
+            return;
+          }
+
           obj.getWorldPosition(_projVec);
 
-          // Camera distance check
-          const distToCam = camera.position.distanceTo(_projVec);
+          // Occlusion check: hide label if object is behind Earth along the camera line of sight
+          if (item.key !== 'earth') {
+            const distCamToObj = camera.position.distanceTo(_projVec);
+            if (distCamToObj > distCamToEarth) {
+              _camToObjVec.subVectors(_projVec, camera.position).normalize();
+              _camToEarthVec.subVectors(_earthPosVec, camera.position).normalize();
+              // If within Earth's apparent disk, suppress the label
+              if (_camToObjVec.dot(_camToEarthVec) > 0.96) {
+                item.el.style.display = 'none';
+                return;
+              }
+            }
+          }
+
           _projVec.project(camera);
 
           // Frustum bounds & front-plane check
@@ -5763,7 +5743,7 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
           document.getElementById('header-more-dropdown')?.classList.add('hidden');
           if (typeof closeIntelCard === 'function') closeIntelCard();
           document.getElementById('nasa-layers-drawer')?.classList.toggle('hidden');
-        },},
+        },
         openDatePickerModal: () => {
           document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
           document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
@@ -6267,6 +6247,9 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         }
 
         showScaleTransitionBanner(validMode, currentTargetTitle);
+        if (typeof updateOrbitAndGizmoVisibility === 'function') {
+          updateOrbitAndGizmoVisibility(window.OrbitalCommandState.selectedId);
+        }
         saveLastValid3DView();
         syncStateToURL();
       };
