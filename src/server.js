@@ -1,4 +1,5 @@
-﻿import express from 'express';
+﻿import compression from 'compression';
+import express from 'express';
 import http from 'http';
 import path from 'path';
 import { PORT, PUBLIC_DIR } from './config/constants.js';
@@ -21,6 +22,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(express.json({ limit: '32kb' }));
+app.use(compression());
 
 // Security Headers
 app.use((req, res, next) => {
@@ -63,7 +65,16 @@ app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
 });
 
 // Static files from public/
-app.use(express.static(PUBLIC_DIR, { index: 'index.html' }));
+app.use(express.static(PUBLIC_DIR, {
+  maxAge: '1d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+    }
+  }
+}));
 
 // SPA Fallback
 app.get('*', (req, res) => {
@@ -85,3 +96,4 @@ startKeepAliveDaemon();
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[SYS] Orbital Command Engine active on port ${PORT}`);
 });
+

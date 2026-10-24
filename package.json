@@ -13,6 +13,7 @@
     "test:system": "node tests/verify-system.js"
   },
   "dependencies": {
+    "compression": "^1.8.2",
     "express": "^4.19.2",
     "sqlite3": "^5.1.7",
     "ws": "^8.18.0"

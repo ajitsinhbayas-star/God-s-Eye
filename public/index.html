@@ -1,9 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- Primary Meta Tags -->
+  <!-- Primary Meta Tags -->
   <title>God's Eye — 3D Orbital Command & Space Situational Awareness</title>
   <meta name="title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
   <meta name="description" content="Track the ISS, ISRO satellites, and deep-space missions in real-time 3D WebGL. High-accuracy pass predictions, conjunction alerts, and space weather monitoring." />
@@ -13,7 +11,13 @@
   <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/" />
   <link rel="manifest" href="/manifest.json" />
 
-  <!-- Open Graph / Facebook / WhatsApp -->
+  <!-- Resource Hints for Core Web Vitals -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+
+  <!-- Open Graph / Social Sharing -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/" />
   <meta property="og:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
@@ -22,542 +26,62 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://god-s-eye-ah3d.onrender.com/" />
   <meta name="twitter:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
   <meta name="twitter:description" content="Live 3D WebGL orbital command platform and satellite tracking engine." />
 
-  <!-- Schema.org JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "God's Eye Orbital Command",
-    "url": "https://god-s-eye-ah3d.onrender.com/",
-    "description": "3D WebGL Space Situational Awareness platform featuring live orbital propagation, ISRO asset tracking, and observer pass predictions.",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "All modern browsers (WebGL 2.0)",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "creator": {
-      "@type": "Person",
-      "name": "Ajitsinh"
-    }
-  }
-  </script>
-
-  <!-- Suppress Tailwind runtime CDN production warning -->
-  <script>
-    (function() {
-      const _warn = console.warn;
-      console.warn = function(...args) {
-        if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
-          return;
-        }
-        _warn.apply(console, args);
-      };
-    })();
-  </script>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Satellite.js SGP4/SDP4 Orbital Propagator -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/4.0.0/satellite.min.js"></script>
-
-  <style>
-    :root {
-      --sat: env(safe-area-inset-top, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
-      --sal: env(safe-area-inset-left, 0px);
-      --sar: env(safe-area-inset-right, 0px);
-    }
-
-    html, body {
-      overscroll-behavior: none;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
-      height: 100%;
-      height: 100dvh;
-      width: 100%;
-      overflow: hidden;
-      background-color: #000208;
-    }
-
-    .scroll-container {
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-y;
-    }
-
-    #globe-container {
-      touch-action: none;
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: rgba(3, 7, 18, 0.95); }
-    ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.35); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.7); }
-
-    .hud-glass {
-      background: rgba(8, 14, 29, 0.90);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-    .hud-glow {
-      box-shadow: 0 0 25px -3px rgba(6, 182, 212, 0.45);
-    }
-    .hud-text-glow {
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.75);
-    }
-    .nasa-target-glow {
-      background: rgba(8, 14, 29, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(217, 70, 239, 0.35);
-      box-shadow: 0 0 25px -3px rgba(217, 70, 239, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-    .nasa-pill-btn {
-      transition: all 0.2s ease;
-    }
-    .nasa-pill-btn:hover {
-      border-color: rgba(217, 70, 239, 0.6);
-      color: #ffffff;
-    }
-
-    .bot-terminal {
-      background: rgba(2, 6, 18, 0.95);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    .panel-slide-left {
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-      will-change: transform, opacity;
-    }
-    .panel-slide-left.is-minimized {
-      transform: translateX(calc(-100% - 24px)) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    .panel-slide-right {
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-      will-change: transform, opacity;
-    }
-    .panel-slide-right.is-minimized {
-      transform: translateX(calc(100% + 24px)) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    .intel-card-slide {
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-      will-change: transform, opacity;
-    }
-    .intel-card-slide.is-hidden {
-      transform: translateX(calc(100% + 40px)) scale(0.96) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-    .edge-pill-right {
-      transition: all 0.25s ease;
-    }
-    .edge-pill-right:hover {
-      border-color: rgba(56, 189, 248, 0.6);
-      transform: translateY(-50%) translateX(-2px);
-    }
-
-    .header-safe {
-      top: calc(0.75rem + var(--sat));
-      left: calc(0.75rem + var(--sal));
-      right: calc(0.75rem + var(--sar));
-    }
-    .dock-safe {
-      bottom: calc(0.75rem + var(--sab));
-    }
-
-    body.cinematic-active header,
-    body.cinematic-active #catalog-panel,
-    body.cinematic-active #telemetry-panel,
-    body.cinematic-active #intel-card,
-    body.cinematic-active #btn-expand-catalog,
-    body.cinematic-active #btn-expand-telemetry,
-    body.cinematic-active #video-panel {
-      opacity: 0.1 !important;
-      pointer-events: none !important;
-      transition: opacity 0.8s ease;
-    }
-
-    .badge-artificial {
-      background: rgba(6, 182, 212, 0.12);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-    }
-    .badge-natural {
-      background: rgba(245, 158, 11, 0.12);
-      color: #fcd34d;
-      border: 1px solid rgba(251, 191, 36, 0.35);
-    }
-    .badge-deepsky {
-      background: rgba(217, 70, 239, 0.12);
-      color: #f0abfc;
-      border: 1px solid rgba(232, 121, 249, 0.35);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
-    }
-
-    /* Accessibility: Visible high-contrast focus rings (Section 8) */
-    :focus-visible {
-      outline: 2px solid #38bdf8 !important;
-      outline-offset: 2px !important;
-    }
-
-    /* Accessibility: Respect Reduced Motion Preferences (Section 8) */
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .panel-slide-left, .panel-slide-right, .intel-card-slide {
-        transition: none !important;
-      }
-    }
-
-    /* Mobile: Adaptive Bottom-Sheet Transformations (Section 8) */
-    @media (max-width: 640px) {
-      #catalog-panel.panel-slide-left {
-        top: auto !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100vw !important;
-        max-height: 68dvh !important;
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-        transform: translateY(0);
-      }
-      #catalog-panel.panel-slide-left.is-minimized {
-        transform: translateY(100%) !important;
-      }
-
-      #intel-card.intel-card-slide {
-        top: auto !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100vw !important;
-        max-height: 72dvh !important;
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-        transform: translateY(0);
-      }
-      #intel-card.intel-card-slide.is-hidden {
-        transform: translateY(100%) !important;
-      }
-    }
-  </style>
-<style>
-/* ==========================================================================
-   MISSION-CONTROL UNIFIED DESIGN SYSTEM (SECTION 7)
-   ========================================================================== */
-:root {
-  /* Core Canvas & Elevation */
-  --space-void: #020612;
-  --space-surface: rgba(8, 18, 36, 0.88);
-  --space-overlay: rgba(13, 27, 48, 0.94);
-  --space-card: #0b1a2e;
-  --space-border: rgba(56, 189, 248, 0.18);
-  --space-border-strong: rgba(56, 189, 248, 0.42);
-
-  /* Functional Accents (Strictly Semantic) */
-  --accent-cyan: #38bdf8;
-  --accent-emerald: #34d399;
-  --accent-amber: #fbbf24;
-  --accent-rose: #f87171;
-  --accent-purple: #c084fc;
-
-  /* Typography Colors */
-  --text-bright: #f8fafc;
-  --text-base: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-
-  /* Elevation & Geometry */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --elevation-panel: 0 16px 48px -8px rgba(0, 0, 0, 0.85);
-  --glass-blur: blur(20px);
-}
-
-/* Accessible Interactive Elements */
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--accent-cyan);
-  outline-offset: 2px;
-}
-
-/* Standardized Provenance Badges */
-.badge-class {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 2px 7px;
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
-}
-.badge-measured {
-  background: rgba(16, 185, 129, 0.16);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-.badge-propagated {
-  background: rgba(56, 189, 248, 0.16);
-  color: #7dd3fc;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-}
-.badge-prediction {
-  background: rgba(245, 158, 11, 0.16);
-  color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-.badge-catalogue {
-  background: rgba(148, 163, 184, 0.14);
-  color: #cbd5e1;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-.badge-illustration {
-  background: rgba(192, 132, 252, 0.16);
-  color: #e9d5ff;
-  border: 1px solid rgba(192, 132, 252, 0.4);
-}
-
-/* Standardized Metric Tile */
-.metric-tile {
-  background: var(--space-card);
-  border: 1px solid var(--space-border);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.metric-tile-label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-.metric-tile-val {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-bright);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.metric-tile-sub {
-  font-size: 10px;
-  color: var(--text-dim);
-}
-
-/* Standardized Empty, Loading & Stale States */
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  text-align: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-.state-icon {
-  font-size: 24px;
-  opacity: 0.8;
-}
-.state-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-base);
-}
-.state-desc {
-  font-size: 11px;
-  max-width: 320px;
-  line-height: 1.4;
-}
-  </style>
-
-  <!-- Preconnect to CDN origins -->
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
-  <link rel="dns-prefetch" href="https://en.wikipedia.org">
-  <link rel="dns-prefetch" href="https://api.wheretheiss.at">
-
-  <!-- Primary Metadata -->
-  <meta name="description" content="Explore a real-time, interactive 3D WebGL visualization of the Solar System, Earth satellites, and the 9-tier Cosmic Address hierarchy using NASA Keplerian ephemeris physics and JWST imagery.">
-  <meta name="keywords" content="Solar System 3D, Three.js astronomical visualization, NASA ephemeris, real time satellite tracking, ISRO satellites, Keplerian orbits, Laniakea supercluster, JWST galaxies, cosmic address">
-  <meta name="author" content="Orbital Command">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="theme-color" content="#000208">
-  <link rel="canonical" href="https://your-domain.com/">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://your-domain.com/">
-  <meta property="og:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta property="og:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers. Powered by NASA Keplerian physics and Three.js WebGL.">
-  <meta property="og:image" content="https://your-domain.com/og-preview.jpg">
-  <meta property="og:site_name" content="Orbital Command">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta name="twitter:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers.">
-  <meta name="twitter:image" content="https://your-domain.com/og-preview.jpg">
-
-  <!-- Schema.org Structured Data -->
+  <!-- Schema.org WebApplication & FAQPage Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebApplication",
-        "@id": "https://your-domain.com/#webapp",
-        "name": "Orbital Command & Interplanetary Universe HUD",
-        "url": "https://your-domain.com/",
+        "name": "God's Eye Orbital Command",
+        "url": "https://god-s-eye-ah3d.onrender.com/",
+        "description": "3D WebGL Space Situational Awareness platform featuring live orbital propagation, ISRO asset tracking, and observer pass predictions.",
         "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All",
-        "browserRequirements": "Requires WebGL support",
-        "description": "Interactive, physically accurate 3D simulation of heliocentric planetary orbits, Earth satellite constellations, and the cosmological cosmic web."
-      }
-    ]
-  }
-  </script>
-  <!-- Core Web Vitals: Preconnect & DNS-Prefetch for Fast First Contentful Paint -->
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-  <link rel="preconnect" href="https://api.wheretheiss.at" crossorigin />
-
-  <!-- Google Search Console Site Verification Hook -->
-  <meta name="google-site-verification" content="INSERT_YOUR_GOOGLE_CONSOLE_CODE_HERE" />
-
-  <!-- Schema.org FAQPage Schema for Google Rich Snippets -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How do I track the International Space Station (ISS) live in 3D?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "God's Eye provides real-time 3D orbital propagation and telemetry for the ISS (NORAD ID 25544) using live downlinks from WhereTheISS and CelesTrak, updating altitude, velocity, and ground-track latitude/longitude every 3 seconds."
+        "operatingSystem": "All modern browsers (WebGL 2.0)",
+        "creator": {
+          "@type": "Person",
+          "name": "Ajitsinh"
         }
       },
       {
-        "@type": "Question",
-        "name": "Which ISRO satellites can be tracked on God's Eye?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The platform tracks key Indian Space Research Organisation (ISRO) assets including Cartosat-3, Cartosat-2F, EOS-04 (RISAT-1A), EOS-06 (Oceansat-3), NISAR, AstroSat, and solar/lunar missions like Aditya-L1 and Chandrayaan-3."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How to check visible satellite passes over India?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Using the OrbitAlert module (/orbitalert), observers can compute topocentric look angles (azimuth, elevation, compass bearing, and naked-eye twilight visibility) tailored to 30+ ground stations across India, including Pune, Mumbai, Delhi, and Bengaluru."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is Space Situational Awareness (SSA)?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Space Situational Awareness (SSA) refers to tracking, characterizing, and predicting the orbits of active spacecraft, defunct satellites, and orbital debris to prevent in-orbit conjunctions, collisions, and unplanned re-entries."
-        }
-      }
-    ]
-  }
-  </script>
-  <!-- Core Web Vitals: Preconnect & DNS-Prefetch for Fast First Contentful Paint -->
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-  <link rel="preconnect" href="https://api.wheretheiss.at" crossorigin />
-
-  <!-- Google Search Console Site Verification Hook -->
-  <meta name="google-site-verification" content="INSERT_YOUR_GOOGLE_CONSOLE_CODE_HERE" />
-
-  <!-- Schema.org FAQPage Schema for Google Rich Snippets -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How do I track the International Space Station (ISS) live in 3D?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "God's Eye provides real-time 3D orbital propagation and telemetry for the ISS (NORAD ID 25544) using live downlinks from WhereTheISS and CelesTrak, updating altitude, velocity, and ground-track latitude/longitude every 3 seconds."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Which ISRO satellites can be tracked on God's Eye?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The platform tracks key Indian Space Research Organisation (ISRO) assets including Cartosat-3, Cartosat-2F, EOS-04 (RISAT-1A), EOS-06 (Oceansat-3), NISAR, AstroSat, and solar/lunar missions like Aditya-L1 and Chandrayaan-3."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How to check visible satellite passes over India?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Using the OrbitAlert module (/orbitalert), observers can compute topocentric look angles (azimuth, elevation, compass bearing, and naked-eye twilight visibility) tailored to 30+ ground stations across India, including Pune, Mumbai, Delhi, and Bengaluru."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is Space Situational Awareness (SSA)?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Space Situational Awareness (SSA) refers to tracking, characterizing, and predicting the orbits of active spacecraft, defunct satellites, and orbital debris to prevent in-orbit conjunctions, collisions, and unplanned re-entries."
-        }
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I track the International Space Station (ISS) live in 3D?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "God's Eye provides real-time 3D orbital propagation and telemetry for the ISS (NORAD ID 25544) using live downlinks from WhereTheISS and CelesTrak, updating altitude, velocity, and ground-track coordinates every 3 seconds."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which ISRO satellites can be tracked on God's Eye?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The platform tracks key Indian Space Research Organisation (ISRO) assets including Cartosat-3, Cartosat-2F, EOS-04 (RISAT-1A), EOS-06 (Oceansat-3), NISAR, AstroSat, and deep-space missions like Aditya-L1 and Chandrayaan-3."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How to check visible satellite passes over India?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Using the OrbitAlert module (/orbitalert), observers can compute topocentric look angles (azimuth, elevation, compass bearing, and naked-eye twilight visibility) tailored to 30+ ground stations across India, including Pune, Mumbai, Delhi, and Bengaluru."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is Space Situational Awareness (SSA)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Space Situational Awareness (SSA) refers to tracking, characterizing, and predicting the orbits of active spacecraft, defunct satellites, and orbital debris to prevent in-orbit conjunctions, collisions, and unplanned re-entries."
+            }
+          }
+        ]
       }
     ]
   }
@@ -6992,5 +6516,6 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
   </aside>
 </body>
 </html>
+
 
 
