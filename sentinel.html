@@ -411,29 +411,7 @@
             } catch (_) {}
         }
 
-        async function fetchSatellites() {
-            try {
-                const res = await fetch('/api/sentinel/satellites');
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('stat-sats').innerText = `${data.count} Objects Verified`;
-                    const listEl = document.getElementById('satellite-list');
-                    listEl.innerHTML = data.satellites.map(sat => `
-                        <div class="p-2.5 rounded-lg bg-space-900 border border-space-700 hover:border-cyan-500/40 transition">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-white text-xs">${sat.name}</span>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">${sat.data_class}</span>
-                            </div>
-                            <div class="flex justify-between items-center mt-1 text-[11px] text-space-400">
-                                <span>Alt: ${Math.round(sat.alt_km)} km</span>
-                                <span class="text-emerald-400">${Number(sat.velocity_kms).toFixed(2)} km/s</span>
-                            </div>
-                            <div class="text-[10px] text-space-500 mt-1 truncate">Source: ${sat.source_provider}</div>
-                        </div>
-                    `).join('') || '<div class="text-space-500 text-center py-4">Ingesting initial ephemeris…</div>';
-                }
-            } catch (e) { console.error(e); }
-        }
+        
 
         // Three.js Radar Mesh Visualization
         let scene, camera, renderer, earthMesh, satGroup = [];

@@ -1876,53 +1876,7 @@ app.get('/api/nasa-solar-live', async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message, fallbackEmbedUrl: embedUrl });
   }
 });
-// 6. Dedicated Sentinel Bot Dashboard routes
-app.get(['/sentinel', '/sentinel/', '/sentinel.html'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'sentinel.html'));
-});
 
-// 7. OrbitAlert page route
-app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'orbitalert.html'));
-});
-
-// 8. Initialize the Sentinel Autonomous Background Supervisor Bot & APIs
-initSentinelSupervisor(app, server);
-
-// 9. Serve static frontend assets (deny hidden dotfiles like .env)
-app.use(express.static(__dirname, { index: 'index.html', dotfiles: 'deny' }));
-
-// 10. Single Page Application Fallback (must be last)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Start HTTP + WebSocket Server on the same port
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[SYS] Orbital Command, OrbitAlert & Sentinel Supervisor online on port ${PORT}`);
-});
-app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'orbitalert.html'));
-});
-
-// 7. Serve static frontend assets (deny hidden dotfiles like .env)
-app.use(express.static(__dirname, { index: 'index.html', dotfiles: 'deny' }));
-
-// 8. Single Page Application Fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Initialize the Sentinel Autonomous Background Supervisor Bot
-initSentinelSupervisor(app, server);
-
-// Start HTTP + WebSocket Server on the same port
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[SYS] Orbital Command, OrbitAlert & Sentinel Supervisor online on port ${PORT}`);
-});
-app.get(['/sentinel', '/sentinel/', '/sentinel.html'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'sentinel.html'));
-});
 // ============================================================================
 // STANDARDIZED SCIENTIFIC API CONTRACT (SECTION 6)
 // ============================================================================
