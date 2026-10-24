@@ -8,7 +8,7 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "start": "node --env-file=.env src/server.js",
+    "start": "node src/server.js",
     "dev": "nodemon --env-file=.env src/server.js",
     "test:system": "node tests/verify-system.js"
   },

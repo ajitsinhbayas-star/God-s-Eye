@@ -6773,18 +6773,36 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         observer.observe(titleNode, { childList: true, characterData: true, subtree: true });
       }
 
-      // Initialize on DOMContentLoaded
-      window.addEventListener('DOMContentLoaded', () => {
-        window.verifyWebGLAndDismissLoader();
-        updateOrbitAlertBadgeCount();
-        window.setMasterDomain('artificial');
-        window.switchSubCategory('earth-sats');
-        window.sanitizeInspectorFields();
+      // Initialize on DOMContentLoaded or immediately if already loaded
+      function initializeOrbitalApp() {
+        if (typeof window.verifyWebGLAndDismissLoader === 'function') {
+          window.verifyWebGLAndDismissLoader();
+        }
+        if (typeof updateOrbitAlertBadgeCount === 'function') {
+          updateOrbitAlertBadgeCount();
+        }
+        if (typeof window.setMasterDomain === 'function') {
+          window.setMasterDomain('artificial');
+        }
+        if (typeof window.switchSubCategory === 'function') {
+          window.switchSubCategory('earth-sats');
+        }
+        if (typeof window.sanitizeInspectorFields === 'function') {
+          window.sanitizeInspectorFields();
+        }
         if (typeof applyMasterCatalogFilter === 'function') {
           applyMasterCatalogFilter();
         }
-        applyStateFromURL();
-      });
+        if (typeof applyStateFromURL === 'function') {
+          applyStateFromURL();
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initializeOrbitalApp);
+      } else {
+        initializeOrbitalApp();
+      }
     })();
   </script>
 </body>
