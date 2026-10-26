@@ -1977,59 +1977,143 @@ setInterval(() => {
     })();
 
     // Speech Output (TTS)
+        // --- MALE J.A.R.V.I.S. VOICE SYNTHESIZER ---
     function jarvisSay(text) {
       if (!jarvisState.voice || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
+
       const utt = new SpeechSynthesisUtterance(text);
       const voices = window.speechSynthesis.getVoices();
-      const ukVoice = voices.find(v => v.lang === 'en-GB' || v.name.includes('UK') || v.name.includes('British')) || voices.find(v => v.lang.startsWith('en'));
-      if (ukVoice) utt.voice = ukVoice;
-      utt.pitch = 0.95;
-      utt.rate = 1.05;
+
+      // Prioritize British Male voices (Paul Bettany cadence)
+      let maleUkVoice = voices.find(v => 
+        (v.lang === 'en-GB' || v.lang.startsWith('en')) && 
+        (v.name.includes('George') || v.name.includes('Male') || v.name.includes('Ryan') || v.name.includes('Daniel') || v.name.includes('Oliver') || v.name.includes('Arthur'))
+      );
+
+      // Secondary fallback to standard UK or English voice
+      if (!maleUkVoice) {
+        maleUkVoice = voices.find(v => v.lang === 'en-GB' && !v.name.includes('Female') && !v.name.includes('Hazel') && !v.name.includes('Susan')) 
+                   || voices.find(v => v.lang.startsWith('en') && (v.name.includes('Male') || v.name.includes('David')));
+      }
+
+      if (maleUkVoice) utt.voice = maleUkVoice;
+
+      // Male pitch and steady, cultured cadence
+      utt.pitch = 0.88;
+      utt.rate = 1.02;
 
       const orb = document.getElementById('jarvis-arc-btn');
-      utt.onstart = () => { jarvisState.neural = 'speaking'; orb.classList.add('arc-speaking-pulse'); };
-      utt.onend = () => { jarvisState.neural = 'idle'; orb.classList.remove('arc-speaking-pulse'); };
-      utt.onerror = () => { jarvisState.neural = 'idle'; orb.classList.remove('arc-speaking-pulse'); };
+      utt.onstart = () => { jarvisState.neural = 'speaking'; orb && orb.classList.add('arc-speaking-pulse'); };
+      utt.onend = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
+      utt.onerror = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
       window.speechSynthesis.speak(utt);
     }
 
-    // Speech Input (STT)
-    function toggleJarvisSpeech() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { alert('Speech recognition not supported in this browser. Please use Chrome or Edge.'); return; }
-      if (!jarvisState.recognition) {
-        jarvisState.recognition = new SR();
-        jarvisState.recognition.lang = 'en-US';
-        jarvisState.recognition.onstart = () => {
-          jarvisState.listening = true;
-          jarvisState.neural = 'listening';
-          document.getElementById('jarvis-mic-btn').style.background = '#ef4444';
-          document.getElementById('jarvis-arc-btn').classList.add('arc-listening-pulse');
-        };
-        jarvisState.recognition.onresult = (e) => {
-          document.getElementById('jarvis-input').value = e.results[0][0].transcript;
-          executeJarvisChat();
-        };
-        const reset = () => {
-          jarvisState.listening = false;
-          if (jarvisState.neural === 'listening') jarvisState.neural = 'idle';
-          document.getElementById('jarvis-mic-btn').style.background = 'rgba(0, 240, 255, 0.15)';
-          document.getElementById('jarvis-arc-btn').classList.remove('arc-listening-pulse');
-        };
-        jarvisState.recognition.onerror = reset;
-        jarvisState.recognition.onend = reset;
+    // Preload voice list
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    // --- EXTENSIVE SPACE INTELLIGENCE CATALOG & FUZZY RESOLVER ---
+    function resolveSpaceIntel(rawText) {
+      const q = rawText.toLowerCase().replace(/[^a-z0-9\s\-]/g, ' ');
+
+      // 1. Aditya-L1 (Handles typos: "adtiya", "aditya", "aditya l1", "l1")
+      if (q.includes('adtiya') || q.includes('aditya') || (q.includes('l1') && (q.includes('sun') || q.includes('solar')))) {
+        jarvisState.lastObj = "Aditya-L1";
+        return "Aditya-L1 is ISRO's flagship solar observatory stationed in a halo orbit around the Sun-Earth Lagrange Point 1, approximately 1.5 million kilometers from Earth. It continuously monitors coronal heating, solar flares, and coronal mass ejections without any occultation, Sir.";
       }
-      if (jarvisState.listening) jarvisState.recognition.stop();
-      else jarvisState.recognition.start();
+
+      // 2. EOS-06 / Oceansat-3
+      if (q.includes('eos-06') || q.includes('eos 06') || q.includes('eos06') || q.includes('oceansat') || q.includes('eos 6')) {
+        jarvisState.lastObj = "EOS-06";
+        return "EOS-06, also designated Oceansat-3, is an ISRO Earth observation satellite in Sun-Synchronous Orbit at 742 km altitude with a 98.3° inclination. It carries the Ocean Colour Monitor 3, Sea Surface Temperature Monitor, and a Ku-band Scatterometer for marine weather and oceanographic research, Sir.";
+      }
+
+      // 3. EOS-04 / RISAT-1A (Radar Imaging)
+      if (q.includes('eos-04') || q.includes('eos 04') || q.includes('eos04') || q.includes('risat')) {
+        jarvisState.lastObj = "EOS-04";
+        return "EOS-04 is ISRO's radar imaging satellite operating in a 529 km Sun-Synchronous Orbit. Utilizing an active C-band Synthetic Aperture Radar, it captures high-resolution imagery through clouds, rain, and darkness for border reconnaissance and disaster assessment, Sir.";
+      }
+
+      // 4. Cartosat-3 & Cartosat fleet
+      if (q.includes('cartosat')) {
+        jarvisState.lastObj = "Cartosat-3";
+        return "Cartosat-3 is ISRO's advanced optical reconnaissance satellite in a 505 km polar orbit at 97.5° inclination. It features an exceptional spatial resolution of 0.28 meters for strategic cartography and military observation, Sir.";
+      }
+
+      // 5. AstroSat
+      if (q.includes('astrosat')) {
+        jarvisState.lastObj = "AstroSat";
+        return "AstroSat is India's dedicated multi-wavelength space observatory orbiting Earth at 650 km altitude with a 6-degree inclination. It simultaneously monitors celestial bodies in ultraviolet, optical, and broadband X-ray spectra, Sir.";
+      }
+
+      // 6. Chandrayaan-3
+      if (q.includes('chandrayaan') || q.includes('chandra')) {
+        jarvisState.lastObj = "Chandrayaan-3";
+        return "Chandrayaan-3 accomplished India's historic soft landing at the Lunar South Pole. Its propulsion module remains active in high lunar orbit conducting SHAPE spectro-polarimetry of Earth, while the Vikram lander and Pragyan rover explored the lunar regolith, Sir.";
+      }
+
+      // 7. NISAR (NASA-ISRO SAR)
+      if (q.includes('nisar')) {
+        jarvisState.lastObj = "NISAR";
+        return "NISAR is the joint NASA-ISRO Earth observation mission carrying dual-frequency L-band and S-band radar. It maps global land and ice changes every 12 days to monitor crustal deformation and climate hazards, Sir.";
+      }
+
+      // 8. International Space Station (ISS)
+      if (q.includes('iss') || q.includes('space station')) {
+        jarvisState.lastObj = "ISS";
+        return "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, maintaining an orbital velocity of 27,600 km/h at 51.6° inclination. Centering 3D globe camera and displaying orbital track now, Sir.";
+      }
+
+      // 9. Hubble Space Telescope
+      if (q.includes('hubble')) {
+        jarvisState.lastObj = "Hubble Space Telescope";
+        return "The Hubble Space Telescope is positioned in Low Earth Orbit at approximately 535 km altitude with a 28.5° inclination, having gathered cosmic imaging data for over three decades, Sir.";
+      }
+
+      // 10. James Webb (JWST)
+      if (q.includes('james webb') || q.includes('jwst') || q.includes('webb')) {
+        jarvisState.lastObj = "James Webb Space Telescope";
+        return "The James Webb Space Telescope is stationed in a halo orbit around Sun-Earth Lagrange Point 2, roughly 1.5 million kilometers beyond Earth, capturing deep infrared cosmological structures, Sir.";
+      }
+
+      // 11. Orbital Physics: Why don't satellites fall?
+      if (q.includes('why') && (q.includes('fall') || q.includes('orbit') || q.includes('gravity') || q.includes('stay up'))) {
+        return "Satellites remain in orbit because high tangential velocity (~7.8 km/s in LEO) generates a centrifugal equilibrium: the spacecraft is in continuous free fall toward Earth, but Earth's surface curves away at the exact same rate, Sir.";
+      }
+
+      // 12. City Passes (Pune / Mumbai / Delhi)
+      if (q.includes('pune') || q.includes('pass') || q.includes('tonight') || q.includes('visible')) {
+        return "For the Pune observation sector (18.52° N, 73.85° E), prime satellite passes occur during dawn and dusk twilight when payloads reflect solar rays against dark ground skies. Navigating to OrbitAlert for exact elevation look-angles, Sir.";
+      }
+
+      // 13. General ISRO Fleet
+      if (q.includes('isro fleet') || q.includes('isro satellites') || q.includes('isro')) {
+        jarvisState.lastObj = "ISRO Fleet";
+        return "God's Eye tracks 18 active ISRO satellites across LEO, Sun-Synchronous, and GTO orbits, including Cartosat-3, EOS-04, EOS-06, and AstroSat. All telemetry downlinks are nominal, Sir.";
+      }
+
+      // 14. Starlink
+      if (q.includes('starlink') || q.includes('spacex')) {
+        return "Starlink operates a Low Earth Orbit megaconstellation between 540 and 570 km altitude, utilizing phased-array antennas and optical inter-satellite laser links to deliver low-latency communications, Sir.";
+      }
+
+      // 15. Greetings
+      if (q === 'hi' || q === 'hello' || q === 'hey' || q.startsWith('hello jarvis') || q.startsWith('hi jarvis')) {
+        return "At your service, Sir. Orbital tracks, pass calculations, and 3D globe telemetry are synchronized. What shall we observe?";
+      }
+
+      // 16. Sun / Space Weather
+      if (q.includes('sun') || q.includes('solar')) {
+        return "The Sun is at our system's gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal operational thresholds.";
+      }
+
+      return null;
     }
 
-    function sendJarvisQuery(q) {
-      document.getElementById('jarvis-input').value = q;
-      executeJarvisChat();
-    }
-
-    // Blueprint Space Intelligence Dispatcher
+    // --- REFINED CHAT DISPATCHER ---
     async function executeJarvisChat() {
       const inp = document.getElementById('jarvis-input');
       const rawText = inp.value.trim();
@@ -2050,40 +2134,27 @@ setInterval(() => {
       stream.appendChild(bMsg);
       stream.scrollTop = stream.scrollHeight;
 
-      let query = rawText;
-      if (/\b(it|its|this|that|track it|show it)\b/i.test(query)) {
-        query += ` (pertaining to ${jarvisState.lastObj})`;
+      // 1. Resolve through local space catalog
+      let answer = resolveSpaceIntel(rawText);
+
+      // 2. If not found locally, query backend route
+      if (!answer) {
+        try {
+          const res = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: rawText, lastSubject: jarvisState.lastObj })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            answer = data.reply;
+          }
+        } catch (_) {}
       }
 
-      const q = query.toUpperCase();
-      let answer = "";
-      let actionTag = null;
-
-      if (q.includes("ISS") || q.includes("SPACE STATION")) {
-        jarvisState.lastObj = "ISS";
-        answer = "I have locked onto the International Space Station. Orbiting at approximately 418 km altitude, maintaining 27,600 km/h at 51.6° inclination. Centering 3D globe camera and displaying orbital track now, Sir.";
-        actionTag = "FOCUS_ISS";
-      } else if (q.includes("HUBBLE")) {
-        jarvisState.lastObj = "Hubble Space Telescope";
-        answer = "I found Hubble (NORAD 20580). Orbiting at ~535 km altitude with a 28.5° inclination. I have highlighted its position on the globe and enabled its orbital path, Sir.";
-        actionTag = "FOCUS_ISS";
-      } else if (q.includes("WHY") && (q.includes("FALL") || q.includes("ORBIT") || q.includes("GRAVITY"))) {
-        answer = "Satellites remain in orbit because forward velocity (~7.8 km/s in LEO) creates a centrifugal balance: the spacecraft is in perpetual free fall where the curvature of its trajectory precisely matches Earth's curvature, Sir.";
-      } else if (q.includes("PUNE") || q.includes("PASS") || q.includes("TONIGHT")) {
-        answer = "For Pune sector (18.52° N, 73.85° E), prime visual passes occur during twilight terminator windows when satellites reflect sunlight against dark skies. Navigating to the OrbitAlert pass table for elevation look-angles, Sir.";
-        actionTag = "NAV_ALERT";
-      } else if (q.includes("ISRO") || q.includes("CARTOSAT") || q.includes("NISAR") || q.includes("ASTROSAT")) {
-        jarvisState.lastObj = "ISRO Fleet";
-        answer = "Tracking primary ISRO orbital assets including Cartosat-3 high-resolution imaging, EOS-04 radar surveillance, and AstroSat in sun-synchronous polar orbits, Sir.";
-      } else if (q.includes("SUN") || q.includes("SOLAR")) {
-        answer = "The Sun is at our system's gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal thresholds.";
-      } else if (q === "HI" || q === "HELLO" || q === "HEY" || q.startsWith("HELLO JARVIS")) {
-        answer = "At your service, Sir. Orbital tracks, pass calculations, and 3D globe telemetry are synchronized. What shall we observe?";
-      } else if (q.includes("SENTINEL") || q.includes("COLLISION") || q.includes("DEBRIS") || q.includes("RE-ENTRY")) {
-        answer = "Accessing Sentinel Conjunction Assessment hub to monitor close approaches and space debris conjunction events, Sir.";
-        actionTag = "NAV_SENTINEL";
-      } else {
-        answer = "Sensors operational, Sir. All orbital downlinks reporting nominal status across target sectors.";
+      // 3. Fallback only if both local and backend fail
+      if (!answer) {
+        answer = "Sensors operational, Sir. Orbital tracks and space telemetry are synchronized across all monitoring stations.";
       }
 
       bMsg.style.fontStyle = 'normal';
@@ -2091,9 +2162,11 @@ setInterval(() => {
       bMsg.innerText = answer;
       jarvisSay(answer);
 
-      if (actionTag === 'NAV_ALERT' && !window.location.pathname.includes('orbitalert')) window.location.href = '/orbitalert';
-      else if (actionTag === 'NAV_SENTINEL' && !window.location.pathname.includes('sentinel')) window.location.href = '/sentinel';
-      else if (actionTag === 'FOCUS_ISS') {
+      // Trigger action if relevant
+      const qLower = rawText.toLowerCase();
+      if (qLower.includes('pass') || qLower.includes('pune')) {
+        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2500);
+      } else if (qLower.includes('iss')) {
         const btn = document.querySelector('[data-target="iss"]') || document.getElementById('btn-track-iss') || document.querySelector('button[title*="ISS"]');
         if (btn) btn.click();
       }
@@ -2107,6 +2180,7 @@ setInterval(() => {
   </script>
 </body>
 </html>
+
 
 
 

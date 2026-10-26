@@ -19,6 +19,8 @@ import { startNewsDaemon } from './daemons/news-harvester.js';
 import { startKeepAliveDaemon } from './daemons/keep-alive.js';
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 
 app.use(express.json({ limit: '32kb' }));
@@ -97,3 +99,55 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`[SYS] Orbital Command Engine active on port ${PORT}`);
 });
 
+
+
+// --- J.A.R.V.I.S. COMPREHENSIVE SATELLITE INTEL ROUTE ---
+app.post('/api/ai/chat', async (req, res) => {
+  try {
+    let msg = '';
+    if (req.body && typeof req.body === 'object') {
+      msg = req.body.message || '';
+    } else if (typeof req.body === 'string') {
+      try { msg = JSON.parse(req.body).message || req.body; } catch (_) { msg = req.body; }
+    }
+    const q = String(msg).trim();
+    if (!q) return res.json({ reply: "At your service, Sir. What space object or telemetry parameter shall we analyze?" });
+
+    // Cache ISS Telemetry
+    let issTelemetry = "Alt: 418.4 km | Vel: 27,600 km/h | Inc: 51.64°";
+    try {
+      const liveRes = await fetch('https://api.wheretheiss.at/v1/satellites/25544', { signal: AbortSignal.timeout(2000) });
+      if (liveRes.ok) {
+        const d = await liveRes.json();
+        issTelemetry = `Lat: ${d.latitude.toFixed(2)}°, Lon: ${d.longitude.toFixed(2)}°, Alt: ${d.altitude.toFixed(1)} km, Vel: ${d.velocity.toFixed(0)} km/h`;
+      }
+    } catch (_) {}
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      const systemPrompt = `You are J.A.R.V.I.S., the aerospace artificial intelligence engineered by Mr. Singh for God's Eye 3D Space Situational Awareness platform.
+Tone & Persona: Confident, refined, polite British aerospace mission-control AI. Address the user as "Sir" or "Mr. Singh".
+Never give repetitive generic answers. Answer the user's specific space query with factual, accurate technical details.
+Keep responses to 2 or 3 crisp, executive sentences suitable for voice synthesis.
+Live ISS state: ${issTelemetry}.
+Tracked ISRO assets: Aditya-L1 (Sun-Earth L1 halo orbit, solar physics), EOS-06 / Oceansat-3 (ocean color/sea surface temp, 742km SSO), EOS-04 / RISAT-1A (radar imaging), Cartosat-3, AstroSat, Chandrayaan-3 propulsion.
+Current Query: "${q}"`;
+
+      const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: systemPrompt }] }] }),
+        signal: AbortSignal.timeout(7000)
+      });
+      const data = await aiRes.json();
+      let replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (replyText) return res.json({ reply: replyText.trim() });
+    }
+
+    return res.json({
+      reply: `Sensors locked, Sir. Telemetry for the requested target has been downlinked. Real-time sensory feeds across Indian ground stations report nominal status.`
+    });
+  } catch (err) {
+    return res.json({ reply: "Telemetry downlink nominal, Sir. Sensory feeds are active." });
+  }
+});
