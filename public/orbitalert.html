@@ -2113,7 +2113,31 @@ setInterval(() => {
       return null;
     }
 
-    // --- REFINED CHAT DISPATCHER ---
+        // --- GLASSMORPHIC TELEMETRY CARD GENERATOR ---
+    function createTelemetryCard(data) {
+      return `
+        <div style="margin-top:8px; padding:10px; background:rgba(2, 18, 31, 0.85); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px; box-shadow:0 0 15px rgba(0, 240, 255, 0.15); font-family:monospace;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0, 240, 255, 0.2); padding-bottom:5px; margin-bottom:6px;">
+            <span style="color:#00f0ff; font-weight:800; font-size:11px; letter-spacing:0.05em;">🛰️ ${data.name}</span>
+            <span style="color:#10b981; font-size:9px; background:rgba(16,185,129,0.15); padding:1px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.3);">TRACKING ACTIVE</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:8px;">
+            <div>NORAD: <strong style="color:#fff;">${data.norad || 'N/A'}</strong></div>
+            <div>ORBIT: <strong style="color:#fff;">${data.orbit || 'LEO'}</strong></div>
+            <div>ALTITUDE: <strong style="color:#38bdf8;">${data.alt || '~420 km'}</strong></div>
+            <div>VELOCITY: <strong style="color:#38bdf8;">${data.vel || '~27,600 km/h'}</strong></div>
+            <div>INC: <strong style="color:#fff;">${data.inc || '51.6°'}</strong></div>
+            <div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button onclick="window.GodsEyeController && window.GodsEyeController.focusSatellite('${data.name}')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
+            <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- REFINED CHAT DISPATCHER WITH TELEMETRY CARDS & FLY-TO ---
     async function executeJarvisChat() {
       const inp = document.getElementById('jarvis-input');
       const rawText = inp.value.trim();
@@ -2130,14 +2154,46 @@ setInterval(() => {
 
       const bMsg = document.createElement('div');
       bMsg.style.cssText = 'align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:7px 10px; border-radius:0 8px 8px 0; color:#00f0ff; font-style:italic;';
-      bMsg.innerText = 'Consulting orbital ephemeris, Sir...';
+      bMsg.innerText = 'Calculating orbital trajectory, Sir...';
       stream.appendChild(bMsg);
       stream.scrollTop = stream.scrollHeight;
 
-      // 1. Resolve through local space catalog
+      // Check space intelligence catalog
       let answer = resolveSpaceIntel(rawText);
+      let telemetryData = null;
 
-      // 2. If not found locally, query backend route
+      const q = rawText.toLowerCase();
+
+      // Attach Telemetry Data Card if satellite detected
+      if (q.includes('iss') || q.includes('space station')) {
+        telemetryData = { name: 'ISS (ZARYA)', norad: '25544', orbit: 'LEO', alt: '418.4 km', vel: '27,600 km/h', inc: '51.64°' };
+        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('ISS');
+      } else if (q.includes('adtiya') || q.includes('aditya')) {
+        telemetryData = { name: 'ADITYA-L1', norad: '57721', orbit: 'Halo (Sun-Earth L1)', alt: '1,500,000 km', vel: '~1.0 km/s', inc: 'Solar Ecliptic' };
+      } else if (q.includes('eos-06') || q.includes('oceansat')) {
+        telemetryData = { name: 'EOS-06 (OCEANSAT-3)', norad: '54361', orbit: 'SSO Polar', alt: '742.0 km', vel: '26,890 km/h', inc: '98.34°' };
+        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-06');
+      } else if (q.includes('eos-04') || q.includes('risat')) {
+        telemetryData = { name: 'EOS-04 (RISAT-1A)', norad: '51656', orbit: 'SSO Polar', alt: '529.0 km', vel: '27,320 km/h', inc: '97.60°' };
+        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-04');
+      } else if (q.includes('cartosat')) {
+        telemetryData = { name: 'CARTOSAT-3', norad: '44804', orbit: 'SSO Polar', alt: '505.0 km', vel: '27,450 km/h', inc: '97.50°' };
+        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Cartosat-3');
+      } else if (q.includes('hubble')) {
+        telemetryData = { name: 'HUBBLE SPACE TELESCOPE', norad: '20580', orbit: 'LEO', alt: '535.0 km', vel: '27,300 km/h', inc: '28.47°' };
+        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Hubble');
+      }
+
+      // Check camera presets
+      if (q.includes('reset') || q.includes('global view')) {
+        if (window.GodsEyeController) window.GodsEyeController.setPreset('GLOBAL');
+        answer = "Resetting 3D orbital perspective to global overview, Sir.";
+      } else if (q.includes('leo view') || q.includes('horizon')) {
+        if (window.GodsEyeController) window.GodsEyeController.setPreset('LEO');
+        answer = "Aligning camera with Low Earth Orbit horizon parameters, Sir.";
+      }
+
+      // If not resolved locally, query backend route
       if (!answer) {
         try {
           const res = await fetch('/api/ai/chat', {
@@ -2152,23 +2208,21 @@ setInterval(() => {
         } catch (_) {}
       }
 
-      // 3. Fallback only if both local and backend fail
       if (!answer) {
         answer = "Sensors operational, Sir. Orbital tracks and space telemetry are synchronized across all monitoring stations.";
       }
 
       bMsg.style.fontStyle = 'normal';
       bMsg.style.color = '#cbd5e1';
-      bMsg.innerText = answer;
+      bMsg.innerHTML = `<div>${answer}</div>` + (telemetryData ? createTelemetryCard(telemetryData) : '');
+
       jarvisSay(answer);
 
-      // Trigger action if relevant
-      const qLower = rawText.toLowerCase();
-      if (qLower.includes('pass') || qLower.includes('pune')) {
-        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2500);
-      } else if (qLower.includes('iss')) {
-        const btn = document.querySelector('[data-target="iss"]') || document.getElementById('btn-track-iss') || document.querySelector('button[title*="ISS"]');
-        if (btn) btn.click();
+      // Redirect actions
+      if (q.includes('pass') || q.includes('pune')) {
+        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2600);
+      } else if (q.includes('sentinel') || q.includes('debris') || q.includes('collision')) {
+        if (!window.location.pathname.includes('sentinel')) setTimeout(() => window.location.href = '/sentinel', 2200);
       }
 
       stream.scrollTop = stream.scrollHeight;
@@ -2180,6 +2234,7 @@ setInterval(() => {
   </script>
 </body>
 </html>
+
 
 
 
