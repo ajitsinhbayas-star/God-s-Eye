@@ -19,8 +19,6 @@ import { startNewsDaemon } from './daemons/news-harvester.js';
 import { startKeepAliveDaemon } from './daemons/keep-alive.js';
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 
 app.use(express.json({ limit: '32kb' }));
@@ -97,21 +95,5 @@ startKeepAliveDaemon();
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[SYS] Orbital Command Engine active on port ${PORT}`);
-});
-}
-    if (message.includes('SUN') || message.includes('SOLAR')) {
-      return res.json({ reply: "The Sun is at the gravitational center of our system, Sir. Current solar radiation flux is nominal." });
-    }
-    if (message.includes('ISS') || message.includes('SPACE STATION')) {
-      return res.json({ reply: "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, moving at 27,600 km/h, Sir." });
-    }
-    if (message.includes('ISRO')) {
-      return res.json({ reply: "Monitoring active ISRO assets including Cartosat-3, EOS-04 radar imaging, and AstroSat, Sir." });
-    }
-
-    return res.json({ reply: "Sensors nominal, Sir. Telemetry uplink active and tracking all target sectors." });
-  } catch (err) {
-    return res.json({ reply: "Telemetry downlink re-established, Sir. All orbital arrays report status nominal." });
-  }
 });
 
