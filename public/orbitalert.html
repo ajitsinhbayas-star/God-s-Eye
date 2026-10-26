@@ -216,7 +216,287 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
   </aside>
 
-  <main>
+    <!-- ==================== TOPOCENTRIC POLAR SKY RADAR ==================== -->
+  <style>
+    #polar-radar-container {
+      background: radial-gradient(circle at center, rgba(2, 18, 31, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.15);
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    .radar-stat-chip {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+  </style>
+
+  <div id="polar-radar-container">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
+        <div>
+          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC POLAR SKY RADAR</span>
+          <span style="font-size:10px; color:#38bdf8; margin-left:8px;">[AZIMUTH / ELEVATION DOME]</span>
+        </div>
+      </div>
+      <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
+        TRACKING: ISS (ZARYA)
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
+      <!-- Polar Radar Canvas -->
+      <div style="position:relative; width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
+        <canvas id="polarRadarCanvas" width="320" height="320" style="width:320px; height:320px; border-radius:50%; background:rgba(1, 10, 19, 0.9); box-shadow:inset 0 0 25px rgba(0,240,255,0.2);"></canvas>
+      </div>
+
+      <!-- Real-Time Metrics & Pass Legend -->
+      <div style="flex:1; min-width:260px; display:flex; flex-direction:column; gap:10px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">CURRENT AZIMUTH</div>
+            <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">142.5° (SE)</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">CURRENT ELEVATION</div>
+            <div id="radar-val-el" style="color:#38bdf8; font-size:14px; font-weight:800;">+48.2°</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">MAX ELEVATION (TCA)</div>
+            <div id="radar-val-max-el" style="color:#10b981; font-size:14px; font-weight:800;">68.4° (PEAK)</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">SLANT RANGE</div>
+            <div id="radar-val-range" style="color:#e2e8f0; font-size:14px; font-weight:800;">582 km</div>
+          </div>
+        </div>
+
+        <div style="padding:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
+          <div style="color:#fff; font-weight:700; margin-bottom:4px;">RADAR SKY LEGEND:</div>
+          <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Rise Point on Horizon)</div>
+          <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Zenith Elevation)</div>
+          <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Set Point on Horizon)</div>
+          <div style="margin-top:6px; color:#38bdf8; font-size:9px;">* Concentric rings indicate 0° (horizon), 30°, 60°, and 90° (zenith).</div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('ISS')" style="flex:1; background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-family:monospace; font-size:10px; padding:6px; cursor:pointer; font-weight:700;">PREVIEW ISS PASS</button>
+          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('CARTOSAT-3')" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-family:monospace; font-size:10px; padding:6px; cursor:pointer;">PREVIEW CARTOSAT-3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function initPolarSkyRadar() {
+      const canvas = document.getElementById('polarRadarCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = cx - 22;
+
+      // Active Pass State
+      let activePass = {
+        name: 'ISS (ZARYA)',
+        aosAz: 215, // Rise SW
+        maxEl: 68,
+        tcaAz: 135, // Peak SE
+        losAz: 45,  // Set NE
+        currentProgress: 0.55 // 0.0 to 1.0
+      };
+
+      // Convert Topocentric Azimuth (degrees) & Elevation (degrees) to Canvas (x, y)
+      // Azimuth: 0° = North (top), 90° = East (right), 180° = South (bottom), 270° = West (left)
+      // Elevation: 0° = Horizon (outer edge), 90° = Zenith (center)
+      function azElToXY(azDeg, elDeg) {
+        const clampedEl = Math.max(0, Math.min(90, elDeg));
+        const r = radius * (1 - clampedEl / 90);
+        const theta = (azDeg - 90) * (Math.PI / 180);
+        return {
+          x: cx + r * Math.cos(theta),
+          y: cy + r * Math.sin(theta)
+        };
+      }
+
+      function drawRadarDome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Concentric Elevation Rings (0°, 30°, 60°)
+        const rings = [
+          { el: 0, label: '0°' },
+          { el: 30, label: '30°' },
+          { el: 60, label: '60°' }
+        ];
+
+        rings.forEach(ring => {
+          const r = radius * (1 - ring.el / 90);
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = ring.el === 0 ? 'rgba(0, 240, 255, 0.7)' : 'rgba(0, 240, 255, 0.2)';
+          ctx.lineWidth = ring.el === 0 ? 1.5 : 1;
+          ctx.setLineDash(ring.el === 0 ? [] : [3, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Elevation Label
+          if (ring.el > 0) {
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
+            ctx.font = '9px monospace';
+            ctx.fillText(ring.label, cx + 4, cy - r + 10);
+          }
+        });
+
+        // Zenith Center Crosshair (90°)
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f0ff';
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
+        ctx.font = '9px monospace';
+        ctx.fillText('90°Z', cx + 5, cy + 12);
+
+        // 2. Cardinal Azimuth Crosshairs (N, S, E, W)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - radius);
+        ctx.lineTo(cx, cy + radius);
+        ctx.moveTo(cx - radius, cy);
+        ctx.lineTo(cx + radius, cy);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Cardinal Text Markers
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, cy - radius - 10);
+        ctx.fillText('S', cx, cy + radius + 10);
+        ctx.fillText('E', cx + radius + 11, cy);
+        ctx.fillText('W', cx - radius - 11, cy);
+
+        // 3. Draw Projected Satellite Pass Trajectory Arc
+        const start = azElToXY(activePass.aosAz, 0);
+        const apex = azElToXY(activePass.tcaAz, activePass.maxEl);
+        const end = azElToXY(activePass.losAz, 0);
+
+        // Quadratic Bézier pass curve
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.quadraticCurveTo(apex.x, apex.y, end.x, end.y);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 8;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // AOS Marker (Rise)
+        ctx.beginPath();
+        ctx.arc(start.x, start.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('AOS', start.x + (start.x > cx ? 12 : -12), start.y + (start.y > cy ? 10 : -10));
+
+        // TCA Marker (Peak)
+        ctx.beginPath();
+        ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#10b981';
+        ctx.fill();
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('TCA', apex.x, apex.y - 10);
+
+        // LOS Marker (Set)
+        ctx.beginPath();
+        ctx.arc(end.x, end.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('LOS', end.x + (end.x > cx ? 12 : -12), end.y + (end.y > cy ? 10 : -10));
+
+        // 4. Interpolate Current Satellite Position on Arc
+        const t = activePass.currentProgress;
+        const currentX = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * apex.x + Math.pow(t, 2) * end.y;
+        const currentY = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * apex.y + Math.pow(t, 2) * end.y;
+
+        // Current Pulsing Satellite Marker
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f0ff';
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Target Tag
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(activePass.name, currentX, currentY - 12);
+      }
+
+      // Live Radar Controller Interface
+      window.PolarRadar = {
+        setPass: function(name, aosAz, maxEl, tcaAz, losAz) {
+          activePass.name = name;
+          activePass.aosAz = aosAz;
+          activePass.maxEl = maxEl;
+          activePass.tcaAz = tcaAz;
+          activePass.losAz = losAz;
+          activePass.currentProgress = 0.5;
+
+          const badge = document.getElementById('radar-target-badge');
+          if (badge) badge.innerText = 'TRACKING: ' + name.toUpperCase();
+
+          const maxElEl = document.getElementById('radar-val-max-el');
+          if (maxElEl) maxElEl.innerText = maxEl + '° (PEAK)';
+
+          const azEl = document.getElementById('radar-val-az');
+          if (azEl) azEl.innerText = tcaAz.toFixed(1) + '°';
+
+          const elEl = document.getElementById('radar-val-el');
+          if (elEl) elEl.innerText = '+' + maxEl.toFixed(1) + '°';
+
+          drawRadarDome();
+        },
+
+        simulatePass: function(satellite) {
+          if (satellite === 'ISS') {
+            this.setPass('ISS (ZARYA)', 215, 68, 135, 45);
+          } else if (satellite === 'CARTOSAT-3') {
+            this.setPass('CARTOSAT-3', 188, 76, 92, 12);
+          } else if (satellite === 'EOS-06') {
+            this.setPass('EOS-06', 195, 54, 110, 28);
+          }
+        }
+      };
+
+      // Initial Render
+      drawRadarDome();
+
+      // Hook click events on OrbitAlert tables to auto-plot on radar
+      document.addEventListener('click', function(e) {
+        const row = e.target.closest('tr, [data-pass]');
+        if (row && row.textContent) {
+          const txt = row.textContent.toUpperCase();
+          if (txt.includes('ISS')) window.PolarRadar.simulatePass('ISS');
+          else if (txt.includes('CARTOSAT')) window.PolarRadar.simulatePass('CARTOSAT-3');
+          else if (txt.includes('EOS')) window.PolarRadar.simulatePass('EOS-06');
+        }
+      });
+    })();
+  </script>
+<main>
     <div class="topbar">
       <div class="crumb">
         <a href="index.html#/earth" style="color:#789bbb;text-decoration:none">3D Explorer</a>&nbsp; / &nbsp;OrbitAlert&nbsp; / &nbsp;<span id="crumbCurrent">Overview</span>
@@ -1281,7 +1561,287 @@ function renderHealthTable() {
         </div>
       </div>
       <div class="table-wrap">
-        <table class="data-table">
+          <!-- ==================== TOPOCENTRIC POLAR SKY RADAR ==================== -->
+  <style>
+    #polar-radar-container {
+      background: radial-gradient(circle at center, rgba(2, 18, 31, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.15);
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    .radar-stat-chip {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+  </style>
+
+  <div id="polar-radar-container">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
+        <div>
+          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC POLAR SKY RADAR</span>
+          <span style="font-size:10px; color:#38bdf8; margin-left:8px;">[AZIMUTH / ELEVATION DOME]</span>
+        </div>
+      </div>
+      <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
+        TRACKING: ISS (ZARYA)
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
+      <!-- Polar Radar Canvas -->
+      <div style="position:relative; width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
+        <canvas id="polarRadarCanvas" width="320" height="320" style="width:320px; height:320px; border-radius:50%; background:rgba(1, 10, 19, 0.9); box-shadow:inset 0 0 25px rgba(0,240,255,0.2);"></canvas>
+      </div>
+
+      <!-- Real-Time Metrics & Pass Legend -->
+      <div style="flex:1; min-width:260px; display:flex; flex-direction:column; gap:10px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">CURRENT AZIMUTH</div>
+            <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">142.5° (SE)</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">CURRENT ELEVATION</div>
+            <div id="radar-val-el" style="color:#38bdf8; font-size:14px; font-weight:800;">+48.2°</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">MAX ELEVATION (TCA)</div>
+            <div id="radar-val-max-el" style="color:#10b981; font-size:14px; font-weight:800;">68.4° (PEAK)</div>
+          </div>
+          <div class="radar-stat-chip">
+            <div style="color:#64748b; font-size:9px;">SLANT RANGE</div>
+            <div id="radar-val-range" style="color:#e2e8f0; font-size:14px; font-weight:800;">582 km</div>
+          </div>
+        </div>
+
+        <div style="padding:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
+          <div style="color:#fff; font-weight:700; margin-bottom:4px;">RADAR SKY LEGEND:</div>
+          <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Rise Point on Horizon)</div>
+          <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Zenith Elevation)</div>
+          <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Set Point on Horizon)</div>
+          <div style="margin-top:6px; color:#38bdf8; font-size:9px;">* Concentric rings indicate 0° (horizon), 30°, 60°, and 90° (zenith).</div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('ISS')" style="flex:1; background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-family:monospace; font-size:10px; padding:6px; cursor:pointer; font-weight:700;">PREVIEW ISS PASS</button>
+          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('CARTOSAT-3')" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-family:monospace; font-size:10px; padding:6px; cursor:pointer;">PREVIEW CARTOSAT-3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function initPolarSkyRadar() {
+      const canvas = document.getElementById('polarRadarCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = cx - 22;
+
+      // Active Pass State
+      let activePass = {
+        name: 'ISS (ZARYA)',
+        aosAz: 215, // Rise SW
+        maxEl: 68,
+        tcaAz: 135, // Peak SE
+        losAz: 45,  // Set NE
+        currentProgress: 0.55 // 0.0 to 1.0
+      };
+
+      // Convert Topocentric Azimuth (degrees) & Elevation (degrees) to Canvas (x, y)
+      // Azimuth: 0° = North (top), 90° = East (right), 180° = South (bottom), 270° = West (left)
+      // Elevation: 0° = Horizon (outer edge), 90° = Zenith (center)
+      function azElToXY(azDeg, elDeg) {
+        const clampedEl = Math.max(0, Math.min(90, elDeg));
+        const r = radius * (1 - clampedEl / 90);
+        const theta = (azDeg - 90) * (Math.PI / 180);
+        return {
+          x: cx + r * Math.cos(theta),
+          y: cy + r * Math.sin(theta)
+        };
+      }
+
+      function drawRadarDome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Concentric Elevation Rings (0°, 30°, 60°)
+        const rings = [
+          { el: 0, label: '0°' },
+          { el: 30, label: '30°' },
+          { el: 60, label: '60°' }
+        ];
+
+        rings.forEach(ring => {
+          const r = radius * (1 - ring.el / 90);
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = ring.el === 0 ? 'rgba(0, 240, 255, 0.7)' : 'rgba(0, 240, 255, 0.2)';
+          ctx.lineWidth = ring.el === 0 ? 1.5 : 1;
+          ctx.setLineDash(ring.el === 0 ? [] : [3, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Elevation Label
+          if (ring.el > 0) {
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
+            ctx.font = '9px monospace';
+            ctx.fillText(ring.label, cx + 4, cy - r + 10);
+          }
+        });
+
+        // Zenith Center Crosshair (90°)
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f0ff';
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
+        ctx.font = '9px monospace';
+        ctx.fillText('90°Z', cx + 5, cy + 12);
+
+        // 2. Cardinal Azimuth Crosshairs (N, S, E, W)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - radius);
+        ctx.lineTo(cx, cy + radius);
+        ctx.moveTo(cx - radius, cy);
+        ctx.lineTo(cx + radius, cy);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Cardinal Text Markers
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, cy - radius - 10);
+        ctx.fillText('S', cx, cy + radius + 10);
+        ctx.fillText('E', cx + radius + 11, cy);
+        ctx.fillText('W', cx - radius - 11, cy);
+
+        // 3. Draw Projected Satellite Pass Trajectory Arc
+        const start = azElToXY(activePass.aosAz, 0);
+        const apex = azElToXY(activePass.tcaAz, activePass.maxEl);
+        const end = azElToXY(activePass.losAz, 0);
+
+        // Quadratic Bézier pass curve
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.quadraticCurveTo(apex.x, apex.y, end.x, end.y);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 8;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // AOS Marker (Rise)
+        ctx.beginPath();
+        ctx.arc(start.x, start.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('AOS', start.x + (start.x > cx ? 12 : -12), start.y + (start.y > cy ? 10 : -10));
+
+        // TCA Marker (Peak)
+        ctx.beginPath();
+        ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#10b981';
+        ctx.fill();
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('TCA', apex.x, apex.y - 10);
+
+        // LOS Marker (Set)
+        ctx.beginPath();
+        ctx.arc(end.x, end.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText('LOS', end.x + (end.x > cx ? 12 : -12), end.y + (end.y > cy ? 10 : -10));
+
+        // 4. Interpolate Current Satellite Position on Arc
+        const t = activePass.currentProgress;
+        const currentX = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * apex.x + Math.pow(t, 2) * end.y;
+        const currentY = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * apex.y + Math.pow(t, 2) * end.y;
+
+        // Current Pulsing Satellite Marker
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f0ff';
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Target Tag
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(activePass.name, currentX, currentY - 12);
+      }
+
+      // Live Radar Controller Interface
+      window.PolarRadar = {
+        setPass: function(name, aosAz, maxEl, tcaAz, losAz) {
+          activePass.name = name;
+          activePass.aosAz = aosAz;
+          activePass.maxEl = maxEl;
+          activePass.tcaAz = tcaAz;
+          activePass.losAz = losAz;
+          activePass.currentProgress = 0.5;
+
+          const badge = document.getElementById('radar-target-badge');
+          if (badge) badge.innerText = 'TRACKING: ' + name.toUpperCase();
+
+          const maxElEl = document.getElementById('radar-val-max-el');
+          if (maxElEl) maxElEl.innerText = maxEl + '° (PEAK)';
+
+          const azEl = document.getElementById('radar-val-az');
+          if (azEl) azEl.innerText = tcaAz.toFixed(1) + '°';
+
+          const elEl = document.getElementById('radar-val-el');
+          if (elEl) elEl.innerText = '+' + maxEl.toFixed(1) + '°';
+
+          drawRadarDome();
+        },
+
+        simulatePass: function(satellite) {
+          if (satellite === 'ISS') {
+            this.setPass('ISS (ZARYA)', 215, 68, 135, 45);
+          } else if (satellite === 'CARTOSAT-3') {
+            this.setPass('CARTOSAT-3', 188, 76, 92, 12);
+          } else if (satellite === 'EOS-06') {
+            this.setPass('EOS-06', 195, 54, 110, 28);
+          }
+        }
+      };
+
+      // Initial Render
+      drawRadarDome();
+
+      // Hook click events on OrbitAlert tables to auto-plot on radar
+      document.addEventListener('click', function(e) {
+        const row = e.target.closest('tr, [data-pass]');
+        if (row && row.textContent) {
+          const txt = row.textContent.toUpperCase();
+          if (txt.includes('ISS')) window.PolarRadar.simulatePass('ISS');
+          else if (txt.includes('CARTOSAT')) window.PolarRadar.simulatePass('CARTOSAT-3');
+          else if (txt.includes('EOS')) window.PolarRadar.simulatePass('EOS-06');
+        }
+      });
+    })();
+  </script>
+<table class="data-table">
           <thead>
             <tr>
               <th>Source Pipeline</th>
@@ -2234,6 +2794,7 @@ setInterval(() => {
   </script>
 </body>
 </html>
+
 
 
 
