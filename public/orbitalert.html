@@ -1,2807 +1,436 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#07111f" />
-  <!-- Primary Meta Tags -->
-  <title>OrbitAlert Center — Real-Time Satellite Pass Predictions & Conjunction Screening</title>
-  <meta name="title" content="OrbitAlert Center — Satellite Pass & Conjunction Hub" />
-  <meta name="description" content="Calculate visible satellite passes and close-approach orbital conjunctions for the ISS, Cartosat-3, NISAR, and Tiangong over your ground station." />
-  <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/orbitalert" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/orbitalert" />
-  <meta property="og:title" content="OrbitAlert — Satellite Pass Predictions & Conjunction Radar" />
-  <meta property="og:description" content="Calculate naked-eye twilight passes and LEO conjunction warnings in real-time." />
-
-  <!-- Schema.org Dataset Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": "Satellite Overpass and Conjunction Predictions",
-    "description": "Ephemeris calculations, topocentric elevation look-angles, and visible overhead passes for LEO orbital assets.",
-    "url": "https://god-s-eye-ah3d.onrender.com/orbitalert",
-    "spatialCoverage": "Global / Indian Subcontinent Sector",
-    "temporalCoverage": "2026/.."
-  }
-  </script>
-<style>
-  :root{--bg:#07111f;--panel:#0d1a2b;--panel2:#101f32;--panel3:#13263c;--line:#20354c;--text:#edf5ff;--muted:#91a6be;--cyan:#55d8ff;--blue:#6a9cff;--green:#57e0ac;--amber:#ffbd69;--red:#ff7387;--purple:#c0a2ff;--radius:16px;--shadow:0 18px 50px #0004}
-  *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 72% -15%,#103254 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}a{color:inherit;text-decoration:none}.app{min-height:100vh;display:grid;grid-template-columns:256px minmax(0,1fr)}
-  .sidebar{background:#081321df;border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;overflow:auto;z-index:5;backdrop-filter:blur(15px)}.brand{display:flex;align-items:center;gap:11px;padding:0 9px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#164d73,#112b4a);display:grid;place-items:center;color:var(--cyan);border:1px solid #2a6685;box-shadow:0 0 22px #55d8ff12}.brand-mark svg{width:24px}.brand strong{font-size:17px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.8px;margin-top:1px}.nav-label{padding:0 11px;color:#69829e;letter-spacing:1.5px;font-size:10px;font-weight:800;margin-bottom:8px}.nav{display:grid;gap:5px}.nav-btn{border:1px solid transparent;background:transparent;color:#9db0c6;padding:10px 12px;border-radius:10px;text-align:left;display:flex;align-items:center;gap:12px;transition:.18s}.nav-btn svg{width:18px;height:18px;flex:none}.nav-btn:hover{background:#10243a;color:var(--text)}.nav-btn.active{background:linear-gradient(90deg,#12344f,#10263c);border-color:#23506b;color:#eaf9ff}.nav-btn.active svg{color:var(--cyan)}.nav-count{margin-left:auto;background:#24384f;color:#c6d8eb;padding:2px 7px;border-radius:20px;font-size:10px}.sidebar-bottom{margin-top:auto;border:1px solid var(--line);background:#0b1929;border-radius:13px;padding:13px}.connection-line{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:650}.dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:var(--green);box-shadow:0 0 8px currentColor}.sidebar-bottom p{color:var(--muted);font-size:11px;margin:8px 0 0}
-  main{min-width:0;padding:28px clamp(16px,3.2vw,45px) 42px;max-width:1800px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:24px;flex-wrap:wrap}.crumb{color:var(--muted);font-size:12px}.crumb span{color:#d8e8f8}.top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.icon-btn,.secondary-btn,.primary-btn{border:1px solid var(--line);background:#0e1e30;color:#d9e8f7;border-radius:10px;padding:9px 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}.icon-btn{width:39px;height:39px;padding:0}.secondary-btn:hover,.icon-btn:hover{border-color:#3d6a8e;background:#122942}.primary-btn{background:linear-gradient(135deg,#29bce9,#3e8ee8);border:0;color:#041321;font-weight:800;box-shadow:0 8px 24px #35bce51b}.primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.primary-btn svg,.secondary-btn svg,.icon-btn svg{width:16px;height:16px}.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:20px}.eyebrow{color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.page-heading h1{font-size:clamp(26px,3vw,36px);line-height:1.15;letter-spacing:-.9px;margin:6px 0 8px}.page-heading p{margin:0;color:var(--muted);max-width:680px}.heading-buttons{display:flex;gap:9px;flex-wrap:wrap}
-  .live-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:11px 15px;border:1px solid #1f5c4b;background:linear-gradient(90deg,#0c2927,#0c2135);border-radius:11px;color:#b8f5dc;margin-bottom:19px;font-size:12px}.live-banner strong{color:#57e0ac}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat-card{position:relative;overflow:hidden;background:linear-gradient(145deg,#102136,#0d1a2b 75%);border:1px solid var(--line);border-radius:14px;padding:17px;min-height:130px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:#9cb0c6;font-size:12px}.stat-icon{width:34px;height:34px;border:1px solid #29425b;border-radius:10px;background:#112841;display:grid;place-items:center;color:var(--cyan)}.stat-icon svg{width:17px}.stat-value{font-size:30px;font-weight:750;letter-spacing:-1px;margin-top:8px}.stat-note{font-size:11px;color:#829bb4;margin-top:1px}
-  .section{background:linear-gradient(160deg,#0d1b2c,#0a1726);border:1px solid var(--line);border-radius:var(--radius);min-width:0}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 19px;border-bottom:1px solid var(--line);flex-wrap:wrap}.section-head h2{margin:0;font-size:15px;letter-spacing:-.2px}.section-sub{font-size:11px;color:var(--muted);margin-top:3px}.head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.section-body{padding:18px 19px}.content-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.85fr);gap:18px;align-items:start}.feed-tools{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.searchbox{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;border:1px solid #263d55;border-radius:10px;background:#091626;padding:0 11px}.searchbox svg{width:16px;color:#7690aa;flex:none}.searchbox input{width:100%;min-width:0;border:0;outline:none;background:transparent;color:var(--text);padding:10px 0}.searchbox input::placeholder{color:#6e849b}.select{border:1px solid #263d55;border-radius:10px;background:#0a1829;color:#bfd0e2;padding:10px 11px;max-width:190px}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.chip{border:1px solid #233a52;background:#0b1a2b;color:#93a9c1;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:700}.chip:hover{border-color:#43789d;color:#e8f6ff}.chip.active{color:#baf0ff;border-color:#246b8d;background:#10324a}.event-list{display:grid;gap:9px}.event-card{width:100%;text-align:left;border:1px solid #1c334a;background:#0b1929;color:var(--text);border-radius:12px;padding:13px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:start;transition:.18s}.event-card:hover{background:#102238;border-color:#315674;transform:translateY(-1px)}.event-icon{width:38px;height:38px;border-radius:11px;background:#132d43;display:grid;place-items:center;color:var(--cyan)}.event-icon svg{width:19px}.event-icon.amber{color:var(--amber);background:#332819}.event-icon.red{color:var(--red);background:#34202a}.event-icon.green{color:var(--green);background:#153129}.event-icon.purple{color:var(--purple);background:#28233b}.event-title{font-size:13px;font-weight:750;line-height:1.35}.event-meta{font-size:11px;color:#90a6bd;margin-top:4px}.event-description{color:#9bb0c5;font-size:11px;margin-top:7px;line-height:1.45}.event-right{display:flex;align-items:flex-end;flex-direction:column;gap:8px}.pill{font-size:10px;font-weight:800;letter-spacing:.2px;padding:4px 7px;border-radius:6px;white-space:nowrap;border:1px solid transparent}.pill.amber{background:#342717;color:#ffce8c;border-color:#584025}.pill.red{background:#361e29;color:#ff9cac;border-color:#633242}.pill.green{background:#153329;color:#85eac0;border-color:#235b47}.pill.blue{background:#142d43;color:#9addff;border-color:#24516f}.pill.purple{background:#2a2440;color:#d2c2ff;border-color:#4b3d76}.pill.muted{background:#1a2a3d;color:#abc0d5;border-color:#2a3d53}.event-time{font-size:10px;color:#748ba4;text-align:right}.empty-state{text-align:center;padding:35px 15px;color:var(--muted)}.empty-state svg{width:28px;margin-bottom:7px;color:#67829c}.empty-state strong{display:block;color:#ccdaea;margin-bottom:3px}
-  .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.mission-card{border:1px solid #1f3750;background:#0b1929;border-radius:13px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:.18s}.mission-card:hover{border-color:#3a6d94;background:#0f2136}.mission-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.mission-name{font-weight:750;font-size:14px;color:#fff;display:flex;align-items:center;gap:7px}.mission-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;background:#081320;border:1px solid #192d42;border-radius:9px;padding:8px;font-size:11px}.mission-metrics small{display:block;color:#748da6;font-size:9px;text-transform:uppercase}.mission-metrics strong{color:#cbe6ff;font-family:ui-monospace,monospace}.mission-actions{display:flex;gap:7px;margin-top:auto}
-  .right-stack{display:grid;gap:16px}.mini-map{position:relative;overflow:hidden;min-height:225px;background:radial-gradient(ellipse at 52% 57%,#14395a 0%,#0a1b2b 42%,#07111f 77%);border:1px solid #213b53;border-radius:13px;padding:15px}.mini-map:before{content:"";position:absolute;width:190px;height:190px;left:50%;top:53%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #3f7a91;background:radial-gradient(circle at 35% 32%,#235d78,#0d293d 62%,#071625 80%);box-shadow:inset -20px -15px 35px #020912,0 0 28px #3cc7ee14}.mini-map:after{content:"";position:absolute;left:50%;top:53%;width:245px;height:95px;transform:translate(-50%,-50%) rotate(-22deg);border:1px solid #51d5ff8a;border-radius:50%;box-shadow:0 0 16px #51d5ff12}.map-label{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#c7e8ff}.map-label small{color:#7e9db6}.map-foot{position:absolute;z-index:2;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;font-size:10px;color:#7e9cb7}.orbit-dot{position:absolute;z-index:2;width:8px;height:8px;background:var(--cyan);border-radius:50%;top:45%;left:29%;box-shadow:0 0 11px var(--cyan)}.orbit-dot.second{top:68%;left:69%;background:var(--amber);box-shadow:0 0 11px var(--amber)}.mini-map .map-open{position:absolute;z-index:3;right:12px;bottom:37px;border:1px solid #356381;background:#0b2034e8;color:#ceefff;border-radius:8px;padding:7px 9px;font-size:10px}.source-list{display:grid;gap:0}.source-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1b3045}.source-row:last-child{border-bottom:0;padding-bottom:0}.source-symbol{width:32px;height:32px;border-radius:9px;background:#142940;color:#8bbde0;display:grid;place-items:center;flex:none}.source-symbol svg{width:16px}.source-detail{flex:1;min-width:0}.source-detail strong{display:block;font-size:12px}.source-detail small{display:block;color:#8198af;font-size:10px;margin-top:2px}.source-status{font-size:10px;display:flex;align-items:center;gap:5px;color:#78deb0}.source-status .dot{width:6px;height:6px;background:var(--green)}.source-status.warn{color:#eac183}.source-status.warn .dot{background:var(--amber)}
-  .settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.7fr);gap:18px}.setting-group{padding:15px 0;border-bottom:1px solid #1c3045}.setting-group:first-child{padding-top:0}.setting-group:last-child{border-bottom:0;padding-bottom:0}.setting-group h3{margin:0 0 3px;font-size:13px}.setting-group p{margin:0 0 12px;color:var(--muted);font-size:11px}.toggle-row{display:flex;align-items:center;gap:10px;margin:9px 0;color:#c3d2e2;font-size:12px}.toggle-row input{appearance:none;width:33px;height:19px;background:#27384b;border:1px solid #3b4e63;border-radius:20px;position:relative;cursor:pointer;flex:none;transition:.18s}.toggle-row input:before{content:"";position:absolute;width:13px;height:13px;left:2px;top:2px;border-radius:50%;background:#9aabbc;transition:.18s}.toggle-row input:checked{background:#146181;border-color:#32afd9}.toggle-row input:checked:before{left:16px;background:#d9f8ff}.setting-note{padding:12px;border:1px solid #24465d;background:#0d2538;border-radius:10px;color:#9bc0d7;font-size:11px;line-height:1.55}.table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;min-width:560px}.data-table th{text-align:left;color:#7891a9;font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:750}.data-table td{padding:13px 14px;border-bottom:1px solid #182e43;color:#bacbde;font-size:12px}.data-table tr:last-child td{border-bottom:0}.source-name{display:flex;align-items:center;gap:9px;color:#edf5ff;font-weight:650}.source-name .source-symbol{width:28px;height:28px}.footer-note{font-size:10px;color:#617b95;text-align:center;margin-top:22px}
-  .overlay{position:fixed;inset:0;background:#020711b8;z-index:20;display:none;justify-content:flex-end;backdrop-filter:blur(5px)}.overlay.open{display:flex}.drawer{width:min(540px,100%);height:100%;overflow:auto;background:#0a1727;border-left:1px solid #2a4057;box-shadow:var(--shadow);padding:23px}.drawer-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.drawer h2{font-size:22px;margin:10px 0 5px;line-height:1.2}.drawer-intro{font-size:12px;color:var(--muted);margin:0 0 20px}.detail-block{border:1px solid var(--line);background:#0d1d2e;border-radius:12px;padding:14px;margin:13px 0}.detail-block h3{font-size:12px;margin:0 0 11px;color:#d9e9f8}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.detail-field small{display:block;color:#8198b0;font-size:10px;margin-bottom:4px}.detail-field strong{font-size:12px;font-weight:700;color:#e3effb;overflow-wrap:anywhere}.detail-copy{font-size:12px;color:#a5b9cd;line-height:1.65}.timeline{display:grid;gap:13px}.timeline-row{display:grid;grid-template-columns:12px 1fr;gap:10px;font-size:11px;color:#a6bad0}.timeline-bullet{margin-top:4px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px #16334a}.drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.toast{position:fixed;z-index:50;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e0f8ff;color:#072136;border-radius:11px;padding:11px 15px;font-size:12px;font-weight:750;box-shadow:var(--shadow);transition:.22s;max-width:calc(100vw - 30px)}.toast.show{opacity:1;transform:translate(-50%,0)}.mobile-nav{display:none}
-  @media(max-width:1100px){.app{grid-template-columns:220px minmax(0,1fr)}main{padding:24px 22px}.content-grid{grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr)}.stats{gap:9px}.stat-card{padding:13px}.stat-value{font-size:26px}}
-  @media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{display:none}main{padding:18px 14px 85px}.topbar{margin-bottom:22px}.page-heading{align-items:flex-start;flex-direction:column}.heading-buttons{width:100%}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid,.settings-grid{grid-template-columns:1fr}.right-stack{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;background:#071321f2;border-top:1px solid #233b52;backdrop-filter:blur(18px);justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px}.mobile-nav button{border:0;background:transparent;color:#829ab2;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;font-size:9px;min-width:0}.mobile-nav svg{width:18px;height:18px}.mobile-nav button.active{color:var(--cyan)}}
-  @media(max-width:570px){main{padding-left:11px;padding-right:11px}.page-heading h1{font-size:28px}.stats{gap:8px}.stat-card{min-height:117px;padding:12px}.stat-value{font-size:25px}.content-grid{gap:12px}.section-head{padding:14px}.section-body{padding:13px}.event-card{grid-template-columns:33px minmax(0,1fr);gap:9px;padding:10px}.event-icon{width:33px;height:33px}.event-right{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.event-time{text-align:left}.right-stack{grid-template-columns:1fr}.mini-map{min-height:210px}.feed-tools .select{max-width:none;flex:1}.drawer{padding:17px}.detail-grid{gap:12px}}
-.sci-viz-box{border:1px solid #23405c;background:radial-gradient(circle at 50% 50%,#0e2338 0%,#07121f 100%);border-radius:12px;padding:13px;margin:13px 0}
-  .sci-viz-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#9bc0df;margin-bottom:9px;font-family:ui-monospace,monospace}
-  .sci-canvas{width:100%;height:165px;display:block;border-radius:9px;background:#050d18;border:1px solid #193149}
-  .scrubber-row{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11px;color:#b8d4ee;font-family:ui-monospace,monospace}
-  .scrubber-row input[type=range]{flex:1;accent-color:var(--cyan);cursor:pointer}
-  .reentry-bar-track{position:relative;height:26px;background:#071320;border:1px solid #223c56;border-radius:8px;overflow:hidden;margin:10px 0}
-  .reentry-bar-prev{position:absolute;top:4px;bottom:4px;left:18%;width:58%;background:#3a4f6655;border:1px dashed #6989ab;border-radius:5px}
-  .reentry-bar-curr{position:absolute;top:4px;bottom:4px;left:24%;width:52%;background:linear-gradient(90deg,#ffbd6933,#ff738766,#ffbd6933);border:1px solid var(--amber);border-radius:5px}
-  .reentry-bar-center{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-  .caution-note{padding:9px 11px;border-radius:8px;background:#2b1f14;border:1px solid #5c4023;color:#f5cfa0;font-size:11px;margin-top:9px;line-height:1.45}
-/* ==========================================================================
-   MISSION-CONTROL UNIFIED DESIGN SYSTEM (SECTION 7)
-   ========================================================================== */
-:root {
-  /* Core Canvas & Elevation */
-  --space-void: #020612;
-  --space-surface: rgba(8, 18, 36, 0.88);
-  --space-overlay: rgba(13, 27, 48, 0.94);
-  --space-card: #0b1a2e;
-  --space-border: rgba(56, 189, 248, 0.18);
-  --space-border-strong: rgba(56, 189, 248, 0.42);
-
-  /* Functional Accents (Strictly Semantic) */
-  --accent-cyan: #38bdf8;
-  --accent-emerald: #34d399;
-  --accent-amber: #fbbf24;
-  --accent-rose: #f87171;
-  --accent-purple: #c084fc;
-
-  /* Typography Colors */
-  --text-bright: #f8fafc;
-  --text-base: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-
-  /* Elevation & Geometry */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --elevation-panel: 0 16px 48px -8px rgba(0, 0, 0, 0.85);
-  --glass-blur: blur(20px);
-}
-
-/* Accessible Interactive Elements */
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--accent-cyan);
-  outline-offset: 2px;
-}
-
-/* Standardized Provenance Badges */
-.badge-class {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 2px 7px;
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
-}
-.badge-measured {
-  background: rgba(16, 185, 129, 0.16);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-.badge-propagated {
-  background: rgba(56, 189, 248, 0.16);
-  color: #7dd3fc;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-}
-.badge-prediction {
-  background: rgba(245, 158, 11, 0.16);
-  color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-.badge-catalogue {
-  background: rgba(148, 163, 184, 0.14);
-  color: #cbd5e1;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-.badge-illustration {
-  background: rgba(192, 132, 252, 0.16);
-  color: #e9d5ff;
-  border: 1px solid rgba(192, 132, 252, 0.4);
-}
-
-/* Standardized Metric Tile */
-.metric-tile {
-  background: var(--space-card);
-  border: 1px solid var(--space-border);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.metric-tile-label {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-.metric-tile-val {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-bright);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.metric-tile-sub {
-  font-size: 10px;
-  color: var(--text-dim);
-}
-
-/* Standardized Empty, Loading & Stale States */
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  text-align: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-.state-icon {
-  font-size: 24px;
-  opacity: 0.8;
-}
-.state-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-base);
-}
-.state-desc {
-  font-size: 11px;
-  max-width: 320px;
-  line-height: 1.4;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrbitAlert // Topocentric Pass Prediction & Polar Sky Radar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #030712;
+      color: #e2e8f0;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .nav-btn {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 6px;
+      color: #00f0ff;
+      padding: 6px 14px;
+      font-size: 11px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover {
+      background: rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+    main {
+      flex: 1;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 16px 80px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    /* City Selection Hub */
+    .panel-box {
+      background: radial-gradient(circle at center, rgba(2, 18, 31, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+    .city-chip {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 20px;
+      color: #94a3b8;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .city-chip:hover, .city-chip.active {
+      background: rgba(0, 240, 255, 0.22);
+      border-color: #00f0ff;
+      color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+      font-weight: 700;
+    }
+    .radar-stat-chip {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+    /* Pass Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      text-align: left;
+    }
+    th {
+      background: rgba(15, 23, 42, 0.9);
+      color: #00f0ff;
+      padding: 10px 12px;
+      border-bottom: 2px solid rgba(0, 240, 255, 0.35);
+      letter-spacing: 0.08em;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+    }
+    tr:hover td {
+      background: rgba(0, 240, 255, 0.06);
+      cursor: pointer;
+    }
+    .plot-btn {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid #00f0ff;
+      border-radius: 4px;
+      color: #00f0ff;
+      font-family: monospace;
+      font-size: 10px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .plot-btn:hover {
+      background: #00f0ff;
+      color: #030712;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar" aria-label="Main navigation">
-    <div class="brand">
-      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><path d="M17.5 3.5l2-2M18.5 6.5l3 .2"/></svg></div>
-      <div><strong>OrbitAlert</strong><small>AUTOMATED SPACE DB</small></div>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="/" class="nav-btn"><i class="fa-solid fa-earth-asia"></i> 3D COMMAND GLOBE</a>
+      <a href="/sentinel" class="nav-btn"><i class="fa-solid fa-shield-halved"></i> SENTINEL CONJUNCTIONS</a>
     </div>
-    <div>
-     <div>
-      <div class="nav-label">OPERATIONS &amp; SENSORS</div>
-      <a href="sentinel.html" class="nav-btn" style="color:var(--cyan);margin-bottom:6px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Sentinel Bot Supervisor ↗
-      </a>
-      <button class="nav-btn active" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="13" width="7" height="8" rx="1.5"/></svg>1. Overview</button>
-        <button class="nav-btn" data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M9 16a3 3 0 0 1 6 0M12 3v4M4.9 6l2.8 2.8M19.1 6l-2.8 2.8"/><circle cx="12" cy="11" r="1"/></svg>2. Satellite Passes<span class="nav-count" id="navCountPasses">0</span></button>
-        <button class="nav-btn" data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/></svg>3. Close Approaches<span class="nav-count" id="navCountClose">0</span></button>
-        <button class="nav-btn" data-view="reentry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c2 4-1 5 2 8 1-2 2-3 2-4 3 3 4 6 2 10a7 7 0 0 1-13-2c0-3 2-5 4-7 0 3 1 4 2 4 2-3-1-6 1-9Z"/></svg>4. Re-entry Watch<span class="nav-count" id="navCountReentry">0</span></button>
-        <button class="nav-btn" data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c3 3 5 7 5 11l-5 6-5-6c0-4 2-8 5-11Z"/><circle cx="12" cy="10" r="1.5"/></svg>5. Missions &amp; Notices</button>
-        <button class="nav-btn" data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>6. My Watchlist &amp; Alerts<span class="nav-count" id="navCountWatchlist">0</span></button>
-        <button class="nav-btn" data-view="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></svg>7. Data Health</button>
-        <button class="nav-btn" data-view="catalog" style="margin-top:6px;border-top:1px solid #1c334a;padding-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>Mission Catalogue<span class="nav-count" id="navCountCatalog">27+</span></button>
-      </nav>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></div>
+      <span style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.12em;">ORBITALERT // SATELLITE PASS RADAR</span>
     </div>
-    <div class="sidebar-bottom">
-      <div class="connection-line"><span class="dot" id="sidebarDot"></span><span id="sidebarConnText">SpaceDB Connected</span></div>
-      <p id="sidebarSyncMeta">Automated orbital propagation & alert screening active.</p>
-    </div>
-  </aside>
-
-    <!-- ==================== TOPOCENTRIC POLAR SKY RADAR ==================== -->
-  <style>
-    #polar-radar-container {
-      background: radial-gradient(circle at center, rgba(2, 18, 31, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
-      border: 1px solid rgba(0, 240, 255, 0.35);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.15);
-      margin-bottom: 20px;
-      font-family: 'Courier New', monospace;
-    }
-    .radar-stat-chip {
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.25);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 11px;
-    }
-  </style>
-
-  <div id="polar-radar-container">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
-        <div>
-          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC POLAR SKY RADAR</span>
-          <span style="font-size:10px; color:#38bdf8; margin-left:8px;">[AZIMUTH / ELEVATION DOME]</span>
-        </div>
-      </div>
-      <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
-        TRACKING: ISS (ZARYA)
-      </div>
-    </div>
-
-    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
-      <!-- Polar Radar Canvas -->
-      <div style="position:relative; width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
-        <canvas id="polarRadarCanvas" width="320" height="320" style="width:320px; height:320px; border-radius:50%; background:rgba(1, 10, 19, 0.9); box-shadow:inset 0 0 25px rgba(0,240,255,0.2);"></canvas>
-      </div>
-
-      <!-- Real-Time Metrics & Pass Legend -->
-      <div style="flex:1; min-width:260px; display:flex; flex-direction:column; gap:10px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">CURRENT AZIMUTH</div>
-            <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">142.5° (SE)</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">CURRENT ELEVATION</div>
-            <div id="radar-val-el" style="color:#38bdf8; font-size:14px; font-weight:800;">+48.2°</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">MAX ELEVATION (TCA)</div>
-            <div id="radar-val-max-el" style="color:#10b981; font-size:14px; font-weight:800;">68.4° (PEAK)</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">SLANT RANGE</div>
-            <div id="radar-val-range" style="color:#e2e8f0; font-size:14px; font-weight:800;">582 km</div>
-          </div>
-        </div>
-
-        <div style="padding:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
-          <div style="color:#fff; font-weight:700; margin-bottom:4px;">RADAR SKY LEGEND:</div>
-          <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Rise Point on Horizon)</div>
-          <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Zenith Elevation)</div>
-          <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Set Point on Horizon)</div>
-          <div style="margin-top:6px; color:#38bdf8; font-size:9px;">* Concentric rings indicate 0° (horizon), 30°, 60°, and 90° (zenith).</div>
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('ISS')" style="flex:1; background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-family:monospace; font-size:10px; padding:6px; cursor:pointer; font-weight:700;">PREVIEW ISS PASS</button>
-          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('CARTOSAT-3')" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-family:monospace; font-size:10px; padding:6px; cursor:pointer;">PREVIEW CARTOSAT-3</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function initPolarSkyRadar() {
-      const canvas = document.getElementById('polarRadarCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const radius = cx - 22;
-
-      // Active Pass State
-      let activePass = {
-        name: 'ISS (ZARYA)',
-        aosAz: 215, // Rise SW
-        maxEl: 68,
-        tcaAz: 135, // Peak SE
-        losAz: 45,  // Set NE
-        currentProgress: 0.55 // 0.0 to 1.0
-      };
-
-      // Convert Topocentric Azimuth (degrees) & Elevation (degrees) to Canvas (x, y)
-      // Azimuth: 0° = North (top), 90° = East (right), 180° = South (bottom), 270° = West (left)
-      // Elevation: 0° = Horizon (outer edge), 90° = Zenith (center)
-      function azElToXY(azDeg, elDeg) {
-        const clampedEl = Math.max(0, Math.min(90, elDeg));
-        const r = radius * (1 - clampedEl / 90);
-        const theta = (azDeg - 90) * (Math.PI / 180);
-        return {
-          x: cx + r * Math.cos(theta),
-          y: cy + r * Math.sin(theta)
-        };
-      }
-
-      function drawRadarDome() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. Concentric Elevation Rings (0°, 30°, 60°)
-        const rings = [
-          { el: 0, label: '0°' },
-          { el: 30, label: '30°' },
-          { el: 60, label: '60°' }
-        ];
-
-        rings.forEach(ring => {
-          const r = radius * (1 - ring.el / 90);
-          ctx.beginPath();
-          ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.strokeStyle = ring.el === 0 ? 'rgba(0, 240, 255, 0.7)' : 'rgba(0, 240, 255, 0.2)';
-          ctx.lineWidth = ring.el === 0 ? 1.5 : 1;
-          ctx.setLineDash(ring.el === 0 ? [] : [3, 4]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          // Elevation Label
-          if (ring.el > 0) {
-            ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
-            ctx.font = '9px monospace';
-            ctx.fillText(ring.label, cx + 4, cy - r + 10);
-          }
-        });
-
-        // Zenith Center Crosshair (90°)
-        ctx.beginPath();
-        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#00f0ff';
-        ctx.fill();
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
-        ctx.font = '9px monospace';
-        ctx.fillText('90°Z', cx + 5, cy + 12);
-
-        // 2. Cardinal Azimuth Crosshairs (N, S, E, W)
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - radius);
-        ctx.lineTo(cx, cy + radius);
-        ctx.moveTo(cx - radius, cy);
-        ctx.lineTo(cx + radius, cy);
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Cardinal Text Markers
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 11px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('N', cx, cy - radius - 10);
-        ctx.fillText('S', cx, cy + radius + 10);
-        ctx.fillText('E', cx + radius + 11, cy);
-        ctx.fillText('W', cx - radius - 11, cy);
-
-        // 3. Draw Projected Satellite Pass Trajectory Arc
-        const start = azElToXY(activePass.aosAz, 0);
-        const apex = azElToXY(activePass.tcaAz, activePass.maxEl);
-        const end = azElToXY(activePass.losAz, 0);
-
-        // Quadratic Bézier pass curve
-        ctx.beginPath();
-        ctx.moveTo(start.x, start.y);
-        ctx.quadraticCurveTo(apex.x, apex.y, end.x, end.y);
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
-        ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // AOS Marker (Rise)
-        ctx.beginPath();
-        ctx.arc(start.x, start.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#ef4444';
-        ctx.fill();
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('AOS', start.x + (start.x > cx ? 12 : -12), start.y + (start.y > cy ? 10 : -10));
-
-        // TCA Marker (Peak)
-        ctx.beginPath();
-        ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#10b981';
-        ctx.fill();
-        ctx.fillStyle = '#10b981';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('TCA', apex.x, apex.y - 10);
-
-        // LOS Marker (Set)
-        ctx.beginPath();
-        ctx.arc(end.x, end.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fill();
-        ctx.fillStyle = '#f59e0b';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('LOS', end.x + (end.x > cx ? 12 : -12), end.y + (end.y > cy ? 10 : -10));
-
-        // 4. Interpolate Current Satellite Position on Arc
-        const t = activePass.currentProgress;
-        const currentX = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * apex.x + Math.pow(t, 2) * end.y;
-        const currentY = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * apex.y + Math.pow(t, 2) * end.y;
-
-        // Current Pulsing Satellite Marker
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
-        ctx.fillStyle = '#00f0ff';
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Target Tag
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText(activePass.name, currentX, currentY - 12);
-      }
-
-      // Live Radar Controller Interface
-      window.PolarRadar = {
-        setPass: function(name, aosAz, maxEl, tcaAz, losAz) {
-          activePass.name = name;
-          activePass.aosAz = aosAz;
-          activePass.maxEl = maxEl;
-          activePass.tcaAz = tcaAz;
-          activePass.losAz = losAz;
-          activePass.currentProgress = 0.5;
-
-          const badge = document.getElementById('radar-target-badge');
-          if (badge) badge.innerText = 'TRACKING: ' + name.toUpperCase();
-
-          const maxElEl = document.getElementById('radar-val-max-el');
-          if (maxElEl) maxElEl.innerText = maxEl + '° (PEAK)';
-
-          const azEl = document.getElementById('radar-val-az');
-          if (azEl) azEl.innerText = tcaAz.toFixed(1) + '°';
-
-          const elEl = document.getElementById('radar-val-el');
-          if (elEl) elEl.innerText = '+' + maxEl.toFixed(1) + '°';
-
-          drawRadarDome();
-        },
-
-        simulatePass: function(satellite) {
-          if (satellite === 'ISS') {
-            this.setPass('ISS (ZARYA)', 215, 68, 135, 45);
-          } else if (satellite === 'CARTOSAT-3') {
-            this.setPass('CARTOSAT-3', 188, 76, 92, 12);
-          } else if (satellite === 'EOS-06') {
-            this.setPass('EOS-06', 195, 54, 110, 28);
-          }
-        }
-      };
-
-      // Initial Render
-      drawRadarDome();
-
-      // Hook click events on OrbitAlert tables to auto-plot on radar
-      document.addEventListener('click', function(e) {
-        const row = e.target.closest('tr, [data-pass]');
-        if (row && row.textContent) {
-          const txt = row.textContent.toUpperCase();
-          if (txt.includes('ISS')) window.PolarRadar.simulatePass('ISS');
-          else if (txt.includes('CARTOSAT')) window.PolarRadar.simulatePass('CARTOSAT-3');
-          else if (txt.includes('EOS')) window.PolarRadar.simulatePass('EOS-06');
-        }
-      });
-    })();
-  </script>
-<main>
-    <div class="topbar">
-      <div class="crumb">
-        <a href="index.html#/earth" style="color:#789bbb;text-decoration:none">3D Explorer</a>&nbsp; / &nbsp;OrbitAlert&nbsp; / &nbsp;<span id="crumbCurrent">Overview</span>
-      </div>
-      <div class="top-actions">
-        <!-- Timezone Selector -->
-        <select class="select" id="timezoneSelect" aria-label="Select display timezone" style="padding:7px 10px;font-size:11px;max-width:160px">
-          <option value="local">Local (Browser)</option>
-          <option value="utc">UTC (Zulu)</option>
-          <option value="asia_kolkata">IST (UTC+5:30)</option>
-          <option value="america_new_york">EST/EDT (New York)</option>
-          <option value="europe_london">GMT/BST (London)</option>
-        </select>
-
-        <!-- Location Preset & Coordinates Modal Trigger -->
-        <button class="secondary-btn" id="locationModalBtn" title="Change observer preset or manual coordinates">
-          📍 <span id="obsLocationLabel">Pune / India (18.5°N, 73.9°E)</span>
-        </button>
-
-        <!-- Live Sync Button (available only when real sync endpoint exists) -->
-        <button class="secondary-btn" id="refreshBtn" title="Query SpaceDB live sync endpoint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.5-3"/></svg>
-          <span id="syncBtnLabel">Sync Now</span>
-        </button>
-
-        <a href="sentinel.html" class="secondary-btn" style="color:var(--cyan)" title="Open Sentinel Bot Supervisor">
-          🤖 <span>Sentinel</span>
-        </a>
-
-        <!-- Copy Link Deep-Link Action -->
-        <button class="icon-btn" id="copyDeepLinkBtn" title="Copy deep-link URL to clipboard" aria-label="Copy deep link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-
-        <!-- Alert Preferences Shortcut -->
-        <button class="icon-btn" id="topAlertsBtn" aria-label="Open alert preferences" title="Alert preferences &amp; Watchlist">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="page-heading">
-      <div>
-        <div class="eyebrow" id="pageEyebrow">AUTOMATED SPACE SITUATIONAL AWARENESS</div>
-        <h1 id="pageTitle">Space Event & Mission Centre</h1>
-        <p id="pageDesc">Automated conjunction screening, overhead pass predictions, deep-space telemetry, and 3,200+ tracked satellites synchronized with the 3D HUD.</p>
-      </div>
-      <div class="heading-buttons">
-        <button class="secondary-btn" id="browseAllSatsBtn" title="Inspect catalogue of loaded satellites and probes" aria-label="Open Satellite Catalogue">
-          <span>🛰️</span><span>Mission Catalogue</span>
-        </button>
-        <button class="secondary-btn" id="exportBtn" title="Export current event feed as CSV file" aria-label="Export Event Feed as CSV">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>
-          <span>Export CSV</span>
-        </button>
-        <a class="primary-btn" id="mapLink" href="index.html#/earth" title="Switch to 3D Orbit Explorer view" aria-label="Launch 3D Orbit Explorer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg>
-          <span>Open 3D Explorer</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- 1. OBSERVER & SKY CONDITIONS -->
-    <section class="section" id="observerConditionsSection" style="margin-bottom:16px;border-color:#20415e">
-      <div class="section-head" style="padding:14px 18px">
-        <div>
-          <h2 style="font-size:14px">1. Observer &amp; Sky Conditions</h2>
-          <div class="section-sub" id="obsConditionMeta">Calculated at: --:--:-- UTC · Timezone: Local · Horizon cutoff: 10°</div>
-        </div>
-        <div class="head-right">
-          <span class="pill blue" id="skyConditionBadge">☾ Calculating Sun Elevation…</span>
-          <button class="secondary-btn" id="openLocationConfigBtn" style="padding:5px 9px;font-size:11px">Configure Location ⚙</button>
-        </div>
-      </div>
-      <div class="section-body" style="padding:14px 18px">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
-          <div style="border-left:2px solid var(--cyan);padding-left:10px">
-            <small style="color:var(--muted);display:block;font-size:10px">ACTIVE OBSERVER</small>
-            <strong id="obsHeroLocation" style="font-size:13px;color:#fff">Pune, Maharashtra</strong>
-            <span id="obsHeroCoords" style="display:block;font-size:11px;color:#85a5c2;font-family:ui-monospace,monospace">18.52° N, 73.86° E</span>
-          </div>
-          <div style="border-left:2px solid var(--green);padding-left:10px">
-            <small style="color:var(--muted);display:block;font-size:10px">LOCAL OBSERVER TIME</small>
-            <strong id="obsHeroLocalTime" style="font-size:13px;color:#fff">--:--:--</strong>
-            <span id="obsHeroTzName" style="display:block;font-size:11px;color:#85a5c2">Browser Local</span>
-          </div>
-          <div style="border-left:2px solid var(--amber);padding-left:10px">
-            <small style="color:var(--muted);display:block;font-size:10px">SOLAR ELEVATION</small>
-            <strong id="obsHeroSunElev" style="font-size:13px;color:#fff">--°</strong>
-            <span id="obsHeroSunStatus" style="display:block;font-size:11px;color:#85a5c2">Twilight / Dark</span>
-          </div>
-          <div style="border-left:2px solid var(--purple);padding-left:10px">
-            <small style="color:var(--muted);display:block;font-size:10px">SATELLITES OVER HORIZON</small>
-            <strong id="abvOverheadCount" style="font-size:13px;color:#fff">0 Overhead</strong>
-            <span id="abvVisibleNowSummary" style="display:block;font-size:11px;color:#57e0ac">0 Naked-Eye Visible</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. NEXT RELEVANT EVENT (Visible pass or Watched Object) -->
-    <section class="section" id="nextEventHeroSection" style="margin-bottom:16px;border-color:#2a557b;background:linear-gradient(135deg,#0c2338,#091626)">
-      <div class="section-body" style="padding:16px 18px" id="nextEventHeroContent">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-          <div>
-            <div class="eyebrow" style="color:var(--cyan)">2. NEXT RELEVANT EVENT</div>
-            <h3 id="nextPassSatName" style="margin:4px 0 2px;font-size:16px;color:#fff">Scanning for upcoming passes &amp; watched assets…</h3>
-            <p id="nextPassMetrics" style="margin:0;font-size:12px;color:#a8c7e4;font-family:ui-monospace,monospace">--:-- → --:-- UTC · Elevation --° · Sighting conditions</p>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span class="pill green" id="nextPassEta">Calculating ETA…</span>
-            <button class="primary-btn" id="nextHeroTrack3dBtn" style="padding:6px 11px;font-size:11px">Open in 3D ↗</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. SUMMARY METRICS (Count actual records returned by service) -->
-    <section class="stats" id="statsRow" aria-label="Actual records summary" style="margin-bottom:18px">
-      <article class="stat-card">
-        <div class="stat-top"><span>Upcoming Passes</span><span class="stat-icon" style="color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg></span></div>
-        <div class="stat-value" id="statPassesCount">0</div>
-        <div class="stat-note">Next 24h over local horizon</div>
-      </article>
-      <article class="stat-card">
-        <div class="stat-top"><span>Monitored Close Approaches</span><span class="stat-icon" style="color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/></svg></span></div>
-        <div class="stat-value" id="statCloseCount">0</div>
-        <div class="stat-note">Screened LEO / GEO encounters</div>
-      </article>
-      <article class="stat-card">
-        <div class="stat-top"><span>Re-entry Items</span><span class="stat-icon" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c2 4-1 5 2 8 1-2 2-3 2-4 3 3 4 6 2 10a7 7 0 0 1-13-2c0-3 2-5 4-7 0 3 1 4 2 4 2-3-1-6 1-9Z"/></svg></span></div>
-        <div class="stat-value" id="statReentryCount">0</div>
-        <div class="stat-note">Active drag decay windows</div>
-      </article>
-      <article class="stat-card">
-        <div class="stat-top"><span>Active Source Warnings</span><span class="stat-icon" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span></div>
-        <div class="stat-value" id="statWarningsCount">0</div>
-        <div class="stat-note" id="statWarningsNote">Pipeline telemetry verified</div>
-      </article>
-    </section>
-
-    <div id="overviewView" class="content-grid">
-      <section class="section">
-        <div class="section-head">
-          <div>
-            <h2 id="feedHeading">Live Automated Event Feed</h2>
-            <div class="section-sub" id="feedSub">Real-time conjunctions, pass predictions, re-entries, and mission bulletins</div>
-          </div>
-          <div class="head-right">
-            <label class="toggle-row" style="margin:0;font-size:11px"><input type="checkbox" id="watchlistOnlyToggle" /> Watchlist only</label>
-            <span class="pill blue" id="eventCount">0 events</span>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="feed-tools">
-            <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="searchInput" type="search" placeholder="Search object, NORAD ID, event classification, source…" aria-label="Search events" /></label>
-            <select class="select" id="statusFilter" aria-label="Filter by status">
-              <option value="all">All statuses</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="monitoring">Monitoring</option>
-              <option value="review">Needs review</option>
-              <option value="resolved">Resolved / Nominal</option>
-              <option value="unavailable">Unavailable</option>
-            </select>
-            <select class="select" id="severityFilter" aria-label="Filter by documented severity">
-              <option value="all">All Severities</option>
-              <option value="elevated">Elevated (Miss &lt; 3.5 km / High El)</option>
-              <option value="watch">Watch (Monitoring Threshold)</option>
-              <option value="info">Info (Routine Ephemeris / nominal)</option>
-            </select>
-            <select class="select" id="timeRangeFilter" aria-label="Filter by time window">
-              <option value="all">All Time Windows</option>
-              <option value="6h">Next 6 Hours</option>
-              <option value="24h">Next 24 Hours</option>
-              <option value="7d">Next 7 Days</option>
-            </select>
-            <button class="secondary-btn" id="clearFiltersBtn" style="padding:8px 11px;font-size:11px" title="Reset all search queries and filters">Clear Filters</button>
-          </div>
-          <div class="chips" id="typeChips">
-            <button class="chip active" data-type="all">All</button>
-            <button class="chip" data-type="close">Close approach</button>
-            <button class="chip" data-type="pass">Satellite pass</button>
-            <button class="chip" data-type="reentry">Re-entry</button>
-            <button class="chip" data-type="mission">Mission notice</button>
-            <button class="chip" data-type="health">Data health</button>
-          </div>
-          <div class="event-list" id="eventList" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <aside class="right-stack">
-        <section class="section">
-          <div class="section-head">
-            <div><h2>Live Orbital Radar Link</h2><div class="section-sub" id="miniMapSub">Click any object to warp into 3D HUD</div></div>
-            <span class="pill green">LIVE LINK</span>
-          </div>
-          <div class="section-body" style="padding:12px">
-            <div class="mini-map">
-              <div class="map-label"><span>EARTH & DEEP SPACE</span><small id="miniMapCoords">ISS LIVE LOCK</small></div>
-              <span class="orbit-dot" title="ISS Live Vector"></span>
-              <span class="orbit-dot second" title="ISRO Fleet Vector"></span>
-              <button class="map-open" id="mapOpenBtn">Launch 3D Globe ↗</button>
-              <div class="map-foot"><span id="miniMapVel">27,580 km/h</span><span>Keplerian 3D →</span></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-head">
-            <div><h2>Main Telemetry Sources</h2><div class="section-sub">Automated database ingestion health</div></div>
-            <button class="secondary-btn" style="padding:7px 9px;font-size:11px" data-nav="health">Full Report</button>
-          </div>
-          <div class="section-body">
-            <div class="source-list" id="sourceMini"></div>
-          </div>
-        </section>
-      </aside>
-    </div>
-
-    <section class="section" id="wideView" style="display:none;margin-top:0">
-      <div class="section-head">
-        <div><h2 id="wideHeading">Events</h2><div class="section-sub" id="wideSub">Wide View Directory</div></div>
-        <div class="head-right"><button class="secondary-btn" id="wideExportBtn">Export CSV</button></div>
-      </div>
-      <div id="wideBody" class="section-body"></div>
-    </section>
-
-    <section class="section" id="alertsView" style="display:none">
-      <div class="section-head">
-        <div>
-          <h2>6. My Watchlist &amp; Alert Rules</h2>
-          <div class="section-sub">Configure notification preferences, severity gates, quiet hours, and monitored spacecraft IDs</div>
-        </div>
-        <div class="head-right">
-          <button class="secondary-btn" id="exportSettingsBtn" style="padding:6px 10px;font-size:11px">Export Settings</button>
-          <button class="secondary-btn" id="importSettingsBtn" style="padding:6px 10px;font-size:11px">Import Settings</button>
-          <input type="file" id="importSettingsFileInput" accept=".json" style="display:none" />
-          <button class="primary-btn" id="savePrefsBtn">Save Settings</button>
-        </div>
-      </div>
-      <div class="section-body">
-        <div class="settings-grid">
-          <div>
-            <div class="setting-group">
-              <h3>Thresholds, Severities &amp; Quiet Hours</h3>
-              <p>Control chime noise and set quiet hours where audio alerts are suppressed.</p>
-              <label class="toggle-row"><input type="checkbox" id="prefShowResolved" checked /> Show resolved &amp; healthy pipeline records in feed</label>
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#c3d2e2">
-                <span>Minimum Severity:</span>
-                <select id="prefMinSeverity" class="select" style="padding:6px 9px">
-                  <option value="all">All severities (Info, Watch, Elevated)</option>
-                  <option value="watch">Watch &amp; Elevated only</option>
-                  <option value="elevated">Elevated only</option>
-                </select>
-                <span>Quiet Hours:</span>
-                <input type="time" id="prefQuietStart" value="23:00" class="select" style="padding:5px 8px;max-width:110px" />
-                <span>to</span>
-                <input type="time" id="prefQuietEnd" value="06:00" class="select" style="padding:5px 8px;max-width:110px" />
-              </div>
-            </div>
-            <div class="setting-group">
-              <h3>Event Categories to Screen</h3>
-              <p>Enable or disable specific automated event screeners.</p>
-              <label class="toggle-row"><input type="checkbox" id="prefClose" checked /> Close-approach conjunction alerts (&lt; 5 km TCA)</label>
-              <label class="toggle-row"><input type="checkbox" id="prefPass" checked /> Overhead visible satellite passes</label>
-              <label class="toggle-row"><input type="checkbox" id="prefReentry" checked /> Atmospheric re-entry decay windows</label>
-              <label class="toggle-row"><input type="checkbox" id="prefMission" checked /> Deep-space mission bulletins &amp; notices</label>
-              <label class="toggle-row"><input type="checkbox" id="prefHealth" checked /> Ingestion pipeline health alerts</label>
-            </div>
-            <div class="setting-group">
-              <h3>Notification Channels &amp; Permissions</h3>
-              <p>Browser desktop push notifications will only be requested after your explicit action.</p>
-              <label class="toggle-row"><input type="checkbox" id="prefInsite" checked /> In-app tactical toast alerts</label>
-              <label class="toggle-row"><input type="checkbox" id="prefSound" checked /> Audio sonar chime on watched object pass/conjunction</label>
-              <label class="toggle-row"><input type="checkbox" id="prefPush" /> Desktop Push Notifications (Notification API)</label>
-              <div id="pushPermissionNote" style="font-size:10px;color:var(--muted);margin-top:5px">Permission state: Checking…</div>
-            </div>
-          </div>
-          <div>
-            <div class="detail-block">
-              <h3>Tracked Object Watchlist</h3>
-              <p class="detail-copy">Add an object by canonical name or catalogue ID (NORAD or Mission Slug). Disambiguation options appear when multiple matches exist.</p>
-              <div id="watchList"></div>
-              
-              <div style="display:flex;gap:8px;margin-top:12px;position:relative">
-                <input id="watchInput" class="select" style="max-width:none;min-width:0;flex:1" placeholder="e.g. 25544, ISS, CARTOSAT, ADITYA" aria-label="Object ID or name to follow" autocomplete="off" />
-                <button class="secondary-btn" id="addWatchBtn">Follow</button>
-              </div>
-              <div id="watchDisambiguationList" style="display:none;margin-top:6px;background:#081423;border:1px solid #1e3852;border-radius:8px;max-height:160px;overflow-y:auto"></div>
-            </div>
-            <div class="setting-note" id="prefSavedNote">Storage State: Saved on this device (localStorage)</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer-note">OrbitAlert Automated Space Situational Awareness · Powered by Orbital Command SpaceDB & Real-Time Keplerian Propagation</div>
-  </main>
-</div>
-
-<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-  <button data-view="overview" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg>Overview</button>
-  <button data-view="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M2 12h20"/></svg>All Sats</button>
-  <button data-view="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/></svg>Approaches</button>
-  <button data-view="passes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M12 3v4"/></svg>Passes</button>
-  <button data-view="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>Watchlist</button>
-</nav>
-
-<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
-  <div class="drawer">
-    <div class="drawer-head">
-      <span class="pill blue" id="detailCategory">EVENT DETAILS</span>
-      <button class="icon-btn" id="closeDrawer" aria-label="Close event details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
-    </div>
-    <h2 id="detailTitle">Event title</h2>
-    <p class="drawer-intro" id="detailIntro"></p>
-    
-    <!-- Structured metadata grid -->
-    <div class="detail-grid" id="detailFields"></div>
-
-    <!-- Specialized 2D geometric visualization (only when geometry is supported) -->
-    <div id="detailVisualContainer"></div>
-
-    <!-- Separated Computed Assessment vs. Official Statement -->
-    <div class="detail-block">
-      <h3>Computed Assessment (Automated Model)</h3>
-      <div class="detail-copy" id="detailComputedAssessment"></div>
-    </div>
-
-    <div class="detail-block" id="detailOfficialBlock">
-      <h3>Official Source Statements &amp; Bulletins</h3>
-      <div class="detail-copy" id="detailOfficialStatement">No official agency bulletin issued; assessment derived from published SGP4 mean elements.</div>
-    </div>
-
-    <div class="detail-block">
-      <h3>Automated Verification &amp; Epoch History</h3>
-      <div class="timeline" id="detailTimeline"></div>
-    </div>
-
-    <div class="detail-block">
-      <h3>Data Provenance &amp; Uncertainty Epoch</h3>
-      <div class="detail-copy" id="detailSource"></div>
-    </div>
-
-    <div class="drawer-actions">
-      <button class="primary-btn" id="detailMapBtn">Open in 3D Map ↗</button>
-      <button class="secondary-btn" id="watchEventBtn">☆ Add to Watchlist</button>
-      <button class="secondary-btn" id="copyEventLinkBtn">🔗 Copy Event Link</button>
-      <button class="secondary-btn" id="closeDetailBtn">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal for Observer Location: Preset Cities or Manual Coordinates -->
-<div class="overlay" id="locationOverlay" role="dialog" aria-modal="true" aria-labelledby="locationModalTitle">
-  <div class="drawer" style="max-width:440px">
-    <div class="drawer-head">
-      <span class="pill blue">OBSERVER LOCATION</span>
-      <button class="icon-btn" id="closeLocationModalBtn" aria-label="Close location configuration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
-    </div>
-    <h2 id="locationModalTitle" style="font-size:18px;margin:8px 0 4px">Observer Coordinates</h2>
-    <p class="drawer-intro">Pass predictions and horizon look-angles depend on your geographic coordinates. Precise coordinates are stored only in memory for this session and are not persisted without consent.</p>
-
-    <div class="detail-block">
-      <h3>Preset Cities (India &amp; Global)</h3>
-      <select class="select" id="modalPresetCitySelect" style="width:100%;max-width:none">
-        <option value="">Choose a preset location…</option>
-      </select>
-    </div>
-
-    <div class="detail-block">
-      <h3>Manual Coordinate Entry</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <label style="font-size:11px;color:var(--muted)">Latitude (°N)
-          <input type="number" id="manualLatInput" step="0.0001" min="-90" max="90" class="select" style="width:100%;max-width:none;margin-top:4px" placeholder="e.g. 18.5204" />
-        </label>
-        <label style="font-size:11px;color:var(--muted)">Longitude (°E)
-          <input type="number" id="manualLonInput" step="0.0001" min="-180" max="180" class="select" style="width:100%;max-width:none;margin-top:4px" placeholder="e.g. 73.8567" />
-        </label>
-      </div>
-      <div style="margin-top:10px">
-        <button class="secondary-btn" id="browserGpsModalBtn" style="width:100%;font-size:11px">📍 Use Browser Geolocation (One-Time)</button>
-        <small style="display:block;color:var(--muted);font-size:10px;margin-top:5px">Requires browser permission. Explains exact horizon look-angles for satellite sightings.</small>
-      </div>
-    </div>
-
-    <div class="drawer-actions">
-      <button class="primary-btn" id="applyManualCoordsBtn" style="flex:1">Apply Location</button>
-      <button class="secondary-btn" id="cancelLocationModalBtn">Cancel</button>
-    </div>
-  </div>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script>
-// ============================================================================
-// ORBITALERT UNIFIED SCRIPT ENGINE (SELF-HEALED & RESILIENT)
-// ============================================================================
-
-// 1. Core DOM & String Helpers (Hoisted & Safe)
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-function safeOn(sel, evt, handler) {
-  const el = typeof sel === 'string' ? document.querySelector(sel) : sel;
-  if (el) el.addEventListener(evt, handler);
-}
-
-// 2. Canonical Routing & Deep Links
-const APP_BASE_PATH = (() => {
-  const trimmed = window.location.pathname.replace(/(?:orbitalert(?:\.html)?\/?)$/i, '');
-  if (!trimmed) return './';
-  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
-})();
-
-function getTargetMapUrl(target, secondary) {
-  const primaryId = encodeURIComponent(String(target || 'earth').toLowerCase().trim());
-  if (secondary) {
-    return `index.html#/earth?target=${primaryId}&conj=${encodeURIComponent(String(secondary).toLowerCase().trim())}`;
-  }
-  return `index.html#/object/${primaryId}?view=earth`;
-}
-
-function buildAlertCenterUrl(section = 'overview', eventId = null) {
-  if (eventId) return `#event/${encodeURIComponent(eventId)}`;
-  return `#${encodeURIComponent(section)}`;
-}
-
-function serializeEpoch(dateOrMs) {
-  const d = new Date(dateOrMs);
-  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
-}
-
-function restoreViewState() {
-  const hash = window.location.hash.replace(/^#\/?/, '').trim();
-  if (hash.startsWith('event/')) {
-    const eventId = decodeURIComponent(hash.replace('event/', ''));
-    if (eventId) setTimeout(() => openEvent(eventId), 300);
-    return 'overview';
-  }
-  const validViews = ['overview', 'passes', 'close', 'reentry', 'missions', 'alerts', 'health', 'catalog'];
-  return validViews.includes(hash) ? hash : 'overview';
-}
-
-// 3. UI Constants & State
-const TYPE_LABELS = { close: 'Close approach', pass: 'Satellite pass', reentry: 'Re-entry', mission: 'Space mission', health: 'Data health' };
-const ICONS = {
-  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-35 12 12)"/></svg>',
-  pass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19h18M6 16a6 6 0 0 1 12 0M9 16a3 3 0 0 1 6 0M12 3v4M5 6l3 3M19 6l-3 3"/></svg>',
-  reentry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c2 4-1 5 2 8 1-2 2-3 2-4 3 3 4 6 2 10a7 7 0 0 1-13-2c0-3 2-5 4-7 0 3 1 4 2 4 2-3-1-6 1-9Z"/></svg>',
-  mission: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c3 3 5 7 5 11l-5 6-5-6c0-4 2-8 5-11Z"/><circle cx="12" cy="10" r="1.5"/></svg>',
-  health: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>'
-};
-
-const viewInfo = {
-  overview: ['OPERATIONAL COMPANION', '1. Overview', 'Actionable space situational awareness, observer horizon geometry, and verified source health.'],
-  passes: ['HORIZON SIGHTING FORECASTS', '2. Satellite Passes', 'Rise, culmination, and set times with explicit twilight and illumination visibility models.'],
-  close: ['CONJUNCTION SCREENING', '3. Close Approaches', 'Orbital node crossings, miss distance, relative velocity, and encounter geometry.'],
-  reentry: ['THERMOSPHERIC DECAY', '4. Re-entry Watch', 'Atmospheric decay windows and trend comparisons without speculative ground impact claims.'],
-  missions: ['MISSION DISPATCHES', '5. Missions & Notices', 'Verified telemetry status and official bulletins across active flagships.'],
-  alerts: ['WATCHLIST & RULES', '6. My Watchlist & Alerts', 'Manage watched satellite catalogue numbers, notification quiet hours, and local rules.'],
-  health: ['DATA PIPELINE HEALTH', '7. Data Health', 'Operational state, processing latency, retry policies, and safe sanitized error logs.'],
-  catalog: ['SPATIAL INVENTORY', 'Satellite & Mission Catalogue', 'Searchable catalogue companion to the 3D Explorer.']
-};
-
-let currentView = 'overview';
-let activeType = 'all';
-let currentEvent = null;
-let events = [];
-let catalog = [];
-
-// Pre-seeded Master Data Health Pipelines (Guarantees Health tab is never empty)
-const DEFAULT_SOURCES = [
-  { id: 'sgp4', name: 'Onboard SGP4 Propagator', detail: 'Keplerian J2 Analytical Client Propagator', status: 'ok', label: '100% Operational', latencyMs: 1, lastFetch: new Date().toISOString() },
-  { id: 'celestrak', name: 'CelesTrak NORAD GP', detail: 'Orbital Elements & TLE Epoch Vectors', status: 'ok', label: 'Operational', latencyMs: 98, lastFetch: new Date().toISOString() },
-  { id: 'wheretheiss', name: 'WhereTheISS.at Downlink', detail: 'Real-Time Space Station Coordinates', status: 'ok', label: 'Live Downlink', latencyMs: 82, lastFetch: new Date().toISOString() },
-  { id: 'nasa_horizons', name: 'NASA/JPL Horizons System', detail: 'Solar System Dynamics & Planetary Ephemerides', status: 'ok', label: 'Operational', latencyMs: 115, lastFetch: new Date().toISOString() },
-  { id: 'noaa_swpc', name: 'NOAA Space Weather Prediction', detail: 'Solar Wind, Geomagnetic Storm & Kp Index', status: 'ok', label: 'Nominal', latencyMs: 140, lastFetch: new Date().toISOString() },
-  { id: 'nasa_jpl_cad', name: 'NASA/JPL Small-Body CAD', detail: 'Near-Earth Asteroid Close-Approach Database', status: 'ok', label: 'Operational', latencyMs: 160, lastFetch: new Date().toISOString() },
-  { id: 'space_track', name: 'Space-Track.org (18th SDS)', detail: 'USSF Conjunction Assessment & Satellite Catalog', status: 'ok', label: 'Authenticated / Active', latencyMs: 108, lastFetch: new Date().toISOString() },
-  { id: 'isro_istrac', name: 'ISRO ISTRAC Ground Network', detail: 'Indian Deep Space Network & Telemetry Tracking', status: 'ok', label: 'Active Tracking', latencyMs: 65, lastFetch: new Date().toISOString() },
-  { id: 'esa_discos', name: 'ESA DISCOSweb', detail: 'Space Debris & Re-entry Database', status: 'warn', label: 'Standby / Verified', latencyMs: 210, lastFetch: new Date().toISOString() }
-];
-
-let sources = [...DEFAULT_SOURCES];
-let followedObjects = JSON.parse(localStorage.getItem('orbitalert_watchlist') || '["ISS","CARTOSAT3","ADITYA_L1","EOS04"]');
-let preferences = JSON.parse(localStorage.getItem('orbitalert_preferences') || '{"prefClose":true,"prefPass":true,"prefReentry":true,"prefMission":true,"prefHealth":true,"prefInsite":true,"prefSound":true,"prefShowResolved":true,"minSeverity":"all","quietStart":"23:00","quietEnd":"06:00","observerLat":18.5204,"observerLon":73.8567,"observerName":"Pune, Maharashtra"}');
-let selectedTimezone = localStorage.getItem('orbitalert_tz') || 'local';
-
-// 4. City Preset & Observer Location Engine
-const MASTER_PRESET_CITIES = [
-  { id: 'pune', name: 'Pune, Maharashtra', group: 'India', lat: 18.5204, lon: 73.8567 },
-  { id: 'mumbai', name: 'Mumbai, Maharashtra', group: 'India', lat: 19.0760, lon: 72.8777 },
-  { id: 'bengaluru', name: 'Bengaluru (ISTRAC), Karnataka', group: 'India', lat: 12.9716, lon: 77.5946 },
-  { id: 'sriharikota', name: 'Sriharikota (SDSC SHAR), Andhra Pradesh', group: 'India', lat: 13.7199, lon: 80.2305 },
-  { id: 'delhi', name: 'Delhi, NCR', group: 'India', lat: 28.6139, lon: 77.2090 },
-  { id: 'chennai', name: 'Chennai, Tamil Nadu', group: 'India', lat: 13.0827, lon: 80.2707 },
-  { id: 'hyderabad', name: 'Hyderabad, Telangana', group: 'India', lat: 17.3850, lon: 78.4867 },
-  { id: 'ahmedabad', name: 'Ahmedabad (SAC ISRO), Gujarat', group: 'India', lat: 23.0225, lon: 72.5714 },
-  { id: 'thiruvananthapuram', name: 'Thiruvananthapuram (VSSC), Kerala', group: 'India', lat: 8.5241, lon: 76.9366 },
-  { id: 'leh', name: 'Leh (Hanle Dark Sky Reserve), Ladakh', group: 'India', lat: 34.1526, lon: 77.5771 },
-  { id: 'kolkata', name: 'Kolkata, West Bengal', group: 'India', lat: 22.5726, lon: 88.3639 },
-  { id: 'jaipur', name: 'Jaipur, Rajasthan', group: 'India', lat: 26.9124, lon: 75.7873 },
-  { id: 'lucknow', name: 'Lucknow, Uttar Pradesh', group: 'India', lat: 26.8467, lon: 80.9462 },
-  { id: 'kochi', name: 'Kochi, Kerala', group: 'India', lat: 9.9312, lon: 76.2673 },
-  { id: 'guwahati', name: 'Guwahati, Assam', group: 'India', lat: 26.1445, lon: 91.7362 },
-  { id: 'bhopal', name: 'Bhopal, Madhya Pradesh', group: 'India', lat: 23.2599, lon: 77.4126 },
-  { id: 'chandigarh', name: 'Chandigarh', group: 'India', lat: 30.7333, lon: 76.7794 },
-  { id: 'nagpur', name: 'Nagpur, Maharashtra', group: 'India', lat: 21.1458, lon: 79.0882 },
-  { id: 'visakhapatnam', name: 'Visakhapatnam, Andhra Pradesh', group: 'India', lat: 17.6868, lon: 83.2185 },
-  { id: 'indore', name: 'Indore, Madhya Pradesh', group: 'India', lat: 22.7196, lon: 75.8577 },
-  { id: 'patna', name: 'Patna, Bihar', group: 'India', lat: 25.5941, lon: 85.1376 },
-  { id: 'bhubaneswar', name: 'Bhubaneswar, Odisha', group: 'India', lat: 20.2961, lon: 85.8245 },
-  { id: 'coimbatore', name: 'Coimbatore, Tamil Nadu', group: 'India', lat: 11.0168, lon: 76.9558 },
-  { id: 'surat', name: 'Surat, Gujarat', group: 'India', lat: 21.1702, lon: 72.8311 },
-  { id: 'kanpur', name: 'Kanpur, Uttar Pradesh', group: 'India', lat: 26.4499, lon: 80.3319 },
-  { id: 'varanasi', name: 'Varanasi, Uttar Pradesh', group: 'India', lat: 25.3176, lon: 82.9739 },
-  { id: 'dehradun', name: 'Dehradun (IIRS), Uttarakhand', group: 'India', lat: 30.3165, lon: 78.0322 },
-  { id: 'srinagar', name: 'Srinagar, Jammu & Kashmir', group: 'India', lat: 34.0837, lon: 74.7973 },
-  { id: 'shillong', name: 'Shillong (NESAC), Meghalaya', group: 'India', lat: 25.5788, lon: 91.8933 },
-  { id: 'raipur', name: 'Raipur, Chhattisgarh', group: 'India', lat: 21.2514, lon: 81.6296 },
-  { id: 'ranchi', name: 'Ranchi, Jharkhand', group: 'India', lat: 23.3441, lon: 85.3096 },
-  { id: 'dsn_goldstone', name: 'DSN Goldstone, California, USA', group: 'Global', lat: 35.4267, lon: -116.8900 },
-  { id: 'dsn_madrid', name: 'DSN Madrid, Spain', group: 'Global', lat: 40.4272, lon: -4.2500 },
-  { id: 'dsn_canberra', name: 'DSN Canberra, Australia', group: 'Global', lat: -35.4014, lon: 148.9817 },
-  { id: 'cape_canaveral', name: 'Cape Canaveral (KSC), Florida, USA', group: 'Global', lat: 28.3922, lon: -80.6077 },
-  { id: 'kourou', name: 'Guiana Space Centre (ESA Kourou)', group: 'Global', lat: 5.2372, lon: -52.7606 },
-  { id: 'tanegashima', name: 'Tanegashima Space Center, Japan', group: 'Global', lat: 30.3986, lon: 130.9697 },
-  { id: 'svalbard', name: 'Svalbard KSAT Station, Norway', group: 'Global', lat: 78.2300, lon: 15.4000 }
-];
-
-const LOCAL_FLAGSHIP_SATELLITES = [
-  { id: 'iss', name: 'ISS (Zarya)', agency: 'NASA / Roscosmos', norad: 25544, altKm: 418, incDeg: 51.64, raan0: 135.2, M0: 48.7 },
-  { id: 'tiangong', name: 'Tiangong (CSS)', agency: 'CNSA', norad: 48274, altKm: 392, incDeg: 41.47, raan0: 215.6, M0: 312.4 },
-  { id: 'cartosat3', name: 'Cartosat-3', agency: 'ISRO', norad: 44804, altKm: 509, incDeg: 97.5, raan0: 42.1, M0: 118.4 },
-  { id: 'eos04', name: 'EOS-04 (RISAT-1A)', agency: 'ISRO', norad: 51656, altKm: 529, incDeg: 97.6, raan0: 154.2, M0: 64.9 },
-  { id: 'astrosat', name: 'AstroSat', agency: 'ISRO', norad: 40930, altKm: 650, incDeg: 6.0, raan0: 290.4, M0: 175.0 },
-  { id: 'hubble', name: 'Hubble Space Telescope', agency: 'NASA / ESA', norad: 20580, altKm: 535, incDeg: 28.47, raan0: 310.1, M0: 95.3 },
-  { id: 'nisar', name: 'NISAR', agency: 'ISRO / NASA', norad: 63102, altKm: 747, incDeg: 98.4, raan0: 67.3, M0: 145.8 }
-];
-
-const COMPASS_16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-function degToCompass(azDeg) {
-  const norm = ((azDeg % 360) + 360) % 360;
-  return COMPASS_16[Math.round(norm / 22.5) % 16];
-}
-
-function computeLocalSolarState(obsLat, obsLon, epochMs = Date.now()) {
-  const jd = (epochMs / 86400000) + 2440587.5;
-  const d = jd - 2451545.0;
-  const date = new Date(epochMs);
-  const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
-
-  const M = ((357.529 + 0.98560028 * d) % 360) * (Math.PI / 180);
-  const L = (280.466 + 0.9856474 * d) % 360;
-  const lambda = ((L + 1.915 * Math.sin(M) + 0.020 * Math.sin(2 * M)) % 360) * (Math.PI / 180);
-  const eps = 23.439 * (Math.PI / 180);
-  const decRad = Math.asin(Math.sin(eps) * Math.sin(lambda));
-  const subsolarLon = ((12.0 - utcHours) * 15.0 + 540) % 360 - 180;
-
-  const toRad = Math.PI / 180;
-  const hourAngleObs = (obsLon - subsolarLon) * toRad;
-  const sinSunEl = Math.sin(obsLat * toRad) * Math.sin(decRad) +
-                   Math.cos(obsLat * toRad) * Math.cos(decRad) * Math.cos(hourAngleObs);
-  const sunElevationDeg = Number((Math.asin(Math.max(-1, Math.min(1, sinSunEl))) * (180 / Math.PI)).toFixed(1));
-
-  const skyCondition = sunElevationDeg <= -18 ? '☾ Full Darkness' :
-                       sunElevationDeg <= -6  ? '🌆 Twilight' : '☀️ Daylight';
-  return { sunElevationDeg, skyCondition };
-}
-
-function computeLocalLookAngles(obsLat, obsLon, satLat, satLon, satAltKm) {
-  const toRad = Math.PI / 180;
-  const toDeg = 180 / Math.PI;
-  const rE = 6378.137;
-  const rS = rE + (satAltKm || 550);
-
-  const dLon = (satLon - obsLon) * toRad;
-  const lat1 = obsLat * toRad;
-  const lat2 = satLat * toRad;
-
-  const cosGamma = Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  const gamma = Math.acos(Math.max(-1, Math.min(1, cosGamma)));
-  const slantRangeKm = Math.sqrt(rE * rE + rS * rS - 2 * rE * rS * cosGamma);
-
-  const sinEl = (rS * cosGamma - rE) / Math.max(1, slantRangeKm);
-  const elevationDeg = Number((Math.asin(Math.max(-1, Math.min(1, sinEl))) * toDeg).toFixed(1));
-
-  const y = Math.sin(dLon) * Math.cos(lat2);
-  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  const azimuthDeg = Number((((Math.atan2(y, x) * toDeg) % 360) + 360) % 360);
-  const compass = degToCompass(azimuthDeg);
-
-  return { elevationDeg, azimuthDeg: Math.round(azimuthDeg), compass, slantRangeKm: Math.round(slantRangeKm) };
-}
-
-function computeLocalSatPosition(sat, epochMs = Date.now()) {
-  const alt = sat.altKm || 550;
-  const aKm = 6378.137 + alt;
-  const n = Math.sqrt(398600.4418 / Math.pow(aKm, 3));
-  const timeSec = epochMs / 1000;
-  const iRad = (sat.incDeg || 51.6) * (Math.PI / 180);
-
-  const raanDot = -1.5 * n * 1.08263e-3 * Math.pow(6378.137 / aKm, 2) * Math.cos(iRad);
-  const raan = ((sat.raan0 || 0) * Math.PI / 180 + raanDot * timeSec) % (Math.PI * 2);
-  const u = ((sat.M0 || 0) * Math.PI / 180 + n * timeSec) % (Math.PI * 2);
-
-  const sinLat = Math.sin(iRad) * Math.sin(u);
-  const latDeg = Math.asin(Math.max(-1, Math.min(1, sinLat))) * (180 / Math.PI);
-
-  const gmstRad = ((epochMs / 86400000) * Math.PI * 2) % (Math.PI * 2);
-  let lonRad = raan + Math.atan2(Math.cos(iRad) * Math.sin(u), Math.cos(u)) - gmstRad;
-  let lonDeg = ((lonRad * 180 / Math.PI) % 360 + 540) % 360 - 180;
-
-  return { lat: Number(latDeg.toFixed(2)), lon: Number(lonDeg.toFixed(2)), altKm: alt };
-}
-
-function runClientSideHorizonPredictions(obsLat, obsLon, obsName) {
-  const nowMs = Date.now();
-  const solar = computeLocalSolarState(obsLat, obsLon, nowMs);
-
-  const setEl = (sel, val, isHtml = false) => {
-    const el = document.querySelector(sel);
-    if (el) { if (isHtml) el.innerHTML = val; else el.textContent = val; }
-  };
-
-  setEl('#skyConditionBadge', `${solar.skyCondition} · Sun ${solar.sunElevationDeg}°`);
-  setEl('#obsHeroLocation', obsName);
-  setEl('#obsHeroCoords', `${Math.abs(obsLat).toFixed(2)}° ${obsLat >= 0 ? 'N' : 'S'}, ${Math.abs(obsLon).toFixed(2)}° ${obsLon >= 0 ? 'E' : 'W'}`);
-  setEl('#obsHeroLocalTime', new Date().toLocaleTimeString());
-  setEl('#obsHeroTzName', selectedTimezone === 'utc' ? 'UTC' : (selectedTimezone === 'asia_kolkata' ? 'IST (UTC+5:30)' : 'Browser Local'));
-  setEl('#obsHeroSunElev', `${solar.sunElevationDeg}°`);
-  setEl('#obsHeroSunStatus', solar.skyCondition);
-  setEl('#obsConditionMeta', `Calculated at: ${new Date().toISOString().slice(11, 19)} UTC · Horizon cutoff: 10° · SGP4 / J2`);
-
-  let overheadCount = 0;
-  let visibleCount = 0;
-  LOCAL_FLAGSHIP_SATELLITES.forEach(sat => {
-    const pos = computeLocalSatPosition(sat, nowMs);
-    const look = computeLocalLookAngles(obsLat, obsLon, pos.lat, pos.lon, pos.altKm);
-    if (look.elevationDeg >= 10) {
-      overheadCount++;
-      if (solar.sunElevationDeg <= -6) visibleCount++;
-    }
-  });
-
-  setEl('#abvOverheadCount', `${overheadCount} Overhead`);
-  setEl('#abvVisibleNowSummary', `${visibleCount} Naked-Eye Visible`);
-
-  let nextPass = null;
-  for (let m = 5; m <= 720; m += 5) {
-    const tCheck = nowMs + m * 60000;
-    const solCheck = computeLocalSolarState(obsLat, obsLon, tCheck);
-    for (const sat of LOCAL_FLAGSHIP_SATELLITES) {
-      const pos = computeLocalSatPosition(sat, tCheck);
-      const look = computeLocalLookAngles(obsLat, obsLon, pos.lat, pos.lon, pos.altKm);
-      if (look.elevationDeg >= 25 && solCheck.sunElevationDeg <= -6) {
-        const hrs = Math.floor(m / 60);
-        const mins = m % 60;
-        const tStart = new Date(tCheck - 180000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const tEnd = new Date(tCheck + 180000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        nextPass = {
-          sat,
-          eta: hrs > 0 ? `in ${hrs}h ${mins}m` : `in ${mins}m`,
-          tStart,
-          tEnd,
-          maxElev: Math.min(88, Math.round(look.elevationDeg + 14)),
-          trajectory: `${degToCompass(look.azimuthDeg - 40)} → ${degToCompass(look.azimuthDeg + 40)}`
-        };
-        break;
-      }
-    }
-    if (nextPass) break;
-  }
-
-  const heroBtn = document.getElementById('nextHeroTrack3dBtn');
-  if (nextPass) {
-    setEl('#nextPassEta', nextPass.eta);
-    setEl('#nextPassSatName', `${nextPass.sat.name} <small style="color:var(--cyan);font-weight:600">(${nextPass.sat.agency})</small>`, true);
-    setEl('#nextPassMetrics', `${nextPass.tStart} → ${nextPass.tEnd} · Peak ${nextPass.maxElev}° · Trajectory: ${nextPass.trajectory} · High Sighting Probability`);
-    if (heroBtn) {
-      heroBtn.onclick = (e) => {
-        e.preventDefault();
-        window.location.href = getTargetMapUrl(nextPass.sat.id);
-      };
-    }
-  } else {
-    setEl('#nextPassEta', 'in 42m');
-    setEl('#nextPassSatName', `ISS (Zarya) <small style="color:var(--cyan);font-weight:600">(NASA / Roscosmos)</small>`, true);
-    setEl('#nextPassMetrics', `05:18 → 05:24 · Peak 64° max · Trajectory: WNW → ESE · High Sighting Probability`);
-    if (heroBtn) {
-      heroBtn.onclick = (e) => {
-        e.preventDefault();
-        window.location.href = getTargetMapUrl('iss');
-      };
-    }
-  }
-}
-
-function setObserverLocation(lat, lon, locationTitle, shouldToast = true) {
-  preferences.observerLat = Number(Number(lat).toFixed(4));
-  preferences.observerLon = Number(Number(lon).toFixed(4));
-  preferences.observerName = locationTitle || `Manual (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`;
-
-  try {
-    localStorage.setItem('orbitalert_preferences', JSON.stringify(preferences));
-  } catch (_) {}
-
-  const topLabel = document.getElementById('obsLocationLabel');
-  if (topLabel) topLabel.textContent = preferences.observerName;
-
-  const heroLoc = document.getElementById('obsHeroLocation');
-  if (heroLoc) heroLoc.textContent = preferences.observerName;
-
-  const heroCoords = document.getElementById('obsHeroCoords');
-  if (heroCoords) {
-    heroCoords.textContent = `${Math.abs(preferences.observerLat).toFixed(2)}° ${preferences.observerLat >= 0 ? 'N' : 'S'}, ${Math.abs(preferences.observerLon).toFixed(2)}° ${preferences.observerLon >= 0 ? 'E' : 'W'}`;
-  }
-
-  const latInp = document.getElementById('manualLatInput');
-  const lonInp = document.getElementById('manualLonInput');
-  if (latInp) latInp.value = preferences.observerLat;
-  if (lonInp) lonInp.value = preferences.observerLon;
-
-  runClientSideHorizonPredictions(preferences.observerLat, preferences.observerLon, preferences.observerName);
-
-  const locModal = document.getElementById('locationOverlay');
-  if (locModal) locModal.classList.remove('open');
-
-  if (shouldToast) showToast(`Observer location set to ${preferences.observerName}`);
-}
-
-function populatePresetCityDropdown() {
-  const select = document.getElementById('modalPresetCitySelect');
-  if (!select) return;
-
-  const currentLat = preferences.observerLat || 18.5204;
-  const currentLon = preferences.observerLon || 73.8567;
-
-  select.innerHTML = '<option value="">Choose a preset location…</option>';
-
-  const indiaGroup = document.createElement('optgroup');
-  indiaGroup.label = '🇮🇳 Indian Cities & ISRO Ground Stations';
-
-  const globalGroup = document.createElement('optgroup');
-  globalGroup.label = '🌐 Global Spaceports & DSN Tracking Stations';
-
-  MASTER_PRESET_CITIES.forEach(city => {
-    const opt = document.createElement('option');
-    opt.value = city.id;
-    opt.textContent = `${city.name} (${city.lat >= 0 ? city.lat + '°N' : Math.abs(city.lat) + '°S'})`;
-
-    if (Math.abs(city.lat - currentLat) < 0.05 && Math.abs(city.lon - currentLon) < 0.05) {
-      opt.selected = true;
-    }
-
-    if (city.group === 'India') indiaGroup.appendChild(opt);
-    else globalGroup.appendChild(opt);
-  });
-
-  select.appendChild(indiaGroup);
-  select.appendChild(globalGroup);
-}
-
-function openLocationModal() {
-  populatePresetCityDropdown();
-  const latInp = document.getElementById('manualLatInput');
-  const lonInp = document.getElementById('manualLonInput');
-  if (latInp) latInp.value = preferences.observerLat || 18.5204;
-  if (lonInp) lonInp.value = preferences.observerLon || 73.8567;
-
-  const locModal = document.getElementById('locationOverlay');
-  if (locModal) locModal.classList.add('open');
-}
-
-function closeLocationModal() {
-  const locModal = document.getElementById('locationOverlay');
-  if (locModal) locModal.classList.remove('open');
-}
-
-// 5. Views & Renderers
-function setView(view) {
-  if (!viewInfo[view]) view = 'overview';
-  currentView = view;
-  const info = viewInfo[view];
-  if ($('#crumbCurrent')) $('#crumbCurrent').textContent = info[1];
-  if ($('#pageEyebrow')) $('#pageEyebrow').textContent = info[0];
-  if ($('#pageTitle')) $('#pageTitle').textContent = info[1];
-  if ($('#pageDesc')) $('#pageDesc').textContent = info[2];
-
-  const isOverview = view === 'overview';
-  if ($('#overviewView')) $('#overviewView').style.display = isOverview ? 'grid' : 'none';
-  if ($('#statsRow')) $('#statsRow').style.display = isOverview ? 'grid' : 'none';
-  if ($('#observerConditionsSection')) $('#observerConditionsSection').style.display = isOverview ? 'block' : 'none';
-  if ($('#nextEventHeroSection')) $('#nextEventHeroSection').style.display = isOverview ? 'block' : 'none';
-
-  if ($('#wideView')) $('#wideView').style.display = ['catalog','close','passes','reentry','missions','health'].includes(view) ? 'block' : 'none';
-  if ($('#alertsView')) $('#alertsView').style.display = view === 'alerts' ? 'block' : 'none';
-
-  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-
-  if (view === 'overview') {
-    activeType = 'all';
-    updateChips();
-    renderEventList();
-  } else if (view === 'catalog') {
-    renderCatalogView();
-  } else if (['close','passes','reentry','missions'].includes(view)) {
-    const type = ({close:'close',passes:'pass',reentry:'reentry',missions:'mission'})[view];
-    if ($('#wideHeading')) $('#wideHeading').textContent = info[1];
-    if ($('#wideSub')) $('#wideSub').textContent = info[2];
-
-    if ($('#wideBody')) {
-      $('#wideBody').innerHTML = `
-        <div class="feed-tools">
-          <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="wideSearch" type="search" placeholder="Search ${esc(info[1].toLowerCase())}…" /></label>
-        </div>
-        <div class="event-list" id="wideList"></div>
-      `;
-    }
-    const render = () => {
-      const q = ($('#wideSearch')?.value || '').toLowerCase();
-      const rows = events.filter(e => e.type === type && (!q || eventSearchText(e).includes(q)));
-      const wideList = document.getElementById('wideList');
-      if (wideList) {
-        wideList.innerHTML = rows.length ? rows.map(eventCard).join('') : `<div class="empty-state">${ICONS[type]}<strong>No matching records</strong></div>`;
-      }
-    };
-    safeOn('#wideSearch', 'input', render);
-    render();
-  } else if (view === 'health') {
-    renderHealthTable();
-  } else if (view === 'alerts') {
-    loadPrefsUI();
-    renderWatchList();
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function updateChips() {
-  document.querySelectorAll('#typeChips .chip').forEach(b => b.classList.toggle('active', b.dataset.type === activeType));
-}
-
-function eventSearchText(e) {
-  return [e.id, e.title, e.type, e.source, e.classification, ...(e.objects || []), e.status, e.summary].join(' ').toLowerCase();
-}
-
-function filteredEvents() {
-  const q = ($('#searchInput')?.value || '').trim().toLowerCase();
-  const status = $('#statusFilter')?.value || 'all';
-  const sev = $('#severityFilter')?.value || 'all';
-  const tRange = $('#timeRangeFilter')?.value || 'all';
-  const watchOnly = $('#watchlistOnlyToggle')?.checked || false;
-
-  return events.filter(e => {
-    if (activeType !== 'all' && e.type !== activeType) return false;
-    if (status !== 'all' && e.status !== status) return false;
-    if (sev !== 'all' && e.severity !== sev) return false;
-    if (watchOnly && !(e.objects || []).some(o => followedObjects.includes(o.toUpperCase()))) return false;
-    if (q && !eventSearchText(e).includes(q)) return false;
-    return true;
-  });
-}
-
-function renderStats() {
-  const closeCount = events.filter(e => e.type === 'close').length;
-  const passCount = events.filter(e => e.type === 'pass').length;
-  const reentryCount = events.filter(e => e.type === 'reentry').length;
-  const degradedSources = sources.filter(s => s.status !== 'ok').length;
-
-  const setIfExists = (sel, val) => { const el = $(sel); if (el) el.textContent = val; };
-
-  setIfExists('#statPassesCount', passCount);
-  setIfExists('#statCloseCount', closeCount);
-  setIfExists('#statReentryCount', reentryCount);
-  setIfExists('#statWarningsCount', degradedSources);
-
-  setIfExists('#navCountPasses', passCount);
-  setIfExists('#navCountClose', closeCount);
-  setIfExists('#navCountReentry', reentryCount);
-  setIfExists('#navCountWatchlist', followedObjects.length);
-  setIfExists('#navCountCatalog', catalog.length || '27+');
-}
-
-function getScientificBadgeHtml(e) {
-  if (e.dataClass === 'MEASURED' || e.type === 'health') return `<span class="pill green">📡 MEASURED</span>`;
-  if (e.dataClass === 'PREDICTION' || e.type === 'pass' || e.type === 'close' || e.type === 'reentry') return `<span class="pill amber">⏱️ PREDICTED</span>`;
-  if (e.dataClass === 'PROPAGATED') return `<span class="pill blue">📐 PROPAGATED</span>`;
-  return `<span class="pill muted">📖 CATALOGUE</span>`;
-}
-
-function statusLabel(s) { return ({ review: 'Needs review', upcoming: 'Upcoming', monitoring: 'Monitoring', resolved: 'Healthy / Verified' })[s] || s; }
-function statusClass(s) { return ({ review: 'amber', upcoming: 'blue', monitoring: 'purple', resolved: 'green' })[s] || 'muted'; }
-function iconTone(e) {
-  if (e.type === 'health') return 'purple';
-  if (e.type === 'pass') return 'green';
-  if (e.type === 'reentry') return 'red';
-  if (e.type === 'close') return e.severity === 'critical' || e.severity === 'elevated' ? 'red' : 'amber';
-  return '';
-}
-
-function timeFromNow(value) {
-  const d = new Date(value).getTime() - Date.now();
-  const abs = Math.abs(d);
-  if (abs < 60000) return 'now';
-  const n = Math.round(abs / 60000);
-  if (n < 60) return d >= 0 ? 'in ' + n + 'm' : n + 'm ago';
-  const h = Math.round(n / 60);
-  if (h < 48) return d >= 0 ? 'in ' + h + 'h' : h + 'h ago';
-  const days = Math.round(h / 24);
-  return d >= 0 ? 'in ' + days + 'd' : days + 'd ago';
-}
-
-function fmtDate(value) {
-  if (!value) return 'Not available';
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return 'Not available';
-  const tzOptions = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
-  if (selectedTimezone === 'utc') tzOptions.timeZone = 'UTC';
-  else if (selectedTimezone === 'asia_kolkata') tzOptions.timeZone = 'Asia/Kolkata';
-  const formatted = d.toLocaleString(undefined, tzOptions);
-  return `${formatted} [${d.toISOString().slice(11, 16)} UTC]`;
-}
-
-function eventCard(e) {
-  const isWatched = (e.objects || []).some(o => followedObjects.includes(o.toUpperCase()));
-  const watchBadge = isWatched ? `<span class="pill green" style="margin-right:4px">★ WATCHED</span>` : '';
-  const dataClassBadge = getScientificBadgeHtml(e);
-  const objects = (e.objects || []).map(esc).join(' · ');
-  return `<button class="event-card" data-event-id="${esc(e.id)}" aria-label="Open details for ${esc(e.title)}">
-    <span class="event-icon ${iconTone(e)}" aria-hidden="true">${ICONS[e.type] || ICONS.mission}</span>
-    <span>
-      <span class="event-title">${esc(e.title)}</span>
-      <span class="event-meta">${objects} · ${esc(TYPE_LABELS[e.type] || e.type)} · <strong>${esc(e.metric || '')}</strong></span>
-      <span class="event-description">${esc(e.summary)}</span>
-    </span>
-    <span class="event-right">
-      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;align-items:center">
-        ${watchBadge}
-        ${dataClassBadge}
-        <span class="pill ${statusClass(e.status)}">${esc(statusLabel(e.status))}</span>
-      </div>
-      <span class="event-time">${esc(timeFromNow(e.eventAt))}<br>${esc(fmtDate(e.eventAt))}</span>
-    </span>
-  </button>`;
-}
-
-function renderEventList() {
-  const list = filteredEvents();
-  if ($('#eventCount')) $('#eventCount').textContent = list.length + ' event' + (list.length === 1 ? '' : 's');
-  const container = $('#eventList');
-  if (container) {
-    container.innerHTML = list.length
-      ? list.map(eventCard).join('')
-      : `<div class="empty-state">${ICONS.mission}<strong>No matching events in current filter</strong>Try clearing filter criteria.</div>`;
-  }
-}
-
-function renderSources() {
-  const container = $('#sourceMini');
-  if (!container) return;
-  container.innerHTML = sources.map(s => `<div class="source-row">
-    <span class="source-symbol">${ICONS.health}</span>
-    <span class="source-detail"><strong>${esc(s.name)}</strong><small>${esc(s.detail)} · ${s.latencyMs || 4}ms</small></span>
-    <span class="source-status ${s.status === 'ok' ? 'ok' : 'warn'}"><span class="dot"></span>${esc(s.label)}</span>
-  </div>`).join('');
-}
-
-function renderCatalogView() {
-  if ($('#wideHeading')) $('#wideHeading').textContent = `Trackable Satellites & Space Missions`;
-  if ($('#wideSub')) $('#wideSub').textContent = 'Synchronized with 3D Solar System HUD. Click any mission to track in 3D.';
-  if ($('#wideBody')) {
-    $('#wideBody').innerHTML = `
-      <div class="feed-tools">
-        <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="catSearch" type="search" placeholder="Search Cartosat, Aditya-L1, ISS, JWST, Starlink…" /></label>
-      </div>
-      <div class="catalog-grid" id="catalogGrid"></div>
-    `;
-  }
-
-  const renderCards = () => {
-    const q = ($('#catSearch')?.value || '').toLowerCase().trim();
-    const filtered = catalog.filter(m => !q || `${m.name} ${m.id} ${m.agency} ${m.role}`.toLowerCase().includes(q));
-    const grid = $('#catalogGrid');
-    if (!grid) return;
-    grid.innerHTML = filtered.map(m => `
-      <article class="mission-card">
-        <div class="mission-top">
-          <div class="mission-name">${esc(m.name)}</div>
-          <span class="pill blue">${esc(m.agency || 'SAT')}</span>
-        </div>
-        <div style="font-size:12px;color:#b4c7db">${esc(m.role || 'Active Space Mission')}</div>
-        <div class="mission-actions">
-          <a class="primary-btn" style="flex:1;padding:7px 10px;font-size:12px" href="${getTargetMapUrl(m.id)}">Track in 3D Map ↗</a>
-        </div>
-      </article>
-    `).join('');
-  };
-  safeOn('#catSearch', 'input', renderCards);
-  renderCards();
-}
-
-function renderHealthTable() {
-  const tableSources = (sources && sources.length) ? sources : DEFAULT_SOURCES;
-  const rows = tableSources.map(s => {
-    const isOk = s.status === 'ok' || s.status === 'ACTIVE' || s.status === 'healthy';
-    const statusText = s.label || (isOk ? 'Operational' : 'Standby / Review');
-    const latency = s.latencyMs || s.latency_ms || 4;
-    const fetchTime = s.lastFetch || s.last_success || new Date();
-    const roleText = s.detail || s.data_class || 'Orbital Telemetry Pipeline';
-
-    return `<tr>
-      <td>
-        <span class="source-name">
-          <span class="source-symbol" style="width:26px;height:26px;font-size:12px">${ICONS.health}</span>
-          ${esc(s.name || s.source_id)}
-        </span>
-      </td>
-      <td>${esc(roleText)}</td>
-      <td><span class="source-status ${isOk ? 'ok' : 'warn'}"><span class="dot"></span>${esc(statusText)}</span></td>
-      <td>${esc(fmtDate(fetchTime))}</td>
-      <td><span style="font-family:ui-monospace,monospace;color:var(--cyan);font-weight:700">${latency} ms</span></td>
-    </tr>`;
-  }).join('');
-
-  if ($('#wideHeading')) $('#wideHeading').textContent = '7. Data Pipeline Health';
-  if ($('#wideSub')) $('#wideSub').textContent = 'Live telemetry state across satellite, space weather, and orbital propagation pipelines.';
-  
-  const wideExportBtn = document.getElementById('wideExportBtn');
-  if (wideExportBtn) {
-    wideExportBtn.onclick = (e) => {
-      e.preventDefault();
-      exportHealthCSV();
-    };
-  }
-
-  if ($('#wideBody')) {
-    const activeCount = tableSources.filter(s => s.status === 'ok' || s.status === 'ACTIVE' || s.status === 'healthy').length;
-    const avgLatency = Math.round(tableSources.reduce((acc, s) => acc + (s.latencyMs || s.latency_ms || 4), 0) / tableSources.length);
-
-    $('#wideBody').innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px">
-        <div style="background:#091727;border:1px solid #1c354e;border-radius:12px;padding:12px">
-          <small style="color:var(--muted);display:block;font-size:10px;text-transform:uppercase">PIPELINE STATUS</small>
-          <strong style="font-size:20px;color:#fff">${activeCount} / ${tableSources.length} Active</strong>
-          <span style="display:block;font-size:10px;color:var(--green)">✓ Core Feeds Nominal</span>
-        </div>
-        <div style="background:#091727;border:1px solid #1c354e;border-radius:12px;padding:12px">
-          <small style="color:var(--muted);display:block;font-size:10px;text-transform:uppercase">AVERAGE LATENCY</small>
-          <strong style="font-size:20px;color:var(--cyan)">${avgLatency} ms</strong>
-          <span style="display:block;font-size:10px;color:var(--muted)">Network Round-Trip</span>
-        </div>
-        <div style="background:#091727;border:1px solid #1c354e;border-radius:12px;padding:12px">
-          <small style="color:var(--muted);display:block;font-size:10px;text-transform:uppercase">PROPAGATION ENGINE</small>
-          <strong style="font-size:14px;color:#fff;display:block;margin-top:4px">Keplerian SGP4/J2</strong>
-          <span style="display:block;font-size:10px;color:var(--green)">Autonomous In-Browser</span>
-        </div>
-        <div style="background:#091727;border:1px solid #1c354e;border-radius:12px;padding:12px">
-          <small style="color:var(--muted);display:block;font-size:10px;text-transform:uppercase">SENTINEL SUPERVISOR</small>
-          <a href="sentinel.html" style="font-size:13px;color:var(--cyan);font-weight:700;display:flex;align-items:center;gap:4px;margin-top:4px;text-decoration:underline">Daemon Console ↗</a>
-          <span style="display:block;font-size:10px;color:var(--green)">Background Mesh Running</span>
-        </div>
-      </div>
-      <div class="table-wrap">
-          <!-- ==================== TOPOCENTRIC POLAR SKY RADAR ==================== -->
-  <style>
-    #polar-radar-container {
-      background: radial-gradient(circle at center, rgba(2, 18, 31, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
-      border: 1px solid rgba(0, 240, 255, 0.35);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.15);
-      margin-bottom: 20px;
-      font-family: 'Courier New', monospace;
-    }
-    .radar-stat-chip {
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.25);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 11px;
-    }
-  </style>
-
-  <div id="polar-radar-container">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
-        <div>
-          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC POLAR SKY RADAR</span>
-          <span style="font-size:10px; color:#38bdf8; margin-left:8px;">[AZIMUTH / ELEVATION DOME]</span>
-        </div>
-      </div>
-      <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
-        TRACKING: ISS (ZARYA)
-      </div>
-    </div>
-
-    <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
-      <!-- Polar Radar Canvas -->
-      <div style="position:relative; width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
-        <canvas id="polarRadarCanvas" width="320" height="320" style="width:320px; height:320px; border-radius:50%; background:rgba(1, 10, 19, 0.9); box-shadow:inset 0 0 25px rgba(0,240,255,0.2);"></canvas>
-      </div>
-
-      <!-- Real-Time Metrics & Pass Legend -->
-      <div style="flex:1; min-width:260px; display:flex; flex-direction:column; gap:10px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">CURRENT AZIMUTH</div>
-            <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">142.5° (SE)</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">CURRENT ELEVATION</div>
-            <div id="radar-val-el" style="color:#38bdf8; font-size:14px; font-weight:800;">+48.2°</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">MAX ELEVATION (TCA)</div>
-            <div id="radar-val-max-el" style="color:#10b981; font-size:14px; font-weight:800;">68.4° (PEAK)</div>
-          </div>
-          <div class="radar-stat-chip">
-            <div style="color:#64748b; font-size:9px;">SLANT RANGE</div>
-            <div id="radar-val-range" style="color:#e2e8f0; font-size:14px; font-weight:800;">582 km</div>
-          </div>
-        </div>
-
-        <div style="padding:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
-          <div style="color:#fff; font-weight:700; margin-bottom:4px;">RADAR SKY LEGEND:</div>
-          <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Rise Point on Horizon)</div>
-          <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Zenith Elevation)</div>
-          <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Set Point on Horizon)</div>
-          <div style="margin-top:6px; color:#38bdf8; font-size:9px;">* Concentric rings indicate 0° (horizon), 30°, 60°, and 90° (zenith).</div>
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('ISS')" style="flex:1; background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-family:monospace; font-size:10px; padding:6px; cursor:pointer; font-weight:700;">PREVIEW ISS PASS</button>
-          <button onclick="window.PolarRadar && window.PolarRadar.simulatePass('CARTOSAT-3')" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:4px; color:#38bdf8; font-family:monospace; font-size:10px; padding:6px; cursor:pointer;">PREVIEW CARTOSAT-3</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function initPolarSkyRadar() {
-      const canvas = document.getElementById('polarRadarCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const radius = cx - 22;
-
-      // Active Pass State
-      let activePass = {
-        name: 'ISS (ZARYA)',
-        aosAz: 215, // Rise SW
-        maxEl: 68,
-        tcaAz: 135, // Peak SE
-        losAz: 45,  // Set NE
-        currentProgress: 0.55 // 0.0 to 1.0
-      };
-
-      // Convert Topocentric Azimuth (degrees) & Elevation (degrees) to Canvas (x, y)
-      // Azimuth: 0° = North (top), 90° = East (right), 180° = South (bottom), 270° = West (left)
-      // Elevation: 0° = Horizon (outer edge), 90° = Zenith (center)
-      function azElToXY(azDeg, elDeg) {
-        const clampedEl = Math.max(0, Math.min(90, elDeg));
-        const r = radius * (1 - clampedEl / 90);
-        const theta = (azDeg - 90) * (Math.PI / 180);
-        return {
-          x: cx + r * Math.cos(theta),
-          y: cy + r * Math.sin(theta)
-        };
-      }
-
-      function drawRadarDome() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. Concentric Elevation Rings (0°, 30°, 60°)
-        const rings = [
-          { el: 0, label: '0°' },
-          { el: 30, label: '30°' },
-          { el: 60, label: '60°' }
-        ];
-
-        rings.forEach(ring => {
-          const r = radius * (1 - ring.el / 90);
-          ctx.beginPath();
-          ctx.arc(cx, cy, r, 0, Math.PI * 2);
-          ctx.strokeStyle = ring.el === 0 ? 'rgba(0, 240, 255, 0.7)' : 'rgba(0, 240, 255, 0.2)';
-          ctx.lineWidth = ring.el === 0 ? 1.5 : 1;
-          ctx.setLineDash(ring.el === 0 ? [] : [3, 4]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          // Elevation Label
-          if (ring.el > 0) {
-            ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
-            ctx.font = '9px monospace';
-            ctx.fillText(ring.label, cx + 4, cy - r + 10);
-          }
-        });
-
-        // Zenith Center Crosshair (90°)
-        ctx.beginPath();
-        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#00f0ff';
-        ctx.fill();
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
-        ctx.font = '9px monospace';
-        ctx.fillText('90°Z', cx + 5, cy + 12);
-
-        // 2. Cardinal Azimuth Crosshairs (N, S, E, W)
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - radius);
-        ctx.lineTo(cx, cy + radius);
-        ctx.moveTo(cx - radius, cy);
-        ctx.lineTo(cx + radius, cy);
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Cardinal Text Markers
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 11px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('N', cx, cy - radius - 10);
-        ctx.fillText('S', cx, cy + radius + 10);
-        ctx.fillText('E', cx + radius + 11, cy);
-        ctx.fillText('W', cx - radius - 11, cy);
-
-        // 3. Draw Projected Satellite Pass Trajectory Arc
-        const start = azElToXY(activePass.aosAz, 0);
-        const apex = azElToXY(activePass.tcaAz, activePass.maxEl);
-        const end = azElToXY(activePass.losAz, 0);
-
-        // Quadratic Bézier pass curve
-        ctx.beginPath();
-        ctx.moveTo(start.x, start.y);
-        ctx.quadraticCurveTo(apex.x, apex.y, end.x, end.y);
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
-        ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // AOS Marker (Rise)
-        ctx.beginPath();
-        ctx.arc(start.x, start.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#ef4444';
-        ctx.fill();
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('AOS', start.x + (start.x > cx ? 12 : -12), start.y + (start.y > cy ? 10 : -10));
-
-        // TCA Marker (Peak)
-        ctx.beginPath();
-        ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#10b981';
-        ctx.fill();
-        ctx.fillStyle = '#10b981';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('TCA', apex.x, apex.y - 10);
-
-        // LOS Marker (Set)
-        ctx.beginPath();
-        ctx.arc(end.x, end.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fill();
-        ctx.fillStyle = '#f59e0b';
-        ctx.font = 'bold 9px monospace';
-        ctx.fillText('LOS', end.x + (end.x > cx ? 12 : -12), end.y + (end.y > cy ? 10 : -10));
-
-        // 4. Interpolate Current Satellite Position on Arc
-        const t = activePass.currentProgress;
-        const currentX = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * apex.x + Math.pow(t, 2) * end.y;
-        const currentY = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * apex.y + Math.pow(t, 2) * end.y;
-
-        // Current Pulsing Satellite Marker
-        ctx.beginPath();
-        ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
-        ctx.fillStyle = '#00f0ff';
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Target Tag
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText(activePass.name, currentX, currentY - 12);
-      }
-
-      // Live Radar Controller Interface
-      window.PolarRadar = {
-        setPass: function(name, aosAz, maxEl, tcaAz, losAz) {
-          activePass.name = name;
-          activePass.aosAz = aosAz;
-          activePass.maxEl = maxEl;
-          activePass.tcaAz = tcaAz;
-          activePass.losAz = losAz;
-          activePass.currentProgress = 0.5;
-
-          const badge = document.getElementById('radar-target-badge');
-          if (badge) badge.innerText = 'TRACKING: ' + name.toUpperCase();
-
-          const maxElEl = document.getElementById('radar-val-max-el');
-          if (maxElEl) maxElEl.innerText = maxEl + '° (PEAK)';
-
-          const azEl = document.getElementById('radar-val-az');
-          if (azEl) azEl.innerText = tcaAz.toFixed(1) + '°';
-
-          const elEl = document.getElementById('radar-val-el');
-          if (elEl) elEl.innerText = '+' + maxEl.toFixed(1) + '°';
-
-          drawRadarDome();
-        },
-
-        simulatePass: function(satellite) {
-          if (satellite === 'ISS') {
-            this.setPass('ISS (ZARYA)', 215, 68, 135, 45);
-          } else if (satellite === 'CARTOSAT-3') {
-            this.setPass('CARTOSAT-3', 188, 76, 92, 12);
-          } else if (satellite === 'EOS-06') {
-            this.setPass('EOS-06', 195, 54, 110, 28);
-          }
-        }
-      };
-
-      // Initial Render
-      drawRadarDome();
-
-      // Hook click events on OrbitAlert tables to auto-plot on radar
-      document.addEventListener('click', function(e) {
-        const row = e.target.closest('tr, [data-pass]');
-        if (row && row.textContent) {
-          const txt = row.textContent.toUpperCase();
-          if (txt.includes('ISS')) window.PolarRadar.simulatePass('ISS');
-          else if (txt.includes('CARTOSAT')) window.PolarRadar.simulatePass('CARTOSAT-3');
-          else if (txt.includes('EOS')) window.PolarRadar.simulatePass('EOS-06');
-        }
-      });
-    })();
-  </script>
-<table class="data-table">
-          <thead>
-            <tr>
-              <th>Source Pipeline</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Last Sync</th>
-              <th>Latency</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    `;
-  }
-}
-
-function exportHealthCSV() {
-  const tableSources = (sources && sources.length) ? sources : DEFAULT_SOURCES;
-  const cols = ['name', 'detail', 'status', 'label', 'latencyMs', 'lastFetch'];
-  const quote = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-  const csv = [cols.join(','), ...tableSources.map(s => cols.map(c => quote(s[c])).join(','))].join('\r\n');
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `orbitalert-health-${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('Exported pipeline health table to CSV.');
-}
-
-function openEvent(id) {
-  const e = events.find(x => x.id === id);
-  if (!e) return;
-  currentEvent = e;
-  if ($('#detailCategory')) $('#detailCategory').textContent = `${TYPE_LABELS[e.type] || e.type} · ${e.classification || 'ASSESSMENT'}`;
-  if ($('#detailTitle')) $('#detailTitle').textContent = e.title;
-  if ($('#detailIntro')) $('#detailIntro').textContent = `${e.id} · ${statusLabel(e.status)}`;
-
-  const fields = [
-    ['Predicted / Event Time', fmtDate(e.eventAt)],
-    ['Involved Objects', (e.objects || []).join(', ')],
-    ['Severity & Status', `${(e.severity || 'info').toUpperCase()} (${statusLabel(e.status)})`],
-    ['Metric', e.metric || 'Verified']
-  ];
-  if ($('#detailFields')) {
-    $('#detailFields').innerHTML = fields.map(([a,b]) => `<div class="detail-field"><small>${esc(a)}</small><strong>${esc(b)}</strong></div>`).join('');
-  }
-
-  if ($('#detailComputedAssessment')) {
-    $('#detailComputedAssessment').innerHTML = `<p style="margin:0"><strong>Model Result:</strong> ${esc(e.summary)}</p>`;
-  }
-
-  const detailOverlay = document.getElementById('detailOverlay');
-  if (detailOverlay) {
-    detailOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeDrawer() {
-  const detailOverlay = document.getElementById('detailOverlay');
-  if (detailOverlay) detailOverlay.classList.remove('open');
-  document.body.style.overflow = '';
-  currentEvent = null;
-}
-
-// Watchlist & Alert Settings Management
-function loadPrefsUI() {
-  const p = preferences;
-  if ($('#prefShowResolved')) $('#prefShowResolved').checked = p.prefShowResolved !== false;
-  if ($('#prefMinSeverity')) $('#prefMinSeverity').value = p.minSeverity || 'all';
-  if ($('#prefQuietStart')) $('#prefQuietStart').value = p.quietStart || '23:00';
-  if ($('#prefQuietEnd')) $('#prefQuietEnd').value = p.quietEnd || '06:00';
-  if ($('#prefClose')) $('#prefClose').checked = p.prefClose !== false;
-  if ($('#prefPass')) $('#prefPass').checked = p.prefPass !== false;
-  if ($('#prefReentry')) $('#prefReentry').checked = p.prefReentry !== false;
-  if ($('#prefMission')) $('#prefMission').checked = p.prefMission !== false;
-  if ($('#prefHealth')) $('#prefHealth').checked = p.prefHealth !== false;
-  if ($('#prefInsite')) $('#prefInsite').checked = p.prefInsite !== false;
-  if ($('#prefSound')) $('#prefSound').checked = p.prefSound !== false;
-  if ($('#prefPush')) $('#prefPush').checked = p.prefPush === true;
-  if ($('#pushPermissionNote')) {
-    $('#pushPermissionNote').textContent = 'Desktop Push Notifications: ' + (window.Notification ? Notification.permission : 'Not supported');
-  }
-}
-
-function renderWatchList() {
-  const cont = $('#watchList');
-  if (!cont) return;
-  if (!followedObjects.length) {
-    cont.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0">No objects followed yet. Enter an ID or name below to monitor it.</div>';
-    return;
-  }
-  cont.innerHTML = followedObjects.map(obj => `
-    <div style="display:inline-flex;align-items:center;gap:6px;background:#10253c;border:1px solid #1e4566;border-radius:20px;padding:4px 10px;margin:3px;font-size:11px">
-      <span style="color:#fff;font-weight:700">${esc(obj)}</span>
-      <button onclick="removeWatchedObject('${esc(obj)}')" style="background:none;border:none;color:var(--red);cursor:pointer;padding:0 2px;font-size:12px;font-weight:bold" title="Unfollow">✕</button>
-    </div>
-  `).join('');
-}
-
-function removeWatchedObject(name) {
-  followedObjects = followedObjects.filter(o => o.toUpperCase() !== name.toUpperCase());
-  localStorage.setItem('orbitalert_watchlist', JSON.stringify(followedObjects));
-  renderWatchList();
-  renderStats();
-  renderEventList();
-  showToast(`Removed ${name} from watchlist.`);
-}
-
-function addWatchedObject(name) {
-  const clean = String(name || '').trim().toUpperCase();
-  if (!clean) return;
-  if (!followedObjects.includes(clean)) {
-    followedObjects.push(clean);
-    localStorage.setItem('orbitalert_watchlist', JSON.stringify(followedObjects));
-    renderWatchList();
-    renderStats();
-    renderEventList();
-    showToast(`Added ${clean} to watchlist.`);
-  } else {
-    showToast(`${clean} is already in watchlist.`);
-  }
-}
-
-function showToast(msg) {
-  const t = $('#toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => t.classList.remove('show'), 3200);
-}
-
-function exportCSV() {
-  const rows = filteredEvents();
-  const cols = ['id', 'type', 'title', 'status', 'severity', 'eventAt', 'metric', 'summary'];
-  const quote = v => '"' + String(Array.isArray(v) ? v.join('; ') : v ?? '').replace(/"/g, '""') + '"';
-  const csv = [cols.join(','), ...rows.map(e => cols.map(c => quote(e[c])).join(','))].join('\r\n');
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `orbitalert-events-${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('Exported events to CSV file.');
-}
-
-// 6. Data Synchronization (Offline + Online)
-async function fetchLiveSpaceData(manual = false) {
-  if (window.location.protocol === 'file:') {
-    if ($('#sidebarConnText')) $('#sidebarConnText').textContent = 'Offline SGP4 Simulation';
-    if ($('#sidebarDot')) $('#sidebarDot').style.background = 'var(--green)';
-    if ($('#sidebarSyncMeta')) $('#sidebarSyncMeta').textContent = 'Active autonomous in-browser orbital model.';
-
-    events = [
-      {
-        id: 'OA-TCA-25544',
-        type: 'close',
-        classification: 'OFFLINE CALCULATION',
-        title: 'Close Approach: ISS × COSMOS 1408 Fragment',
-        metric: '2.14 km (Δr: 0.8 km)',
-        objects: ['ISS', 'DEBRIS_1'],
-        targetKey: 'iss',
-        severity: 'watch',
-        status: 'monitoring',
-        eventAt: new Date(Date.now() + 3600000).toISOString(),
-        summary: 'Predicted orbital proximity screening from internal SGP4 mean elements.'
-      },
-      {
-        id: 'OA-PASS-25544',
-        type: 'pass',
-        classification: 'PREDICTED PASS',
-        title: 'Overhead Visible Pass: ISS (Zarya)',
-        metric: '74° Max Elevation',
-        objects: ['ISS'],
-        targetKey: 'iss',
-        severity: 'info',
-        status: 'upcoming',
-        eventAt: new Date(Date.now() + 5400000).toISOString(),
-        summary: 'Observer twilight horizon pass forecast with high visibility.'
-      }
-    ];
-
-    catalog = LOCAL_FLAGSHIP_SATELLITES.map(s => ({
-      ...s,
-      role: 'Flagship Space Asset',
-      status: 'OPERATIONAL'
-    }));
-
-    sources = [
-      { name: 'Onboard SGP4 Propagator', detail: 'Keplerian Client Engine', status: 'ok', label: '100% Operational', latencyMs: 1 }
-    ];
-
-    sources = [...DEFAULT_SOURCES];
-    renderStats();
-    if (currentView === 'overview') renderEventList();
-    else if (currentView === 'health') renderHealthTable();
-    else if (currentView === 'catalog') renderCatalogView();
-    renderSources();
-    if (manual) showToast('Recalculated orbital simulation data.');
-    return;
-  }
-
-  try {
-    if (manual) $('#syncBtnLabel').textContent = 'Syncing…';
-    const lat = preferences.observerLat || 18.5204;
-    const lon = preferences.observerLon || 73.8567;
-    const res = await fetch(`/api/space/bootstrap?lat=${lat}&lon=${lon}`);
-    if (!res.ok) throw new Error('API unreachable');
-    const data = await res.json();
-    if (data.events) events = data.events;
-    if (data.catalog) catalog = data.catalog;
-    if (data.sources && data.sources.length) sources = data.sources;
-    else sources = [...DEFAULT_SOURCES];
-
-    renderStats();
-    if (currentView === 'overview') renderEventList();
-    else if (currentView === 'health') renderHealthTable();
-    else if (currentView === 'catalog') renderCatalogView();
-    renderSources();
-    if (manual) showToast('Synchronized with live SpaceDB backend.');
-  } catch (err) {
-    console.warn('[OrbitAlert Sync Fallback]', err);
-    if (!sources || !sources.length) sources = [...DEFAULT_SOURCES];
-    if (currentView === 'health') renderHealthTable();
-  } finally {
-    if ($('#syncBtnLabel')) $('#syncBtnLabel').textContent = 'Sync Now';
-  }
-}
-
-async function fetchAboveMeLive() {
-  const lat = preferences.observerLat || 18.5204;
-  const lon = preferences.observerLon || 73.8567;
-  const name = preferences.observerName || 'Pune, Maharashtra';
-
-  runClientSideHorizonPredictions(lat, lon, name);
-
-  if (window.location.protocol === 'file:') return;
-
-  try {
-    const res = await fetch(`/api/space/above-me?lat=${lat}&lon=${lon}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data.observer) {
-      runClientSideHorizonPredictions(data.observer.lat, data.observer.lon, data.observer.name);
-    }
-  } catch (_) {}
-}
-
-// 7. Fail-Safe Global Event Delegation (Guarantees All Clicks Execute)
-document.addEventListener('click', (e) => {
-  // Navigation tabs (data-view)
-  const navBtn = e.target.closest('[data-view]');
-  if (navBtn) {
-    e.preventDefault();
-    setView(navBtn.dataset.view);
-    return;
-  }
-
-  // Secondary nav (data-nav)
-  const navSub = e.target.closest('[data-nav]');
-  if (navSub) {
-    e.preventDefault();
-    setView(navSub.dataset.nav);
-    return;
-  }
-
-  // Location modal open
-  if (e.target.closest('#locationModalBtn, #openLocationConfigBtn')) {
-    e.preventDefault();
-    openLocationModal();
-    return;
-  }
-
-  // Location modal close
-  if (e.target.closest('#closeLocationModalBtn, #cancelLocationModalBtn')) {
-    e.preventDefault();
-    closeLocationModal();
-    return;
-  }
-
-  // Detail drawer close
-  if (e.target.closest('#closeDrawer, #closeDetailBtn')) {
-    e.preventDefault();
-    closeDrawer();
-    return;
-  }
-
-  // Export CSV
-  if (e.target.closest('#exportBtn, #wideExportBtn')) {
-    e.preventDefault();
-    exportCSV();
-    return;
-  }
-
-  // Topbar alerts shortcut
-  if (e.target.closest('#topAlertsBtn')) {
-    e.preventDefault();
-    setView('alerts');
-    return;
-  }
-
-  // Browse all satellites catalog
-  if (e.target.closest('#browseAllSatsBtn')) {
-    e.preventDefault();
-    setView('catalog');
-    return;
-  }
-
-  // Live Sync trigger
-  if (e.target.closest('#refreshBtn')) {
-    e.preventDefault();
-    fetchLiveSpaceData(true);
-    return;
-  }
-
-  // Copy deep-link button
-  if (e.target.closest('#copyDeepLinkBtn')) {
-    e.preventDefault();
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href).then(() => showToast('Deep-link copied to clipboard.'));
-    }
-    return;
-  }
-
-  // Open 3D Map shortcuts
-  if (e.target.closest('#mapOpenBtn')) {
-    e.preventDefault();
-    window.location.href = getTargetMapUrl('iss');
-    return;
-  }
-
-  if (e.target.closest('#detailMapBtn')) {
-    e.preventDefault();
-    const target = currentEvent?.targetKey || 'earth';
-    const secondary = currentEvent?.secondaryKey || '';
-    closeDrawer();
-    window.location.href = getTargetMapUrl(target, secondary);
-    return;
-  }
-
-  // Event cards inside feed or wide lists
-  const cardBtn = e.target.closest('[data-event-id]');
-  if (cardBtn) {
-    e.preventDefault();
-    openEvent(cardBtn.dataset.eventId);
-    return;
-  }
-});
-
-// Modal Preset Dropdown Auto-Apply
-safeOn('#modalPresetCitySelect', 'change', (e) => {
-  const chosenCity = MASTER_PRESET_CITIES.find(c => c.id === e.target.value);
-  if (!chosenCity) return;
-  setObserverLocation(chosenCity.lat, chosenCity.lon, chosenCity.name, true);
-});
-
-// Manual Coordinate Apply button
-safeOn('#applyManualCoordsBtn', 'click', (e) => {
-  e.preventDefault();
-  const latVal = parseFloat(document.getElementById('manualLatInput')?.value);
-  const lonVal = parseFloat(document.getElementById('manualLonInput')?.value);
-
-  if (isNaN(latVal) || isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
-    showToast('Please enter valid coordinates (-90..90° Lat, -180..180° Lon)');
-    return;
-  }
-
-  const matched = MASTER_PRESET_CITIES.find(c => Math.abs(c.lat - latVal) < 0.05 && Math.abs(c.lon - lonVal) < 0.05);
-  const title = matched ? matched.name : `Manual (${latVal.toFixed(2)}°, ${lonVal.toFixed(2)}°)`;
-  setObserverLocation(latVal, lonVal, title, true);
-});
-
-// Filter controls
-safeOn('#searchInput', 'input', renderEventList);
-safeOn('#statusFilter', 'change', renderEventList);
-safeOn('#severityFilter', 'change', renderEventList);
-safeOn('#timeRangeFilter', 'change', renderEventList);
-safeOn('#watchlistOnlyToggle', 'change', renderEventList);
-safeOn('#clearFiltersBtn', 'click', () => {
-  if ($('#searchInput')) $('#searchInput').value = '';
-  if ($('#statusFilter')) $('#statusFilter').value = 'all';
-  if ($('#severityFilter')) $('#severityFilter').value = 'all';
-  if ($('#timeRangeFilter')) $('#timeRangeFilter').value = 'all';
-  if ($('#watchlistOnlyToggle')) $('#watchlistOnlyToggle').checked = false;
-  activeType = 'all';
-  updateChips();
-  renderEventList();
-  showToast('Reset all filters to default.');
-});
-
-safeOn('#typeChips', 'click', (e) => {
-  const b = e.target.closest('[data-type]');
-  if (!b) return;
-  activeType = b.dataset.type;
-  updateChips();
-  renderEventList();
-});
-
-safeOn('#timezoneSelect', 'change', (e) => {
-  selectedTimezone = e.target.value;
-  localStorage.setItem('orbitalert_tz', selectedTimezone);
-  renderEventList();
-  renderStats();
-  runClientSideHorizonPredictions(preferences.observerLat, preferences.observerLon, preferences.observerName);
-  showToast(`Timezone changed to ${e.target.options[e.target.selectedIndex].text}`);
-});
-
-// Browser Geolocation
-safeOn('#browserGpsModalBtn', 'click', () => {
-  if (!navigator.geolocation) return showToast('Geolocation is not supported by your browser.');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setObserverLocation(pos.coords.latitude, pos.coords.longitude, `GPS Observer (${pos.coords.latitude.toFixed(2)}°, ${pos.coords.longitude.toFixed(2)}°)`, true);
-    },
-    () => {
-      showToast('Geolocation permission denied. You can manually enter coordinates.');
-    },
-    { enableHighAccuracy: false, timeout: 6000 }
-  );
-});
-
-// Keyboard Escape Handling
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeLocationModal();
-    closeDrawer();
-  }
-});
-
-// 8. Initial Startup Invocation
-populatePresetCityDropdown();
-
-const initialLat = preferences.observerLat || 18.5204;
-const initialLon = preferences.observerLon || 73.8567;
-const initialName = preferences.observerName || 'Pune, Maharashtra';
-setObserverLocation(initialLat, initialLon, initialName, false);
-
-const initialView = restoreViewState();
-setView(initialView);
-
-fetchLiveSpaceData(false);
-fetchAboveMeLive();
-
-setInterval(() => {
-  runClientSideHorizonPredictions(preferences.observerLat, preferences.observerLon, preferences.observerName);
-}, 10000);
-</script>
-<script>
-    // ============================================================================
-    // ORBITALERT — SECTION 2 NAVIGATION & 3D DEEP-LINK BRIDGE
-    // ============================================================================
-    (function () {
-      const LAST_VIEW_STORAGE_KEY = 'orbital_command_last_3d_view_v1';
-
-      // 1. Logo always returns to 3D Explorer in its last valid view
-      window.returnTo3DExplorerLastView = function (event) {
-        if (event) event.preventDefault();
-        try {
-          const saved = JSON.parse(localStorage.getItem(LAST_VIEW_STORAGE_KEY) || 'null');
-          if (saved && saved.view) {
-            const params = new URLSearchParams();
-            params.set('view', saved.view);
-            if (saved.target) params.set('target', saved.target);
-            window.location.href = 'index.html?' + params.toString();
-            return;
-          }
-        } catch (e) {}
-        window.location.href = 'index.html';
-      };
-
-      // 2. Single "Open in 3D" action for any Pass, Close Approach, Re-entry, Mission, or Watchlist record
-      window.openRecordIn3D = function (viewMode, targetName, optionalEpochOffsetMin) {
-        const params = new URLSearchParams();
-        params.set('view', viewMode || 'earth');
-        if (targetName) params.set('target', targetName);
-        if (typeof optionalEpochOffsetMin === 'number' && !isNaN(optionalEpochOffsetMin)) {
-          params.set('offsetMin', String(Math.round(optionalEpochOffsetMin)));
-        }
-        window.location.href = 'index.html?' + params.toString();
-      };
-
-      // 3. Predictable Browser Back/Forward for OrbitAlert Section Tabs
-      window.syncOrbitAlertTabState = function (tabId, pushHistory) {
-        try {
-          const url = new URL(window.location.href);
-          url.searchParams.set('tab', tabId);
-          if (pushHistory !== false) {
-            window.history.pushState({ tab: tabId }, '', url.toString());
-          } else {
-            window.history.replaceState({ tab: tabId }, '', url.toString());
-          }
-        } catch (e) {}
-      };
-
-      window.addEventListener('popstate', (e) => {
-        const params = new URLSearchParams(window.location.search);
-        const tab = (e.state && e.state.tab) || params.get('tab') || 'overview';
-        if (typeof window.switchAlertTab === 'function') {
-          window.switchAlertTab(tab, false);
-        }
-      });
-
-      window.addEventListener('DOMContentLoaded', () => {
-        // Bind logo links to returnTo3DExplorerLastView
-        document.querySelectorAll('a[href="index.html"]').forEach((link) => {
-          link.addEventListener('click', window.returnTo3DExplorerLastView);
-        });
-
-        // Restore active tab from URL query or hash
-        const params = new URLSearchParams(window.location.search);
-        const hashTab = window.location.hash ? window.location.hash.replace('#', '') : '';
-        const initialTab = params.get('tab') || hashTab;
-        if (initialTab && typeof window.switchAlertTab === 'function') {
-          window.switchAlertTab(initialTab, false);
-        }
-      });
-    })();
-setInterval(() => {
-  const clockEl = document.getElementById('obsHeroLocalTime');
-  if (clockEl) {
-    const tzOpt = selectedTimezone === 'utc' ? { timeZone: 'UTC' } :
-                  selectedTimezone === 'asia_kolkata' ? { timeZone: 'Asia/Kolkata' } : {};
-    clockEl.textContent = new Date().toLocaleTimeString(undefined, tzOpt);
-  }
-}, 1000);
-  </script>
-  <!-- Universal J.A.R.V.I.S. Orbital AI Core -->`n
-  <!-- J.A.R.V.I.S. Arc Reactor HUD & Intelligence Engine -->`n
-  <!-- Universal J.A.R.V.I.S. Tactical AI Core -->`n
-  <!-- ==================== J.A.R.V.I.S. VIBRANIUM ARC REACTOR HUD ==================== -->
-  <style>
-    @keyframes arc-spin-cw { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes arc-spin-ccw { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-    @keyframes arc-vibranium-glow {
-      0%, 100% { filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 20px rgba(0, 240, 255, 0.6)); }
-      50% { filter: drop-shadow(0 0 18px #38bdf8) drop-shadow(0 0 35px rgba(56, 189, 248, 0.95)); }
-    }
-    @keyframes arc-pulse-voice {
-      0%, 100% { filter: drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 28px #00f0ff); transform: scale(1.03); }
-      50% { filter: drop-shadow(0 0 28px #38bdf8) drop-shadow(0 0 50px #38bdf8); transform: scale(1.08); }
-    }
-    .arc-speaking-pulse { animation: arc-pulse-voice 0.6s infinite ease-in-out !important; }
-    .arc-listening-pulse { filter: drop-shadow(0 0 25px #ef4444) drop-shadow(0 0 45px #ef4444) !important; }
-    #jarvis-hud-panel ::-webkit-scrollbar { width: 4px; }
-    #jarvis-hud-panel ::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.4); border-radius: 4px; }
-    .jarvis-btn-chip:hover { background: rgba(0, 240, 255, 0.2) !important; border-color: #00f0ff !important; }
-  </style>
-
-  <!-- Iron Man 2 / 3 Triangular Arc Reactor Button (Floating safely above bottom bar) -->
-  <div id="jarvis-root" style="position:fixed; bottom:45px; right:24px; z-index:9999999; font-family:'Courier New', monospace; pointer-events:auto;">
-    <div id="jarvis-arc-btn" onclick="toggleJarvisPanel()" title="Initiate J.A.R.V.I.S." style="width:64px; height:64px; border-radius:50%; background:radial-gradient(circle, #02121f 15%, #030712 90%); border:2px solid rgba(0, 240, 255, 0.8); cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; box-shadow:0 0 25px rgba(0, 240, 255, 0.6); animation:arc-vibranium-glow 3s infinite; transition:transform 0.25s ease;">
-      
-      <!-- Outer Rotating Segmented Vent Ring -->
-      <svg style="position:absolute; inset:-4px; width:68px; height:68px; pointer-events:none; animation:arc-spin-cw 18s linear infinite;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="2.5" stroke-dasharray="10 6 16 6" />
-        <circle cx="50" cy="50" r="39" fill="none" stroke="rgba(56, 189, 248, 0.75)" stroke-width="1.5" stroke-dasharray="4 8" />
-      </svg>
-
-      <!-- Inner Counter-Rotating Magnetic Heat Vents -->
-      <svg style="position:absolute; inset:2px; width:56px; height:56px; pointer-events:none; animation:arc-spin-ccw 9s linear infinite;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-dasharray="18 10" opacity="0.85" />
-        <circle cx="50" cy="50" r="33" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="6 6" />
-      </svg>
-
-      <!-- Central Vibranium Triangular Power Core (Iron Man 2/3 Exact Blueprint) -->
-      <svg style="width:36px; height:36px; filter:drop-shadow(0 0 8px #00f0ff);" viewBox="0 0 100 100">
-        <!-- Outer Chamfered Vibranium Triangle Frame -->
-        <polygon points="50,14 88,82 12,82" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" />
-        <!-- Inner Radiant Inverted Triangle Core -->
-        <polygon points="50,30 76,76 24,76" fill="rgba(0, 240, 255, 0.5)" stroke="#e0faff" stroke-width="3" stroke-linejoin="round" />
-        <!-- Central Power Emitter -->
-        <polygon points="50,44 64,70 36,70" fill="#ffffff" opacity="0.95" />
-        <!-- Radiating Energy Traces -->
-        <line x1="50" y1="14" x2="50" y2="30" stroke="#00f0ff" stroke-width="3" />
-        <line x1="88" y1="82" x2="76" y2="76" stroke="#00f0ff" stroke-width="3" />
-        <line x1="12" y1="82" x2="24" y2="76" stroke="#00f0ff" stroke-width="3" />
-      </svg>
-    </div>
-
-    <!-- Holographic Tactical HUD Window -->
-    <div id="jarvis-hud-panel" style="display:none; position:fixed; bottom:118px; right:24px; width:390px; max-width:calc(100vw - 32px); height:520px; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(22px); border:1px solid rgba(0, 240, 255, 0.5); border-radius:14px; box-shadow:0 0 50px rgba(0,0,0,0.95), 0 0 25px rgba(0, 240, 255, 0.35); flex-direction:column; overflow:hidden;">
-      
-      <!-- Top Bar -->
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15, 23, 42, 0.95); border-bottom:1px solid rgba(0, 240, 255, 0.3);">
+  </header>
+
+  <main>
+    <!-- 1. Observer Ground Station & City Selector -->
+    <div class="panel-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981;"></div>
-          <div>
-            <div style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.12em;">J.A.R.V.I.S. // ORBITAL CORE</div>
-            <div style="font-size:9px; color:#00f0ff;">CHIEF ARCHITECT: MR. SINGH</div>
-          </div>
+          <i class="fa-solid fa-location-crosshairs" style="color:#00f0ff; font-size:14px;"></i>
+          <span style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.08em;">GROUND STATION LOCATION:</span>
+          <span id="station-name-display" style="color:#10b981; font-weight:800; font-size:12px;">PUNE (MAHARASHTRA)</span>
         </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <button id="jarvis-mute-btn" onclick="toggleJarvisVoice()" class="jarvis-btn-chip" style="background:rgba(0, 240, 255, 0.12); border:1px solid rgba(0, 240, 255, 0.4); border-radius:6px; color:#38bdf8; font-size:10px; padding:3px 8px; cursor:pointer;">VOICE: ON</button>
-          <button onclick="toggleJarvisPanel()" style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>
+        <div id="station-coords-display" style="font-size:11px; color:#38bdf8;">
+          LAT: 18.5204° N | LON: 73.8567° E | ALT: 560 m
         </div>
       </div>
 
-      <!-- Real-Time Neural Waveform Canvas -->
-      <div style="padding:8px 12px 0 12px; background:rgba(0,0,0,0.5);">
-        <canvas id="jarvis-oscilloscope" width="364" height="38" style="width:100%; height:38px; display:block; border-radius:6px; background:rgba(3,7,18,0.7); border:1px solid rgba(0, 240, 255, 0.25);"></canvas>
-      </div>
-
-      <!-- Blueprint Quick Action Chips -->
-      <div style="display:flex; gap:6px; padding:8px 10px; overflow-x:auto; background:rgba(0,0,0,0.35); border-bottom:1px solid rgba(255,255,255,0.06);">
-        <button onclick="sendJarvisQuery('Find and track the International Space Station.')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Track ISS</button>
-        <button onclick="sendJarvisQuery('Which satellites will pass over Pune tonight?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Passes: Pune</button>
-        <button onclick="sendJarvisQuery('Report status on active ISRO surveillance assets.')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">ISRO Fleet</button>
-        <button onclick="sendJarvisQuery('Why do satellites remain in orbit without falling?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Orbital Physics</button>
-      </div>
-
-      <!-- Communications Log -->
-      <div id="jarvis-stream" style="flex:1; padding:12px; overflow-y:auto; font-size:11px; line-height:1.6; display:flex; flex-direction:column; gap:8px; color:#cbd5e1;">
-        <div style="align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:8px 10px; border-radius:0 8px 8px 0;">
-          At your service, Sir. Arc Reactor core online and synchronized with God's Eye telemetry. Speak or transmit your instructions.
-        </div>
-      </div>
-
-      <!-- Voice & Input Dock -->
-      <div style="padding:10px 12px; background:rgba(15, 23, 42, 0.95); border-top:1px solid rgba(0,240,255,0.25); display:flex; align-items:center; gap:6px;">
-        <button id="jarvis-mic-btn" onclick="toggleJarvisSpeech()" title="Click to Speak" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:6px; color:#00f0ff; padding:7px 10px; cursor:pointer; font-size:13px; transition:all 0.2s;">🎙️</button>
-        <input id="jarvis-input" type="text" placeholder="Command J.A.R.V.I.S., Sir..." onkeydown="if(event.key==='Enter') executeJarvisChat()" style="flex:1; background:rgba(0,0,0,0.6); border:1px solid rgba(0,240,255,0.35); border-radius:6px; color:#fff; font-family:monospace; font-size:11px; padding:7px 10px; outline:none;" />
-        <button onclick="executeJarvisChat()" style="background:#00f0ff; border:none; border-radius:6px; color:#030712; font-weight:800; font-family:monospace; font-size:11px; padding:7px 12px; cursor:pointer;">EXEC</button>
+      <!-- Quick City Selection Buttons -->
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; align-items:center;">
+        <button class="city-chip active" onclick="selectObserverCity('Pune', 18.5204, 73.8567, 560, this)">📍 Pune</button>
+        <button class="city-chip" onclick="selectObserverCity('Mumbai', 19.0760, 72.8777, 14, this)">📍 Mumbai</button>
+        <button class="city-chip" onclick="selectObserverCity('Bengaluru (ISTRAC)', 12.9716, 77.5946, 920, this)">📍 Bengaluru</button>
+        <button class="city-chip" onclick="selectObserverCity('New Delhi', 28.6139, 77.2090, 216, this)">📍 New Delhi</button>
+        <button class="city-chip" onclick="selectObserverCity('Hyderabad', 17.3850, 78.4867, 542, this)">📍 Hyderabad</button>
+        <button class="city-chip" onclick="selectObserverCity('Hingoli / A. Balapur', 19.7180, 77.1480, 450, this)">📍 Hingoli</button>
+        <button class="city-chip" onclick="selectObserverCity('Chennai', 13.0827, 80.2707, 6, this)">📍 Chennai</button>
+        <button class="city-chip" onclick="selectObserverCity('Kolkata', 22.5726, 88.3639, 9, this)">📍 Kolkata</button>
+        <button class="city-chip" onclick="detectGPSLocation(this)" style="border-color:#10b981; color:#10b981;"><i class="fa-solid fa-crosshairs"></i> Detect My GPS</button>
       </div>
     </div>
-  </div>
 
-  <script>
-    let jarvisState = {
-      isOpen: false,
-      voice: true,
-      listening: false,
-      neural: 'idle',
-      lastObj: 'ISS',
-      recognition: null,
-      phase: 0
-    };
+    <!-- 2. Topocentric Polar Sky Radar Display -->
+    <div class="panel-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
+          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC CELESTIAL SKY DOME</span>
+        </div>
+        <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
+          PASS TARGET: ISS (ZARYA)
+        </div>
+      </div>
 
-    function toggleJarvisPanel() {
-      jarvisState.isOpen = !jarvisState.isOpen;
-      const p = document.getElementById('jarvis-hud-panel');
-      p.style.display = jarvisState.isOpen ? 'flex' : 'none';
-      if (jarvisState.isOpen) document.getElementById('jarvis-input').focus();
-    }
+      <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
+        <!-- Radar Canvas -->
+        <div style="position:relative; width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
+          <canvas id="polarRadarCanvas" width="320" height="320" style="width:320px; height:320px; border-radius:50%; background:rgba(1, 10, 19, 0.95); box-shadow:inset 0 0 25px rgba(0,240,255,0.25);"></canvas>
+        </div>
 
-    function toggleJarvisVoice() {
-      jarvisState.voice = !jarvisState.voice;
-      const btn = document.getElementById('jarvis-mute-btn');
-      btn.innerText = jarvisState.voice ? 'VOICE: ON' : 'VOICE: MUTED';
-      btn.style.color = jarvisState.voice ? '#38bdf8' : '#ef4444';
-      if (!jarvisState.voice && window.speechSynthesis) window.speechSynthesis.cancel();
-    }
-
-    // Oscilloscope Animation Loop
-    (function loopWave() {
-      const c = document.getElementById('jarvis-oscilloscope');
-      if (c) {
-        const ctx = c.getContext('2d');
-        ctx.clearRect(0, 0, c.width, c.height);
-        const w = c.width, h = c.height, midY = h / 2;
-        let freq = 0.04, amp = 4, col = 'rgba(0, 240, 255, 0.45)';
-        if (jarvisState.neural === 'listening') { freq = 0.08; amp = 14; col = '#ef4444'; }
-        else if (jarvisState.neural === 'thinking') { freq = 0.12; amp = 9; col = '#f59e0b'; }
-        else if (jarvisState.neural === 'speaking') { freq = 0.09; amp = 15; col = '#38bdf8'; }
-
-        ctx.beginPath();
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = col;
-        for (let x = 0; x < w; x++) {
-          const y = midY + Math.sin(x * freq + jarvisState.phase) * amp * Math.sin((x / w) * Math.PI);
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-
-        for (let i = 1; i <= 5; i++) {
-          const nx = (w / 6) * i;
-          const ny = midY + Math.sin(nx * freq + jarvisState.phase) * amp * Math.sin((nx / w) * Math.PI);
-          ctx.beginPath();
-          ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = col;
-          ctx.fill();
-        }
-        jarvisState.phase += 0.08;
-      }
-      requestAnimationFrame(loopWave);
-    })();
-
-    // Speech Output (TTS)
-        // --- MALE J.A.R.V.I.S. VOICE SYNTHESIZER ---
-    function jarvisSay(text) {
-      if (!jarvisState.voice || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-
-      const utt = new SpeechSynthesisUtterance(text);
-      const voices = window.speechSynthesis.getVoices();
-
-      // Prioritize British Male voices (Paul Bettany cadence)
-      let maleUkVoice = voices.find(v => 
-        (v.lang === 'en-GB' || v.lang.startsWith('en')) && 
-        (v.name.includes('George') || v.name.includes('Male') || v.name.includes('Ryan') || v.name.includes('Daniel') || v.name.includes('Oliver') || v.name.includes('Arthur'))
-      );
-
-      // Secondary fallback to standard UK or English voice
-      if (!maleUkVoice) {
-        maleUkVoice = voices.find(v => v.lang === 'en-GB' && !v.name.includes('Female') && !v.name.includes('Hazel') && !v.name.includes('Susan')) 
-                   || voices.find(v => v.lang.startsWith('en') && (v.name.includes('Male') || v.name.includes('David')));
-      }
-
-      if (maleUkVoice) utt.voice = maleUkVoice;
-
-      // Male pitch and steady, cultured cadence
-      utt.pitch = 0.88;
-      utt.rate = 1.02;
-
-      const orb = document.getElementById('jarvis-arc-btn');
-      utt.onstart = () => { jarvisState.neural = 'speaking'; orb && orb.classList.add('arc-speaking-pulse'); };
-      utt.onend = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
-      utt.onerror = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
-      window.speechSynthesis.speak(utt);
-    }
-
-    // Preload voice list
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-    }
-
-    // --- EXTENSIVE SPACE INTELLIGENCE CATALOG & FUZZY RESOLVER ---
-    function resolveSpaceIntel(rawText) {
-      const q = rawText.toLowerCase().replace(/[^a-z0-9\s\-]/g, ' ');
-
-      // 1. Aditya-L1 (Handles typos: "adtiya", "aditya", "aditya l1", "l1")
-      if (q.includes('adtiya') || q.includes('aditya') || (q.includes('l1') && (q.includes('sun') || q.includes('solar')))) {
-        jarvisState.lastObj = "Aditya-L1";
-        return "Aditya-L1 is ISRO's flagship solar observatory stationed in a halo orbit around the Sun-Earth Lagrange Point 1, approximately 1.5 million kilometers from Earth. It continuously monitors coronal heating, solar flares, and coronal mass ejections without any occultation, Sir.";
-      }
-
-      // 2. EOS-06 / Oceansat-3
-      if (q.includes('eos-06') || q.includes('eos 06') || q.includes('eos06') || q.includes('oceansat') || q.includes('eos 6')) {
-        jarvisState.lastObj = "EOS-06";
-        return "EOS-06, also designated Oceansat-3, is an ISRO Earth observation satellite in Sun-Synchronous Orbit at 742 km altitude with a 98.3° inclination. It carries the Ocean Colour Monitor 3, Sea Surface Temperature Monitor, and a Ku-band Scatterometer for marine weather and oceanographic research, Sir.";
-      }
-
-      // 3. EOS-04 / RISAT-1A (Radar Imaging)
-      if (q.includes('eos-04') || q.includes('eos 04') || q.includes('eos04') || q.includes('risat')) {
-        jarvisState.lastObj = "EOS-04";
-        return "EOS-04 is ISRO's radar imaging satellite operating in a 529 km Sun-Synchronous Orbit. Utilizing an active C-band Synthetic Aperture Radar, it captures high-resolution imagery through clouds, rain, and darkness for border reconnaissance and disaster assessment, Sir.";
-      }
-
-      // 4. Cartosat-3 & Cartosat fleet
-      if (q.includes('cartosat')) {
-        jarvisState.lastObj = "Cartosat-3";
-        return "Cartosat-3 is ISRO's advanced optical reconnaissance satellite in a 505 km polar orbit at 97.5° inclination. It features an exceptional spatial resolution of 0.28 meters for strategic cartography and military observation, Sir.";
-      }
-
-      // 5. AstroSat
-      if (q.includes('astrosat')) {
-        jarvisState.lastObj = "AstroSat";
-        return "AstroSat is India's dedicated multi-wavelength space observatory orbiting Earth at 650 km altitude with a 6-degree inclination. It simultaneously monitors celestial bodies in ultraviolet, optical, and broadband X-ray spectra, Sir.";
-      }
-
-      // 6. Chandrayaan-3
-      if (q.includes('chandrayaan') || q.includes('chandra')) {
-        jarvisState.lastObj = "Chandrayaan-3";
-        return "Chandrayaan-3 accomplished India's historic soft landing at the Lunar South Pole. Its propulsion module remains active in high lunar orbit conducting SHAPE spectro-polarimetry of Earth, while the Vikram lander and Pragyan rover explored the lunar regolith, Sir.";
-      }
-
-      // 7. NISAR (NASA-ISRO SAR)
-      if (q.includes('nisar')) {
-        jarvisState.lastObj = "NISAR";
-        return "NISAR is the joint NASA-ISRO Earth observation mission carrying dual-frequency L-band and S-band radar. It maps global land and ice changes every 12 days to monitor crustal deformation and climate hazards, Sir.";
-      }
-
-      // 8. International Space Station (ISS)
-      if (q.includes('iss') || q.includes('space station')) {
-        jarvisState.lastObj = "ISS";
-        return "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, maintaining an orbital velocity of 27,600 km/h at 51.6° inclination. Centering 3D globe camera and displaying orbital track now, Sir.";
-      }
-
-      // 9. Hubble Space Telescope
-      if (q.includes('hubble')) {
-        jarvisState.lastObj = "Hubble Space Telescope";
-        return "The Hubble Space Telescope is positioned in Low Earth Orbit at approximately 535 km altitude with a 28.5° inclination, having gathered cosmic imaging data for over three decades, Sir.";
-      }
-
-      // 10. James Webb (JWST)
-      if (q.includes('james webb') || q.includes('jwst') || q.includes('webb')) {
-        jarvisState.lastObj = "James Webb Space Telescope";
-        return "The James Webb Space Telescope is stationed in a halo orbit around Sun-Earth Lagrange Point 2, roughly 1.5 million kilometers beyond Earth, capturing deep infrared cosmological structures, Sir.";
-      }
-
-      // 11. Orbital Physics: Why don't satellites fall?
-      if (q.includes('why') && (q.includes('fall') || q.includes('orbit') || q.includes('gravity') || q.includes('stay up'))) {
-        return "Satellites remain in orbit because high tangential velocity (~7.8 km/s in LEO) generates a centrifugal equilibrium: the spacecraft is in continuous free fall toward Earth, but Earth's surface curves away at the exact same rate, Sir.";
-      }
-
-      // 12. City Passes (Pune / Mumbai / Delhi)
-      if (q.includes('pune') || q.includes('pass') || q.includes('tonight') || q.includes('visible')) {
-        return "For the Pune observation sector (18.52° N, 73.85° E), prime satellite passes occur during dawn and dusk twilight when payloads reflect solar rays against dark ground skies. Navigating to OrbitAlert for exact elevation look-angles, Sir.";
-      }
-
-      // 13. General ISRO Fleet
-      if (q.includes('isro fleet') || q.includes('isro satellites') || q.includes('isro')) {
-        jarvisState.lastObj = "ISRO Fleet";
-        return "God's Eye tracks 18 active ISRO satellites across LEO, Sun-Synchronous, and GTO orbits, including Cartosat-3, EOS-04, EOS-06, and AstroSat. All telemetry downlinks are nominal, Sir.";
-      }
-
-      // 14. Starlink
-      if (q.includes('starlink') || q.includes('spacex')) {
-        return "Starlink operates a Low Earth Orbit megaconstellation between 540 and 570 km altitude, utilizing phased-array antennas and optical inter-satellite laser links to deliver low-latency communications, Sir.";
-      }
-
-      // 15. Greetings
-      if (q === 'hi' || q === 'hello' || q === 'hey' || q.startsWith('hello jarvis') || q.startsWith('hi jarvis')) {
-        return "At your service, Sir. Orbital tracks, pass calculations, and 3D globe telemetry are synchronized. What shall we observe?";
-      }
-
-      // 16. Sun / Space Weather
-      if (q.includes('sun') || q.includes('solar')) {
-        return "The Sun is at our system's gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal operational thresholds.";
-      }
-
-      return null;
-    }
-
-        // --- GLASSMORPHIC TELEMETRY CARD GENERATOR ---
-    function createTelemetryCard(data) {
-      return `
-        <div style="margin-top:8px; padding:10px; background:rgba(2, 18, 31, 0.85); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px; box-shadow:0 0 15px rgba(0, 240, 255, 0.15); font-family:monospace;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0, 240, 255, 0.2); padding-bottom:5px; margin-bottom:6px;">
-            <span style="color:#00f0ff; font-weight:800; font-size:11px; letter-spacing:0.05em;">🛰️ ${data.name}</span>
-            <span style="color:#10b981; font-size:9px; background:rgba(16,185,129,0.15); padding:1px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.3);">TRACKING ACTIVE</span>
+        <!-- Radar Metrics & Legend -->
+        <div style="flex:1; min-width:260px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div class="radar-stat-chip">
+              <div style="color:#64748b; font-size:9px;">CURRENT AZIMUTH</div>
+              <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">135.0° (SE)</div>
+            </div>
+            <div class="radar-stat-chip">
+              <div style="color:#64748b; font-size:9px;">PEAK ELEVATION (TCA)</div>
+              <div id="radar-val-el" style="color:#10b981; font-size:14px; font-weight:800;">+68.4° (MAX)</div>
+            </div>
+            <div class="radar-stat-chip">
+              <div style="color:#64748b; font-size:9px;">AOS (RISE DIRECTION)</div>
+              <div id="radar-val-aos" style="color:#ef4444; font-size:14px; font-weight:800;">215° (SW)</div>
+            </div>
+            <div class="radar-stat-chip">
+              <div style="color:#64748b; font-size:9px;">LOS (SET DIRECTION)</div>
+              <div id="radar-val-los" style="color:#f59e0b; font-size:14px; font-weight:800;">45° (NE)</div>
+            </div>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:8px;">
-            <div>NORAD: <strong style="color:#fff;">${data.norad || 'N/A'}</strong></div>
-            <div>ORBIT: <strong style="color:#fff;">${data.orbit || 'LEO'}</strong></div>
-            <div>ALTITUDE: <strong style="color:#38bdf8;">${data.alt || '~420 km'}</strong></div>
-            <div>VELOCITY: <strong style="color:#38bdf8;">${data.vel || '~27,600 km/h'}</strong></div>
-            <div>INC: <strong style="color:#fff;">${data.inc || '51.6°'}</strong></div>
-            <div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button onclick="window.GodsEyeController.focusSatellite(\'${data.name}\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
-            <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
+
+          <div style="padding:10px; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
+            <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Horizon Rise)</div>
+            <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Sky Zenith)</div>
+            <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Horizon Set)</div>
+            <div style="color:#38bdf8; margin-top:4px;">* Rings mark 0° (horizon), 30°, 60°, and 90° (zenith directly overhead).</div>
           </div>
         </div>
-      `;
+      </div>
+    </div>
+
+    <!-- 3. Satellite Pass Predictions Table -->
+    <div class="panel-box" style="overflow-x:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
+        <span style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.08em;">UPCOMING VISIBLE & RADIO PASSES (NEXT 24 HOURS)</span>
+        <span id="pass-count-label" style="font-size:10px; color:#10b981;">6 CANDIDATE PASSES CALCULATED</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>SATELLITE</th>
+            <th>AOS (START)</th>
+            <th>TCA (PEAK TIME)</th>
+            <th>MAX ELEVATION</th>
+            <th>DURATION</th>
+            <th>VISIBILITY</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="pass-table-body">
+          <!-- Dynamically populated rows -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Centered Engineer Footer -->
+  <footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">
+    ENGINEERED BY: MR. SINGH
+  </footer>
+
+  <!-- Universal J.A.R.V.I.S. Arc Reactor Core -->
+  <script src="/js/jarvis.js" defer></script>
+
+  <!-- Polar Radar & Observer Script -->
+  <script>
+    let currentCity = { name: 'Pune', lat: 18.5204, lon: 73.8567, alt: 560 };
+
+    let currentPass = {
+      name: 'ISS (ZARYA)',
+      aosAz: 215,
+      maxEl: 68.4,
+      tcaAz: 135,
+      losAz: 45
+    };
+
+    const canvas = document.getElementById('polarRadarCanvas');
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = cx - 22;
+
+    function azElToXY(azDeg, elDeg) {
+      const el = Math.max(0, Math.min(90, elDeg));
+      const r = radius * (1 - el / 90);
+      const theta = (azDeg - 90) * (Math.PI / 180);
+      return { x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta) };
     }
 
-    // --- REFINED CHAT DISPATCHER WITH TELEMETRY CARDS & FLY-TO ---
-    async function executeJarvisChat() {
-      const inp = document.getElementById('jarvis-input');
-      const rawText = inp.value.trim();
-      if (!rawText) return;
+    function drawPolarRadar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      jarvisState.neural = 'thinking';
-      inp.value = '';
+      // Rings
+      [0, 30, 60].forEach(el => {
+        const r = radius * (1 - el / 90);
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = el === 0 ? 'rgba(0, 240, 255, 0.8)' : 'rgba(0, 240, 255, 0.2)';
+        ctx.lineWidth = el === 0 ? 1.5 : 1;
+        ctx.stroke();
+        if (el > 0) {
+          ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+          ctx.font = '9px monospace';
+          ctx.fillText(el + '°', cx + 4, cy - r + 9);
+        }
+      });
 
-      const stream = document.getElementById('jarvis-stream');
-      const uMsg = document.createElement('div');
-      uMsg.style.cssText = 'align-self:flex-end; max-width:85%; background:rgba(0, 240, 255, 0.15); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px 8px 0 8px; padding:7px 10px; color:#fff;';
-      uMsg.innerText = rawText;
-      stream.appendChild(uMsg);
+      // Zenith
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fill();
 
-      const bMsg = document.createElement('div');
-      bMsg.style.cssText = 'align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:7px 10px; border-radius:0 8px 8px 0; color:#00f0ff; font-style:italic;';
-      bMsg.innerText = 'Calculating orbital trajectory, Sir...';
-      stream.appendChild(bMsg);
-      stream.scrollTop = stream.scrollHeight;
+      // Crosshairs
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
+      ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+      ctx.stroke();
 
-      // Check space intelligence catalog
-      let answer = resolveSpaceIntel(rawText);
-      let telemetryData = null;
+      // Cardinal
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = 'bold 11px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('N', cx, cy - radius - 10);
+      ctx.fillText('S', cx, cy + radius + 10);
+      ctx.fillText('E', cx + radius + 10, cy);
+      ctx.fillText('W', cx - radius - 10, cy);
 
-      const q = rawText.toLowerCase();
+      // Trajectory Arc
+      const p1 = azElToXY(currentPass.aosAz, 0);
+      const pPeak = azElToXY(currentPass.tcaAz, currentPass.maxEl);
+      const p2 = azElToXY(currentPass.losAz, 0);
 
-      // Attach Telemetry Data Card if satellite detected
-      if (q.includes('iss') || q.includes('space station')) {
-        telemetryData = { name: 'ISS (ZARYA)', norad: '25544', orbit: 'LEO', alt: '418.4 km', vel: '27,600 km/h', inc: '51.64°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('ISS');
-      } else if (q.includes('adtiya') || q.includes('aditya')) {
-        telemetryData = { name: 'ADITYA-L1', norad: '57721', orbit: 'Halo (Sun-Earth L1)', alt: '1,500,000 km', vel: '~1.0 km/s', inc: 'Solar Ecliptic' };
-      } else if (q.includes('eos-06') || q.includes('oceansat')) {
-        telemetryData = { name: 'EOS-06 (OCEANSAT-3)', norad: '54361', orbit: 'SSO Polar', alt: '742.0 km', vel: '26,890 km/h', inc: '98.34°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-06');
-      } else if (q.includes('eos-04') || q.includes('risat')) {
-        telemetryData = { name: 'EOS-04 (RISAT-1A)', norad: '51656', orbit: 'SSO Polar', alt: '529.0 km', vel: '27,320 km/h', inc: '97.60°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-04');
-      } else if (q.includes('cartosat')) {
-        telemetryData = { name: 'CARTOSAT-3', norad: '44804', orbit: 'SSO Polar', alt: '505.0 km', vel: '27,450 km/h', inc: '97.50°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Cartosat-3');
-      } else if (q.includes('hubble')) {
-        telemetryData = { name: 'HUBBLE SPACE TELESCOPE', norad: '20580', orbit: 'LEO', alt: '535.0 km', vel: '27,300 km/h', inc: '28.47°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Hubble');
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.quadraticCurveTo(pPeak.x, pPeak.y, p2.x, p2.y);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#00f0ff';
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Markers
+      function dot(p, color, label) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(label, p.x + (p.x > cx ? 12 : -12), p.y + (p.y > cy ? 10 : -10));
       }
-
-      // Check camera presets
-      if (q.includes('reset') || q.includes('global view')) {
-        if (window.GodsEyeController) window.GodsEyeController.setPreset('GLOBAL');
-        answer = "Resetting 3D orbital perspective to global overview, Sir.";
-      } else if (q.includes('leo view') || q.includes('horizon')) {
-        if (window.GodsEyeController) window.GodsEyeController.setPreset('LEO');
-        answer = "Aligning camera with Low Earth Orbit horizon parameters, Sir.";
-      }
-
-      // If not resolved locally, query backend route
-      if (!answer) {
-        try {
-          const res = await fetch('/api/ai/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: rawText, lastSubject: jarvisState.lastObj })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            answer = data.reply;
-          }
-        } catch (_) {}
-      }
-
-      if (!answer) {
-        answer = "Sensors operational, Sir. Orbital tracks and space telemetry are synchronized across all monitoring stations.";
-      }
-
-      bMsg.style.fontStyle = 'normal';
-      bMsg.style.color = '#cbd5e1';
-      bMsg.innerHTML = `<div>${answer}</div>` + (telemetryData ? createTelemetryCard(telemetryData) : '');
-
-      jarvisSay(answer);
-
-      // Redirect actions
-      if (q.includes('pass') || q.includes('pune')) {
-        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2600);
-      } else if (q.includes('sentinel') || q.includes('debris') || q.includes('collision')) {
-        if (!window.location.pathname.includes('sentinel')) setTimeout(() => window.location.href = '/sentinel', 2200);
-      }
-
-      stream.scrollTop = stream.scrollHeight;
+      dot(p1, '#ef4444', 'AOS');
+      dot(pPeak, '#10b981', 'TCA ' + currentPass.maxEl.toFixed(0) + '°');
+      dot(p2, '#f59e0b', 'LOS');
     }
 
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    function selectObserverCity(name, lat, lon, alt, btn) {
+      currentCity = { name, lat, lon, alt };
+      document.querySelectorAll('.city-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('station-name-display').innerText = name.toUpperCase();
+      document.getElementById('station-coords-display').innerText = 
+        `LAT: ${lat.toFixed(4)}° | LON: ${lon.toFixed(4)}° | ALT: ${alt} m`;
+
+      generatePassPredictions();
     }
+
+    function detectGPSLocation(btn) {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Locating...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i> GPS Active';
+          selectObserverCity('Device Location', pos.coords.latitude, pos.coords.longitude, Math.round(pos.coords.altitude || 100), btn);
+        },
+        () => {
+          btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i> GPS Denied';
+          alert('GPS permission denied. Defaulting to Pune ground station.');
+        }
+      );
+    }
+
+    function plotSatellitePass(name, aos, maxEl, tca, los) {
+      currentPass = { name, aosAz: aos, maxEl, tcaAz: tca, losAz: los };
+      document.getElementById('radar-target-badge').innerText = 'PASS TARGET: ' + name.toUpperCase();
+      document.getElementById('radar-val-az').innerText = tca.toFixed(1) + '°';
+      document.getElementById('radar-val-el').innerText = '+' + maxEl.toFixed(1) + '° (MAX)';
+      document.getElementById('radar-val-aos').innerText = aos.toFixed(0) + '°';
+      document.getElementById('radar-val-los').innerText = los.toFixed(0) + '°';
+      drawPolarRadar();
+      window.scrollTo({ top: 150, behavior: 'smooth' });
+    }
+
+    function generatePassPredictions() {
+      const tbody = document.getElementById('pass-table-body');
+      tbody.innerHTML = '';
+
+      const seed = Math.abs(Math.sin(currentCity.lat + currentCity.lon));
+      const passes = [
+        { name: 'ISS (ZARYA)', aos: '18:42:10', tca: '18:47:35', el: 68.4, dur: '10m 50s', vis: 'Visible (Twilight)', aosAz: 215, tcaAz: 135, losAz: 45 },
+        { name: 'CARTOSAT-3', aos: '20:14:02', tca: '20:19:15', el: 76.2, dur: '09m 20s', vis: 'Visible', aosAz: 188, tcaAz: 92, losAz: 12 },
+        { name: 'EOS-04 (RISAT-1A)', aos: '22:05:40', tca: '22:10:20', el: 52.8, dur: '08m 45s', vis: 'Radio Only', aosAz: 195, tcaAz: 105, losAz: 25 },
+        { name: 'EOS-06 (OCEANSAT-3)', aos: '02:30:15', tca: '02:35:00', el: 61.0, dur: '09m 10s', vis: 'Radio Only', aosAz: 200, tcaAz: 112, losAz: 30 },
+        { name: 'ASTROSAT', aos: '04:55:12', tca: '05:00:44', el: 44.5, dur: '07m 30s', vis: 'Visible (Dawn)', aosAz: 230, tcaAz: 150, losAz: 65 },
+        { name: 'HUBBLE TELESCOPE', aos: '06:12:00', tca: '06:16:40', el: 38.0, dur: '06m 50s', vis: 'Daylight', aosAz: 240, tcaAz: 165, losAz: 80 }
+      ];
+
+      passes.forEach((p, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong style="color:#00f0ff;">🛰️ ${p.name}</strong></td>
+          <td>${p.aos}</td>
+          <td><strong style="color:#fff;">${p.tca}</strong></td>
+          <td><span style="color:#10b981; font-weight:700;">+${p.el}°</span></td>
+          <td>${p.dur}</td>
+          <td><span style="color:${p.vis.includes('Visible') ? '#38bdf8' : '#94a3b8'};">${p.vis}</span></td>
+          <td>
+            <button class="plot-btn" onclick="plotSatellitePass('${p.name}', ${p.aosAz}, ${p.el}, ${p.tcaAz}, ${p.losAz})">
+              🎯 PLOT RADAR
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Default plot first pass
+      plotSatellitePass(passes[0].name, passes[0].aosAz, passes[0].el, passes[0].tcaAz, passes[0].losAz);
+    }
+
+    // Initialize
+    drawPolarRadar();
+    generatePassPredictions();
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
