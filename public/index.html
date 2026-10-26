@@ -1,6 +1,111 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- ==================== GOD'S EYE WEBGL COMMAND BRIDGE ==================== -->
+  <script>
+    window.GodsEyeController = {
+      focusSatellite: function(query) {
+        if (!query) return false;
+        const q = String(query).trim().toUpperCase();
+        console.log('[GodsEyeController] Requesting 3D focus on:', q);
+
+        // If on /orbitalert or /sentinel, navigate to 3D Globe with parameter
+        if (window.location.pathname.includes('orbitalert') || window.location.pathname.includes('sentinel')) {
+          window.location.href = '/?focus=' + encodeURIComponent(q);
+          return true;
+        }
+
+        // METHOD 1: Find the satellite row in Object Explorer and click its "TRACK" button
+        const allElements = Array.from(document.querySelectorAll('div, li, tr, span, p'));
+        for (const el of allElements) {
+          // Check if this specific element directly has the satellite name
+          if (el.children.length <= 2 && el.textContent && el.textContent.toUpperCase().includes(q)) {
+            // Find parent card / container row
+            let parent = el.parentElement;
+            for (let i = 0; i < 4 && parent; i++) {
+              const trackBtn = Array.from(parent.querySelectorAll('button, a')).find(b => {
+                const txt = (b.textContent || '').toUpperCase();
+                return txt.includes('TRACK') || txt.includes('CENTRE') || txt.includes('VIEW');
+              });
+              if (trackBtn) {
+                console.log('[GodsEyeController] Triggered native TRACK button in row:', el.textContent.trim());
+                trackBtn.click();
+                return true;
+              }
+              parent = parent.parentElement;
+            }
+          }
+        }
+
+        // METHOD 2: Use Object Explorer Search Input
+        const searchInput = document.querySelector('input[placeholder*="Search" i], input[placeholder*="NORAD" i], #search-input');
+        if (searchInput) {
+          searchInput.value = query;
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          searchInput.dispatchEvent(new Event('change', { bubbles: true }));
+          
+          setTimeout(() => {
+            const resultBtn = Array.from(document.querySelectorAll('button')).find(b => {
+              const txt = (b.textContent || '').toUpperCase();
+              return txt.includes('TRACK');
+            });
+            if (resultBtn) {
+              console.log('[GodsEyeController] Clicked search result TRACK button');
+              resultBtn.click();
+            }
+          }, 150);
+          return true;
+        }
+
+        // METHOD 3: Three.js World Coordinate Traversal
+        if (window.scene && window.camera) {
+          let foundMesh = null;
+          window.scene.traverse(obj => {
+            if (foundMesh) return;
+            const name = (obj.name || (obj.userData && obj.userData.name) || '').toUpperCase();
+            if (name && (name.includes(q) || q.includes(name))) {
+              foundMesh = obj;
+            }
+          });
+
+          if (foundMesh) {
+            const worldPos = new THREE.Vector3();
+            foundMesh.getWorldPosition(worldPos);
+            if (window.controls) {
+              window.controls.target.copy(worldPos);
+              window.camera.position.set(worldPos.x * 1.35, worldPos.y * 1.35 + 0.1, worldPos.z * 1.35);
+              window.controls.update();
+              return true;
+            }
+          }
+        }
+
+        // METHOD 4: ISS bottom banner fallback
+        if (q.includes('ISS')) {
+          const centreBtn = Array.from(document.querySelectorAll('button, a')).find(b => (b.textContent || '').toUpperCase().includes('CENTRE'));
+          if (centreBtn) { centreBtn.click(); return true; }
+        }
+
+        return false;
+      },
+
+      setPreset: function(presetName) {
+        const p = String(presetName).toUpperCase();
+        const presetBtn = Array.from(document.querySelectorAll('button')).find(b => (b.textContent || '').toUpperCase() === p);
+        if (presetBtn) { presetBtn.click(); return true; }
+        return false;
+      }
+    };
+
+    // Auto-focus handler if arriving from URL query (?focus=CARTOSAT-3)
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const focusTarget = params.get('focus');
+      if (focusTarget) {
+        setTimeout(() => window.GodsEyeController.focusSatellite(focusTarget), 1500);
+      }
+    });
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- Primary Meta Tags -->
@@ -6850,107 +6955,6 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
     })();
   </script>
   <!-- Tactical Command HUD Footer -->
-    <!-- ==================== GOD'S EYE WEBGL COMMAND BRIDGE ==================== -->
-  <script>
-    window.GodsEyeController = {
-      // Smoothly tweens camera to target satellite
-      focusSatellite: function(query) {
-        if (!query) return false;
-        const q = String(query).trim().toUpperCase();
-
-        // 1. Search internal satellite arrays or scene meshes
-        let target = null;
-        if (Array.isArray(window.satellites)) {
-          target = window.satellites.find(s => 
-            (s.name && s.name.toUpperCase().includes(q)) || 
-            (s.noradId && String(s.noradId) === q) ||
-            (s.id && String(s.id).toUpperCase().includes(q))
-          );
-        }
-
-        // 2. Check DOM target triggers if mesh array is abstract
-        if (!target) {
-          const domBtn = document.querySelector(`[data-target*="${q.toLowerCase()}" i]`) || 
-                         document.querySelector(`button[title*="${q}" i]`);
-          if (domBtn) {
-            domBtn.click();
-            return true;
-          }
-        }
-
-        // 3. Three.js Camera Interpolation
-        if (target && window.camera) {
-          const targetPos = target.mesh ? target.mesh.position : (target.position || null);
-          if (targetPos) {
-            const startPos = { x: window.camera.position.x, y: window.camera.position.y, z: window.camera.position.z };
-            const endPos = { x: targetPos.x * 1.35, y: targetPos.y * 1.35 + 0.1, z: targetPos.z * 1.35 };
-            const duration = 1200;
-            const startTime = performance.now();
-
-            function animateFlyTo(now) {
-              const elapsed = now - startTime;
-              const progress = Math.min(elapsed / duration, 1);
-              // Cubic easing out
-              const ease = 1 - Math.pow(1 - progress, 3);
-
-              window.camera.position.x = startPos.x + (endPos.x - startPos.x) * ease;
-              window.camera.position.y = startPos.y + (endPos.y - startPos.y) * ease;
-              window.camera.position.z = startPos.z + (endPos.z - startPos.z) * ease;
-
-              if (window.controls) {
-                window.controls.target.set(
-                  targetPos.x * ease,
-                  targetPos.y * ease,
-                  targetPos.z * ease
-                );
-                window.controls.update();
-              }
-
-              if (progress < 1) {
-                requestAnimationFrame(animateFlyTo);
-              }
-            }
-            requestAnimationFrame(animateFlyTo);
-
-            if (target.orbitLine) target.orbitLine.visible = true;
-            return true;
-          }
-        }
-
-        // Fallback: Trigger default ISS / generic observer button if available
-        if (q.includes("ISS")) {
-          const issBtn = document.getElementById("btn-track-iss") || document.querySelector('[data-target="iss"]');
-          if (issBtn) { issBtn.click(); return true; }
-        }
-        return false;
-      },
-
-      toggleOrbitSpline: function(satelliteName, visible = true) {
-        if (!window.satellites) return false;
-        const q = String(satelliteName).toUpperCase();
-        const sat = window.satellites.find(s => s.name && s.name.toUpperCase().includes(q));
-        if (sat && sat.orbitLine) {
-          sat.orbitLine.visible = visible;
-          return true;
-        }
-        return false;
-      },
-
-      setPreset: function(presetName) {
-        if (!window.camera || !window.controls) return false;
-        const p = String(presetName).toUpperCase();
-        if (p === 'GLOBAL') {
-          window.camera.position.set(0, 2.5, 4.5);
-          window.controls.target.set(0, 0, 0);
-        } else if (p === 'LEO') {
-          window.camera.position.set(0, 0.8, 1.8);
-          window.controls.target.set(0, 0, 0);
-        }
-        window.controls.update();
-        return true;
-      }
-    };
-  </script>
 
   <!-- ==================== J.A.R.V.I.S. VIBRANIUM ARC REACTOR HUD ==================== -->
   <style>
@@ -7263,7 +7267,7 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
             <div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button onclick="window.GodsEyeController && window.GodsEyeController.focusSatellite('${data.name}')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
+            <button onclick="window.GodsEyeController.focusSatellite(\'${data.name}\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
             <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
           </div>
         </div>
@@ -7372,6 +7376,8 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
   <!-- Universal J.A.R.V.I.S. Tactical AI Core -->`n
 </body>
 </html>
+
+
 
 
 

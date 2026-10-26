@@ -2130,7 +2130,7 @@ setInterval(() => {
             <div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button onclick="window.GodsEyeController && window.GodsEyeController.focusSatellite('${data.name}')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
+            <button onclick="window.GodsEyeController.focusSatellite(\'${data.name}\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
             <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
           </div>
         </div>
@@ -2234,6 +2234,7 @@ setInterval(() => {
   </script>
 </body>
 </html>
+
 
 
 
