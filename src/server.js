@@ -1,7 +1,7 @@
-﻿import compression from 'compression';
+﻿import path from 'path';
+import compression from 'compression';
 import express from 'express';
 import http from 'http';
-import path from 'path';
 import { PORT, PUBLIC_DIR } from './config/constants.js';
 import { getDatabase } from './db/sqlite.js';
 import { getSpaceStore } from './db/space-store.js';
@@ -151,3 +151,21 @@ Current Query: "${q}"`;
     return res.json({ reply: "Telemetry downlink nominal, Sir. Sensory feeds are active." });
   }
 });
+
+
+// --- PAGE ROUTES ---
+app.get('/', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+});
+
+app.get('/sentinel', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'sentinel.html'));
+});
+
+app.get('/orbitalert', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'orbitalert.html'));
+});
+// --- END PAGE ROUTES ---
+
+
+

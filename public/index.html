@@ -6,30 +6,24 @@
     window.GodsEyeController = {
       focusSatellite: function(query) {
         if (!query) return false;
-        const q = String(query).trim().toUpperCase();
-        console.log('[GodsEyeController] Requesting 3D focus on:', q);
+        var q = String(query).trim().toUpperCase();
+        console.log('[GodsEyeController] Focusing:', q);
 
-        // If on /orbitalert or /sentinel, navigate to 3D Globe with parameter
-        if (window.location.pathname.includes('orbitalert') || window.location.pathname.includes('sentinel')) {
-          window.location.href = '/?focus=' + encodeURIComponent(q);
+        if (window.location.protocol !== 'file:' && (window.location.pathname.includes('orbitalert') || window.location.pathname.includes('sentinel'))) {
+          window.location.href = 'index.html?focus=' + encodeURIComponent(q);
           return true;
         }
 
-        // METHOD 1: Find the satellite row in Object Explorer and click its "TRACK" button
-        const allElements = Array.from(document.querySelectorAll('div, li, tr, span, p'));
-        for (const el of allElements) {
-          // Check if this specific element directly has the satellite name
-          if (el.children.length <= 2 && el.textContent && el.textContent.toUpperCase().includes(q)) {
-            // Find parent card / container row
-            let parent = el.parentElement;
-            for (let i = 0; i < 4 && parent; i++) {
-              const trackBtn = Array.from(parent.querySelectorAll('button, a')).find(b => {
-                const txt = (b.textContent || '').toUpperCase();
-                return txt.includes('TRACK') || txt.includes('CENTRE') || txt.includes('VIEW');
-              });
-              if (trackBtn) {
-                console.log('[GodsEyeController] Triggered native TRACK button in row:', el.textContent.trim());
-                trackBtn.click();
+        // Method A: Click native TRACK button in Object Explorer list
+        var elements = document.querySelectorAll('div, li, tr, span, p');
+        for (var i = 0; i < elements.length; i++) {
+          var el = elements[i];
+          if (el.children.length <= 2 && el.textContent && el.textContent.toUpperCase().indexOf(q) !== -1) {
+            var parent = el.parentElement;
+            for (var depth = 0; depth < 4 && parent; depth++) {
+              var btn = parent.querySelector('button, a');
+              if (btn && (btn.textContent || '').toUpperCase().indexOf('TRACK') !== -1) {
+                btn.click();
                 return true;
               }
               parent = parent.parentElement;
@@ -37,74 +31,33 @@
           }
         }
 
-        // METHOD 2: Use Object Explorer Search Input
-        const searchInput = document.querySelector('input[placeholder*="Search" i], input[placeholder*="NORAD" i], #search-input');
+        // Method B: Search input
+        var searchInput = document.querySelector('input[placeholder*="Search" i], #search-input');
         if (searchInput) {
           searchInput.value = query;
           searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-          searchInput.dispatchEvent(new Event('change', { bubbles: true }));
-          
-          setTimeout(() => {
-            const resultBtn = Array.from(document.querySelectorAll('button')).find(b => {
-              const txt = (b.textContent || '').toUpperCase();
-              return txt.includes('TRACK');
-            });
-            if (resultBtn) {
-              console.log('[GodsEyeController] Clicked search result TRACK button');
-              resultBtn.click();
+          setTimeout(function() {
+            var trackBtn = document.querySelector('button:not([disabled])');
+            if (trackBtn && (trackBtn.textContent || '').toUpperCase().indexOf('TRACK') !== -1) {
+              trackBtn.click();
             }
           }, 150);
           return true;
         }
-
-        // METHOD 3: Three.js World Coordinate Traversal
-        if (window.scene && window.camera) {
-          let foundMesh = null;
-          window.scene.traverse(obj => {
-            if (foundMesh) return;
-            const name = (obj.name || (obj.userData && obj.userData.name) || '').toUpperCase();
-            if (name && (name.includes(q) || q.includes(name))) {
-              foundMesh = obj;
-            }
-          });
-
-          if (foundMesh) {
-            const worldPos = new THREE.Vector3();
-            foundMesh.getWorldPosition(worldPos);
-            if (window.controls) {
-              window.controls.target.copy(worldPos);
-              window.camera.position.set(worldPos.x * 1.35, worldPos.y * 1.35 + 0.1, worldPos.z * 1.35);
-              window.controls.update();
-              return true;
-            }
-          }
-        }
-
-        // METHOD 4: ISS bottom banner fallback
-        if (q.includes('ISS')) {
-          const centreBtn = Array.from(document.querySelectorAll('button, a')).find(b => (b.textContent || '').toUpperCase().includes('CENTRE'));
-          if (centreBtn) { centreBtn.click(); return true; }
-        }
-
         return false;
       },
-
       setPreset: function(presetName) {
-        const p = String(presetName).toUpperCase();
-        const presetBtn = Array.from(document.querySelectorAll('button')).find(b => (b.textContent || '').toUpperCase() === p);
-        if (presetBtn) { presetBtn.click(); return true; }
+        var p = String(presetName).toUpperCase();
+        var buttons = document.querySelectorAll('button');
+        for (var i = 0; i < buttons.length; i++) {
+          if ((buttons[i].textContent || '').toUpperCase() === p) {
+            buttons[i].click();
+            return true;
+          }
+        }
         return false;
       }
     };
-
-    // Auto-focus handler if arriving from URL query (?focus=CARTOSAT-3)
-    document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const focusTarget = params.get('focus');
-      if (focusTarget) {
-        setTimeout(() => window.GodsEyeController.focusSatellite(focusTarget), 1500);
-      }
-    });
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -116,7 +69,7 @@
   <meta name="author" content="Ajitsinh" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/" />
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href="manifest.json" />
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
@@ -548,23 +501,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <meta name="twitter:image" content="https://your-domain.com/og-preview.jpg">
 
   <!-- Schema.org Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": "https://your-domain.com/#webapp",
-        "name": "Orbital Command & Interplanetary Universe HUD",
-        "url": "https://your-domain.com/",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All",
-        "browserRequirements": "Requires WebGL support",
-        "description": "Interactive, physically accurate 3D simulation of heliocentric planetary orbits, Earth satellite constellations, and the cosmological cosmic web."
-      }
-    ]
-  }
-  </script>
+  
   <meta name="google-site-verification" content="pUD93vWhaPBMab_inqL7UsKFGDEfSe-7WuSyI-N_5uw" />
 </head>
 <body class="bg-[#000208] text-slate-100 font-sans h-screen h-[100dvh] w-screen overflow-hidden select-none">
@@ -6955,7 +6892,6 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
     })();
   </script>
   <!-- Tactical Command HUD Footer -->
-
   <!-- ==================== J.A.R.V.I.S. VIBRANIUM ARC REACTOR HUD ==================== -->
   <style>
     @keyframes arc-spin-cw { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -6975,41 +6911,27 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
     .jarvis-btn-chip:hover { background: rgba(0, 240, 255, 0.2) !important; border-color: #00f0ff !important; }
   </style>
 
-  <!-- Iron Man 2 / 3 Triangular Arc Reactor Button (Floating safely above bottom bar) -->
   <div id="jarvis-root" style="position:fixed; bottom:45px; right:24px; z-index:9999999; font-family:'Courier New', monospace; pointer-events:auto;">
     <div id="jarvis-arc-btn" onclick="toggleJarvisPanel()" title="Initiate J.A.R.V.I.S." style="width:64px; height:64px; border-radius:50%; background:radial-gradient(circle, #02121f 15%, #030712 90%); border:2px solid rgba(0, 240, 255, 0.8); cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; box-shadow:0 0 25px rgba(0, 240, 255, 0.6); animation:arc-vibranium-glow 3s infinite; transition:transform 0.25s ease;">
-      
-      <!-- Outer Rotating Segmented Vent Ring -->
       <svg style="position:absolute; inset:-4px; width:68px; height:68px; pointer-events:none; animation:arc-spin-cw 18s linear infinite;" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="2.5" stroke-dasharray="10 6 16 6" />
         <circle cx="50" cy="50" r="39" fill="none" stroke="rgba(56, 189, 248, 0.75)" stroke-width="1.5" stroke-dasharray="4 8" />
       </svg>
-
-      <!-- Inner Counter-Rotating Magnetic Heat Vents -->
       <svg style="position:absolute; inset:2px; width:56px; height:56px; pointer-events:none; animation:arc-spin-ccw 9s linear infinite;" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="42" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-dasharray="18 10" opacity="0.85" />
         <circle cx="50" cy="50" r="33" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="6 6" />
       </svg>
-
-      <!-- Central Vibranium Triangular Power Core (Iron Man 2/3 Exact Blueprint) -->
       <svg style="width:36px; height:36px; filter:drop-shadow(0 0 8px #00f0ff);" viewBox="0 0 100 100">
-        <!-- Outer Chamfered Vibranium Triangle Frame -->
         <polygon points="50,14 88,82 12,82" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" />
-        <!-- Inner Radiant Inverted Triangle Core -->
         <polygon points="50,30 76,76 24,76" fill="rgba(0, 240, 255, 0.5)" stroke="#e0faff" stroke-width="3" stroke-linejoin="round" />
-        <!-- Central Power Emitter -->
         <polygon points="50,44 64,70 36,70" fill="#ffffff" opacity="0.95" />
-        <!-- Radiating Energy Traces -->
         <line x1="50" y1="14" x2="50" y2="30" stroke="#00f0ff" stroke-width="3" />
         <line x1="88" y1="82" x2="76" y2="76" stroke="#00f0ff" stroke-width="3" />
         <line x1="12" y1="82" x2="24" y2="76" stroke="#00f0ff" stroke-width="3" />
       </svg>
     </div>
 
-    <!-- Holographic Tactical HUD Window -->
     <div id="jarvis-hud-panel" style="display:none; position:fixed; bottom:118px; right:24px; width:390px; max-width:calc(100vw - 32px); height:520px; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(22px); border:1px solid rgba(0, 240, 255, 0.5); border-radius:14px; box-shadow:0 0 50px rgba(0,0,0,0.95), 0 0 25px rgba(0, 240, 255, 0.35); flex-direction:column; overflow:hidden;">
-      
-      <!-- Top Bar -->
       <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15, 23, 42, 0.95); border-bottom:1px solid rgba(0, 240, 255, 0.3);">
         <div style="display:flex; align-items:center; gap:8px;">
           <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981;"></div>
@@ -7024,12 +6946,10 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         </div>
       </div>
 
-      <!-- Real-Time Neural Waveform Canvas -->
       <div style="padding:8px 12px 0 12px; background:rgba(0,0,0,0.5);">
         <canvas id="jarvis-oscilloscope" width="364" height="38" style="width:100%; height:38px; display:block; border-radius:6px; background:rgba(3,7,18,0.7); border:1px solid rgba(0, 240, 255, 0.25);"></canvas>
       </div>
 
-      <!-- Blueprint Quick Action Chips -->
       <div style="display:flex; gap:6px; padding:8px 10px; overflow-x:auto; background:rgba(0,0,0,0.35); border-bottom:1px solid rgba(255,255,255,0.06);">
         <button onclick="sendJarvisQuery('Find and track the International Space Station.')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Track ISS</button>
         <button onclick="sendJarvisQuery('Which satellites will pass over Pune tonight?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Passes: Pune</button>
@@ -7037,14 +6957,12 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         <button onclick="sendJarvisQuery('Why do satellites remain in orbit without falling?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Orbital Physics</button>
       </div>
 
-      <!-- Communications Log -->
       <div id="jarvis-stream" style="flex:1; padding:12px; overflow-y:auto; font-size:11px; line-height:1.6; display:flex; flex-direction:column; gap:8px; color:#cbd5e1;">
         <div style="align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:8px 10px; border-radius:0 8px 8px 0;">
           At your service, Sir. Arc Reactor core online and synchronized with God's Eye telemetry. Speak or transmit your instructions.
         </div>
       </div>
 
-      <!-- Voice & Input Dock -->
       <div style="padding:10px 12px; background:rgba(15, 23, 42, 0.95); border-top:1px solid rgba(0,240,255,0.25); display:flex; align-items:center; gap:6px;">
         <button id="jarvis-mic-btn" onclick="toggleJarvisSpeech()" title="Click to Speak" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:6px; color:#00f0ff; padding:7px 10px; cursor:pointer; font-size:13px; transition:all 0.2s;">🎙️</button>
         <input id="jarvis-input" type="text" placeholder="Command J.A.R.V.I.S., Sir..." onkeydown="if(event.key==='Enter') executeJarvisChat()" style="flex:1; background:rgba(0,0,0,0.6); border:1px solid rgba(0,240,255,0.35); border-radius:6px; color:#fff; font-family:monospace; font-size:11px; padding:7px 10px; outline:none;" />
@@ -7054,7 +6972,7 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
   </div>
 
   <script>
-    let jarvisState = {
+    var jarvisState = {
       isOpen: false,
       voice: true,
       listening: false,
@@ -7066,27 +6984,31 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
 
     function toggleJarvisPanel() {
       jarvisState.isOpen = !jarvisState.isOpen;
-      const p = document.getElementById('jarvis-hud-panel');
-      p.style.display = jarvisState.isOpen ? 'flex' : 'none';
-      if (jarvisState.isOpen) document.getElementById('jarvis-input').focus();
+      var p = document.getElementById('jarvis-hud-panel');
+      if (p) {
+        p.style.display = jarvisState.isOpen ? 'flex' : 'none';
+        if (jarvisState.isOpen) document.getElementById('jarvis-input').focus();
+      }
     }
 
     function toggleJarvisVoice() {
       jarvisState.voice = !jarvisState.voice;
-      const btn = document.getElementById('jarvis-mute-btn');
-      btn.innerText = jarvisState.voice ? 'VOICE: ON' : 'VOICE: MUTED';
-      btn.style.color = jarvisState.voice ? '#38bdf8' : '#ef4444';
+      var btn = document.getElementById('jarvis-mute-btn');
+      if (btn) {
+        btn.innerText = jarvisState.voice ? 'VOICE: ON' : 'VOICE: MUTED';
+        btn.style.color = jarvisState.voice ? '#38bdf8' : '#ef4444';
+      }
       if (!jarvisState.voice && window.speechSynthesis) window.speechSynthesis.cancel();
     }
 
-    // Oscilloscope Animation Loop
+    // Oscilloscope Loop
     (function loopWave() {
-      const c = document.getElementById('jarvis-oscilloscope');
+      var c = document.getElementById('jarvis-oscilloscope');
       if (c) {
-        const ctx = c.getContext('2d');
+        var ctx = c.getContext('2d');
         ctx.clearRect(0, 0, c.width, c.height);
-        const w = c.width, h = c.height, midY = h / 2;
-        let freq = 0.04, amp = 4, col = 'rgba(0, 240, 255, 0.45)';
+        var w = c.width, h = c.height, midY = h / 2;
+        var freq = 0.04, amp = 4, col = 'rgba(0, 240, 255, 0.45)';
         if (jarvisState.neural === 'listening') { freq = 0.08; amp = 14; col = '#ef4444'; }
         else if (jarvisState.neural === 'thinking') { freq = 0.12; amp = 9; col = '#f59e0b'; }
         else if (jarvisState.neural === 'speaking') { freq = 0.09; amp = 15; col = '#38bdf8'; }
@@ -7094,15 +7016,15 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
         ctx.beginPath();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = col;
-        for (let x = 0; x < w; x++) {
-          const y = midY + Math.sin(x * freq + jarvisState.phase) * amp * Math.sin((x / w) * Math.PI);
+        for (var x = 0; x < w; x++) {
+          var y = midY + Math.sin(x * freq + jarvisState.phase) * amp * Math.sin((x / w) * Math.PI);
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
 
-        for (let i = 1; i <= 5; i++) {
-          const nx = (w / 6) * i;
-          const ny = midY + Math.sin(nx * freq + jarvisState.phase) * amp * Math.sin((nx / w) * Math.PI);
+        for (var i = 1; i <= 5; i++) {
+          var nx = (w / 6) * i;
+          var ny = midY + Math.sin(nx * freq + jarvisState.phase) * amp * Math.sin((nx / w) * Math.PI);
           ctx.beginPath();
           ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
           ctx.fillStyle = col;
@@ -7113,269 +7035,232 @@ earthOuterAtmoMat.uniforms.uCameraPos.value.copy(camera.position);
       requestAnimationFrame(loopWave);
     })();
 
-    // Speech Output (TTS)
-        // --- MALE J.A.R.V.I.S. VOICE SYNTHESIZER ---
+    // British Male Voice Synthesis
     function jarvisSay(text) {
       if (!jarvisState.voice || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
 
-      const utt = new SpeechSynthesisUtterance(text);
-      const voices = window.speechSynthesis.getVoices();
-
-      // Prioritize British Male voices (Paul Bettany cadence)
-      let maleUkVoice = voices.find(v => 
-        (v.lang === 'en-GB' || v.lang.startsWith('en')) && 
-        (v.name.includes('George') || v.name.includes('Male') || v.name.includes('Ryan') || v.name.includes('Daniel') || v.name.includes('Oliver') || v.name.includes('Arthur'))
-      );
-
-      // Secondary fallback to standard UK or English voice
-      if (!maleUkVoice) {
-        maleUkVoice = voices.find(v => v.lang === 'en-GB' && !v.name.includes('Female') && !v.name.includes('Hazel') && !v.name.includes('Susan')) 
-                   || voices.find(v => v.lang.startsWith('en') && (v.name.includes('Male') || v.name.includes('David')));
+      var utt = new SpeechSynthesisUtterance(text);
+      var voices = window.speechSynthesis.getVoices();
+      var maleUkVoice = null;
+      for (var i = 0; i < voices.length; i++) {
+        var v = voices[i];
+        if ((v.lang === 'en-GB' || v.lang.indexOf('en') === 0) &&
+            (v.name.indexOf('George') !== -1 || v.name.indexOf('Male') !== -1 || v.name.indexOf('Ryan') !== -1 || v.name.indexOf('Daniel') !== -1)) {
+          maleUkVoice = v;
+          break;
+        }
       }
-
+      if (!maleUkVoice) {
+        for (var j = 0; j < voices.length; j++) {
+          if (voices[j].lang === 'en-GB' && voices[j].name.indexOf('Female') === -1) {
+            maleUkVoice = voices[j];
+            break;
+          }
+        }
+      }
       if (maleUkVoice) utt.voice = maleUkVoice;
-
-      // Male pitch and steady, cultured cadence
       utt.pitch = 0.88;
       utt.rate = 1.02;
 
-      const orb = document.getElementById('jarvis-arc-btn');
-      utt.onstart = () => { jarvisState.neural = 'speaking'; orb && orb.classList.add('arc-speaking-pulse'); };
-      utt.onend = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
-      utt.onerror = () => { jarvisState.neural = 'idle'; orb && orb.classList.remove('arc-speaking-pulse'); };
+      var orb = document.getElementById('jarvis-arc-btn');
+      utt.onstart = function() { jarvisState.neural = 'speaking'; if (orb) orb.classList.add('arc-speaking-pulse'); };
+      utt.onend = function() { jarvisState.neural = 'idle'; if (orb) orb.classList.remove('arc-speaking-pulse'); };
+      utt.onerror = function() { jarvisState.neural = 'idle'; if (orb) orb.classList.remove('arc-speaking-pulse'); };
       window.speechSynthesis.speak(utt);
     }
 
-    // Preload voice list
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
     }
 
-    // --- EXTENSIVE SPACE INTELLIGENCE CATALOG & FUZZY RESOLVER ---
+    function toggleJarvisSpeech() {
+      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { alert('Speech recognition not supported in this browser. Please use Chrome or Edge.'); return; }
+      if (!jarvisState.recognition) {
+        jarvisState.recognition = new SR();
+        jarvisState.recognition.lang = 'en-US';
+        jarvisState.recognition.onstart = function() {
+          jarvisState.listening = true;
+          jarvisState.neural = 'listening';
+          document.getElementById('jarvis-mic-btn').style.background = '#ef4444';
+          var orb = document.getElementById('jarvis-arc-btn');
+          if (orb) orb.classList.add('arc-listening-pulse');
+        };
+        jarvisState.recognition.onresult = function(e) {
+          document.getElementById('jarvis-input').value = e.results[0][0].transcript;
+          executeJarvisChat();
+        };
+        var reset = function() {
+          jarvisState.listening = false;
+          if (jarvisState.neural === 'listening') jarvisState.neural = 'idle';
+          document.getElementById('jarvis-mic-btn').style.background = 'rgba(0, 240, 255, 0.15)';
+          var orb = document.getElementById('jarvis-arc-btn');
+          if (orb) orb.classList.remove('arc-listening-pulse');
+        };
+        jarvisState.recognition.onerror = reset;
+        jarvisState.recognition.onend = reset;
+      }
+      if (jarvisState.listening) jarvisState.recognition.stop();
+      else jarvisState.recognition.start();
+    }
+
+    function sendJarvisQuery(q) {
+      document.getElementById('jarvis-input').value = q;
+      executeJarvisChat();
+    }
+
     function resolveSpaceIntel(rawText) {
-      const q = rawText.toLowerCase().replace(/[^a-z0-9\s\-]/g, ' ');
-
-      // 1. Aditya-L1 (Handles typos: "adtiya", "aditya", "aditya l1", "l1")
-      if (q.includes('adtiya') || q.includes('aditya') || (q.includes('l1') && (q.includes('sun') || q.includes('solar')))) {
-        jarvisState.lastObj = "Aditya-L1";
-        return "Aditya-L1 is ISRO's flagship solar observatory stationed in a halo orbit around the Sun-Earth Lagrange Point 1, approximately 1.5 million kilometers from Earth. It continuously monitors coronal heating, solar flares, and coronal mass ejections without any occultation, Sir.";
+      var q = rawText.toLowerCase().replace(/[^a-z0-9\s\-]/g, ' ');
+      if (q.indexOf('adtiya') !== -1 || q.indexOf('aditya') !== -1) {
+        jarvisState.lastObj = 'Aditya-L1';
+        return "Aditya-L1 is stationed in a halo orbit around the Sun-Earth Lagrange Point 1, approximately 1.5 million kilometers from Earth, observing coronal mass ejections without occultation, Sir.";
       }
-
-      // 2. EOS-06 / Oceansat-3
-      if (q.includes('eos-06') || q.includes('eos 06') || q.includes('eos06') || q.includes('oceansat') || q.includes('eos 6')) {
-        jarvisState.lastObj = "EOS-06";
-        return "EOS-06, also designated Oceansat-3, is an ISRO Earth observation satellite in Sun-Synchronous Orbit at 742 km altitude with a 98.3° inclination. It carries the Ocean Colour Monitor 3, Sea Surface Temperature Monitor, and a Ku-band Scatterometer for marine weather and oceanographic research, Sir.";
+      if (q.indexOf('eos-06') !== -1 || q.indexOf('eos 06') !== -1 || q.indexOf('oceansat') !== -1) {
+        jarvisState.lastObj = 'EOS-06';
+        return "EOS-06 (Oceansat-3) operates in a 742 km Sun-Synchronous Orbit at 98.3° inclination, monitoring ocean color, sea surface temperatures, and wind vectors, Sir.";
       }
-
-      // 3. EOS-04 / RISAT-1A (Radar Imaging)
-      if (q.includes('eos-04') || q.includes('eos 04') || q.includes('eos04') || q.includes('risat')) {
-        jarvisState.lastObj = "EOS-04";
-        return "EOS-04 is ISRO's radar imaging satellite operating in a 529 km Sun-Synchronous Orbit. Utilizing an active C-band Synthetic Aperture Radar, it captures high-resolution imagery through clouds, rain, and darkness for border reconnaissance and disaster assessment, Sir.";
+      if (q.indexOf('eos-04') !== -1 || q.indexOf('risat') !== -1) {
+        jarvisState.lastObj = 'EOS-04';
+        return "EOS-04 is ISRO's C-band Synthetic Aperture Radar reconnaissance satellite in a 529 km polar orbit, imaging through clouds and night conditions, Sir.";
       }
-
-      // 4. Cartosat-3 & Cartosat fleet
-      if (q.includes('cartosat')) {
-        jarvisState.lastObj = "Cartosat-3";
-        return "Cartosat-3 is ISRO's advanced optical reconnaissance satellite in a 505 km polar orbit at 97.5° inclination. It features an exceptional spatial resolution of 0.28 meters for strategic cartography and military observation, Sir.";
+      if (q.indexOf('cartosat') !== -1) {
+        jarvisState.lastObj = 'Cartosat-3';
+        return "Cartosat-3 is ISRO's advanced optical reconnaissance satellite in a 505 km polar orbit with 0.28m ground resolution for defense and cartography, Sir.";
       }
-
-      // 5. AstroSat
-      if (q.includes('astrosat')) {
-        jarvisState.lastObj = "AstroSat";
-        return "AstroSat is India's dedicated multi-wavelength space observatory orbiting Earth at 650 km altitude with a 6-degree inclination. It simultaneously monitors celestial bodies in ultraviolet, optical, and broadband X-ray spectra, Sir.";
+      if (q.indexOf('iss') !== -1 || q.indexOf('space station') !== -1) {
+        jarvisState.lastObj = 'ISS';
+        return "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, maintaining 27,600 km/h at 51.6° inclination. Aligning tracking vectors now, Sir.";
       }
-
-      // 6. Chandrayaan-3
-      if (q.includes('chandrayaan') || q.includes('chandra')) {
-        jarvisState.lastObj = "Chandrayaan-3";
-        return "Chandrayaan-3 accomplished India's historic soft landing at the Lunar South Pole. Its propulsion module remains active in high lunar orbit conducting SHAPE spectro-polarimetry of Earth, while the Vikram lander and Pragyan rover explored the lunar regolith, Sir.";
+      if (q.indexOf('hubble') !== -1) {
+        jarvisState.lastObj = 'Hubble';
+        return "The Hubble Space Telescope is positioned in Low Earth Orbit at approximately 535 km altitude with a 28.5° inclination, Sir.";
       }
-
-      // 7. NISAR (NASA-ISRO SAR)
-      if (q.includes('nisar')) {
-        jarvisState.lastObj = "NISAR";
-        return "NISAR is the joint NASA-ISRO Earth observation mission carrying dual-frequency L-band and S-band radar. It maps global land and ice changes every 12 days to monitor crustal deformation and climate hazards, Sir.";
+      if (q.indexOf('why') !== -1 && (q.indexOf('fall') !== -1 || q.indexOf('orbit') !== -1 || q.indexOf('gravity') !== -1)) {
+        return "Satellites remain in orbit because high forward velocity (~7.8 km/s in LEO) ensures the spacecraft is in continuous free fall, where Earth's curvature drops away at the exact same rate, Sir.";
       }
-
-      // 8. International Space Station (ISS)
-      if (q.includes('iss') || q.includes('space station')) {
-        jarvisState.lastObj = "ISS";
-        return "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, maintaining an orbital velocity of 27,600 km/h at 51.6° inclination. Centering 3D globe camera and displaying orbital track now, Sir.";
+      if (q.indexOf('pune') !== -1 || q.indexOf('pass') !== -1) {
+        return "For Pune ground station (18.52° N, 73.85° E), prime visual passes occur during twilight terminator windows. Navigating to the OrbitAlert pass table for elevation look-angles, Sir.";
       }
-
-      // 9. Hubble Space Telescope
-      if (q.includes('hubble')) {
-        jarvisState.lastObj = "Hubble Space Telescope";
-        return "The Hubble Space Telescope is positioned in Low Earth Orbit at approximately 535 km altitude with a 28.5° inclination, having gathered cosmic imaging data for over three decades, Sir.";
+      if (q.indexOf('isro') !== -1) {
+        return "Tracking active ISRO orbital assets including Cartosat-3, EOS-04 radar imaging, EOS-06, and AstroSat. All telemetry downlinks are nominal, Sir.";
       }
-
-      // 10. James Webb (JWST)
-      if (q.includes('james webb') || q.includes('jwst') || q.includes('webb')) {
-        jarvisState.lastObj = "James Webb Space Telescope";
-        return "The James Webb Space Telescope is stationed in a halo orbit around Sun-Earth Lagrange Point 2, roughly 1.5 million kilometers beyond Earth, capturing deep infrared cosmological structures, Sir.";
+      if (q.indexOf('sun') !== -1 || q.indexOf('solar') !== -1) {
+        return "The Sun is at our gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal thresholds.";
       }
-
-      // 11. Orbital Physics: Why don't satellites fall?
-      if (q.includes('why') && (q.includes('fall') || q.includes('orbit') || q.includes('gravity') || q.includes('stay up'))) {
-        return "Satellites remain in orbit because high tangential velocity (~7.8 km/s in LEO) generates a centrifugal equilibrium: the spacecraft is in continuous free fall toward Earth, but Earth's surface curves away at the exact same rate, Sir.";
+      if (q === 'hi' || q === 'hello' || q === 'hey') {
+        return "At your service, Sir. Orbital tracks and 3D globe telemetry are synchronized. What shall we observe?";
       }
-
-      // 12. City Passes (Pune / Mumbai / Delhi)
-      if (q.includes('pune') || q.includes('pass') || q.includes('tonight') || q.includes('visible')) {
-        return "For the Pune observation sector (18.52° N, 73.85° E), prime satellite passes occur during dawn and dusk twilight when payloads reflect solar rays against dark ground skies. Navigating to OrbitAlert for exact elevation look-angles, Sir.";
-      }
-
-      // 13. General ISRO Fleet
-      if (q.includes('isro fleet') || q.includes('isro satellites') || q.includes('isro')) {
-        jarvisState.lastObj = "ISRO Fleet";
-        return "God's Eye tracks 18 active ISRO satellites across LEO, Sun-Synchronous, and GTO orbits, including Cartosat-3, EOS-04, EOS-06, and AstroSat. All telemetry downlinks are nominal, Sir.";
-      }
-
-      // 14. Starlink
-      if (q.includes('starlink') || q.includes('spacex')) {
-        return "Starlink operates a Low Earth Orbit megaconstellation between 540 and 570 km altitude, utilizing phased-array antennas and optical inter-satellite laser links to deliver low-latency communications, Sir.";
-      }
-
-      // 15. Greetings
-      if (q === 'hi' || q === 'hello' || q === 'hey' || q.startsWith('hello jarvis') || q.startsWith('hi jarvis')) {
-        return "At your service, Sir. Orbital tracks, pass calculations, and 3D globe telemetry are synchronized. What shall we observe?";
-      }
-
-      // 16. Sun / Space Weather
-      if (q.includes('sun') || q.includes('solar')) {
-        return "The Sun is at our system's gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal operational thresholds.";
-      }
-
       return null;
     }
 
-        // --- GLASSMORPHIC TELEMETRY CARD GENERATOR ---
     function createTelemetryCard(data) {
-      return `
-        <div style="margin-top:8px; padding:10px; background:rgba(2, 18, 31, 0.85); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px; box-shadow:0 0 15px rgba(0, 240, 255, 0.15); font-family:monospace;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0, 240, 255, 0.2); padding-bottom:5px; margin-bottom:6px;">
-            <span style="color:#00f0ff; font-weight:800; font-size:11px; letter-spacing:0.05em;">🛰️ ${data.name}</span>
-            <span style="color:#10b981; font-size:9px; background:rgba(16,185,129,0.15); padding:1px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.3);">TRACKING ACTIVE</span>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:8px;">
-            <div>NORAD: <strong style="color:#fff;">${data.norad || 'N/A'}</strong></div>
-            <div>ORBIT: <strong style="color:#fff;">${data.orbit || 'LEO'}</strong></div>
-            <div>ALTITUDE: <strong style="color:#38bdf8;">${data.alt || '~420 km'}</strong></div>
-            <div>VELOCITY: <strong style="color:#38bdf8;">${data.vel || '~27,600 km/h'}</strong></div>
-            <div>INC: <strong style="color:#fff;">${data.inc || '51.6°'}</strong></div>
-            <div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button onclick="window.GodsEyeController.focusSatellite(\'${data.name}\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
-            <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
-          </div>
-        </div>
-      `;
+      return '<div style="margin-top:8px; padding:10px; background:rgba(2, 18, 31, 0.85); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px; box-shadow:0 0 15px rgba(0, 240, 255, 0.15); font-family:monospace;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0, 240, 255, 0.2); padding-bottom:5px; margin-bottom:6px;">' +
+          '<span style="color:#00f0ff; font-weight:800; font-size:11px;">🛰️ ' + data.name + '</span>' +
+          '<span style="color:#10b981; font-size:9px; background:rgba(16,185,129,0.15); padding:1px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.3);">TRACKING ACTIVE</span>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:8px;">' +
+          '<div>NORAD: <strong style="color:#fff;">' + (data.norad || 'N/A') + '</strong></div>' +
+          '<div>ORBIT: <strong style="color:#fff;">' + (data.orbit || 'LEO') + '</strong></div>' +
+          '<div>ALTITUDE: <strong style="color:#38bdf8;">' + (data.alt || '~420 km') + '</strong></div>' +
+          '<div>VELOCITY: <strong style="color:#38bdf8;">' + (data.vel || '~27,600 km/h') + '</strong></div>' +
+          '<div>INC: <strong style="color:#fff;">' + (data.inc || '51.6°') + '</strong></div>' +
+          '<div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>' +
+        '</div>' +
+        '<div style="display:flex; gap:6px;">' +
+          '<button onclick="window.GodsEyeController && window.GodsEyeController.focusSatellite(\'' + data.name + '\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>' +
+          '<button onclick="window.location.href=\'orbitalert.html\'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>' +
+        '</div>' +
+      '</div>';
     }
 
-    // --- REFINED CHAT DISPATCHER WITH TELEMETRY CARDS & FLY-TO ---
     async function executeJarvisChat() {
-      const inp = document.getElementById('jarvis-input');
-      const rawText = inp.value.trim();
+      var inp = document.getElementById('jarvis-input');
+      var rawText = inp.value.trim();
       if (!rawText) return;
 
       jarvisState.neural = 'thinking';
       inp.value = '';
 
-      const stream = document.getElementById('jarvis-stream');
-      const uMsg = document.createElement('div');
+      var stream = document.getElementById('jarvis-stream');
+      var uMsg = document.createElement('div');
       uMsg.style.cssText = 'align-self:flex-end; max-width:85%; background:rgba(0, 240, 255, 0.15); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px 8px 0 8px; padding:7px 10px; color:#fff;';
       uMsg.innerText = rawText;
       stream.appendChild(uMsg);
 
-      const bMsg = document.createElement('div');
+      var bMsg = document.createElement('div');
       bMsg.style.cssText = 'align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:7px 10px; border-radius:0 8px 8px 0; color:#00f0ff; font-style:italic;';
       bMsg.innerText = 'Calculating orbital trajectory, Sir...';
       stream.appendChild(bMsg);
       stream.scrollTop = stream.scrollHeight;
 
-      // Check space intelligence catalog
-      let answer = resolveSpaceIntel(rawText);
-      let telemetryData = null;
+      var answer = resolveSpaceIntel(rawText);
+      var telemetryData = null;
+      var q = rawText.toLowerCase();
 
-      const q = rawText.toLowerCase();
-
-      // Attach Telemetry Data Card if satellite detected
-      if (q.includes('iss') || q.includes('space station')) {
+      if (q.indexOf('iss') !== -1 || q.indexOf('space station') !== -1) {
         telemetryData = { name: 'ISS (ZARYA)', norad: '25544', orbit: 'LEO', alt: '418.4 km', vel: '27,600 km/h', inc: '51.64°' };
         if (window.GodsEyeController) window.GodsEyeController.focusSatellite('ISS');
-      } else if (q.includes('adtiya') || q.includes('aditya')) {
+      } else if (q.indexOf('adtiya') !== -1 || q.indexOf('aditya') !== -1) {
         telemetryData = { name: 'ADITYA-L1', norad: '57721', orbit: 'Halo (Sun-Earth L1)', alt: '1,500,000 km', vel: '~1.0 km/s', inc: 'Solar Ecliptic' };
-      } else if (q.includes('eos-06') || q.includes('oceansat')) {
+      } else if (q.indexOf('eos-06') !== -1 || q.indexOf('oceansat') !== -1) {
         telemetryData = { name: 'EOS-06 (OCEANSAT-3)', norad: '54361', orbit: 'SSO Polar', alt: '742.0 km', vel: '26,890 km/h', inc: '98.34°' };
         if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-06');
-      } else if (q.includes('eos-04') || q.includes('risat')) {
+      } else if (q.indexOf('eos-04') !== -1 || q.indexOf('risat') !== -1) {
         telemetryData = { name: 'EOS-04 (RISAT-1A)', norad: '51656', orbit: 'SSO Polar', alt: '529.0 km', vel: '27,320 km/h', inc: '97.60°' };
         if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-04');
-      } else if (q.includes('cartosat')) {
+      } else if (q.indexOf('cartosat') !== -1) {
         telemetryData = { name: 'CARTOSAT-3', norad: '44804', orbit: 'SSO Polar', alt: '505.0 km', vel: '27,450 km/h', inc: '97.50°' };
         if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Cartosat-3');
-      } else if (q.includes('hubble')) {
+      } else if (q.indexOf('hubble') !== -1) {
         telemetryData = { name: 'HUBBLE SPACE TELESCOPE', norad: '20580', orbit: 'LEO', alt: '535.0 km', vel: '27,300 km/h', inc: '28.47°' };
         if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Hubble');
       }
 
-      // Check camera presets
-      if (q.includes('reset') || q.includes('global view')) {
-        if (window.GodsEyeController) window.GodsEyeController.setPreset('GLOBAL');
-        answer = "Resetting 3D orbital perspective to global overview, Sir.";
-      } else if (q.includes('leo view') || q.includes('horizon')) {
-        if (window.GodsEyeController) window.GodsEyeController.setPreset('LEO');
-        answer = "Aligning camera with Low Earth Orbit horizon parameters, Sir.";
-      }
-
-      // If not resolved locally, query backend route
       if (!answer) {
         try {
-          const res = await fetch('/api/ai/chat', {
+          var res = await fetch('/api/ai/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: rawText, lastSubject: jarvisState.lastObj })
           });
           if (res.ok) {
-            const data = await res.json();
+            var data = await res.json();
             answer = data.reply;
           }
         } catch (_) {}
       }
 
       if (!answer) {
-        answer = "Sensors operational, Sir. Orbital tracks and space telemetry are synchronized across all monitoring stations.";
+        answer = "Sensors operational, Sir. All orbital downlinks reporting nominal status across target sectors.";
       }
 
       bMsg.style.fontStyle = 'normal';
       bMsg.style.color = '#cbd5e1';
-      bMsg.innerHTML = `<div>${answer}</div>` + (telemetryData ? createTelemetryCard(telemetryData) : '');
-
+      bMsg.innerHTML = '<div>' + answer + '</div>' + (telemetryData ? createTelemetryCard(telemetryData) : '');
       jarvisSay(answer);
 
-      // Redirect actions
-      if (q.includes('pass') || q.includes('pune')) {
-        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2600);
-      } else if (q.includes('sentinel') || q.includes('debris') || q.includes('collision')) {
-        if (!window.location.pathname.includes('sentinel')) setTimeout(() => window.location.href = '/sentinel', 2200);
+      if (q.indexOf('pass') !== -1 || q.indexOf('pune') !== -1) {
+        if (window.location.pathname.indexOf('orbitalert') === -1) {
+          setTimeout(function() { window.location.href = 'orbitalert.html'; }, 2600);
+        }
       }
-
       stream.scrollTop = stream.scrollHeight;
-    }
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     }
   </script>
 <footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; z-index:9000; display:flex; align-items:center; justify-content:center; padding:6px 16px; background:rgba(3, 7, 18, 0.75); backdrop-filter:blur(8px); border-top:1px solid rgba(6, 182, 212, 0.2); font-family:monospace; font-size:11px; letter-spacing:0.12em; color:#94a3b8; pointer-events:none; user-select:none;">
     <span>ENGINEERED BY: <strong style="color:#38bdf8; font-weight:700;">MR. SINGH</strong></span>
-  </footer>  <!-- Universal J.A.R.V.I.S. Orbital AI Core -->`n
-  <!-- J.A.R.V.I.S. Arc Reactor HUD & Intelligence Engine -->`n
-  <!-- Universal J.A.R.V.I.S. Tactical AI Core -->`n
+  </footer>  <!-- Universal J.A.R.V.I.S. Orbital AI Core -->
+  <!-- J.A.R.V.I.S. Arc Reactor HUD & Intelligence Engine -->
+  <!-- Universal J.A.R.V.I.S. Tactical AI Core -->
+<footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">ENGINEERED BY: MR. SINGH</footer>
 </body>
 </html>
+
+
+
+
 
 
 

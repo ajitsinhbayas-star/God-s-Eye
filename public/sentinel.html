@@ -516,9 +516,9 @@
             connectSentinelWebSocket();
         };
     </script>
-  <!-- Universal J.A.R.V.I.S. Orbital AI Core -->`n
-  <!-- J.A.R.V.I.S. Arc Reactor HUD & Intelligence Engine -->`n
-  <!-- Universal J.A.R.V.I.S. Tactical AI Core -->`n
+  <!-- Universal J.A.R.V.I.S. Orbital AI Core -->
+  <!-- J.A.R.V.I.S. Arc Reactor HUD & Intelligence Engine -->
+  <!-- Universal J.A.R.V.I.S. Tactical AI Core -->
   <!-- ==================== J.A.R.V.I.S. VIBRANIUM ARC REACTOR HUD ==================== -->
   <style>
     @keyframes arc-spin-cw { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -831,7 +831,7 @@
           </div>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
             <button onclick="window.GodsEyeController.focusSatellite(\'${data.name}\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>
-            <button onclick="window.location.href='/orbitalert'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
+            <button onclick="window.location.href='orbitalert.html'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>
           </div>
         </div>
       `;
@@ -920,9 +920,9 @@
 
       // Redirect actions
       if (q.includes('pass') || q.includes('pune')) {
-        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = '/orbitalert', 2600);
+        if (!window.location.pathname.includes('orbitalert')) setTimeout(() => window.location.href = window.location.protocol === 'file:' ? 'orbitalert.html' : '/orbitalert', 2600);
       } else if (q.includes('sentinel') || q.includes('debris') || q.includes('collision')) {
-        if (!window.location.pathname.includes('sentinel')) setTimeout(() => window.location.href = '/sentinel', 2200);
+        if (!window.location.pathname.includes('sentinel')) setTimeout(() => window.location.href = window.location.protocol === 'file:' ? 'sentinel.html' : '/sentinel', 2200);
       }
 
       stream.scrollTop = stream.scrollHeight;
@@ -932,8 +932,13 @@
       window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     }
   </script>
+<footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">ENGINEERED BY: MR. SINGH</footer>
 </body>
 </html>
+
+
+
+
 
 
 
