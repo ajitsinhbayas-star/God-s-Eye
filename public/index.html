@@ -1099,75 +1099,39 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
   </aside>
 
-  <!-- Unified Professional Bottom Mission Dock -->
-  <div id="dock-bar" class="dock-safe absolute left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl hud-glass pointer-events-auto max-w-[calc(100vw-1.5rem)] overflow-x-auto scroll-container font-mono text-xs">
-    
-    <!-- 1. Temporal Controls -->
-    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 shrink-0">
-      <button onclick="toggleSimulationPlayPause()" id="btn-sim-play" title="Play / Pause Orbital Clock" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+  <!-- Unified NASA Eyes Curved Bottom HUD Bar (Exact Match to NASA Eyes on Solar System) -->
+  <div id="dock-bar" class="dock-safe absolute left-1/2 -translate-x-1/2 z-30 flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2 rounded-full hud-glass pointer-events-auto border border-slate-800/90 shadow-2xl backdrop-blur-xl font-mono text-xs max-w-[calc(100vw-1.5rem)]">
+    <!-- Left: LIVE Indicator -->
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="resetToLiveTime()" id="btn-sim-live" class="flex items-center gap-2 text-emerald-400 font-bold hover:text-emerald-300 transition" title="Snap to Live Real-Time UTC">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs sm:text-sm tracking-wide font-sans">● LIVE</span>
+      </button>
+    </div>
+
+    <!-- Center: Date, Real Rate Multiplier & Live Time with Curved Timeline Arc -->
+    <div class="flex flex-col items-center justify-center shrink-0 min-w-[200px] sm:min-w-[280px]">
+      <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
+        <span id="nasa-hud-date" class="font-bold text-white tracking-wider">OCT 28, 2026</span>
+        <span id="nasa-hud-rate" class="text-emerald-400 font-bold uppercase tracking-wider">REAL RATE</span>
+        <span id="nasa-hud-time" class="text-slate-300 font-mono">05:56:38 PM</span>
+      </div>
+      <!-- Curved timeline scrub track with glowing green handle -->
+      <div class="relative w-full max-w-[220px] sm:max-w-[260px] flex items-center justify-center mt-0.5">
+        <input id="time-scrubber-slider" type="range" min="-1440" max="1440" value="0" step="1" oninput="scrubSimulationTime(this.value)" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400" title="Scrub Timeline (-24h to +24h)">
+      </div>
+    </div>
+
+    <!-- Right: Play/Pause, Top-Down Ecliptic View & Settings -->
+    <div class="flex items-center gap-1.5 shrink-0 text-[10px]">
+      <button onclick="toggleSimulationPlayPause()" id="btn-sim-play" class="p-1 px-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-400 text-cyan-300 transition" title="Play / Pause Orbital Clock">
         ⏸
       </button>
-      <button onclick="resetToLiveTime()" id="btn-sim-live" title="Snap to Real-Time UTC" class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold flex items-center gap-1">
-        <span id="live-dot-indicator" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-        <span>LIVE</span>
-      </button>
-    </div>
-
-    <!-- Temporal Scrubber (-24h to +24h) -->
-    <div class="hidden lg:flex items-center gap-2 bg-slate-950/80 border border-slate-800 rounded-xl px-2.5 py-1 text-[10px] shrink-0">
-      <span class="text-slate-500">-24h</span>
-      <input id="time-scrubber-slider" type="range" min="-1440" max="1440" value="0" step="1" oninput="scrubSimulationTime(this.value)" class="w-24 lg:w-32 accent-cyan-400 cursor-pointer" title="Scrub -24h to +24h">
-      <span id="scrubber-offset-label" class="text-cyan-300 font-bold w-12 text-right">+0.0h</span>
-    </div>
-
-    <!-- Warp Speed Multipliers -->
-    <div class="hidden md:flex items-center gap-0.5 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[10px] shrink-0">
-      <span class="text-slate-400 px-1">WARP:</span>
-      <button onclick="setTimeScale(1)" id="btn-scale-1" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">1x</button>
-      <button onclick="setTimeScale(10)" id="btn-scale-10" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">10x</button>
-      <button onclick="setTimeScale(100)" id="btn-scale-100" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">100x</button>
-      <button onclick="setTimeScale(1000)" id="btn-scale-1000" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">1000x</button>
-    </div>
-
-        <!-- 1B. NASA Eyes Quick Perspectives -->
-    <div class="hidden sm:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 shrink-0 text-[10px]">
-      <button onclick="setCosmicTier(2); targetCameraDistance = 140.0; targetCameraPhi = 1.55; targetCameraTheta = 0.0;" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold transition" title="Top-Down Ecliptic Polar View">
+      <button onclick="setCosmicTier(2); targetCameraDistance = 135.0; targetCameraPhi = 1.55; targetCameraTheta = 0.0;" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 transition font-bold" title="Top-Down Polar Ecliptic View">
         🔭 Top-Down
       </button>
-      <button onclick="setCosmicTier(2); targetCameraDistance = 55.0; targetCameraPhi = 0.45; targetCameraTheta = 0.75;" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold transition" title="Inner Planets & Asteroid Belt">
-        ☀️ Inner
-      </button>
-      <button onclick="setCosmicTier(2); targetCameraDistance = 180.0; targetCameraPhi = 0.38; targetCameraTheta = 0.85;" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-purple-300 font-bold transition" title="Outer Gas Giants & Kuiper Belt">
-        🪐 Outer
-      </button>
-    </div>
-    <!-- 2. NASA Eyes Suite (Stories, Layers, Date, Embed) -->
-    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 shrink-0">
-      <button onclick="window.NASAEyesApp.toggleStoriesDrawer()" class="px-2 py-1 rounded-lg text-amber-300 hover:bg-amber-500/15 transition" title="Featured Stories">
-        📖 Stories
-      </button>
-      <button onclick="window.NASAEyesApp.toggleLayersDrawer()" class="px-2 py-1 rounded-lg text-cyan-300 hover:bg-cyan-500/15 transition" title="Layers & Lighting">
-        ⚙️ Layers
-      </button>
-      <button onclick="window.NASAEyesApp.openDatePickerModal()" class="px-2 py-1 rounded-lg text-emerald-300 hover:bg-emerald-500/15 transition" title="Epoch & Rate">
-        📅 Date
-      </button>
-      <button id="btn-nasa-share" onclick="window.NASAEyesApp.openEmbedModal()" class="px-2 py-1 rounded-lg text-purple-300 hover:bg-purple-500/15 transition" title="Share / Embed">
-        🔗 Share
-      </button>
-</div>
-
-    <!-- 3. Gizmo & Cinematic Controls -->
-    <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 shrink-0">
-      <button onclick="toggleXYZCoordinateGizmo()" id="btn-toggle-xyz" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1 font-bold">
-        <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span><span>XYZ</span>
-      </button>
-      <button onclick="startCinematicDriftExperience()" id="btn-cinematic-cam" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1">
-        <span class="w-1.5 h-1.5 rounded-full bg-slate-500" id="dot-cinematic"></span>
-        <span id="txt-cinematic">Drift</span>
-      </button>
-      <button onclick="toggleFullscreen()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Fullscreen">
-        ⛶
+      <button onclick="window.NASAEyesApp.toggleLayersDrawer()" class="p-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 transition" title="Layers & Visual Settings">
+        ⚙️
       </button>
     </div>
   </div>
@@ -1604,7 +1568,7 @@ let activeIntroBlobUrl = null;
     };
   
     const CELESTIAL_BODIES = {
-      sun: { name: "The Sun (Sol)", type: "G2V Star", a: 0, e: 0, I: 0, L0: 0, Lrate: 0, w: 0, node: 0, baseDist: 0, radius: 3.2, color: 0xfbbf24, rotPeriod: 609.1, tilt: 7.25, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
+      sun: { name: "The Sun (Sol)", type: "G2V Star", a: 0, e: 0, I: 0, L0: 0, Lrate: 0, w: 0, node: 0, baseDist: 0, radius: 1.1, color: 0xfbbf24, rotPeriod: 609.1, tilt: 7.25, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", a: 0.387098, e: 0.205630, I: 7.005, L0: 252.25, Lrate: 4.0923344, w: 77.456, node: 48.331, baseDist: 8.5, radius: 0.70, color: 0x94a3b8, rotPeriod: 1407.6, tilt: 0.034, desc: "0.39 AU • Rocky Core • Highly Eccentric Orbit", wikiKey: "Mercury_(planet)" },
       venus: { name: "Venus", type: "Terrestrial Planet", a: 0.723332, e: 0.006773, I: 3.395, L0: 181.98, Lrate: 1.6021305, w: 131.53, node: 76.680, baseDist: 13.5, radius: 1.45, color: 0xfde047, rotPeriod: -5832.5, tilt: 177.36, desc: "0.72 AU • Acid Clouds • Retrograde Axial Spin", wikiKey: "Venus" },
       earth: { name: "Earth (Terra)", type: "Terrestrial Planet", a: 1.000000, e: 0.016709, I: 0.000, L0: 100.46, Lrate: 0.9856091, w: 102.94, node: 0.0, baseDist: 20.0, radius: 1.85, color: 0x38bdf8, rotPeriod: 23.934, tilt: 23.44, desc: "1.00 AU • Home World • 23.44° Obliquity", wikiKey: "Earth" },
@@ -1903,14 +1867,39 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
 
     const clickableMeshes = [];
 
-    // The Sun
-    const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius, 32, 32), new THREE.MeshBasicMaterial({ color: 0xfffbeb }));
+    // The Sun (NASA Eyes Luminous Golden Star with Additive Corona Bloom)
+    const sunMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xfffef0 })
+    );
     scene.add(sunMesh);
 
-    const coronaMesh = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius + 0.65, 32, 32), new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.4 }));
-    sunMesh.add(coronaMesh);
+    // Soft Radiating Corona Bloom (Additive Billboard Sprite - No dark rings!)
+    const sunGlowCanvas = document.createElement('canvas');
+    sunGlowCanvas.width = 256; sunGlowCanvas.height = 256;
+    const sunGlowCtx = sunGlowCanvas.getContext('2d');
+    const sGrad = sunGlowCtx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    sGrad.addColorStop(0.00, 'rgba(255, 255, 255, 1.0)');
+    sGrad.addColorStop(0.12, 'rgba(254, 240, 138, 0.95)');
+    sGrad.addColorStop(0.35, 'rgba(245, 158, 11, 0.60)');
+    sGrad.addColorStop(0.65, 'rgba(234, 88, 12, 0.20)');
+    sGrad.addColorStop(1.00, 'rgba(0, 0, 0, 0.0)');
+    sunGlowCtx.fillStyle = sGrad;
+    sunGlowCtx.fillRect(0, 0, 256, 256);
 
-    const sunHit = new THREE.Mesh(new THREE.SphereGeometry(CELESTIAL_BODIES.sun.radius * 1.5, 12, 12), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+    const sunGlowMat = new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(sunGlowCanvas),
+      color: 0xffffff,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const sunGlowSprite = new THREE.Sprite(sunGlowMat);
+    sunGlowSprite.scale.set(12.5, 12.5, 1.0);
+    sunMesh.add(sunGlowSprite);
+    const coronaMesh = sunGlowSprite;
+
+    const sunHit = new THREE.Mesh(new THREE.SphereGeometry(2.5, 12, 12), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
     sunHit.userData = { targetKey: 'sun' };
     sunMesh.add(sunHit);
     clickableMeshes.push(sunHit);
@@ -2534,419 +2523,288 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     Object.keys(CELESTIAL_BODIES).forEach(k => buildPlanet(k, CELESTIAL_BODIES[k]));
 
     // =========================================================================
-    // NASA EYES ON THE SOLAR SYSTEM - ADVANCED 3D VISUALIZATION ENGINE
+    // NASA EYES ON THE SOLAR SYSTEM - EXACT REPLICATION ENGINE
     // =========================================================================
     const nasaSolarSystemGroup = new THREE.Group();
     scene.add(nasaSolarSystemGroup);
 
-    let asteroidBeltPoints = null;
-    let kuiperBeltPoints = null;
-    let trojanL4Points = null;
-    let trojanL5Points = null;
-    let habitableZoneMesh = null;
-    let distanceRingsGroup = null;
-    let solarWindParticles = null;
-    let interplanetaryTrailsGroup = null;
+    // 1. NASA EYES SMALL BODIES CATALOG (Asteroids, Comets & Solar Probes from Image 2)
+    const NASA_SMALL_BODIES = [
+      { id: 'bennu', name: 'Bennu', a: 1.126, e: 0.204, I: 6.03, color: 0x94a3b8, type: 'Near-Earth Asteroid (B-type)', desc: 'Sampled by OSIRIS-REx; rich in carbon and water-bearing minerals.' },
+      { id: 'ryugu', name: 'Ryugu', a: 1.190, e: 0.190, I: 5.88, color: 0x94a3b8, type: 'Near-Earth Asteroid (C-type)', desc: 'Sampled by JAXA Hayabusa2; primitive carbonaceous rubble pile.' },
+      { id: 'psyche', name: '16 Psyche', a: 2.924, e: 0.134, I: 3.10, color: 0xcbd5e1, type: 'Metallic Main Belt Asteroid', desc: 'Target of NASA Psyche orbiter; exposed nickel-iron protoplanetary core.' },
+      { id: 'eros', name: 'Eros', a: 1.458, e: 0.223, I: 10.83, color: 0x94a3b8, type: 'Near-Earth Asteroid (S-type)', desc: 'First asteroid orbited and landed on by NEAR Shoemaker (2001).' },
+      { id: 'ceres', name: 'Ceres', a: 2.767, e: 0.076, I: 10.59, color: 0xe2e8f0, type: 'Dwarf Planet / King of Asteroid Belt', desc: 'Largest asteroid belt body; contains water ice mantle & Ahuna Mons volcano.' },
+      { id: 'vesta', name: 'Vesta', a: 2.362, e: 0.089, I: 7.14, color: 0xd1d5db, type: 'Differentiated Asteroid', desc: 'Second largest asteroid in belt; huge south pole impact crater Rheasilvia.' },
+      { id: 'pallas', name: 'Pallas', a: 2.772, e: 0.231, I: 34.84, color: 0xa1a1aa, type: 'High-Inclination Asteroid', desc: 'Third largest asteroid; highly tilted 34.8° orbit.' },
+      { id: 'juno_ast', name: 'Juno', a: 2.670, e: 0.258, I: 12.97, color: 0x94a3b8, type: 'Main Belt Asteroid', desc: 'Third asteroid ever discovered (1804 by Karl Harding).' },
+      { id: 'dinkinesh', name: 'Dinkinesh', a: 2.191, e: 0.111, I: 2.11, color: 0x94a3b8, type: 'Main Belt Binary Asteroid', desc: 'Flyby target of NASA Lucy mission; discovered binary satellite Selam.' },
+      { id: 'donaldjohanson', name: 'Donaldjohanson', a: 2.384, e: 0.187, I: 4.42, color: 0x94a3b8, type: 'C-type Asteroid', desc: 'Named after Lucy fossil discoverer; visited by Lucy mission in 2025.' },
+      { id: 'ida', name: 'Ida', a: 2.861, e: 0.046, I: 1.14, color: 0x94a3b8, type: 'Koronis Family Asteroid', desc: 'Imaged by Galileo (1993); first asteroid found to have a moon (Dactyl).' },
+      { id: 'gaspra', name: 'Gaspra', a: 2.210, e: 0.173, I: 4.11, color: 0x94a3b8, type: 'S-type Asteroid', desc: 'First asteroid closely imaged by a spacecraft (Galileo, 1991).' },
+      { id: 'mathilde', name: 'Mathilde', a: 2.647, e: 0.266, I: 6.74, color: 0x71717a, type: 'Very Dark C-type Asteroid', desc: 'Low density rubble pile asteroid imaged by NEAR Shoemaker.' },
+      { id: 'steins', name: 'Steins', a: 2.364, e: 0.146, I: 9.94, color: 0x94a3b8, type: 'Diamond-shaped Asteroid', desc: 'Diamond-shaped E-type asteroid visited by ESA Rosetta (2008).' },
+      { id: 'florence', name: 'Florence', a: 1.769, e: 0.423, I: 22.15, color: 0x94a3b8, type: 'Potentially Hazardous Asteroid', desc: '4.5 km tri-lobed near-Earth asteroid with two orbiting moons.' },
+      { id: 'bacchus', name: 'Bacchus', a: 1.078, e: 0.349, I: 9.43, color: 0x94a3b8, type: 'Apollo Asteroid', desc: 'Near-Earth asteroid with optical & radar shape models.' },
+      { id: 'apollo', name: 'Apollo', a: 1.470, e: 0.560, I: 6.35, color: 0x94a3b8, type: 'Prototype Earth-Crossing Asteroid', desc: 'Namesake of the Apollo group of Earth-crossing asteroids.' },
+      { id: 'zephyr', name: 'Zephyr', a: 1.756, e: 0.492, I: 5.30, color: 0x94a3b8, type: 'Apollo Asteroid', desc: 'Mars-crossing and Earth-crossing near-Earth object.' },
+      { id: 'phaethon', name: 'Phaethon', a: 1.271, e: 0.890, I: 22.25, color: 0x94a3b8, type: 'Rock Comet / Geminids Parent', desc: 'Extreme perihelion inside Mercury orbit; parent of Geminid meteor shower.' },
+      { id: 'geographos', name: 'Geographos', a: 1.246, e: 0.335, I: 13.34, color: 0x94a3b8, type: 'Elongated Apollo Asteroid', desc: 'Highly elongated asteroid observed by Goldstone radar.' },
+      { id: 'kleopatra', name: 'Kleopatra', a: 2.793, e: 0.252, I: 13.13, color: 0x94a3b8, type: 'Dog-Bone Metal Asteroid', desc: 'Distinct dog-bone shaped metallic binary with two moons.' },
+      { id: 'lutetia', name: 'Lutetia', a: 2.435, e: 0.163, I: 3.06, color: 0x94a3b8, type: 'Large M-type Asteroid', desc: 'High density 100-km asteroid imaged by ESA Rosetta (2010).' },
+      { id: 'tantalus', name: 'Tantalus', a: 1.290, e: 0.298, I: 64.01, color: 0x94a3b8, type: 'High-Inclination Apollo Asteroid', desc: 'Near-Earth asteroid with extraordinary 64.0° orbital inclination.' },
+      { id: 'tempel1', name: 'Tempel 1', a: 3.120, e: 0.517, I: 10.53, color: 0x38bdf8, type: 'Jupiter-Family Comet (9P)', desc: 'Target of NASA Deep Impact (2005) and Stardust-NExT (2011).' },
+      { id: 'khufu', name: 'Khufu', a: 0.989, e: 0.469, I: 9.91, color: 0x94a3b8, type: 'Aten Asteroid', desc: 'Earth-crossing Aten asteroid with semi-major axis under 1 AU.' },
+      { id: 'pan', name: 'Pan', a: 1.442, e: 0.418, I: 10.23, color: 0x94a3b8, type: 'Apollo Asteroid', desc: 'Named after the Greek god of nature; Earth-crossing trajectory.' },
+      { id: 'adonis', name: 'Adonis', a: 1.875, e: 0.764, I: 1.34, color: 0x94a3b8, type: 'Apollo Asteroid', desc: 'Early discovered Earth-approaching asteroid (1936 by Delporte).' },
+      { id: 'sedna', name: 'Sedna', a: 506.0, e: 0.850, I: 11.93, color: 0xa855f7, type: 'Extreme Trans-Neptunian Object', desc: 'Detached trans-Neptunian dwarf planet with 11,400-year orbit.' },
+      // NASA Mission Probes from Image 2
+      { id: 'parker_solar', name: 'Parker Solar Probe', a: 0.70, e: 0.85, I: 3.4, color: 0xef4444, type: 'Solar Coronal Probe', desc: 'Fastest human-made spacecraft; dives within 6 million km of the Sun.' },
+      { id: 'stereo_ahead', name: 'STEREO Ahead', a: 0.96, e: 0.01, I: 0.1, color: 0x38bdf8, type: 'Solar Terrestrial Relations Observatory', desc: 'Heliospheric observatory preceding Earth in orbit around Sol.' },
+      { id: 'biosentinel', name: 'BioSentinel', a: 0.98, e: 0.05, I: 0.2, color: 0x10b981, type: 'Deep Space Biosensor CubeSat', desc: 'Artemis I secondary payload measuring deep-space radiation on yeast cells.' }
+    ];
 
-    // 1. MAIN ASTEROID BELT (Between Mars ~2.2 AU and Jupiter ~3.2 AU)
-    function buildMainAsteroidBelt() {
-      const count = 3200;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(count * 3);
-      const cols = new Float32Array(count * 3);
-      const orbitData = [];
+    const smallBodyMeshes = {};
+    const smallBodyLabels = [];
 
-      const cRock1 = new THREE.Color(0xa1a1aa);
-      const cRock2 = new THREE.Color(0x71717a);
-      const cAmber = new THREE.Color(0xd97706);
-
-      for (let i = 0; i < count; i++) {
-        let r = 31.0 + Math.pow(Math.random(), 0.85) * 8.2;
-        if (r > 33.8 && r < 34.4 && Math.random() > 0.15) r += 0.8; // Kirkwood gap simulation
-
-        const theta = Math.random() * Math.PI * 2;
-        const inc = (Math.random() - 0.5) * 0.28;
-        const y = Math.sin(theta) * r * Math.sin(inc) + (Math.random() - 0.5) * 0.8;
-        const x = Math.cos(theta) * r;
-        const z = Math.sin(theta) * r;
-
-        pos[i * 3] = x;
-        pos[i * 3 + 1] = y;
-        pos[i * 3 + 2] = z;
-
-        const mixCol = Math.random() > 0.85 ? cAmber : (Math.random() > 0.5 ? cRock1 : cRock2);
-        cols[i * 3] = mixCol.r;
-        cols[i * 3 + 1] = mixCol.g;
-        cols[i * 3 + 2] = mixCol.b;
-
-        const angVel = 0.00035 * Math.pow(35.0 / r, 1.5);
-        orbitData.push({ r, theta, inc, angVel });
-      }
-
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-
-      const mat = new THREE.PointsMaterial({
-        size: 1.8,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        depthWrite: false
-      });
-
-      asteroidBeltPoints = new THREE.Points(geo, mat);
-      asteroidBeltPoints.userData = { orbitData };
-      nasaSolarSystemGroup.add(asteroidBeltPoints);
-    }
-
-    // 2. JUPITER TROJAN ASTEROIDS (Lagrange Points L4 & L5 at +60° and -60°)
-    function buildJupiterTrojans() {
-      const trojanGroup = new THREE.Group();
-      nasaSolarSystemGroup.add(trojanGroup);
-
-      function createTrojanSwarm(lagrangeOffsetAngle, colorHex) {
-        const count = 450;
-        const geo = new THREE.BufferGeometry();
-        const pos = new Float32Array(count * 3);
-        const offsets = [];
-
-        for (let i = 0; i < count; i++) {
-          const radialDist = 42.0 + (Math.random() - 0.5) * 4.5;
-          const angSpread = (Math.random() - 0.5) * 0.38;
-          const y = (Math.random() - 0.5) * 2.8;
-
-          pos[i * 3] = 0;
-          pos[i * 3 + 1] = y;
-          pos[i * 3 + 2] = 0;
-          offsets.push({ radialDist, angSpread, y });
-        }
-
-        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const mat = new THREE.PointsMaterial({
-          color: colorHex,
-          size: 2.2,
-          transparent: true,
-          opacity: 0.85,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false
-        });
-
-        const swarm = new THREE.Points(geo, mat);
-        swarm.userData = { lagrangeOffsetAngle, offsets };
-        trojanGroup.add(swarm);
-        return swarm;
-      }
-
-      trojanL4Points = createTrojanSwarm(Math.PI / 3, 0x38bdf8);
-      trojanL5Points = createTrojanSwarm(-Math.PI / 3, 0xf59e0b);
-    }
-
-    // 3. KUIPER BELT (Beyond Neptune from 81.0 to 125.0 visual units, ~30 to ~55 AU)
-    function buildKuiperBelt() {
-      const count = 3500;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(count * 3);
-      const cols = new Float32Array(count * 3);
-      const orbitData = [];
-
-      const cIce1 = new THREE.Color(0x38bdf8);
-      const cIce2 = new THREE.Color(0xa855f7);
-      const cIce3 = new THREE.Color(0xe0e7ff);
-
-      for (let i = 0; i < count; i++) {
-        const r = 81.0 + Math.pow(Math.random(), 0.9) * 44.0;
-        const theta = Math.random() * Math.PI * 2;
-        const inc = (Math.random() - 0.5) * 0.42;
-        const y = Math.sin(theta) * r * Math.sin(inc) + (Math.random() - 0.5) * 2.5;
-
-        pos[i * 3] = Math.cos(theta) * r;
-        pos[i * 3 + 1] = y;
-        pos[i * 3 + 2] = Math.sin(theta) * r;
-
-        const mix = Math.random() > 0.7 ? cIce1 : (Math.random() > 0.4 ? cIce2 : cIce3);
-        cols[i * 3] = mix.r;
-        cols[i * 3 + 1] = mix.g;
-        cols[i * 3 + 2] = mix.b;
-
-        const angVel = 0.00008 * Math.pow(90.0 / r, 1.5);
-        orbitData.push({ r, theta, inc, angVel });
-      }
-
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-
-      const mat = new THREE.PointsMaterial({
-        size: 2.0,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.75,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-
-      kuiperBeltPoints = new THREE.Points(geo, mat);
-      kuiperBeltPoints.userData = { orbitData };
-      nasaSolarSystemGroup.add(kuiperBeltPoints);
-    }
-
-    // 4. HABITABLE ZONE (Goldilocks Zone from ~0.95 AU to ~1.67 AU around Sol)
-    function buildHabitableZone() {
-      const innerR = 19.0;
-      const outerR = 30.5;
-      const segs = 96;
-
-      const c = document.createElement('canvas');
-      c.width = 512; c.height = 1;
-      const ctx = c.getContext('2d');
-      const grad = ctx.createLinearGradient(0, 0, 512, 0);
-      grad.addColorStop(0.00, 'rgba(16, 185, 129, 0)');
-      grad.addColorStop(0.15, 'rgba(16, 185, 129, 0.18)');
-      grad.addColorStop(0.45, 'rgba(52, 211, 153, 0.32)');
-      grad.addColorStop(0.75, 'rgba(6, 182, 212, 0.22)');
-      grad.addColorStop(1.00, 'rgba(6, 182, 212, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 512, 1);
-
-      const tex = new THREE.CanvasTexture(c);
-      const ringGeo = new THREE.RingGeometry(innerR, outerR, segs);
-      const pos = ringGeo.attributes.position;
-      const uvs = ringGeo.attributes.uv;
-
-      for (let i = 0; i < pos.count; i++) {
-        const x = pos.getX(i);
-        const y = pos.getY(i);
-        const dist = Math.sqrt(x * x + y * y);
-        const u = (dist - innerR) / (outerR - innerR);
-        uvs.setXY(i, u, 0.5);
-      }
-      uvs.needsUpdate = true;
-
+    function buildNASAExactSmallBodies() {
+      const ringGeo = new THREE.RingGeometry(0.24, 0.36, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        map: tex,
+        color: 0x94a3b8,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.65,
-        blending: THREE.AdditiveBlending,
+        opacity: 0.75,
         depthWrite: false
       });
 
-      habitableZoneMesh = new THREE.Mesh(ringGeo, ringMat);
-      habitableZoneMesh.rotation.x = Math.PI / 2;
-      nasaSolarSystemGroup.add(habitableZoneMesh);
-    }
+      // Label Container in HTML
+      let labelsLayer = document.getElementById('nasa-small-bodies-labels-layer');
+      if (!labelsLayer) {
+        labelsLayer = document.createElement('div');
+        labelsLayer.id = 'nasa-small-bodies-labels-layer';
+        labelsLayer.style.position = 'absolute';
+        labelsLayer.style.inset = '0';
+        labelsLayer.style.pointerEvents = 'none';
+        labelsLayer.style.overflow = 'hidden';
+        labelsLayer.style.zIndex = '25';
+        document.body.appendChild(labelsLayer);
+      }
+      labelsLayer.innerHTML = '';
 
-    // 5. ECLIPTIC DISTANCE RADAR RINGS & AU SCALE LABELS
-    function buildEclipticDistanceRings() {
-      distanceRingsGroup = new THREE.Group();
-      nasaSolarSystemGroup.add(distanceRingsGroup);
+      NASA_SMALL_BODIES.forEach(item => {
+        // Base distance mapping for inner vs outer solar system
+        let distScene = 20.0 * Math.pow(item.a, 0.65);
+        if (item.a > 30.0) distScene = 75.0 + Math.min(25.0, (item.a - 30.0) * 0.15); // Sedna scale clamp
 
-      const rings = [
-        { r: 20.0, label: "1.0 AU (Earth Orbit - 149.6M km)", color: 0x38bdf8 },
-        { r: 35.0, label: "2.8 AU (Asteroid Belt - Ceres)", color: 0xa1a1aa },
-        { r: 42.0, label: "5.2 AU (Jupiter Orbit - 778M km)", color: 0xf59e0b },
-        { r: 55.0, label: "9.5 AU (Saturn Orbit - 1.43B km)", color: 0xfde047 },
-        { r: 68.0, label: "19.2 AU (Uranus Orbit - 2.87B km)", color: 0x67e8f9 },
-        { r: 80.0, label: "30.0 AU (Neptune Orbit - 4.50B km)", color: 0x3b82f6 },
-        { r: 105.0, label: "50.0 AU (Kuiper Belt Boundary)", color: 0xa855f7 },
-        { r: 150.0, label: "100.0 AU (Termination Shock)", color: 0xec4899 }
-      ];
+        const marker = new THREE.Mesh(ringGeo, ringMat.clone());
+        if (item.color) marker.material.color.setHex(item.color);
 
-      rings.forEach(item => {
-        const segs = 128;
-        const linePos = new Float32Array((segs + 1) * 3);
-        for (let i = 0; i <= segs; i++) {
-          const a = (i / segs) * Math.PI * 2;
-          linePos[i * 3] = Math.cos(a) * item.r;
-          linePos[i * 3 + 1] = 0;
-          linePos[i * 3 + 2] = Math.sin(a) * item.r;
-        }
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
-        const mat = new THREE.LineDashedMaterial({
-          color: item.color,
-          dashSize: 1.5,
-          gapSize: 1.0,
-          transparent: true,
-          opacity: 0.35,
-          depthWrite: false
-        });
-        const line = new THREE.Line(geo, mat);
-        line.computeLineDistances();
-        distanceRingsGroup.add(line);
+        // Click hit box
+        const hit = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+        hit.userData = { smallBodyId: item.id };
+        marker.add(hit);
+        clickableMeshes.push(hit);
+
+        nasaSolarSystemGroup.add(marker);
+
+        // HTML Screen Label
+        const el = document.createElement('div');
+        el.className = 'nasa-small-body-label';
+        el.style.position = 'absolute';
+        el.style.transform = 'translate(6px, -50%)';
+        el.style.fontFamily = 'ui-sans-serif, system-ui, sans-serif';
+        el.style.fontSize = '10px';
+        el.style.letterSpacing = '0.02em';
+        el.style.color = item.id.includes('probe') || item.id.includes('stereo') ? '#38bdf8' : '#cbd5e1';
+        el.style.whiteSpace = 'nowrap';
+        el.style.cursor = 'pointer';
+        el.style.pointerEvents = 'auto';
+        el.style.textShadow = '0 1px 4px rgba(0,0,0,0.95)';
+        el.innerText = item.name;
+        el.onclick = () => setFocusToSmallBody(item.id);
+        labelsLayer.appendChild(el);
+
+        smallBodyMeshes[item.id] = { marker, data: item, distScene, angle: Math.random() * Math.PI * 2 };
+        smallBodyLabels.push({ id: item.id, el, marker });
       });
     }
 
-    // 6. DYNAMIC SOLAR WIND PARTICLE STREAM
-    function buildSolarWindStream() {
-      const count = 1200;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(count * 3);
-      const cols = new Float32Array(count * 3);
-      const speeds = [];
+    // 2. CONSTELLATIONS ENGINE (Orion, Canis Minor, Monoceros, Taurus, Gemini as seen in Image 2)
+    let constellationsGroup = null;
+    function buildNASAConstellations() {
+      constellationsGroup = new THREE.Group();
+      nasaSolarSystemGroup.add(constellationsGroup);
 
-      const cCore = new THREE.Color(0xfef08a);
-      const cMid = new THREE.Color(0xf97316);
-      const cOuter = new THREE.Color(0x38bdf8);
-
-      for (let i = 0; i < count; i++) {
-        const theta = Math.random() * Math.PI * 2;
-        const phi = (Math.random() - 0.5) * 0.5;
-        const dist = 3.5 + Math.random() * 95.0;
-
-        pos[i * 3] = Math.cos(theta) * Math.cos(phi) * dist;
-        pos[i * 3 + 1] = Math.sin(phi) * dist;
-        pos[i * 3 + 2] = Math.sin(theta) * Math.cos(phi) * dist;
-
-        const t = Math.min(1.0, dist / 80.0);
-        const col = t < 0.4 ? cCore.clone().lerp(cMid, t / 0.4) : cMid.clone().lerp(cOuter, (t - 0.4) / 0.6);
-        cols[i * 3] = col.r;
-        cols[i * 3 + 1] = col.g;
-        cols[i * 3 + 2] = col.b;
-
-        speeds.push(0.35 + Math.random() * 0.45);
+      const R = 600.0;
+      function radec(raH, decDeg) {
+        const raRad = (raH * 15.0) * (Math.PI / 180);
+        const decRad = decDeg * (Math.PI / 180);
+        return new THREE.Vector3(
+          R * Math.cos(decRad) * Math.cos(raRad),
+          R * Math.sin(decRad),
+          R * Math.cos(decRad) * Math.sin(raRad)
+        );
       }
 
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+      // Constellation Stars
+      const stars = {
+        // Orion
+        betelgeuse: radec(5.92, 7.4),
+        bellatrix: radec(5.42, 6.3),
+        alnitak: radec(5.68, -1.9),
+        alnilam: radec(5.60, -1.2),
+        mintaka: radec(5.53, -0.3),
+        saiph: radec(5.79, -9.7),
+        rigel: radec(5.24, -8.2),
+        // Canis Minor
+        procyon: radec(7.65, 5.2),
+        gomeisa: radec(7.45, 8.3),
+        // Monoceros
+        mono_a: radec(6.48, -7.1),
+        mono_b: radec(6.80, 2.5),
+        mono_c: radec(7.19, -9.5),
+        // Taurus
+        aldebaran: radec(4.60, 16.5),
+        elnath: radec(5.44, 28.6),
+        alcyone: radec(3.79, 24.1),
+        // Gemini
+        pollux: radec(7.76, 28.0),
+        castor: radec(7.58, 31.9),
+        alhena: radec(6.63, 16.4)
+      };
 
-      const mat = new THREE.PointsMaterial({
-        size: 2.2,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.8,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-
-      solarWindParticles = new THREE.Points(geo, mat);
-      solarWindParticles.userData = { speeds };
-      nasaSolarSystemGroup.add(solarWindParticles);
-    }
-
-    // 7. INTERPLANETARY SPACECRAFT TRAJECTORIES (NASA Eyes Signature Paths)
-    function buildInterplanetaryTrajectories() {
-      interplanetaryTrailsGroup = new THREE.Group();
-      nasaSolarSystemGroup.add(interplanetaryTrailsGroup);
-
-      const trajectories = [
-        {
-          id: 'voyager_1',
-          name: 'Voyager 1 (Interstellar Space)',
-          color: 0xfbbf24,
-          generatePoints: () => {
-            const pts = [];
-            const steps = 120;
-            for (let i = 0; i <= steps; i++) {
-              const t = i / steps;
-              const r = 20.0 + Math.pow(t, 1.2) * 145.0;
-              const angle = t * 1.8;
-              const y = t * 75.0;
-              pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-            }
-            return pts;
-          }
-        },
-        {
-          id: 'voyager_2',
-          name: 'Voyager 2 (Interstellar Space)',
-          color: 0x38bdf8,
-          generatePoints: () => {
-            const pts = [];
-            const steps = 120;
-            for (let i = 0; i <= steps; i++) {
-              const t = i / steps;
-              const r = 20.0 + Math.pow(t, 1.2) * 120.0;
-              const angle = -t * 2.2;
-              const y = -t * 85.0;
-              pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-            }
-            return pts;
-          }
-        },
-        {
-          id: 'new_horizons',
-          name: 'New Horizons (Pluto & Kuiper Belt)',
-          color: 0xa855f7,
-          generatePoints: () => {
-            const pts = [];
-            const steps = 100;
-            for (let i = 0; i <= steps; i++) {
-              const t = i / steps;
-              const r = 20.0 + Math.pow(t, 1.1) * 85.0;
-              const angle = 0.8 + t * 1.4;
-              const y = t * 6.5;
-              pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-            }
-            return pts;
-          }
-        },
-        {
-          id: 'parker_solar',
-          name: 'Parker Solar Probe (Corona Diving Loops)',
-          color: 0xef4444,
-          generatePoints: () => {
-            const pts = [];
-            const loops = 4;
-            const stepsPerLoop = 64;
-            for (let loop = 0; loop < loops; loop++) {
-              const peri = 3.6 + loop * 0.4;
-              const apo = 19.5 - loop * 1.8;
-              const a = (peri + apo) / 2;
-              const e = (apo - peri) / (apo + peri);
-              const rotOffset = loop * 0.45;
-              for (let i = 0; i <= stepsPerLoop; i++) {
-                const nu = (i / stepsPerLoop) * Math.PI * 2;
-                const r = (a * (1 - e * e)) / (1 + e * Math.cos(nu));
-                const theta = nu + rotOffset;
-                pts.push(new THREE.Vector3(Math.cos(theta) * r, Math.sin(theta) * 0.8, Math.sin(theta) * r));
-              }
-            }
-            return pts;
-          }
-        },
-        {
-          id: 'europa_clipper',
-          name: 'Europa Clipper (Cruise to Jupiter)',
-          color: 0x22d3ee,
-          generatePoints: () => {
-            const pts = [];
-            const steps = 90;
-            for (let i = 0; i <= steps; i++) {
-              const t = i / steps;
-              const r = 20.0 + t * 22.0;
-              const angle = t * 2.8;
-              const y = Math.sin(t * Math.PI) * 2.2;
-              pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-            }
-            return pts;
-          }
-        }
+      const linePairs = [
+        // Orion Asterism
+        [stars.betelgeuse, stars.bellatrix],
+        [stars.betelgeuse, stars.alnitak],
+        [stars.bellatrix, stars.mintaka],
+        [stars.alnitak, stars.alnilam],
+        [stars.alnilam, stars.mintaka],
+        [stars.alnitak, stars.saiph],
+        [stars.mintaka, stars.rigel],
+        [stars.saiph, stars.rigel],
+        // Canis Minor
+        [stars.procyon, stars.gomeisa],
+        // Monoceros
+        [stars.mono_a, stars.mono_b],
+        [stars.mono_b, stars.mono_c],
+        [stars.mono_b, stars.betelgeuse],
+        // Taurus
+        [stars.aldebaran, stars.elnath],
+        [stars.aldebaran, stars.alcyone],
+        // Gemini
+        [stars.pollux, stars.castor],
+        [stars.pollux, stars.alhena]
       ];
 
-      trajectories.forEach(traj => {
-        const pts = traj.generatePoints();
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        const mat = new THREE.LineBasicMaterial({
-          color: traj.color,
-          transparent: true,
-          opacity: 0.65,
-          linewidth: 2,
-          depthWrite: false
-        });
-        const line = new THREE.Line(geo, mat);
-        line.userData = { id: traj.id, name: traj.name };
-        interplanetaryTrailsGroup.add(line);
+      const lineGeo = new THREE.BufferGeometry();
+      const linePos = [];
+      linePairs.forEach(pair => {
+        linePos.push(pair[0].x, pair[0].y, pair[0].z);
+        linePos.push(pair[1].x, pair[1].y, pair[1].z);
       });
+      lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
+
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x0284c7,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false
+      });
+      const linesMesh = new THREE.LineSegments(lineGeo, lineMat);
+      constellationsGroup.add(linesMesh);
+
+      // Star Point Nodes
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = [];
+      Object.keys(stars).forEach(k => {
+        starPos.push(stars[k].x, stars[k].y, stars[k].z);
+      });
+      starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+      const starPoints = new THREE.Points(starGeo, new THREE.PointsMaterial({
+        color: 0x93c5fd,
+        size: 2.8,
+        transparent: true,
+        opacity: 0.85
+      }));
+      constellationsGroup.add(starPoints);
+    }
+
+    function setFocusToSmallBody(id) {
+      const obj = smallBodyMeshes[id];
+      if (!obj) return;
+      activeTargetKey = id;
+      window.activeCosmicTier = 2;
+
+      obj.marker.getWorldPosition(focusWorldPos);
+      cameraTarget.copy(focusWorldPos);
+      targetCameraDistance = 3.5;
+      targetCameraPhi = 0.35;
+      targetCameraTheta = 0.78;
+
+      updateUniversalDossier('small_body', id, focusWorldPos);
+      updateSEOMetadata(obj.data.name, 'Small Solar System Body');
     }
 
     function buildNASASolarSystemFeatures() {
-      buildMainAsteroidBelt();
-      buildJupiterTrojans();
-      buildKuiperBelt();
-      buildHabitableZone();
-      buildEclipticDistanceRings();
-      buildSolarWindStream();
-      buildInterplanetaryTrajectories();
+      buildNASAExactSmallBodies();
+      buildNASAConstellations();
+    }
+
+    function updateNASASolarSystemAnimation(deltaRealMs, timeScale, astro) {
+      const dt = (deltaRealMs / 1000) * (timeScale || 1.0);
+
+      // 1. Update Small Body Orbits and Orient Markers to Camera
+      Object.keys(smallBodyMeshes).forEach(id => {
+        const item = smallBodyMeshes[id];
+        // Keplerian angular speed (v proportional to a^-1.5)
+        const angVel = 0.00045 * Math.pow(1.0 / item.data.a, 1.5);
+        item.angle += angVel * dt * 25.0;
+
+        const incRad = (item.data.I || 0) * (Math.PI / 180);
+        item.marker.position.x = Math.cos(item.angle) * item.distScene;
+        item.marker.position.y = Math.sin(item.angle) * item.distScene * Math.sin(incRad);
+        item.marker.position.z = Math.sin(item.angle) * item.distScene;
+
+        // Billboarding: make the ring face the camera
+        item.marker.quaternion.copy(camera.quaternion);
+      });
+
+      // 2. Project Small Body Screen Labels (Only when in Solar System mode)
+      const currentMode = window.OrbitalCommandState?.viewMode || 'solar';
+      const labelsLayer = document.getElementById('nasa-small-bodies-labels-layer');
+      if (labelsLayer) {
+        if (currentMode === 'deepsky') {
+          labelsLayer.style.display = 'none';
+        } else {
+          labelsLayer.style.display = 'block';
+          const halfW = window.innerWidth / 2;
+          const halfH = window.innerHeight / 2;
+          const _pVec = new THREE.Vector3();
+
+          smallBodyLabels.forEach(lbl => {
+            lbl.marker.getWorldPosition(_pVec);
+            _pVec.project(camera);
+
+            const inFront = _pVec.z >= -1.0 && _pVec.z <= 1.0;
+            const inScreen = _pVec.x >= -0.92 && _pVec.x <= 0.92 && _pVec.y >= -0.90 && _pVec.y <= 0.90;
+
+            if (inFront && inScreen) {
+              lbl.el.style.display = 'block';
+              lbl.el.style.left = `${(_pVec.x * halfW) + halfW}px`;
+              lbl.el.style.top = `${-(_pVec.y * halfH) + halfH}px`;
+            } else {
+              lbl.el.style.display = 'none';
+            }
+          });
+        }
+      }
+
+      // 3. Sun Corona gentle breathing pulse
+      if (coronaMesh) {
+        const pulse = 12.5 + Math.sin(Date.now() * 0.002) * 0.8;
+        coronaMesh.scale.set(pulse, pulse, 1.0);
+      }
     }
 
     function updateNASASolarSystemAnimation(deltaRealMs, timeScale, astro) {
