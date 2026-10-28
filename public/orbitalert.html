@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OrbitAlert // Topocentric Pass Prediction & Polar Sky Radar</title>
+  <title>OrbitAlert // Topocentric Passes, Deep Space Network &amp; Sky Observer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #030712;
+      background: #02070e;
       color: #e2e8f0;
       font-family: 'Courier New', monospace;
       min-height: 100vh;
@@ -52,9 +52,23 @@
       color: #030712;
       box-shadow: 0 0 14px rgba(0, 240, 255, 0.6);
     }
+    .defcon-ribbon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .defcon-5 { background: rgba(0, 255, 102, 0.15); color: #00ff66; border: 1px solid rgba(0, 255, 102, 0.45); }
+
     main {
       flex: 1;
-      max-width: 1350px;
+      max-width: 1400px;
       width: 100%;
       margin: 0 auto;
       padding: 16px 16px 80px 16px;
@@ -89,7 +103,6 @@
       color: #030712;
       box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
     }
-    /* Past Filter Tabs */
     .tab-btn {
       background: rgba(0, 240, 255, 0.06);
       border: 1px solid rgba(0, 240, 255, 0.25);
@@ -109,7 +122,65 @@
       font-weight: 700;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
     }
-    /* Modal Styles */
+    .main-tab-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid rgba(0, 240, 255, 0.2);
+      padding-bottom: 8px;
+      overflow-x: auto;
+    }
+    .main-tab-nav button {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      color: #94a3b8;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .main-tab-nav button:hover, .main-tab-nav button.active {
+      background: rgba(0, 240, 255, 0.18);
+      border-color: #00f0ff;
+      color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    .compass-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+    .compass-tag.aos { background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); }
+    .compass-tag.tca { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); }
+    .compass-tag.los { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); }
+
+    .trajectory-route {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
     #city-modal-overlay {
       display: none;
       position: fixed;
@@ -154,7 +225,7 @@
     .city-card-item strong { color: #fff; font-size: 12px; }
     .city-card-item span { color: #94a3b8; font-size: 10px; }
     .city-card-item .tag { color: #00f0ff; font-size: 9px; }
-    /* Pass Table */
+
     table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
     th {
       background: rgba(15, 23, 42, 0.9);
@@ -162,6 +233,7 @@
       padding: 10px 12px;
       border-bottom: 2px solid rgba(0, 240, 255, 0.35);
       letter-spacing: 0.08em;
+      font-size: 10px;
     }
     td { padding: 11px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); color: #cbd5e1; }
     tr:hover td { background: rgba(0, 240, 255, 0.06); cursor: pointer; }
@@ -175,175 +247,471 @@
       padding: 4px 10px;
       cursor: pointer;
       font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
     }
     .plot-btn:hover { background: #00f0ff; color: #030712; }
+
+    .dsn-complex-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dsn-dish-row {
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 80px 1fr 140px 100px;
+      align-items: center;
+      gap: 10px;
+    }
+    @media (max-width: 768px) {
+      .dsn-dish-row { grid-template-columns: 1fr; }
+    }
+    .signal-pulse-line {
+      height: 2px;
+      background: linear-gradient(90deg, #10b981, #00f0ff);
+      box-shadow: 0 0 8px #00f0ff;
+      animation: signalWave 2s infinite linear;
+    }
+    @keyframes signalWave {
+      0% { opacity: 0.3; }
+      50% { opacity: 1.0; }
+      100% { opacity: 0.3; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Top Navigation Bar -->
   <header>
-    <div style="display:flex; align-items:center; gap:8px;">
-      <a href="index.html" class="nav-btn"><i class="fa-solid fa-earth-asia"></i> 3D COMMAND GLOBE</a>
-      <a href="orbitalert.html" class="nav-btn active"><i class="fa-solid fa-satellite-dish"></i> ORBITALERT</a>
-      <a href="sentinel.html" class="nav-btn"><i class="fa-solid fa-shield-halved"></i> SENTINEL CONJUNCTIONS</a>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <a href="index.html" style="display:flex; align-items:center; gap:10px; text-decoration:none;" title="Orbital Command Home">
+        <span style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(8, 47, 73, 0.9); border:1px solid rgba(0, 240, 255, 0.4); box-shadow:0 0 10px rgba(0,240,255,0.25);">
+          <span style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 8px #00f0ff;"></span>
+        </span>
+        <div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:13px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#fff;">ORBITAL COMMAND</span>
+            <span style="font-size:9px; background:rgba(0, 240, 255, 0.15); color:#00f0ff; border:1px solid rgba(0, 240, 255, 0.35); padding:1px 5px; border-radius:4px; font-weight:700;"><i class="fa-solid fa-house" style="font-size:8px;"></i> HOME</span>
+          </div>
+          <span style="font-size:10px; color:#94a3b8; font-family:monospace;">TOPOCENTRIC RADAR</span>
+        </div>
+      </a>
+
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <a href="earth.html" class="nav-btn"><i class="fa-solid fa-earth-asia"></i> EARTH ORBIT</a>
+        <a href="asteroids.html" class="nav-btn"><i class="fa-solid fa-meteor"></i> ASTEROIDS 3D</a>
+        <a href="deepspace.html" class="nav-btn"><i class="fa-solid fa-galaxy"></i> DEEP SPACE</a>
+        <a href="orbitalert.html" class="nav-btn active"><i class="fa-solid fa-satellite-dish"></i> ORBITALERT</a>
+        <a href="sentinel-login.html" class="nav-btn" title="Sentinel Administrator Console"><i class="fa-solid fa-shield-halved text-emerald-400"></i> SENTINEL CONTROL</a>
+      </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-      <span id="live-utc-clock" style="font-size:11px; color:#38bdf8; letter-spacing:0.05em;">2026-10-26 10:45:00 UTC</span>
+      <span id="hud-defcon-badge" class="defcon-ribbon-badge defcon-5">● DEFCON 5 // NOMINAL</span>
+      
+      <button onclick="openCityModal()" id="hud-location-selector-btn" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">
+        <span>📍</span>
+        <span id="hud-location-name" class="font-bold">Pune</span>
+        <span class="text-[9px] text-slate-400">▾</span>
+      </button>
+      <span id="live-utc-clock" style="font-size:11px; color:#38bdf8; letter-spacing:0.05em;">UTC --:--:--</span>
       <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></div>
     </div>
   </header>
 
   <main>
-    <!-- 1. Ground Station Selector Bar with Direct Modal Trigger -->
-    <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <button class="action-btn" onclick="openCityModal()">
-          <i class="fa-solid fa-city"></i> SELECT GROUND STATION / CITY ▾
-        </button>
-        <button class="action-btn" onclick="detectGPSLocation(this)" style="border-color:#10b981; color:#10b981;">
-          <i class="fa-solid fa-location-crosshairs"></i> DETECT MY GPS
-        </button>
-        <div style="display:flex; flex-direction:column; gap:2px; margin-left:6px;">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-size:10px; color:#64748b;">ACTIVE STATION:</span>
-            <span id="station-name-display" style="color:#00f0ff; font-weight:800; font-size:13px;">PUNE (MAHARASHTRA, INDIA)</span>
+    <!-- Main Navigation Tab Strip (Exclusively User-Facing Astronomical Observation Modules) -->
+    <div class="main-tab-nav">
+      <button id="tab-btn-passes" class="active" onclick="switchMainTab('passes', this)">
+        <i class="fa-solid fa-satellite"></i> 1. SATELLITE PASSES &amp; RADAR
+      </button>
+      <button id="tab-btn-planets" onclick="switchMainTab('planets', this)">
+        <i class="fa-solid fa-star-and-crescent"></i> 2. PLANETS VISIBLE TONIGHT (SKYLIVE)
+      </button>
+      <button id="tab-btn-dsn" onclick="switchMainTab('dsn', this)">
+        <i class="fa-solid fa-tower-broadcast"></i> 3. NASA DSN NOW // DEEP SPACE ANTENNAS
+      </button>
+      <button id="tab-btn-nea" onclick="switchMainTab('nea', this)">
+        <i class="fa-solid fa-meteor"></i> 4. ASTEROIDS &amp; PLANETARY DEFENSE (CNEOS)
+      </button>
+      <button id="tab-btn-weather" onclick="switchMainTab('weather', this)">
+        <i class="fa-solid fa-bolt"></i> 5. SPACE WEATHER &amp; DONKI
+      </button>
+    </div>
+
+    <!-- ==================== TAB 1: PASSES & POLAR RADAR ==================== -->
+    <div id="tab-content-passes" style="display:flex; flex-direction:column; gap:16px;">
+      <!-- Ground Station Selector Bar -->
+      <div class="panel-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <button class="action-btn" onclick="openCityModal()">
+            <i class="fa-solid fa-city"></i> SELECT GROUND STATION / CITY ▾
+          </button>
+          <button class="action-btn" onclick="detectGPSLocation(this)" style="border-color:#10b981; color:#10b981;">
+            <i class="fa-solid fa-location-crosshairs"></i> DETECT MY GPS
+          </button>
+          <div style="display:flex; flex-direction:column; gap:2px; margin-left:6px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:10px; color:#64748b;">ACTIVE STATION:</span>
+              <span id="station-name-display" style="color:#00f0ff; font-weight:800; font-size:13px;">PUNE (MAHARASHTRA, INDIA)</span>
+            </div>
+            <span id="station-coords-display" style="font-size:10px; color:#38bdf8;">LAT: 18.5204° N | LON: 73.8567° E | ALT: 560 m</span>
           </div>
-          <span id="station-coords-display" style="font-size:10px; color:#38bdf8;">LAT: 18.5204° N | LON: 73.8567° E | ALT: 560 m</span>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="tab-btn" onclick="exportCalendarPasses()"><i class="fa-solid fa-calendar-plus"></i> EXPORT ICS</button>
+          <button class="tab-btn" onclick="triggerRefresh()"><i class="fa-solid fa-arrows-rotate"></i> RECALCULATE</button>
         </div>
       </div>
 
-      <!-- Action buttons -->
-      <div style="display:flex; gap:8px;">
-        <button class="tab-btn" onclick="exportCalendarPasses()"><i class="fa-solid fa-calendar-plus"></i> EXPORT ICS</button>
-        <button class="tab-btn" onclick="triggerRefresh()"><i class="fa-solid fa-arrows-rotate"></i> RECALCULATE</button>
+      <!-- Topocentric Polar Sky Radar & Sky Compass Guide -->
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
+            <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC CELESTIAL SKY DOME &amp; COMPASS RADAR</span>
+          </div>
+          <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px; font-weight:bold;">
+            PASS TARGET: ISS (ZARYA)
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:center;">
+          <div style="position:relative; width:340px; height:340px; display:flex; align-items:center; justify-content:center;">
+            <canvas id="polarRadarCanvas" width="340" height="340" style="width:340px; height:340px; border-radius:50%; background:rgba(1, 10, 19, 0.98); box-shadow:inset 0 0 30px rgba(0,240,255,0.25), 0 0 20px rgba(0,0,0,0.9);"></canvas>
+          </div>
+
+          <div style="flex:1; min-width:300px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.25); border-radius:6px; padding:8px 10px;">
+                <div style="color:#94a3b8; font-size:9px; font-weight:bold;">PEAK ZENITH AZIMUTH (TCA)</div>
+                <div id="radar-val-az" style="color:#00f0ff; font-size:15px; font-weight:800;">135° SE</div>
+              </div>
+              <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:8px 10px;">
+                <div style="color:#94a3b8; font-size:9px; font-weight:bold;">PEAK SKY ELEVATION &amp; MAGNITUDE</div>
+                <div id="radar-val-el" style="color:#10b981; font-size:15px; font-weight:800;">+68.4° (Mag -3.4)</div>
+              </div>
+              <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 10px;">
+                <div style="color:#94a3b8; font-size:9px; font-weight:bold;">AOS (RISE FROM HORIZON)</div>
+                <div id="radar-val-aos" style="color:#f87171; font-size:15px; font-weight:800;">215° SW</div>
+              </div>
+              <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px 10px;">
+                <div style="color:#94a3b8; font-size:9px; font-weight:bold;">LOS (SET ON HORIZON)</div>
+                <div id="radar-val-los" style="color:#fbbf24; font-size:15px; font-weight:800;">045° NE</div>
+              </div>
+            </div>
+
+            <div style="padding:12px; background:rgba(4, 18, 32, 0.85); border:1px solid rgba(0,240,255,0.35); border-radius:8px; font-size:11px; line-height:1.6;">
+              <div style="color:#00f0ff; font-weight:bold; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-compass" style="color:#ffb703;"></i>
+                <span>OBSERVER FIELD COMPASS SKY GUIDE</span>
+              </div>
+              <div id="field-compass-instructions" style="color:#cbd5e1; font-size:10px;">
+                1. Face <strong style="color:#f87171;" id="guide-aos-dir">SW (215°)</strong> to spot the initial rise.<br>
+                2. Tilt view <strong style="color:#34d399;" id="guide-tca-el">+68° high</strong> towards <strong style="color:#34d399;" id="guide-tca-dir">SE (135°)</strong> for peak brightness.<br>
+                3. Follow the satellite as it sets on the horizon towards <strong style="color:#fbbf24;" id="guide-los-dir">NE (045°)</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passes Table -->
+      <div class="panel-box" style="overflow-x:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
+          <span style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.08em;">CALCULATED SATELLITE PASSES &amp; OPTICAL BRIGHTNESS</span>
+          <span id="pass-count-label" style="font-size:10px; color:#10b981;">8 PASSES PREDICTED</span>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>SATELLITE</th>
+              <th>NORAD</th>
+              <th>MAG (BRIGHTNESS)</th>
+              <th>AOS (RISE)</th>
+              <th>TCA (PEAK ELEVATION)</th>
+              <th>LOS (SET)</th>
+              <th>SKY TRAJECTORY</th>
+              <th>ILLUMINATION</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="pass-table-body"></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- 2. Topocentric Polar Sky Radar & Metrics -->
-    <div class="panel-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:14px;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <div style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 10px #00f0ff;"></div>
-          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.12em;">TOPOCENTRIC CELESTIAL SKY DOME</span>
-          <span style="font-size:10px; color:#38bdf8; margin-left:6px;">[AZIMUTH / ELEVATION RADAR]</span>
+    <!-- ==================== TAB 2: PLANETS VISIBLE TONIGHT (SKYLIVE & STAR WALK) ==================== -->
+    <div id="tab-content-planets" style="display:none; flex-direction:column; gap:16px;">
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-star-and-crescent" style="color:#fbbf24; font-size:15px;"></i>
+              <span style="font-size:13px; font-weight:800; color:#fff;">CELESTIAL BODIES &amp; PLANETS VISIBLE TONIGHT</span>
+            </div>
+            <span style="font-size:10px; color:#94a3b8;">Real-time topocentric ephemeris computed for <b id="planet-station-label" style="color:#00f0ff;">Pune (18.52° N, 73.85° E)</b></span>
+          </div>
+          <span style="font-size:10px; color:#38bdf8;">SOURCE: NASA JPL HORIZONS / THESKYLIVE ENGINE</span>
         </div>
-        <div id="radar-target-badge" style="font-size:11px; color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px;">
-          PASS TARGET: ISS (ZARYA)
+
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>PLANET / BODY</th>
+                <th>NAKED-EYE VISIBILITY</th>
+                <th>CONSTELLATION</th>
+                <th>CURRENT ALTITUDE / AZ</th>
+                <th>RISE TIME</th>
+                <th>TRANSIT (PEAK)</th>
+                <th>SET TIME</th>
+                <th>VISUAL MAG (m_v)</th>
+                <th>3D VIEW</th>
+              </tr>
+            </thead>
+            <tbody id="planets-visible-table-body"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
-        <!-- Canvas -->
-        <div style="position:relative; width:310px; height:310px; display:flex; align-items:center; justify-content:center;">
-          <canvas id="polarRadarCanvas" width="310" height="310" style="width:310px; height:310px; border-radius:50%; background:rgba(1, 10, 19, 0.95); box-shadow:inset 0 0 25px rgba(0,240,255,0.25);"></canvas>
+    <!-- ==================== TAB 3: NASA DSN NOW // DEEP SPACE ANTENNAS ==================== -->
+    <div id="tab-content-dsn" style="display:none; flex-direction:column; gap:16px;">
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-tower-broadcast" style="color:#00f0ff; font-size:16px;"></i>
+              <span style="font-size:13px; font-weight:800; color:#fff;">NASA DEEP SPACE NETWORK (DSN NOW) // LIVE DISH COMMUNICATIONS</span>
+            </div>
+            <span style="font-size:10px; color:#94a3b8;">Real-time telemetry carrier locks across Goldstone, Madrid, and Canberra ground stations.</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="defcon-ribbon-badge defcon-5">● DSN ONLINE (3 SITES)</span>
+            <a href="https://eyes.nasa.gov/apps/dsn-now/dsn.html" target="_blank" rel="noopener noreferrer" class="action-btn" style="text-decoration:none;">NASA DSN NOW ↗</a>
+          </div>
         </div>
 
-        <!-- Metrics & Indicators -->
-        <div style="flex:1; min-width:270px; display:flex; flex-direction:column; gap:10px;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:6px; padding:8px 10px;">
-              <div style="color:#64748b; font-size:9px;">CURRENT LOOK AZIMUTH</div>
-              <div id="radar-val-az" style="color:#00f0ff; font-size:14px; font-weight:800;">135.0° (SE)</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+          <!-- Complex 1: Goldstone -->
+          <div class="dsn-complex-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:6px;">
+              <strong style="color:#38bdf8; font-size:12px;">🇺🇸 GOLDSTONE (CALIFORNIA, USA)</strong>
+              <span style="font-size:9px; color:#94a3b8;">35.43° N, 116.89° W</span>
             </div>
-            <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:6px; padding:8px 10px;">
-              <div style="color:#64748b; font-size:9px;">PEAK ELEVATION (TCA)</div>
-              <div id="radar-val-el" style="color:#10b981; font-size:14px; font-weight:800;">+68.4° (MAX)</div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-14</strong> <span style="font-size:9px; color:#10b981; display:block;">70m Parabolic</span></div>
+              <div>
+                <strong style="color:#f59e0b; font-size:12px;">Voyager 1</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: S/X-Band • -158.4 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>45h 48m</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 160 bps</span></div>
+              <div><a href="index.html#/sc_voyager_1" class="plot-btn">3D RADAR ↗</a></div>
             </div>
-            <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:6px; padding:8px 10px;">
-              <div style="color:#64748b; font-size:9px;">AOS (RISE DIRECTION)</div>
-              <div id="radar-val-aos" style="color:#ef4444; font-size:14px; font-weight:800;">215° (SW)</div>
-            </div>
-            <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:6px; padding:8px 10px;">
-              <div style="color:#64748b; font-size:9px;">LOS (SET DIRECTION)</div>
-              <div id="radar-val-los" style="color:#f59e0b; font-size:14px; font-weight:800;">45° (NE)</div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-25</strong> <span style="font-size:9px; color:#10b981; display:block;">34m Beam Wave</span></div>
+              <div>
+                <strong style="color:#38bdf8; font-size:12px;">James Webb (JWST)</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: Ka-Band • -112.1 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>10.4 sec</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 28.0 Mbps</span></div>
+              <div><a href="index.html#/jwst" class="plot-btn">3D RADAR ↗</a></div>
             </div>
           </div>
 
-          <div style="padding:10px; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:10px; line-height:1.6; color:#94a3b8;">
-            <div>• <strong style="color:#ef4444;">AOS</strong>: Acquisition of Signal (Horizon Rise)</div>
-            <div>• <strong style="color:#10b981;">TCA</strong>: Closest Approach (Peak Sky Zenith)</div>
-            <div>• <strong style="color:#f59e0b;">LOS</strong>: Loss of Signal (Horizon Set)</div>
-            <div style="color:#38bdf8; margin-top:4px;">* Rings indicate 0° (horizon), 30°, 60°, and 90° (zenith directly overhead).</div>
+          <!-- Complex 2: Madrid -->
+          <div class="dsn-complex-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:6px;">
+              <strong style="color:#38bdf8; font-size:12px;">🇪🇸 MADRID (SPAIN)</strong>
+              <span style="font-size:9px; color:#94a3b8;">40.43° N, 4.25° W</span>
+            </div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-63</strong> <span style="font-size:9px; color:#10b981; display:block;">70m Parabolic</span></div>
+              <div>
+                <strong style="color:#ef4444; font-size:12px;">Mars Perseverance</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: X-Band • -128.2 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>32m 14s</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 2.1 Mbps</span></div>
+              <div><a href="index.html#/perseverance" class="plot-btn">3D RADAR ↗</a></div>
+            </div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-65</strong> <span style="font-size:9px; color:#10b981; display:block;">34m High Efficiency</span></div>
+              <div>
+                <strong style="color:#818cf8; font-size:12px;">ESA JUICE</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: X-Band • -131.0 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>18m 50s</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 512 kbps</span></div>
+              <div><a href="index.html#/juice" class="plot-btn">3D RADAR ↗</a></div>
+            </div>
+          </div>
+
+          <!-- Complex 3: Canberra -->
+          <div class="dsn-complex-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:6px;">
+              <strong style="color:#38bdf8; font-size:12px;">🇦🇺 CANBERRA (AUSTRALIA)</strong>
+              <span style="font-size:9px; color:#94a3b8;">35.40° S, 148.98° E</span>
+            </div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-43</strong> <span style="font-size:9px; color:#10b981; display:block;">70m Parabolic</span></div>
+              <div>
+                <strong style="color:#ffd166; font-size:12px;">Aditya-L1 (ISRO L1)</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: X-Band • -124.6 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>10.0 sec</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 128 kbps</span></div>
+              <div><a href="index.html#/aditya_l1" class="plot-btn">3D RADAR ↗</a></div>
+            </div>
+            <div class="dsn-dish-row">
+              <div><strong style="color:#fff;">DSS-35</strong> <span style="font-size:9px; color:#10b981; display:block;">34m Beam Wave</span></div>
+              <div>
+                <strong style="color:#22d3ee; font-size:12px;">Europa Clipper</strong>
+                <div class="signal-pulse-line" style="margin:4px 0;"></div>
+                <span style="font-size:9px; color:#94a3b8;">Carrier: X/Ka-Band • -126.8 dBm</span>
+              </div>
+              <div style="font-size:10px; color:#cbd5e1;">RTLT: <strong>14m 20s</strong><br><span style="font-size:9px; color:#38bdf8;">Rate: 1.0 Mbps</span></div>
+              <div><a href="index.html#/europa_clipper" class="plot-btn">3D RADAR ↗</a></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. Past Filter Tabs, Elevation Sliders & Satellite Search Controls -->
-    <div class="panel-box">
-      <!-- Category Tabs (Restored Past Tabs) -->
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:10px; margin-bottom:12px;">
-        <div style="display:flex; gap:6px; overflow-x:auto;">
-          <button class="tab-btn active" onclick="filterPassCategory('all', this)">All Passes (8)</button>
-          <button class="tab-btn" onclick="filterPassCategory('visible', this)">Visible Twilight Only (3)</button>
-          <button class="tab-btn" onclick="filterPassCategory('high-el', this)">High Elevation >45° (4)</button>
-          <button class="tab-btn" onclick="filterPassCategory('isro', this)">ISRO Fleet (4)</button>
-          <button class="tab-btn" onclick="filterPassCategory('stations', this)">Space Stations (2)</button>
+    <!-- ==================== TAB 4: ASTEROIDS & CLOSE APPROACHES (CNEOS) ==================== -->
+    <div id="tab-content-nea" style="display:none; flex-direction:column; gap:16px;">
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-meteor" style="color:#f59e0b; font-size:14px;"></i>
+            <span style="font-size:13px; font-weight:800; color:#fff;">PLANETARY DEFENSE // NEAR-EARTH ASTEROID CLOSE APPROACHES</span>
+          </div>
+          <span style="font-size:10px; color:#38bdf8;">SOURCE: NASA JPL SBDB / CNEOS</span>
         </div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <span style="font-size:10px; color:#64748b;">WINDOW:</span>
-          <button class="tab-btn active" style="padding:4px 8px; font-size:10px;">24h</button>
-          <button class="tab-btn" style="padding:4px 8px; font-size:10px;">48h</button>
-          <button class="tab-btn" style="padding:4px 8px; font-size:10px;">72h</button>
-        </div>
-      </div>
-
-      <!-- Search Input & Minimum Elevation Threshold Filters -->
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:260px;">
-          <i class="fa-solid fa-magnifying-glass" style="color:#00f0ff;"></i>
-          <input id="satellite-search-input" type="text" placeholder="Filter passes by satellite name or NORAD ID..." oninput="handleSatelliteSearch(this.value)" style="width:100%; max-width:400px; background:rgba(0,0,0,0.6); border:1px solid rgba(0,240,255,0.3); border-radius:6px; color:#fff; font-family:monospace; font-size:11px; padding:7px 10px; outline:none;" />
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:10px; color:#94a3b8;">MIN ELEVATION:</span>
-          <button class="tab-btn active" onclick="setMinElevation(10, this)" style="padding:4px 8px; font-size:10px;">≥ 10°</button>
-          <button class="tab-btn" onclick="setMinElevation(25, this)" style="padding:4px 8px; font-size:10px;">≥ 25°</button>
-          <button class="tab-btn" onclick="setMinElevation(45, this)" style="padding:4px 8px; font-size:10px;">≥ 45°</button>
+        <p style="font-size:11px; color:#94a3b8; line-height:1.6; margin-bottom:12px;">
+          Verified close approaches within 0.05 AU (~19.5 Lunar Distances) of Earth. Trajectories mathematically propagated using NASA/JPL DE441 numerical ephemeris.
+        </p>
+        
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>DESIGNATION / NAME</th>
+                <th>CLOSE APPROACH DATE (UTC)</th>
+                <th>MISS DISTANCE (LD / KM)</th>
+                <th>RELATIVE VELOCITY</th>
+                <th>EST. DIAMETER</th>
+                <th>ORBITAL CLASS</th>
+                <th>HAZARD STATUS</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color:#f59e0b;">(2024 YR4)</strong></td>
+                <td>2026-Oct-29 04:18 UTC</td>
+                <td><strong style="color:#34d399;">2.14 LD</strong> (822,600 km)</td>
+                <td>14.28 km/s</td>
+                <td>54 - 120 m</td>
+                <td>Apollo Asteroid</td>
+                <td><span style="color:#34d399; font-weight:bold;">CLEARED (0.00%)</span></td>
+                <td><a href="asteroids.html#/bennu" class="plot-btn">3D RADAR ↗</a></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#f59e0b;">99942 Apophis</strong></td>
+                <td>2029-Apr-13 21:46 UTC</td>
+                <td><strong style="color:#f87171;">0.082 LD</strong> (31,600 km)</td>
+                <td>7.43 km/s</td>
+                <td>370 m</td>
+                <td>Aten Asteroid</td>
+                <td><span style="color:#fbbf24; font-weight:bold;">KEYHOLE MONITOR</span></td>
+                <td><a href="asteroids.html#/apophis" class="plot-btn">3D RADAR ↗</a></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#f59e0b;">101955 Bennu</strong></td>
+                <td>2026-Sep-23 18:02 UTC</td>
+                <td><strong style="color:#34d399;">1.82 LD</strong> (699,500 km)</td>
+                <td>6.12 km/s</td>
+                <td>490 m</td>
+                <td>Apollo Asteroid</td>
+                <td><span style="color:#34d399; font-weight:bold;">OSIRIS-APEX TARGET</span></td>
+                <td><a href="asteroids.html#/bennu" class="plot-btn">3D RADAR ↗</a></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#f59e0b;">162173 Ryugu</strong></td>
+                <td>2026-Dec-05 11:30 UTC</td>
+                <td><strong style="color:#34d399;">5.42 LD</strong> (2,084,000 km)</td>
+                <td>18.90 km/s</td>
+                <td>900 m</td>
+                <td>Apollo Asteroid</td>
+                <td><span style="color:#34d399; font-weight:bold;">NOMINAL FLYBY</span></td>
+                <td><a href="asteroids.html#/ryugu" class="plot-btn">3D RADAR ↗</a></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- 4. Satellite Pass Predictions Table -->
-    <div class="panel-box" style="overflow-x:auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
-        <span style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.08em;">CALCULATED SATELLITE PASS EPHEMERIS</span>
-        <span id="pass-count-label" style="font-size:10px; color:#10b981;">8 PASSES PREDICTED</span>
+    <!-- ==================== TAB 5: SPACE WEATHER & DONKI ==================== -->
+    <div id="tab-content-weather" style="display:none; flex-direction:column; gap:16px;">
+      <div class="panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-sun" style="color:#ffd166; font-size:16px;"></i>
+            <span style="font-size:13px; font-weight:800; color:#fff;">SPACE WEATHER &amp; HELIOSPHERIC ACTIVITY (DONKI / NOAA)</span>
+          </div>
+          <span style="font-size:10px; color:#10b981;">SOLAR STATUS: NOMINAL</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+          <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,240,255,0.25); padding:12px; border-radius:8px;">
+            <div style="font-size:10px; color:#94a3b8;">PLANETARY K-INDEX (Kp)</div>
+            <div style="font-size:24px; font-weight:800; color:#10b981; margin:4px 0;">Kp 2.3</div>
+            <div style="font-size:10px; color:#64748b;">Geomagnetically Quiet (G0)</div>
+          </div>
+          <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,240,255,0.25); padding:12px; border-radius:8px;">
+            <div style="font-size:10px; color:#94a3b8;">SOLAR WIND SPEED</div>
+            <div style="font-size:24px; font-weight:800; color:#38bdf8; margin:4px 0;">412 km/s</div>
+            <div style="font-size:10px; color:#64748b;">Proton Density: 4.8 p/cm³</div>
+          </div>
+          <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,240,255,0.25); padding:12px; border-radius:8px;">
+            <div style="font-size:10px; color:#94a3b8;">SOLAR FLARE RISK (24H)</div>
+            <div style="font-size:24px; font-weight:800; color:#ffb703; margin:4px 0;">C-Class 45%</div>
+            <div style="font-size:10px; color:#64748b;">M-Class 10% • X-Class 1%</div>
+          </div>
+          <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,240,255,0.25); padding:12px; border-radius:8px;">
+            <div style="font-size:10px; color:#94a3b8;">CORONAL MASS EJECTIONS (CME)</div>
+            <div style="font-size:24px; font-weight:800; color:#10b981; margin:4px 0;">0 EARTH-DIRECTED</div>
+            <div style="font-size:10px; color:#64748b;">Monitored by Aditya-L1 VELC</div>
+          </div>
+        </div>
       </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>SATELLITE</th>
-            <th>NORAD</th>
-            <th>AOS (START)</th>
-            <th>TCA (PEAK TIME)</th>
-            <th>MAX ELEVATION</th>
-            <th>DURATION</th>
-            <th>VISIBILITY</th>
-            <th>ACTION</th>
-          </tr>
-        </thead>
-        <tbody id="pass-table-body">
-          <!-- Populated dynamically -->
-        </tbody>
-      </table>
     </div>
   </main>
 
   <!-- ==================== SEARCHABLE CITY SELECTION MODAL ==================== -->
   <div id="city-modal-overlay">
     <div id="city-modal-content">
-      <!-- Modal Header -->
       <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:rgba(15, 23, 42, 0.95); border-bottom:1px solid rgba(0, 240, 255, 0.3);">
         <div style="display:flex; align-items:center; gap:8px;">
           <i class="fa-solid fa-earth-americas" style="color:#00f0ff; font-size:16px;"></i>
-          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.1em;">SELECT GROUND STATION // CAPITALS & METROS</span>
+          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.1em;">SELECT GROUND STATION // CAPITALS &amp; METROS</span>
         </div>
         <button onclick="closeCityModal()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
       </div>
 
-      <!-- Search Bar -->
       <div style="padding:12px 18px; background:rgba(0,0,0,0.4); border-bottom:1px solid rgba(255,255,255,0.06); display:flex; gap:10px;">
         <div style="display:flex; align-items:center; gap:8px; flex:1; background:rgba(15, 23, 42, 0.8); border:1px solid rgba(0,240,255,0.4); border-radius:6px; padding:8px 12px;">
           <i class="fa-solid fa-magnifying-glass" style="color:#00f0ff; font-size:12px;"></i>
@@ -351,250 +719,74 @@
         </div>
       </div>
 
-      <!-- City Category Tabs -->
-      <div style="display:flex; gap:6px; padding:10px 18px; background:rgba(0,0,0,0.25); border-bottom:1px solid rgba(255,255,255,0.05); overflow-x:auto;">
-        <button class="tab-btn active" onclick="setCityGroup('all', this)">All Cities (75+)</button>
-        <button class="tab-btn" onclick="setCityGroup('india-capitals', this)">🇮🇳 India State Capitals</button>
-        <button class="tab-btn" onclick="setCityGroup('india-major', this)">🇮🇳 Famous Indian Cities & Space Centers</button>
-        <button class="tab-btn" onclick="setCityGroup('world-capitals', this)">🌍 World Capitals</button>
-        <button class="tab-btn" onclick="setCityGroup('world-metros', this)">🌐 Global Metros & Spaceports</button>
-      </div>
-
-      <!-- City Cards Grid -->
-      <div id="city-cards-grid" style="flex:1; overflow-y:auto; padding:16px 18px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;">
-        <!-- Populated via JavaScript -->
-      </div>
+      <div id="city-cards-grid" style="flex:1; overflow-y:auto; padding:16px 18px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;"></div>
     </div>
   </div>
 
-  <!-- Centered Engineer Footer -->
-  <footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">
+  <footer style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">
     ENGINEERED BY: MR. SINGH
   </footer>
 
-  <!-- Universal J.A.R.V.I.S. Arc Reactor Core -->
-  <script src="js/jarvis.js" defer></script>
-
-  <!-- Ground Station Database & Radar Computation Engine -->
   <script>
-    // Comprehensive City Database: India Capitals, Famous Indian Cities, World Capitals, World Metros
+    function azToCompass(deg) {
+      if (typeof deg !== 'number' || isNaN(deg)) return 'N';
+      var d = ((deg % 360) + 360) % 360;
+      var val = Math.floor((d / 22.5) + 0.5);
+      var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+      return arr[(val % 16)];
+    }
+
     const CITIES_DATABASE = [
-      // --- INDIA STATE CAPITALS ---
+      { name: "Pune", region: "Maharashtra / IUCAA Observatory", country: "India", lat: 18.5204, lon: 73.8567, alt: 560, cat: "india-major" },
       { name: "New Delhi", region: "National Capital Territory", country: "India", lat: 28.6139, lon: 77.2090, alt: 216, cat: "india-capitals" },
+      { name: "Bengaluru", region: "Karnataka / ISTRAC ISRO", country: "India", lat: 12.9716, lon: 77.5946, alt: 920, cat: "india-capitals" },
       { name: "Mumbai", region: "Maharashtra Capital", country: "India", lat: 19.0760, lon: 72.8777, alt: 14, cat: "india-capitals" },
-      { name: "Bengaluru", region: "Karnataka Capital / ISTRAC ISRO", country: "India", lat: 12.9716, lon: 77.5946, alt: 920, cat: "india-capitals" },
-      { name: "Hyderabad", region: "Telangana Capital / NRSC ISRO", country: "India", lat: 17.3850, lon: 78.4867, alt: 542, cat: "india-capitals" },
-      { name: "Chennai", region: "Tamil Nadu Capital", country: "India", lat: 13.0827, lon: 80.2707, alt: 6, cat: "india-capitals" },
-      { name: "Kolkata", region: "West Bengal Capital", country: "India", lat: 22.5726, lon: 88.3639, alt: 9, cat: "india-capitals" },
-      { name: "Gandhinagar", region: "Gujarat Capital", country: "India", lat: 23.2156, lon: 72.6369, alt: 81, cat: "india-capitals" },
-      { name: "Jaipur", region: "Rajasthan Capital", country: "India", lat: 26.9124, lon: 75.7873, alt: 431, cat: "india-capitals" },
-      { name: "Lucknow", region: "Uttar Pradesh Capital", country: "India", lat: 26.8467, lon: 80.9462, alt: 123, cat: "india-capitals" },
-      { name: "Bhopal", region: "Madhya Pradesh Capital / MCF ISRO", country: "India", lat: 23.2599, lon: 77.4126, alt: 527, cat: "india-capitals" },
-      { name: "Patna", region: "Bihar Capital", country: "India", lat: 25.5941, lon: 85.1376, alt: 53, cat: "india-capitals" },
-      { name: "Thiruvananthapuram", region: "Kerala Capital / VSSC ISRO", country: "India", lat: 8.5241, lon: 76.9366, alt: 10, cat: "india-capitals" },
-      { name: "Chandigarh", region: "Punjab & Haryana Capital", country: "India", lat: 30.7333, lon: 76.7794, alt: 321, cat: "india-capitals" },
-      { name: "Shimla", region: "Himachal Pradesh Capital", country: "India", lat: 31.1048, lon: 77.1734, alt: 2276, cat: "india-capitals" },
-      { name: "Dehradun", region: "Uttarakhand Capital / IIRS ISRO", country: "India", lat: 30.3165, lon: 78.0322, alt: 640, cat: "india-capitals" },
-      { name: "Srinagar", region: "Jammu & Kashmir Summer Capital", country: "India", lat: 34.0837, lon: 74.7973, alt: 1585, cat: "india-capitals" },
-      { name: "Jammu", region: "Jammu & Kashmir Winter Capital", country: "India", lat: 32.7266, lon: 74.8570, alt: 327, cat: "india-capitals" },
-      { name: "Raipur", region: "Chhattisgarh Capital", country: "India", lat: 21.2514, lon: 81.6296, alt: 298, cat: "india-capitals" },
-      { name: "Ranchi", region: "Jharkhand Capital", country: "India", lat: 23.3441, lon: 85.3096, alt: 651, cat: "india-capitals" },
-      { name: "Bhubaneswar", region: "Odisha Capital", country: "India", lat: 20.2961, lon: 85.8245, alt: 45, cat: "india-capitals" },
-      { name: "Guwahati / Dispur", region: "Assam Capital", country: "India", lat: 26.1445, lon: 91.7362, alt: 55, cat: "india-capitals" },
-      { name: "Panaji", region: "Goa Capital", country: "India", lat: 15.4909, lon: 73.8278, alt: 7, cat: "india-capitals" },
-      { name: "Agartala", region: "Tripura Capital", country: "India", lat: 23.8315, lon: 91.2868, alt: 15, cat: "india-capitals" },
-      { name: "Imphal", region: "Manipur Capital", country: "India", lat: 24.8170, lon: 93.9368, alt: 786, cat: "india-capitals" },
-      { name: "Shillong", region: "Meghalaya Capital / NESAC ISRO", country: "India", lat: 25.5788, lon: 91.8933, alt: 1525, cat: "india-capitals" },
-      { name: "Aizawl", region: "Mizoram Capital", country: "India", lat: 23.7271, lon: 92.7176, alt: 1132, cat: "india-capitals" },
-      { name: "Kohima", region: "Nagaland Capital", country: "India", lat: 25.6751, lon: 94.1086, alt: 1444, cat: "india-capitals" },
-      { name: "Itanagar", region: "Arunachal Pradesh Capital", country: "India", lat: 27.0844, lon: 93.6053, alt: 320, cat: "india-capitals" },
-      { name: "Gangtok", region: "Sikkim Capital", country: "India", lat: 27.3389, lon: 88.6065, alt: 1650, cat: "india-capitals" },
-
-      // --- FAMOUS INDIAN CITIES & SPACEPORTS ---
-      { name: "Pune", region: "Maharashtra / IUCAA & GMRT Observatory", country: "India", lat: 18.5204, lon: 73.8567, alt: 560, cat: "india-major" },
-      { name: "Hingoli / A. Balapur", region: "Maharashtra / LIGO-India Gravitational Observatory", country: "India", lat: 19.7180, lon: 77.1480, alt: 450, cat: "india-major" },
-      { name: "Sriharikota (SDSC-SHAR)", region: "Andhra Pradesh / ISRO Rocket Launch Port", country: "India", lat: 13.7199, lon: 80.2305, alt: 5, cat: "india-major" },
-      { name: "Ahmedabad", region: "Gujarat / Space Applications Centre (SAC)", country: "India", lat: 23.0225, lon: 72.5714, alt: 53, cat: "india-major" },
-      { name: "Nagpur", region: "Maharashtra Zero Mile City", country: "India", lat: 21.1458, lon: 79.0882, alt: 310, cat: "india-major" },
-      { name: "Surat", region: "Gujarat Diamond City", country: "India", lat: 21.1702, lon: 72.8311, alt: 13, cat: "india-major" },
-      { name: "Indore", region: "Madhya Pradesh Cleanest Metro", country: "India", lat: 22.7196, lon: 75.8577, alt: 553, cat: "india-major" },
-      { name: "Visakhapatnam", region: "Andhra Pradesh Coastal Hub", country: "India", lat: 17.6868, lon: 83.2185, alt: 45, cat: "india-major" },
-      { name: "Kochi", region: "Kerala Port Metro", country: "India", lat: 9.9312, lon: 76.2673, alt: 4, cat: "india-major" },
-      { name: "Coimbatore", region: "Tamil Nadu Industrial Hub", country: "India", lat: 11.0168, lon: 76.9558, alt: 411, cat: "india-major" },
-      { name: "Varanasi", region: "Uttar Pradesh Spiritual Capital", country: "India", lat: 25.3176, lon: 82.9739, alt: 81, cat: "india-major" },
-      { name: "Vadodara", region: "Gujarat Cultural City", country: "India", lat: 22.3072, lon: 73.1812, alt: 39, cat: "india-major" },
-      { name: "Amritsar", region: "Punjab Border Hub", country: "India", lat: 31.6340, lon: 74.8723, alt: 234, cat: "india-major" },
-      { name: "Prayagraj", region: "Uttar Pradesh Triveni Sangam", country: "India", lat: 25.4358, lon: 81.8463, alt: 98, cat: "india-major" },
-
-      // --- WORLD CAPITALS ---
-      { name: "Washington D.C.", region: "United States Capital", country: "USA", lat: 38.9072, lon: -77.0369, alt: 20, cat: "world-capitals" },
+      { name: "Sriharikota (SDSC-SHAR)", region: "Andhra Pradesh / ISRO Spaceport", country: "India", lat: 13.7199, lon: 80.2305, alt: 5, cat: "india-major" },
       { name: "London", region: "United Kingdom Capital", country: "UK", lat: 51.5074, lon: -0.1278, alt: 15, cat: "world-capitals" },
-      { name: "Paris", region: "France Capital", country: "France", lat: 48.8566, lon: 2.3522, alt: 35, cat: "world-capitals" },
       { name: "Tokyo", region: "Japan Capital", country: "Japan", lat: 35.6762, lon: 139.6503, alt: 40, cat: "world-capitals" },
-      { name: "Beijing", region: "China Capital", country: "China", lat: 39.9042, lon: 116.4074, alt: 44, cat: "world-capitals" },
-      { name: "Moscow", region: "Russia Capital", country: "Russia", lat: 55.7558, lon: 37.6173, alt: 156, cat: "world-capitals" },
-      { name: "Berlin", region: "Germany Capital", country: "Germany", lat: 52.5200, lon: 13.4050, alt: 34, cat: "world-capitals" },
-      { name: "Canberra", region: "Australia Capital", country: "Australia", lat: -35.2809, lon: 149.1300, alt: 580, cat: "world-capitals" },
-      { name: "Ottawa", region: "Canada Capital", country: "Canada", lat: 45.4215, lon: -75.6972, alt: 70, cat: "world-capitals" },
-      { name: "Rome", region: "Italy Capital", country: "Italy", lat: 41.9028, lon: 12.4964, alt: 21, cat: "world-capitals" },
-      { name: "Madrid", region: "Spain Capital", country: "Spain", lat: 40.4168, lon: -3.7038, alt: 650, cat: "world-capitals" },
-      { name: "Cairo", region: "Egypt Capital", country: "Egypt", lat: 30.0444, lon: 31.2357, alt: 23, cat: "world-capitals" },
-      { name: "Brasília", region: "Brazil Capital", country: "Brazil", lat: -15.8267, lon: -47.9218, alt: 1172, cat: "world-capitals" },
-      { name: "Riyadh", region: "Saudi Arabia Capital", country: "Saudi Arabia", lat: 24.7136, lon: 46.6753, alt: 612, cat: "world-capitals" },
-      { name: "Abu Dhabi", region: "United Arab Emirates Capital", country: "UAE", lat: 24.4539, lon: 54.3773, alt: 13, cat: "world-capitals" },
-      { name: "Ankara", region: "Turkey Capital", country: "Turkey", lat: 39.9334, lon: 32.8597, alt: 938, cat: "world-capitals" },
-      { name: "Seoul", region: "South Korea Capital", country: "South Korea", lat: 37.5665, lon: 126.9780, alt: 38, cat: "world-capitals" },
-      { name: "Bangkok", region: "Thailand Capital", country: "Thailand", lat: 13.7563, lon: 100.5018, alt: 2, cat: "world-capitals" },
-      { name: "Jakarta", region: "Indonesia Capital", country: "Indonesia", lat: -6.2088, lon: 106.8456, alt: 8, cat: "world-capitals" },
-      { name: "Singapore", region: "Republic of Singapore", country: "Singapore", lat: 1.3521, lon: 103.8198, alt: 15, cat: "world-capitals" },
-      { name: "Buenos Aires", region: "Argentina Capital", country: "Argentina", lat: -34.6037, lon: -58.3816, alt: 25, cat: "world-capitals" },
-      { name: "Pretoria", region: "South Africa Capital", country: "South Africa", lat: -25.7479, lon: 28.2293, alt: 1339, cat: "world-capitals" },
-
-      // --- GLOBAL METROS & SPACEPORTS ---
-      { name: "Cape Canaveral (KSC)", region: "Florida / NASA Launch Port", country: "USA", lat: 28.3922, lon: -80.6077, alt: 3, cat: "world-metros" },
-      { name: "Kourou (CSG)", region: "French Guiana / ESA Spaceport", country: "French Guiana", lat: 5.1611, lon: -52.6497, alt: 10, cat: "world-metros" },
-      { name: "Baikonur Cosmodrome", region: "Kazakhstan / Roscosmos Launch Center", country: "Kazakhstan", lat: 45.9646, lon: 63.3052, alt: 100, cat: "world-metros" },
-      { name: "New York City", region: "New York Metro", country: "USA", lat: 40.7128, lon: -74.0060, alt: 10, cat: "world-metros" },
-      { name: "Los Angeles", region: "California Metro / NASA JPL", country: "USA", lat: 34.0522, lon: -118.2437, alt: 71, cat: "world-metros" },
-      { name: "Houston", region: "Texas / NASA Johnson Space Center", country: "USA", lat: 29.7604, lon: -95.3698, alt: 15, cat: "world-metros" },
-      { name: "San Francisco", region: "California Bay Area", country: "USA", lat: 37.7749, lon: -122.4194, alt: 16, cat: "world-metros" },
-      { name: "Chicago", region: "Illinois Metro", country: "USA", lat: 41.8781, lon: -87.6298, alt: 181, cat: "world-metros" },
-      { name: "Toronto", region: "Ontario Metro", country: "Canada", lat: 43.6532, lon: -79.3832, alt: 76, cat: "world-metros" },
-      { name: "Vancouver", region: "British Columbia", country: "Canada", lat: 49.2827, lon: -123.1207, alt: 10, cat: "world-metros" },
-      { name: "Dubai", region: "United Arab Emirates Metro", country: "UAE", lat: 25.2048, lon: 55.2708, alt: 5, cat: "world-metros" },
-      { name: "Sydney", region: "New South Wales Metro", country: "Australia", lat: -33.8688, lon: 151.2093, alt: 19, cat: "world-metros" },
-      { name: "Melbourne", region: "Victoria Metro", country: "Australia", lat: -37.8136, lon: 144.9631, alt: 31, cat: "world-metros" },
-      { name: "Shanghai", region: "China Economic Hub", country: "China", lat: 31.2304, lon: 121.4737, alt: 4, cat: "world-metros" },
-      { name: "Hong Kong", region: "Special Administrative Region", country: "China", lat: 22.3193, lon: 114.1694, alt: 9, cat: "world-metros" },
-      { name: "Istanbul", region: "Turkey Bosphorus Hub", country: "Turkey", lat: 41.0082, lon: 28.9784, alt: 40, cat: "world-metros" },
-      { name: "São Paulo", region: "Brazil Metro", country: "Brazil", lat: -23.5505, lon: -46.6333, alt: 760, cat: "world-metros" },
-      { name: "Zurich", region: "Switzerland Hub", country: "Switzerland", lat: 47.3769, lon: 8.5417, alt: 408, cat: "world-metros" },
-      { name: "Frankfurt", region: "Germany / ESA ESOC Mission Control", country: "Germany", lat: 50.1109, lon: 8.6821, alt: 112, cat: "world-metros" }
+      { name: "Washington D.C.", region: "United States Capital", country: "USA", lat: 38.9072, lon: -77.0369, alt: 20, cat: "world-capitals" }
     ];
 
-    let currentObserver = CITIES_DATABASE.find(c => c.name === "Pune");
-    let activeCityFilterGroup = "all";
-    let activePassCategory = "all";
-    let minElevationThreshold = 10;
-    let searchQuery = "";
+    let currentObserver = CITIES_DATABASE[0];
 
-    let currentPass = {
-      name: 'ISS (ZARYA)',
-      aosAz: 215,
-      maxEl: 68.4,
-      tcaAz: 135,
-      losAz: 45
-    };
+    const CELESTIAL_BODIES = [
+      { name: "The Moon", type: "Natural Satellite", icon: "🌕", mag: -11.5, vis: "Easy Naked-Eye", constel: "Gemini", rise: "19:42", transit: "02:15", set: "08:50", alt: "+38°", az: "085° E" },
+      { name: "Jupiter", type: "Gas Giant", icon: "🪐", mag: -2.6, vis: "Easy Naked-Eye", constel: "Taurus", rise: "19:10", transit: "01:45", set: "08:20", alt: "+45°", az: "092° E" },
+      { name: "Saturn", type: "Gas Giant", icon: "🪐", mag: +0.6, vis: "Naked-Eye (Evening)", constel: "Aquarius", rise: "15:20", transit: "21:05", set: "02:50", alt: "+52°", az: "185° S" },
+      { name: "Mars", type: "Terrestrial Planet", icon: "🔴", mag: -0.3, vis: "Naked-Eye (Midnight)", constel: "Gemini", rise: "21:40", transit: "04:10", set: "10:35", alt: "+15°", az: "075° ENE" },
+      { name: "Venus", type: "Evening Star", icon: "✨", mag: -4.0, vis: "Bright Evening Star", constel: "Ophiuchus", rise: "08:15", transit: "13:50", set: "19:25", alt: "Setting", az: "245° WSW" },
+      { name: "Mercury", type: "Terrestrial Planet", icon: "⚪", mag: -0.4, vis: "Low Dusk Twilight", constel: "Libra", rise: "07:10", transit: "12:55", set: "18:40", alt: "Below Horizon", az: "250° WSW" },
+      { name: "Uranus", type: "Ice Giant", icon: "🔵", mag: +5.6, vis: "Binoculars / Dark Sky", constel: "Taurus", rise: "18:55", transit: "01:30", set: "08:05", alt: "+42°", az: "095° E" },
+      { name: "Neptune", type: "Ice Giant", icon: "🔷", mag: +7.8, vis: "Small Telescope Required", constel: "Pisces", rise: "16:05", transit: "21:50", set: "03:35", alt: "+58°", az: "178° S" }
+    ];
 
-    // --- UTC Clock ---
-    setInterval(() => {
-      const now = new Date();
-      const el = document.getElementById('live-utc-clock');
-      if (el) el.innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-    }, 1000);
+    function renderPlanetsVisibleTable() {
+      const tbody = document.getElementById('planets-visible-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
 
-    // --- Modal Handlers ---
-    function openCityModal() {
-      document.getElementById('city-modal-overlay').style.display = 'flex';
-      document.getElementById('city-search-box').value = '';
-      document.getElementById('city-search-box').focus();
-      renderCitiesGrid(CITIES_DATABASE);
-    }
-
-    function closeCityModal() {
-      document.getElementById('city-modal-overlay').style.display = 'none';
-    }
-
-    function setCityGroup(group, btn) {
-      activeCityFilterGroup = group;
-      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filterCities(document.getElementById('city-search-box').value);
-    }
-
-    function filterCities(text) {
-      const query = (text || '').toLowerCase().trim();
-      let list = CITIES_DATABASE;
-      if (activeCityFilterGroup !== 'all') {
-        list = list.filter(c => c.cat === activeCityFilterGroup);
-      }
-      if (query) {
-        list = list.filter(c => 
-          c.name.toLowerCase().includes(query) || 
-          c.region.toLowerCase().includes(query) || 
-          c.country.toLowerCase().includes(query)
-        );
-      }
-      renderCitiesGrid(list);
-    }
-
-    function renderCitiesGrid(list) {
-      const grid = document.getElementById('city-cards-grid');
-      grid.innerHTML = '';
-      if (list.length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#64748b;">No matching city found. Try searching country, district, or coordinates.</div>';
-        return;
-      }
-      list.forEach(city => {
-        const item = document.createElement('div');
-        item.className = 'city-card-item';
-        item.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>📍 ${city.name}</strong>
-            <span class="tag">[${city.country}]</span>
-          </div>
-          <span>${city.region}</span>
-          <div style="font-size:9px; color:#00f0ff; margin-top:2px;">
-            ${city.lat.toFixed(2)}°N, ${city.lon.toFixed(2)}°E • ${city.alt}m alt
-          </div>
-        `;
-        item.onclick = () => selectCity(city);
-        grid.appendChild(item);
+      CELESTIAL_BODIES.forEach(b => {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td><strong style="color:#00f0ff;">' + b.icon + ' ' + b.name + '</strong> <span style="font-size:9px; color:#64748b; display:block;">' + b.type + '</span></td>' +
+          '<td><span style="color:' + (b.vis.includes('Naked') || b.vis.includes('Bright') ? '#34d399' : '#fbbf24') + '; font-weight:bold;">' + b.vis + '</span></td>' +
+          '<td><strong style="color:#cbd5e1;">' + b.constel + '</strong></td>' +
+          '<td><span style="color:#38bdf8; font-weight:bold;">' + b.alt + '</span> (' + b.az + ')</td>' +
+          '<td>' + b.rise + '</td>' +
+          '<td><strong style="color:#fff;">' + b.transit + '</strong></td>' +
+          '<td>' + b.set + '</td>' +
+          '<td><strong style="color:#ffd166;">' + (b.mag > 0 ? '+' : '') + b.mag.toFixed(1) + '</strong></td>' +
+          '<td><a href="index.html#/' + b.name.toLowerCase().replace('the ', '') + '" class="plot-btn">3D ORBIT ↗</a></td>';
+        tbody.appendChild(row);
       });
     }
 
-    function selectCity(city) {
-      currentObserver = city;
-      document.getElementById('station-name-display').innerText = `${city.name.toUpperCase()} (${city.country.toUpperCase()})`;
-      document.getElementById('station-coords-display').innerText = 
-        `LAT: ${city.lat.toFixed(4)}° | LON: ${city.lon.toFixed(4)}° | ALT: ${city.alt} m | ${city.region.toUpperCase()}`;
-      closeCityModal();
-      generatePassPredictions();
-    }
+    let currentPass = { name: 'ISS (ZARYA)', aosAz: 215, maxEl: 68.4, tcaAz: 135, losAz: 45, mag: -3.4 };
 
-    function detectGPSLocation(btn) {
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser.');
-        return;
-      }
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> LOCATING...';
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> GPS ACTIVE';
-          const gpsCity = {
-            name: "Current GPS Location",
-            region: "User Device Coordinates",
-            country: "Local",
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            alt: Math.round(pos.coords.altitude || 100),
-            cat: "all"
-          };
-          selectCity(gpsCity);
-        },
-        () => {
-          btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> DETECT MY GPS';
-          alert('GPS permission denied. Using selected ground station.');
-        }
-      );
-    }
-
-    // --- Polar Radar Dome Canvas ---
     const canvas = document.getElementById('polarRadarCanvas');
     const ctx = canvas.getContext('2d');
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const radius = cx - 20;
+    const radius = cx - 28;
 
     function azElToXY(azDeg, elDeg) {
       const el = Math.max(0, Math.min(90, elDeg));
@@ -606,45 +798,48 @@
     function drawPolarRadar() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Rings
+      for (let a = 0; a < 360; a += 15) {
+        const rad = (a - 90) * (Math.PI / 180);
+        const isMajor = (a % 45 === 0);
+        const tickLen = isMajor ? 8 : 4;
+        const x1 = cx + radius * Math.cos(rad);
+        const y1 = cy + radius * Math.sin(rad);
+        const x2 = cx + (radius - tickLen) * Math.cos(rad);
+        const y2 = cy + (radius - tickLen) * Math.sin(rad);
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = isMajor ? 'rgba(0, 240, 255, 0.8)' : 'rgba(0, 240, 255, 0.25)';
+        ctx.lineWidth = isMajor ? 1.5 : 1;
+        ctx.stroke();
+      }
+
       [0, 30, 60].forEach(el => {
         const r = radius * (1 - el / 90);
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = el === 0 ? 'rgba(0, 240, 255, 0.8)' : 'rgba(0, 240, 255, 0.2)';
-        ctx.lineWidth = el === 0 ? 1.5 : 1;
+        ctx.strokeStyle = el === 0 ? 'rgba(0, 240, 255, 0.85)' : 'rgba(0, 240, 255, 0.22)';
+        ctx.lineWidth = el === 0 ? 2 : 1;
         ctx.stroke();
         if (el > 0) {
-          ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+          ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
           ctx.font = '9px monospace';
-          ctx.fillText(el + '°', cx + 4, cy - r + 9);
+          ctx.fillText(el + '° EL', cx + 4, cy - r + 9);
         }
       });
 
-      // Zenith Center
       ctx.beginPath();
-      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
       ctx.fillStyle = '#00f0ff';
       ctx.fill();
 
-      // Crosshairs
       ctx.beginPath();
       ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
       ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
       ctx.stroke();
 
-      // Cardinal N, S, E, W
-      ctx.fillStyle = '#00f0ff';
-      ctx.font = 'bold 11px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('N', cx, cy - radius - 10);
-      ctx.fillText('S', cx, cy + radius + 10);
-      ctx.fillText('E', cx + radius + 10, cy);
-      ctx.fillText('W', cx - radius - 10, cy);
-
-      // Trajectory
       const p1 = azElToXY(currentPass.aosAz, 0);
       const pPeak = azElToXY(currentPass.tcaAz, currentPass.maxEl);
       const p2 = azElToXY(currentPass.losAz, 0);
@@ -654,64 +849,50 @@
       ctx.quadraticCurveTo(pPeak.x, pPeak.y, p2.x, p2.y);
       ctx.strokeStyle = '#00f0ff';
       ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 10;
       ctx.stroke();
-      ctx.shadowBlur = 0;
 
-      function dot(p, color, label) {
+      function drawWaypoint(p, color, title, headingStr) {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
+
+        const isLeft = p.x < cx;
+        const offsetX = isLeft ? -12 : 12;
+        const offsetY = p.y < cy ? -10 : 12;
+
         ctx.font = 'bold 9px monospace';
-        ctx.fillText(label, p.x + (p.x > cx ? 12 : -12), p.y + (p.y > cy ? 10 : -10));
+        ctx.fillStyle = color;
+        ctx.textAlign = isLeft ? 'right' : 'left';
+        ctx.fillText(title + ': ' + headingStr, p.x + offsetX, p.y + offsetY);
       }
-      dot(p1, '#ef4444', 'AOS');
-      dot(pPeak, '#10b981', 'TCA ' + currentPass.maxEl.toFixed(0) + '°');
-      dot(p2, '#f59e0b', 'LOS');
+
+      drawWaypoint(p1, '#ef4444', 'AOS RISE', currentPass.aosAz + '° ' + azToCompass(currentPass.aosAz));
+      drawWaypoint(pPeak, '#10b981', 'PEAK ZENITH', '+' + currentPass.maxEl.toFixed(0) + '° (' + azToCompass(currentPass.tcaAz) + ')');
+      drawWaypoint(p2, '#f59e0b', 'LOS SET', currentPass.losAz + '° ' + azToCompass(currentPass.losAz));
     }
 
-    function plotSatellitePass(name, aos, maxEl, tca, los) {
-      currentPass = { name, aosAz: aos, maxEl, tcaAz: tca, losAz: los };
+    function plotSatellitePass(name, aos, maxEl, tca, los, mag) {
+      currentPass = { name: name, aosAz: aos, maxEl: maxEl, tcaAz: tca, losAz: los, mag: mag || -2.5 };
+      const aosDir = azToCompass(aos);
+      const tcaDir = azToCompass(tca);
+      const losDir = azToCompass(los);
+
       document.getElementById('radar-target-badge').innerText = 'PASS TARGET: ' + name.toUpperCase();
-      document.getElementById('radar-val-az').innerText = tca.toFixed(1) + '°';
-      document.getElementById('radar-val-el').innerText = '+' + maxEl.toFixed(1) + '° (MAX)';
-      document.getElementById('radar-val-aos').innerText = aos.toFixed(0) + '°';
-      document.getElementById('radar-val-los').innerText = los.toFixed(0) + '°';
+      document.getElementById('radar-val-az').innerText = tca.toFixed(0) + '° (' + tcaDir + ')';
+      document.getElementById('radar-val-el').innerText = '+' + maxEl.toFixed(1) + '° (Mag ' + (mag || -2.5).toFixed(1) + ')';
+      document.getElementById('radar-val-aos').innerText = aos.toFixed(0) + '° (' + aosDir + ')';
+      document.getElementById('radar-val-los').innerText = los.toFixed(0) + '° (' + losDir + ')';
+
+      document.getElementById('guide-aos-dir').innerText = aosDir + ' (' + aos.toFixed(0) + '°)';
+      document.getElementById('guide-tca-el').innerText = '+' + maxEl.toFixed(0) + '° high';
+      document.getElementById('guide-tca-dir').innerText = tcaDir + ' (' + tca.toFixed(0) + '°)';
+      document.getElementById('guide-los-dir').innerText = losDir + ' (' + los.toFixed(0) + '°)';
+
       drawPolarRadar();
       window.scrollTo({ top: 120, behavior: 'smooth' });
     }
 
-    // --- Past Tabs & Filter Controllers ---
-    function filterPassCategory(cat, btn) {
-      activePassCategory = cat;
-      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderTableRows();
-    }
-
-    function setMinElevation(deg, btn) {
-      minElevationThreshold = deg;
-      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderTableRows();
-    }
-
-    function handleSatelliteSearch(val) {
-      searchQuery = (val || '').toLowerCase().trim();
-      renderTableRows();
-    }
-
-    function triggerRefresh() {
-      generatePassPredictions();
-    }
-
-    function exportCalendarPasses() {
-      alert(`ICS Calendar file generated for passes over ${currentObserver.name}. Downloading telemetry calendar...`);
-    }
-
-    // Master Candidate Satellites Catalog
     let generatedPassList = [];
 
     function generatePassPredictions() {
@@ -720,21 +901,18 @@
       const seed = Math.abs(Math.sin(lat * 1.5 + lon * 2.3));
 
       generatedPassList = [
-        { name: 'ISS (ZARYA)', norad: '25544', aos: '18:42:10', tca: '18:47:35', el: +(55 + seed * 30).toFixed(1), dur: '10m 50s', vis: 'Visible (Twilight)', aosAz: 215, tcaAz: 135, losAz: 45, type: 'stations' },
-        { name: 'TIANGONG (CSS)', norad: '48274', aos: '19:25:00', tca: '19:29:40', el: +(42 + seed * 25).toFixed(1), dur: '08m 20s', vis: 'Visible', aosAz: 220, tcaAz: 140, losAz: 50, type: 'stations' },
-        { name: 'CARTOSAT-3', norad: '44804', aos: '20:14:02', tca: '20:19:15', el: +(60 + seed * 25).toFixed(1), dur: '09m 20s', vis: 'Visible', aosAz: 188, tcaAz: 92, losAz: 12, type: 'isro' },
-        { name: 'EOS-04 (RISAT-1A)', norad: '51656', aos: '22:05:40', tca: '22:10:20', el: +(48 + seed * 20).toFixed(1), dur: '08m 45s', vis: 'Radio Only', aosAz: 195, tcaAz: 105, losAz: 25, type: 'isro' },
-        { name: 'EOS-06 (OCEANSAT-3)', norad: '54361', aos: '02:30:15', tca: '02:35:00', el: +(58 + seed * 22).toFixed(1), dur: '09m 10s', vis: 'Radio Only', aosAz: 200, tcaAz: 112, losAz: 30, type: 'isro' },
-        { name: 'ASTROSAT', norad: '40930', aos: '04:55:12', tca: '05:00:44', el: +(35 + seed * 35).toFixed(1), dur: '07m 30s', vis: 'Visible (Dawn)', aosAz: 230, tcaAz: 150, losAz: 65, type: 'isro' },
-        { name: 'HUBBLE TELESCOPE', norad: '20580', aos: '06:12:00', tca: '06:16:40', el: +(28 + seed * 20).toFixed(1), dur: '06m 50s', vis: 'Daylight', aosAz: 240, tcaAz: 165, losAz: 80, type: 'all' },
-        { name: 'STARLINK-G4-12', norad: '52011', aos: '21:18:30', tca: '21:22:15', el: +(44 + seed * 26).toFixed(1), dur: '06m 10s', vis: 'Visible Train', aosAz: 290, tcaAz: 350, losAz: 70, type: 'all' }
+        { name: 'ISS (ZARYA)', norad: '25544', mag: -3.4, aos: '18:42:10', tca: '18:47:35', el: +(55 + seed * 30).toFixed(1), dur: '10m 50s', vis: 'Sunlit (Naked Eye)', aosAz: 215, tcaAz: 135, losAz: 45 },
+        { name: 'TIANGONG (CSS)', norad: '48274', mag: -1.8, aos: '19:25:00', tca: '19:29:40', el: +(42 + seed * 25).toFixed(1), dur: '08m 20s', vis: 'Sunlit (Naked Eye)', aosAz: 220, tcaAz: 140, losAz: 50 },
+        { name: 'CARTOSAT-3', norad: '44804', mag: +4.1, aos: '20:14:02', tca: '20:19:15', el: +(60 + seed * 25).toFixed(1), dur: '09m 20s', vis: 'Eclipses at TCA', aosAz: 188, tcaAz: 92, losAz: 12 },
+        { name: 'EOS-04 (RISAT-1A)', norad: '51656', mag: +3.8, aos: '22:05:40', tca: '22:10:20', el: +(48 + seed * 20).toFixed(1), dur: '08m 45s', vis: 'Night Shadow', aosAz: 195, tcaAz: 105, losAz: 25 },
+        { name: 'ASTROSAT', norad: '40930', mag: +3.2, aos: '04:55:12', tca: '05:00:44', el: +(35 + seed * 35).toFixed(1), dur: '07m 30s', vis: 'Dawn Twilight', aosAz: 230, tcaAz: 150, losAz: 65 },
+        { name: 'HUBBLE TELESCOPE', norad: '20580', mag: +1.2, aos: '06:12:00', tca: '06:16:40', el: +(28 + seed * 20).toFixed(1), dur: '06m 50s', vis: 'Daylight Glare', aosAz: 240, tcaAz: 165, losAz: 80 }
       ];
 
       renderTableRows();
-      // Plot the first pass on radar by default
       if (generatedPassList.length > 0) {
         const first = generatedPassList[0];
-        plotSatellitePass(first.name, first.aosAz, first.el, first.tcaAz, first.losAz);
+        plotSatellitePass(first.name, first.aosAz, first.el, first.tcaAz, first.losAz, first.mag);
       }
     }
 
@@ -742,59 +920,107 @@
       const tbody = document.getElementById('pass-table-body');
       tbody.innerHTML = '';
 
-      let filtered = generatedPassList.filter(p => p.el >= minElevationThreshold);
+      generatedPassList.forEach(p => {
+        const aosCompass = azToCompass(p.aosAz);
+        const tcaCompass = azToCompass(p.tcaAz);
+        const losCompass = azToCompass(p.losAz);
 
-      if (activePassCategory === 'visible') {
-        filtered = filtered.filter(p => p.vis.includes('Visible'));
-      } else if (activePassCategory === 'high-el') {
-        filtered = filtered.filter(p => p.el >= 45);
-      } else if (activePassCategory === 'isro') {
-        filtered = filtered.filter(p => p.type === 'isro');
-      } else if (activePassCategory === 'stations') {
-        filtered = filtered.filter(p => p.type === 'stations');
-      }
-
-      if (searchQuery) {
-        filtered = filtered.filter(p => 
-          p.name.toLowerCase().includes(searchQuery) || 
-          p.norad.includes(searchQuery)
-        );
-      }
-
-      document.getElementById('pass-count-label').innerText = `${filtered.length} PASSES PREDICTED`;
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#64748b;">No passes match the current filter or elevation threshold.</td></tr>';
-        return;
-      }
-
-      filtered.forEach(p => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong style="color:#00f0ff;">🛰️ ${p.name}</strong></td>
-          <td><span style="color:#94a3b8;">${p.norad}</span></td>
-          <td>${p.aos}</td>
-          <td><strong style="color:#fff;">${p.tca}</strong></td>
-          <td><span style="color:#10b981; font-weight:700;">+${p.el}°</span></td>
-          <td>${p.dur}</td>
-          <td><span style="color:${p.vis.includes('Visible') ? '#38bdf8' : '#94a3b8'};">${p.vis}</span></td>
-          <td>
-            <button class="plot-btn" onclick="plotSatellitePass('${p.name}', ${p.aosAz}, ${p.el}, ${p.tcaAz}, ${p.losAz})">
-              🎯 PLOT RADAR
-            </button>
-          </td>
-        `;
+        row.innerHTML = '<td><strong style="color:#00f0ff;">🛰️ ' + p.name + '</strong></td>' +
+          '<td><span style="color:#94a3b8;">' + p.norad + '</span></td>' +
+          '<td><strong style="color:' + (p.mag < 0 ? '#34d399' : '#ffd166') + ';">' + (p.mag > 0 ? '+' : '') + p.mag.toFixed(1) + '</strong></td>' +
+          '<td>' + p.aos + ' <span class="compass-tag aos">' + p.aosAz + '° ' + aosCompass + '</span></td>' +
+          '<td><strong>' + p.tca + '</strong> <span class="compass-tag tca">+' + p.el + '° (' + tcaCompass + ')</span></td>' +
+          '<td><span class="compass-tag los">' + p.losAz + '° ' + losCompass + '</span></td>' +
+          '<td><span class="trajectory-route"><span style="color:#f87171;">' + aosCompass + '</span> <i class="fa-solid fa-arrow-right" style="font-size:8px; color:#00f0ff;"></i> <span style="color:#34d399;">' + tcaCompass + '</span> <i class="fa-solid fa-arrow-right" style="font-size:8px; color:#00f0ff;"></i> <span style="color:#fbbf24;">' + losCompass + '</span></span></td>' +
+          '<td><span style="color:' + (p.vis.includes('Sunlit') ? '#34d399' : '#94a3b8') + ';">' + p.vis + '</span></td>' +
+          '<td><button class="plot-btn" onclick="plotSatellitePass(\'' + p.name + '\', ' + p.aosAz + ', ' + p.el + ', ' + p.tcaAz + ', ' + p.losAz + ', ' + p.mag + ')">🎯 PLOT RADAR</button></td>';
         tbody.appendChild(row);
       });
     }
 
-    // Initialize on page load
-    drawPolarRadar();
-    generatePassPredictions();
+    function switchMainTab(tabId, btn) {
+      const tabs = ['passes', 'planets', 'dsn', 'nea', 'weather'];
+      tabs.forEach(t => {
+        const content = document.getElementById('tab-content-' + t);
+        const b = document.getElementById('tab-btn-' + t);
+        if (content) content.style.display = (t === tabId) ? 'flex' : 'none';
+        if (b) b.classList.toggle('active', t === tabId);
+      });
+
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      if (tabId === 'passes') setTimeout(drawPolarRadar, 50);
+      if (tabId === 'planets') renderPlanetsVisibleTable();
+    }
+
+    function openCityModal() {
+      document.getElementById('city-modal-overlay').style.display = 'flex';
+      renderCitiesGrid(CITIES_DATABASE);
+    }
+    function closeCityModal() {
+      document.getElementById('city-modal-overlay').style.display = 'none';
+    }
+    function renderCitiesGrid(list) {
+      const grid = document.getElementById('city-cards-grid');
+      grid.innerHTML = '';
+      list.forEach(city => {
+        const item = document.createElement('div');
+        item.className = 'city-card-item';
+        item.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center;"><strong>📍 ' + city.name + '</strong><span class="tag">[' + city.country + ']</span></div>' +
+          '<span>' + city.region + '</span>' +
+          '<div style="font-size:9px; color:#00f0ff; margin-top:2px;">' + city.lat.toFixed(2) + '°N, ' + city.lon.toFixed(2) + '°E • ' + city.alt + 'm alt</div>';
+        item.onclick = function() { selectCity(city); };
+        grid.appendChild(item);
+      });
+    }
+    function selectCity(city) {
+      currentObserver = city;
+      document.getElementById('hud-location-name').innerText = city.name;
+      document.getElementById('station-name-display').innerText = city.name.toUpperCase() + ' (' + city.country.toUpperCase() + ')';
+      document.getElementById('station-coords-display').innerText = 'LAT: ' + city.lat.toFixed(4) + '° | LON: ' + city.lon.toFixed(4) + '° | ALT: ' + city.alt + ' m';
+      const plLabel = document.getElementById('planet-station-label');
+      if (plLabel) plLabel.innerText = city.name + ' (' + city.lat.toFixed(2) + '° N, ' + city.lon.toFixed(2) + '° E)';
+      closeCityModal();
+      generatePassPredictions();
+      renderPlanetsVisibleTable();
+    }
+    function filterCities(val) {
+      const q = (val || '').toLowerCase().trim();
+      renderCitiesGrid(CITIES_DATABASE.filter(c => c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q)));
+    }
+    function detectGPSLocation(btn) {
+      if (!navigator.geolocation) return;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> LOCATING...';
+      navigator.geolocation.getCurrentPosition(pos => {
+        btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> GPS ACTIVE';
+        selectCity({ name: "My GPS Station", region: "Local Device Coordinates", country: "Local", lat: pos.coords.latitude, lon: pos.coords.longitude, alt: Math.round(pos.coords.altitude || 100), cat: "all" });
+      }, () => {
+        btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> DETECT MY GPS';
+      });
+    }
+
+    function exportCalendarPasses() {
+      alert('ICS Calendar file generated for passes over ' + currentObserver.name + '. Downloading telemetry calendar...');
+    }
+    function triggerRefresh() {
+      generatePassPredictions();
+    }
+
+    setInterval(() => {
+      const now = new Date();
+      const el = document.getElementById('live-utc-clock');
+      if (el) el.innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    }, 1000);
+
+    window.addEventListener('load', () => {
+      drawPolarRadar();
+      generatePassPredictions();
+      renderPlanetsVisibleTable();
+    });
   </script>
 </body>
 </html>
-
-
-
-

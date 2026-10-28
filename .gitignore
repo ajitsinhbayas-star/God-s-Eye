@@ -1,6 +1,6 @@
 node_modules/
 .env
-space-db.json
+.env.local
 diagnostics-db.json
 *.db
 *.db-journal

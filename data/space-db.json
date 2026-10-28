@@ -1,0 +1,105 @@
+{
+  "lastUpdated": "2026-10-24T16:55:36.984Z",
+  "syncCycles": 0,
+  "liveISS": {
+    "latitude": 24.206940533054,
+    "longitude": -144.38507435261,
+    "altitude": 419.01401178269,
+    "velocity": 27590.103029683,
+    "visibility": "eclipsed",
+    "timestamp": 1793091676710
+  },
+  "externalIntel": {
+    "spaceWeather": {
+      "kpIndex": 2,
+      "stormLevel": "G0 (Quiet)",
+      "updatedAt": "2026-10-27T17:03:31.237Z"
+    },
+    "neoApproaches": [
+      {
+        "des": "2026 TB94",
+        "distKm": 1954821
+      },
+      {
+        "des": "2018 GS1",
+        "distKm": 4240878
+      },
+      {
+        "des": "2026 UB1",
+        "distKm": 3666145
+      }
+    ],
+    "missionNews": [
+      {
+        "id": 40597,
+        "title": "How a Johnson Mentor Shapes the Next Generation of NASA Talent",
+        "newsSite": "NASA"
+      },
+      {
+        "id": 40596,
+        "title": "APOD: 2026 October 27 – Noctilucent Clouds over Sweden",
+        "newsSite": "NASA"
+      },
+      {
+        "id": 40595,
+        "title": "A-81 Reaches South Georgia",
+        "newsSite": "NASA"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "SRC-ISS-LIVE",
+      "name": "WhereTheISS Live Ephemeris API",
+      "detail": "Real-time ISS coordinates",
+      "status": "ok",
+      "label": "Connected (Live)",
+      "lastFetch": "2026-10-24T16:55:36.985Z",
+      "latencyMs": 142
+    },
+    {
+      "id": "SRC-CELESTRAK",
+      "name": "CelesTrak / NORAD GP Elements",
+      "detail": "Active satellite TLE vectors",
+      "status": "ok",
+      "label": "Synced (8 NORAD vectors)",
+      "lastFetch": "2026-10-27T09:00:32.209Z",
+      "latencyMs": 210
+    },
+    {
+      "id": "SRC-NOAA-SWPC",
+      "name": "NOAA SWPC Space Weather Feed",
+      "detail": "Planetary Kp-Index",
+      "status": "ok",
+      "label": "Connected (Live Kp)",
+      "lastFetch": "2026-10-24T16:55:36.985Z",
+      "latencyMs": 165
+    },
+    {
+      "id": "SRC-JPL-CAD",
+      "name": "NASA JPL Close-Approach (CAD) API",
+      "detail": "Near-Earth Asteroid flybys",
+      "status": "ok",
+      "label": "Connected (Live NEO)",
+      "lastFetch": "2026-10-24T16:55:36.985Z",
+      "latencyMs": 230
+    }
+  ],
+  "watchlist": [
+    "ISS",
+    "CARTOSAT3",
+    "ADITYA_L1",
+    "EOS04"
+  ],
+  "preferences": {
+    "prefClose": true,
+    "prefPass": true,
+    "prefReentry": true,
+    "prefMission": true,
+    "prefHealth": true,
+    "observerLat": 18.5204,
+    "observerLon": 73.8567,
+    "observerName": "Pune / India Sector"
+  },
+  "events": []
+}

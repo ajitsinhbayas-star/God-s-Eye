@@ -1,3 +1,5 @@
+const sentinelAuth = require('./supervisor/admin-auth');
+const sentinelRoutes = require('./routes/sentinel');
 ﻿import path from 'path';
 import compression from 'compression';
 import express from 'express';
@@ -50,7 +52,7 @@ app.get('/api/health', (req, res) => {
 
 // Mount Routes
 app.use('/api/space', spaceRouter);
-app.use('/api/sentinel', sentinelRouter);
+
 app.use('/api', objectsRouter);
 
 app.get('/api/passes', (req, res) => {
@@ -58,15 +60,29 @@ app.get('/api/passes', (req, res) => {
 });
 
 // HTML Pages
-app.get(['/sentinel', '/sentinel/', '/sentinel.html'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'sentinel.html'));
-});
+
 
 app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'orbitalert.html'));
 });
 
 // Static files from public/
+
+// ==================== SENTINEL ADMIN SECURITY GUARDS ====================
+app.use('/api/sentinel', sentinelRoutes);
+
+app.get('/sentinel-login', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.sendFile(path.join(__dirname, '../public/sentinel-login.html'));
+});
+
+// Intercept all /sentinel variants BEFORE express.static
+app.get(['/sentinel', '/sentinel/', '/sentinel.html'], sentinelAuth.requireAdminAuth, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.sendFile(path.join(__dirname, '../public/sentinel.html'));
+});
+// =========================================================================
+
 app.use(express.static(PUBLIC_DIR, {
   maxAge: '1d',
   setHeaders: (res, filePath) => {
@@ -158,12 +174,48 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
 });
 
-app.get('/sentinel', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'public', 'sentinel.html'));
-});
+
 
 app.get('/orbitalert', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'public', 'orbitalert.html'));
+});
+// Add into src/server.js
+
+const SATNOGS_API_BASE = 'https://db.satnogs.org/api';
+
+/**
+ * Proxy route to query SatNOGS DB for transmitter frequencies,
+ * active ground station observations, and TLE data.
+ */
+app.get('/api/satnogs/transmitters/:noradId', async (req, res) => {
+  const { noradId } = req.params;
+  try {
+    const headers = { 'Accept': 'application/json' };
+    if (process.env.SATNOGS_API_TOKEN) {
+      headers['Authorization'] = `Token ${process.env.SATNOGS_API_TOKEN}`;
+    }
+
+    const response = await fetch(`${SATNOGS_API_BASE}/transmitters/?satellite__norad_cat_id=${noradId}`, { headers });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `SatNOGS returned HTTP ${response.status}` });
+    }
+
+    const data = await response.json();
+    res.json({
+      noradId,
+      transmitters: data.map(tx => ({
+        description: tx.description,
+        frequency: tx.frequency ? (tx.frequency / 1e6).toFixed(3) + ' MHz' : 'N/A',
+        mode: tx.mode || 'FM/Digital',
+        baud: tx.baud || null,
+        status: tx.status,
+        type: tx.type
+      }))
+    });
+  } catch (err) {
+    console.error('[SatNOGS Gateway Error]:', err.message);
+    res.status(500).json({ error: 'Failed to query SatNOGS DB gateway.' });
+  }
 });
 // --- END PAGE ROUTES ---
 

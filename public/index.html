@@ -647,19 +647,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <header class="header-safe absolute z-50 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-3.5 rounded-2xl hud-glass pointer-events-auto">
     <!-- Left: Brand Identity, Simulation Clock & Data Freshness Status -->
     <div class="flex items-center gap-2.5 min-w-0">
-      <button onclick="returnToLastValid3DView()" id="hud-logo-badge" class="relative flex items-center gap-2.5 text-left group focus:outline-none" title="Return to 3D Explorer">
-        <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/90 border border-cyan-500/40 group-hover:border-cyan-400 hud-glow shrink-0 transition">
+      <a href="index.html" id="hud-logo-badge" class="relative flex items-center gap-2.5 text-left group focus:outline-none no-underline cursor-pointer" title="Return to Orbital Command Home">
+        <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/90 border border-cyan-500/40 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shrink-0 transition">
           <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
         </span>
         <span class="min-w-0">
           <span class="flex items-center gap-1.5">
-            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white hud-text-glow whitespace-nowrap">Orbital Command</span>
-            <span id="hud-data-status-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap" title="Data source state">LIVE UPDATE</span>
-       <span id="hud-defcon-pill" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap">DEFCON 5</span>
+            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap">Orbital Command</span>
+            <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider flex items-center gap-1"><i class="fa-solid fa-house text-[8px]"></i> HOME</span>
+            <span id="hud-defcon-pill" class="hidden md:inline-block text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap">DEFCON 5</span>
           </span>
           <span class="text-[10px] text-slate-400 font-mono block truncate" id="live-utc-display">UTC --:--:--</span>
         </span>
-      </button>
+      </a>
 
       <!-- Active Observer Location Chooser Pill -->
       <button onclick="window.openUniversalLocationModal()" id="hud-location-selector-btn" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">
@@ -672,10 +672,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <!-- Centre: Explicit 3-Mode View Switcher (Earth Orbit / Solar System / Deep Sky) -->
     <nav id="nasa-target-bar" aria-label="View Mode Switcher" class="flex items-center gap-1 bg-slate-950/85 border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono">
       <a href="index.html" id="viewmode-btn-solar" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition whitespace-nowrap">
-        ☀️ Solar System (Home)
+        ☀️ Solar
       </a>
       <a href="earth.html" id="viewmode-btn-earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
         🌍 Earth Orbit
+      </a>
+      <a href="asteroids.html" id="viewmode-btn-asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
+        ☄️ Asteroids
       </a>
       <a href="deepspace.html" id="viewmode-btn-deepsky" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
         🌌 Deep Space
@@ -735,10 +738,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <span class="text-[9px] text-slate-500">Default</span>
           </button>
           <!-- FIXED -->
-<a href="orbitalert.html#health" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-slate-400 hover:text-white flex items-center justify-between">
-  <span>🩺 Source &amp; Data Health</span>
-  <span id="more-health-indicator" class="text-[9px] text-emerald-400">OK</span>
-</a>
+
 <a href="sentinel-login.html" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between" title="Administrator Access Required">
   <span>🛡️ Sentinel Bot (Admin)</span>
   <span class="text-[9px] text-amber-400 font-bold border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded">LOGIN 🔒</span>
@@ -1124,6 +1124,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
     <!-- Right: Play/Pause, Top-Down Ecliptic View & Settings -->
     <div class="flex items-center gap-1.5 shrink-0 text-[10px]">
+      <button onclick="toggleSimulationPlayPause()" id="btn-sim-play" class="p-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-400 text-cyan-300 transition" title="Play / Pause Orbital Clock">
+        ⏸
+      </button>
+      <button onclick="setCosmicTier(2); targetCameraDistance = 135.0; targetCameraPhi = 1.55; targetCameraTheta = 0.0;" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 transition font-bold" title="Top-Down Polar Ecliptic View">
+        🔭 Top-Down
+      </button>
+      <button onclick="window.NASAEyesApp.toggleLayersDrawer()" class="p-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 transition" title="Layers & Visual Settings">
+        ⚙️
+      </button>
+    </div>
+  </div>
+
+    <!-- Right: Play/Pause, Top-Down Ecliptic View & Settings -->
+    <div class="flex items-center gap-1.5 shrink-0 text-[10px]">
       <button onclick="toggleSimulationPlayPause()" id="btn-sim-play" class="p-1 px-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-400 text-cyan-300 transition" title="Play / Pause Orbital Clock">
         ⏸
       </button>
@@ -1249,6 +1263,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
   <!-- Primary Astronomical Simulation & Engine Script -->
   <script>
+    window.OrbitalCommandState = { viewMode: "solar", isLive: true };
     // --- 1. RESILIENT AUDIO & SOUNDTRACK ENGINE ---
     const audioCinematic = document.getElementById('audio-cinematic');
     const audioIntro = document.getElementById('audio-intro');
@@ -1567,6 +1582,21 @@ let activeIntroBlobUrl = null;
       pluto:   { distance: 2.8,   phi: 0.32, theta: 0.75, fov: 42 }
     };
   
+    // ============================================================================
+    // NASA EYES NATURAL MOONS HIERARCHY (JOVIAN, SATURNIAN & MARTIAN SYSTEMS)
+    // ============================================================================
+    const NATURAL_MOONS = {
+      io:        { name: "Io", parent: "jupiter", radius: 0.38, orbitRadius: 4.8, periodDays: 1.769, color: 0xfacc15, desc: "Most volcanically active body in the Solar System.", wikiKey: "Io_(moon)" },
+      europa:    { name: "Europa", parent: "jupiter", radius: 0.35, orbitRadius: 6.0, periodDays: 3.551, color: 0xbae6fd, desc: "Global subsurface saltwater ocean under a cracked ice shell.", wikiKey: "Europa_(moon)" },
+      ganymede:  { name: "Ganymede", parent: "jupiter", radius: 0.52, orbitRadius: 7.5, periodDays: 7.155, color: 0xcbd5e1, desc: "Largest moon in the Solar System; possesses an intrinsic magnetosphere.", wikiKey: "Ganymede_(moon)" },
+      callisto:  { name: "Callisto", parent: "jupiter", radius: 0.48, orbitRadius: 9.6, periodDays: 16.689, color: 0x94a3b8, desc: "Heavily cratered, geologically ancient ice-rock surface.", wikiKey: "Callisto_(moon)" },
+      titan:     { name: "Titan", parent: "saturn", radius: 0.50, orbitRadius: 6.8, periodDays: 15.945, color: 0xfb923c, desc: "Dense nitrogen atmosphere with liquid methane lakes and dunes.", wikiKey: "Titan_(moon)" },
+      enceladus: { name: "Enceladus", parent: "saturn", radius: 0.28, orbitRadius: 3.9, periodDays: 1.370, color: 0xffffff, desc: "Active cryovolcanic water-ice geysers venting from south polar fractures.", wikiKey: "Enceladus" },
+      mimas:     { name: "Mimas", parent: "saturn", radius: 0.24, orbitRadius: 3.2, periodDays: 0.942, color: 0xa1a1aa, desc: "Dominated by the 130 km Herschel impact basin.", wikiKey: "Mimas_(moon)" },
+      phobos:    { name: "Phobos", parent: "mars", radius: 0.22, orbitRadius: 1.8, periodDays: 0.319, color: 0x78716c, desc: "Innermost moon of Mars; tidally decaying towards Roche limit.", wikiKey: "Phobos_(moon)" },
+      deimos:    { name: "Deimos", parent: "mars", radius: 0.18, orbitRadius: 2.7, periodDays: 1.263, color: 0xa8a29e, desc: "Outer Martian moon coated in thick regolith retention sheets.", wikiKey: "Deimos_(moon)" }
+    };
+    const moonMeshes = {};
     const CELESTIAL_BODIES = {
       sun: { name: "The Sun (Sol)", type: "G2V Star", a: 0, e: 0, I: 0, L0: 0, Lrate: 0, w: 0, node: 0, baseDist: 0, radius: 1.1, color: 0xfbbf24, rotPeriod: 609.1, tilt: 7.25, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
       mercury: { name: "Mercury", type: "Terrestrial Planet", a: 0.387098, e: 0.205630, I: 7.005, L0: 252.25, Lrate: 4.0923344, w: 77.456, node: 48.331, baseDist: 8.5, radius: 0.70, color: 0x94a3b8, rotPeriod: 1407.6, tilt: 0.034, desc: "0.39 AU • Rocky Core • Highly Eccentric Orbit", wikiKey: "Mercury_(planet)" },
@@ -1800,11 +1830,28 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     const ambientLight = new THREE.AmbientLight(0x081026, 0.12);
     scene.add(ambientLight);
 
+    
+    // Soft Circular Star Sprite (Replaces raw square WebGL point primitives)
+    const circleStarTexture = (function() {
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0.0, 'rgba(255,255,255,1.0)');
+      g.addColorStop(0.25, 'rgba(255,255,255,0.85)');
+      g.addColorStop(0.55, 'rgba(255,255,255,0.25)');
+      g.addColorStop(1.0, 'rgba(255,255,255,0.0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 64, 64);
+      const tex = new THREE.CanvasTexture(c);
+      return tex;
+    })();
+
     const starPos = new Float32Array(5000 * 3);
     for (let i = 0; i < 5000 * 3; i++) starPos[i] = (Math.random() - 0.5) * 800;
     const starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.08 })));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.08, map: circleStarTexture, transparent: true, depthWrite: false })));
 
     // --- 8A. ESA GAIA DR3 ASTROMETRIC STELLAR FIELD (ICRS J2016.0) ---
     const GAIA_BRIGHT_STARS = [
@@ -1863,50 +1910,235 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       scene.add(new THREE.Points(geom, mat));
     }
     buildGaiaAstrometricStarField();
+// ============================================================================
+    // NASA 3D DEEP SPACE NETWORK (DSN NOW) CARRIER BEAMS & INTERPLANETARY LINKS
+    // ============================================================================
+    const dsnBeamsGroup = new THREE.Group();
+    scene.add(dsnBeamsGroup);
+
+    const DSN_COMPLEXES = [
+      { id: 'goldstone', name: 'Goldstone (DSS 14/25)', lat: 35.43, lon: -116.89, color: 0x10b981 },
+      { id: 'madrid',    name: 'Madrid (DSS 63/65)',    lat: 40.43, lon: -4.25,    color: 0x38bdf8 },
+      { id: 'canberra',  name: 'Canberra (DSS 35/43)',  lat: -35.40, lon: 148.98,  color: 0xc084fc }
+    ];
+
+    const DSN_TARGET_PROBES = [
+      { key: 'aditya_l1',    label: 'Aditya-L1 (ISRO L1)',     freqBand: 'X-Band (8.4 GHz)', rate: '128 kbps' },
+      { key: 'jwst',         label: 'James Webb (NASA/ESA L2)', freqBand: 'Ka-Band (25.9 GHz)', rate: '28 Mbps' },
+      { key: 'sc_voyager_1', label: 'Voyager 1 (Interstellar)', freqBand: 'S/X-Band (2.3 GHz)', rate: '160 bps' },
+      { key: 'parker_solar', label: 'Parker Solar Probe',      freqBand: 'X-Band (8.4 GHz)', rate: '512 kbps' }
+    ];
+
+    const activeDsnBeamMeshes = [];
+
+    function build3DDeepSpaceNetworkBeams() {
+      const beamGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, 0)
+      ]);
+
+      DSN_TARGET_PROBES.forEach(probe => {
+        DSN_COMPLEXES.forEach(complex => {
+          const lineMat = new THREE.LineDashedMaterial({
+            color: complex.color,
+            dashSize: 1.8,
+            gapSize: 0.9,
+            transparent: true,
+            opacity: 0.75,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const beamLine = new THREE.Line(beamGeo.clone(), lineMat);
+          beamLine.computeLineDistances();
+          beamLine.visible = true;
+          dsnBeamsGroup.add(beamLine);
+
+          activeDsnBeamMeshes.push({
+            probeKey: probe.key,
+            complexId: complex.id,
+            line: beamLine,
+            color: complex.color,
+            offset: Math.random() * 10.0
+          });
+        });
+      });
+    }
 
 
     const clickableMeshes = [];
 
-    // The Sun (NASA Eyes Luminous Golden Star with Additive Corona Bloom)
-    const sunMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1.1, 32, 32),
-      new THREE.MeshBasicMaterial({ color: 0xfffef0 })
-    );
+    // ============================================================================
+    // NASA EYES HELIOPHYSICS: PHOTOSPHERE CONVECTION, CORONA & PARKER SPIRAL
+    // ============================================================================
+    const sunRadius = 2.4;
+
+    const sunShaderUniforms = {
+      uTime:      { value: 0.0 },
+      uCameraPos: { value: new THREE.Vector3(0, 0, 115) },
+      uCoreColor: { value: new THREE.Color(0xfffdf0) },
+      uGranColor: { value: new THREE.Color(0xf59e0b) },
+      uLimbColor: { value: new THREE.Color(0xd946ef) }
+    };
+
+    // 1. Photosphere with Simplex Noise Convective Cells & Physical Limb Darkening
+    const sunPhotosphereMat = new THREE.ShaderMaterial({
+      uniforms: sunShaderUniforms,
+      vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          vNormal = normalize(mat3(modelMatrix) * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          #include <logdepthbuf_vertex>
+        }
+      `,
+      fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
+        uniform float uTime;
+        uniform vec3 uCameraPos;
+        uniform vec3 uCoreColor;
+        uniform vec3 uGranColor;
+        uniform vec3 uLimbColor;
+
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+
+        // Procedural Solar Plasma Granulation
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float noise(vec2 p) {
+          vec2 i = floor(p); vec2 f = fract(p);
+          vec2 u = f*f*(3.0-2.0*f);
+          return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+                     mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+        }
+
+        void main() {
+          #include <logdepthbuf_fragment>
+          vec3 N = normalize(vNormal);
+          vec3 V = normalize(uCameraPos - vWorldPos);
+
+          // Physical Limb Darkening: I(mu) = 1.0 - u * (1.0 - mu)
+          float mu = max(0.0, dot(N, V));
+          float limbFactor = pow(mu, 0.65);
+
+          // Dynamic Convective Plasma Cells
+          vec2 uvCoords = vUv * 45.0;
+          float n1 = noise(uvCoords + vec2(uTime * 0.12, uTime * 0.08));
+          float n2 = noise(uvCoords * 2.0 - vec2(uTime * 0.09, uTime * 0.15));
+          float granulation = n1 * 0.65 + n2 * 0.35;
+
+          vec3 plasmaCol = mix(uGranColor, uCoreColor, granulation * 0.8 + 0.2);
+          vec3 finalSun = mix(uLimbColor, plasmaCol, limbFactor);
+
+          gl_FragColor = vec4(finalSun, 1.0);
+        }
+      `
+    });
+
+    const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(sunRadius, 48, 48), sunPhotosphereMat);
     scene.add(sunMesh);
 
-    // Soft Radiating Corona Bloom (Additive Billboard Sprite - No dark rings!)
-    const sunGlowCanvas = document.createElement('canvas');
-    sunGlowCanvas.width = 256; sunGlowCanvas.height = 256;
-    const sunGlowCtx = sunGlowCanvas.getContext('2d');
-    const sGrad = sunGlowCtx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    sGrad.addColorStop(0.00, 'rgba(255, 255, 255, 1.0)');
-    sGrad.addColorStop(0.12, 'rgba(254, 240, 138, 0.95)');
-    sGrad.addColorStop(0.35, 'rgba(245, 158, 11, 0.60)');
-    sGrad.addColorStop(0.65, 'rgba(234, 88, 12, 0.20)');
-    sGrad.addColorStop(1.00, 'rgba(0, 0, 0, 0.0)');
-    sunGlowCtx.fillStyle = sGrad;
-    sunGlowCtx.fillRect(0, 0, 256, 256);
+    // 2. Coronal Streamers & Atmospheric Halo
+    const sunCoronaMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime:      { value: 0.0 },
+        uCameraPos: { value: new THREE.Vector3(0, 0, 115) }
+      },
+      vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        void main() {
+          vNormal = normalize(mat3(modelMatrix) * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          #include <logdepthbuf_vertex>
+        }
+      `,
+      fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
+        uniform float uTime;
+        uniform vec3 uCameraPos;
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
 
-    const sunGlowMat = new THREE.SpriteMaterial({
-      map: new THREE.CanvasTexture(sunGlowCanvas),
-      color: 0xffffff,
+        void main() {
+          #include <logdepthbuf_fragment>
+          vec3 N = normalize(vNormal);
+          vec3 V = normalize(uCameraPos - vWorldPos);
+          float rim = 1.0 - max(0.0, dot(V, N));
+          float streamer = pow(rim, 3.2) * (0.8 + 0.2 * sin(uTime * 2.0 + N.x * 12.0));
+          vec3 coronaCol = mix(vec3(0.96, 0.62, 0.07), vec3(1.0, 0.95, 0.7), rim);
+          gl_FragColor = vec4(coronaCol, streamer * 0.75);
+        }
+      `,
       transparent: true,
       blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
       depthWrite: false
     });
-    const sunGlowSprite = new THREE.Sprite(sunGlowMat);
-    sunGlowSprite.scale.set(12.5, 12.5, 1.0);
-    sunMesh.add(sunGlowSprite);
-    const coronaMesh = sunGlowSprite;
 
-    const sunHit = new THREE.Mesh(new THREE.SphereGeometry(2.5, 12, 12), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+    const coronaMesh = new THREE.Mesh(new THREE.SphereGeometry(sunRadius * 1.35, 40, 40), sunCoronaMat);
+    sunMesh.add(coronaMesh);
+
+    // 3. Solar Raycast Hit Sphere
+    const sunHit = new THREE.Mesh(new THREE.SphereGeometry(sunRadius * 1.8, 12, 12), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
     sunHit.userData = { targetKey: 'sun' };
     sunMesh.add(sunHit);
     clickableMeshes.push(sunHit);
 
-    const sunLight = new THREE.PointLight(0xffffff, 3.8, 0, 0.0);
+    // 4. Photometric Point Light Source
+    const sunLight = new THREE.PointLight(0xfffaed, 4.2, 0, 0.0);
     sunLight.position.set(0, 0, 0);
     scene.add(sunLight);
+
+    // 5. Interplanetary Magnetic Field (Parker Spiral) & Solar Wind Particles
+    const solarWindParticleCount = 1800;
+    const solarWindGeo = new THREE.BufferGeometry();
+    const solarWindPositions = new Float32Array(solarWindParticleCount * 3);
+    const solarWindData = [];
+
+    for (let i = 0; i < solarWindParticleCount; i++) {
+      const arm = (i % 4) * (Math.PI / 2.0);
+      const dist = 3.0 + Math.random() * 85.0;
+      // Archimedean Parker Spiral theta = -omega * (r - r0) / v_sw
+      const spiralTheta = arm - (dist * 0.08);
+
+      solarWindPositions[i * 3]     = Math.cos(spiralTheta) * dist;
+      solarWindPositions[i * 3 + 1] = (Math.random() - 0.5) * (dist * 0.12);
+      solarWindPositions[i * 3 + 2] = Math.sin(spiralTheta) * dist;
+
+      solarWindData.push({
+        arm,
+        dist,
+        speed: 0.18 + Math.random() * 0.22,
+        ySpread: (Math.random() - 0.5) * 0.12
+      });
+    }
+
+    solarWindGeo.setAttribute('position', new THREE.BufferAttribute(solarWindPositions, 3));
+    const solarWindMat = new THREE.PointsMaterial({
+      color: 0xfde047,
+      size: 1.2,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const solarWindParticles = new THREE.Points(solarWindGeo, solarWindMat);
+    scene.add(solarWindParticles);
 
     function createKeplerianOrbitRing(pData, color) {
       if (pData.a === 0) return null;
@@ -2434,7 +2666,7 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       grad.addColorStop(0.12, 'rgba(168,142,106,0.25)');
       grad.addColorStop(0.32, 'rgba(215,188,143,0.92)');
       grad.addColorStop(0.58, 'rgba(224,198,154,0.95)'); 
-      grad.addColorStop(0.61, 'rgba(10,8,6,0.05)');
+      grad.addColorStop(0.61, 'rgba(10,8,6,0.05)'); // Cassini Division
       grad.addColorStop(0.66, 'rgba(195,170,128,0.75)');
       grad.addColorStop(0.92, 'rgba(180,155,115,0.65)'); 
       grad.addColorStop(0.95, 'rgba(0,0,0,0)');
@@ -2457,12 +2689,59 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       }
       uvs.needsUpdate = true;
 
-      const ringMat = new THREE.MeshStandardMaterial({
-        map: ringTex,
+      // NASA Eyes Shadow-Casting Ring Shader (Planet disc blocks Sun from ring fragments)
+      const ringMat = new THREE.ShaderMaterial({
+        uniforms: {
+          uRingTex:      { value: ringTex },
+          uSunDir:       { value: new THREE.Vector3(1, 0, 0) },
+          uPlanetRadius: { value: CELESTIAL_BODIES.saturn.radius }
+        },
+        vertexShader: `
+          #include <common>
+          #include <logdepthbuf_pars_vertex>
+          varying vec2 vUv;
+          varying vec3 vWorldPos;
+          varying vec3 vLocalPos;
+          void main() {
+            vUv = uv;
+            vLocalPos = position;
+            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+            vWorldPos = worldPos.xyz;
+            gl_Position = projectionMatrix * viewMatrix * worldPos;
+            #include <logdepthbuf_vertex>
+          }
+        `,
+        fragmentShader: `
+          #include <common>
+          #include <logdepthbuf_pars_fragment>
+          uniform sampler2D uRingTex;
+          uniform vec3 uSunDir;
+          uniform float uPlanetRadius;
+          varying vec2 vUv;
+          varying vec3 vLocalPos;
+          varying vec3 vWorldPos;
+
+          void main() {
+            #include <logdepthbuf_fragment>
+            vec4 texColor = texture2D(uRingTex, vUv);
+            if (texColor.a < 0.02) discard;
+
+            // Optical planet shadow: cast along anti-solar vector behind Saturn
+            vec3 sunDirNorm = normalize(uSunDir);
+            float shadow = 1.0;
+            float proj = dot(vWorldPos, -sunDirNorm);
+            if (proj > 0.0) {
+              float distToSunAxis = length(cross(vWorldPos, -sunDirNorm));
+              shadow = smoothstep(uPlanetRadius * 0.95, uPlanetRadius * 1.05, distToSunAxis);
+            }
+
+            vec3 litRings = texColor.rgb * (shadow * 0.85 + 0.15);
+            gl_FragColor = vec4(litRings, texColor.a);
+          }
+        `,
         side: THREE.DoubleSide,
         transparent: true,
-        roughness: 0.6,
-        metalness: 0.1
+        depthWrite: false
       });
 
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
@@ -2470,6 +2749,83 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       return ringMesh;
     }
 
+    function buildNaturalMoonsHierarchy() {
+      if (typeof NATURAL_MOONS === 'undefined') return;
+
+      Object.keys(NATURAL_MOONS).forEach(key => {
+        const mData = NATURAL_MOONS[key];
+        const parentObj = planetMeshes[mData.parent];
+        if (!parentObj || !parentObj.group) return;
+
+        // Orbit Guide Ring
+        const segs = 64;
+        const pts = new Float32Array((segs + 1) * 3);
+        for (let i = 0; i <= segs; i++) {
+          const a = (i / segs) * Math.PI * 2;
+          pts[i * 3]     = Math.cos(a) * mData.orbitRadius;
+          pts[i * 3 + 1] = 0;
+          pts[i * 3 + 2] = Math.sin(a) * mData.orbitRadius;
+        }
+        const orbitGeo = new THREE.BufferGeometry();
+        orbitGeo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+        const orbitLine = new THREE.Line(orbitGeo, new THREE.LineBasicMaterial({
+          color: mData.color,
+          transparent: true,
+          opacity: 0.28
+        }));
+        parentObj.group.add(orbitLine);
+
+        // Moon Mesh
+        const mMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(mData.radius, 24, 24),
+          new THREE.MeshStandardMaterial({
+            color: mData.color,
+            roughness: 0.75,
+            metalness: 0.05
+          })
+        );
+        parentObj.group.add(mMesh);
+
+        // Raycast Hit Volume
+        const hit = new THREE.Mesh(
+          new THREE.SphereGeometry(Math.max(0.65, mData.radius * 3.0), 8, 8),
+          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
+        );
+        hit.userData = { moonKey: key };
+        mMesh.add(hit);
+        clickableMeshes.push(hit);
+
+        moonMeshes[key] = {
+          mesh: mMesh,
+          orbitLine,
+          data: mData,
+          angle: Math.random() * Math.PI * 2
+        };
+      });
+    }
+
+    function setFocusToMoon(key) {
+      const mObj = moonMeshes[key];
+      if (!mObj) return;
+      activeTargetKey = key;
+      isTrackingPlanet = false;
+      window.activeCosmicTier = 2;
+
+      targetCameraDistance = 2.4;
+      targetCameraPhi = 0.32;
+      targetCameraTheta = 0.78;
+
+      mObj.mesh.getWorldPosition(focusWorldPos);
+      cameraTarget.copy(focusWorldPos);
+
+      const targetNameEl = document.getElementById('target-name');
+      const targetAgencyEl = document.getElementById('target-agency');
+      if (targetNameEl) targetNameEl.innerText = mObj.data.name;
+      if (targetAgencyEl) targetAgencyEl.innerText = `${mObj.data.parent.toUpperCase()} SYSTEM`;
+
+      updateUniversalDossier('moon_natural', key, focusWorldPos);
+      updateSEOMetadata(mObj.data.name, 'Natural Satellite');
+    }
     function buildPlanet(k, pData) {
       if (k === 'sun' || k === 'earth' || k === 'moon') return;
       const orbitRing = createKeplerianOrbitRing(pData, pData.color);
@@ -2812,8 +3168,8 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
 
         // 3. Sun Corona gentle breathing pulse
         if (typeof coronaMesh !== 'undefined' && coronaMesh) {
-          const pulse = 12.5 + Math.sin(Date.now() * 0.002) * 0.8;
-          coronaMesh.scale.set(pulse, pulse, 1.0);
+          const pulse = 1.0 + Math.sin(Date.now() * 0.002) * 0.03;
+        coronaMesh.scale.set(pulse, pulse, pulse);
         }
       } catch (err) {
         // Safe fall-through: never let simulation step halt WebGL rendering
@@ -3739,7 +4095,34 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
           document.getElementById('card-intel-site').innerText = sat.launchSite || (sat.country === 'IND' ? 'SDSC SHAR, Sriharikota' : 'Global Launch Complex');
           document.getElementById('card-intel-method').innerText = sat.role || 'Operational Earth-orbiting spacecraft.';
         }
-      } else if (entityType === 'planet' && CELESTIAL_BODIES[key]) {
+      } else if (entityType === 'moon_natural' && NATURAL_MOONS[key]) {
+        const m = NATURAL_MOONS[key];
+        wikiQuery = m.wikiKey || m.name;
+        if (dot) dot.style.background = '#' + m.color.toString(16).padStart(6, '0');
+        if (xyzFrame) xyzFrame.innerText = `${m.parent.toUpperCase()} CELESTIAL FRAME`;
+        document.getElementById('card-intel-name').innerText = m.name.toUpperCase();
+        document.getElementById('card-intel-subtitle').innerText = `Natural Satellite • ${m.parent.toUpperCase()} System`;
+        document.getElementById('card-intel-badge').innerText = 'NATURAL MOON';
+        document.getElementById('card-intel-badge').className = 'text-[9px] px-1.5 py-0.5 rounded font-bold border border-amber-500/40 text-amber-300 bg-amber-500/10';
+
+        const fallbackSvg = createFallbackMissionBanner(m.name, `Natural Moon of ${m.parent}`, '#' + m.color.toString(16).padStart(6, '0'));
+        if (previewImg) { previewImg.onerror = () => { previewImg.src = fallbackSvg; }; previewImg.src = fallbackSvg; }
+        if (imgCaption) imgCaption.innerText = `${m.name} • NASA Planetary Satellite Ephemeris`;
+
+        document.getElementById('card-grid-lbl-1').innerText = 'Orbital Radius';
+        document.getElementById('card-intel-alt').innerText = `${m.orbitRadius} planetary units`;
+        document.getElementById('card-grid-lbl-2').innerText = 'Orbital Period';
+        document.getElementById('card-intel-vel').innerText = `${m.periodDays} days`;
+        document.getElementById('card-grid-lbl-3').innerText = 'Parent Planet';
+        document.getElementById('card-intel-dist').innerText = m.parent.toUpperCase();
+        document.getElementById('card-grid-lbl-4').innerText = 'Surface Color';
+        document.getElementById('card-intel-coords').innerText = '#' + m.color.toString(16).padStart(6, '0');
+
+        document.getElementById('card-intel-vehicle').innerText = 'Natural Satellite';
+        document.getElementById('card-intel-launch-date').innerText = 'Formed ~4.5 Gyr ago';
+        document.getElementById('card-intel-site').innerText = `Orbiting ${m.parent.toUpperCase()}`;
+        document.getElementById('card-intel-method').innerText = m.desc;
+      }  else if (entityType === 'planet' && CELESTIAL_BODIES[key]) {
         const body = CELESTIAL_BODIES[key];
         wikiQuery = body.wikiKey || body.name;
         if (dot) dot.style.background = '#f97316';
@@ -3816,37 +4199,47 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
         const dObj = DEEP_SKY_CATALOG[key];
         wikiQuery = dObj.wikiKey || dObj.name;
         if (dot) dot.style.background = '#d946ef';
-        if (xyzFrame) xyzFrame.innerText = 'COSMOLOGICAL MLY / MPC';
+        if (xyzFrame) xyzFrame.innerText = 'COSMOLOGICAL COMOVING FRAME (Mly / z)';
+
+        // Relativistic Cosmological Velocity Calculation: v = c * ((1+z)^2 - 1) / ((1+z)^2 + 1)
+        const z = dObj.redshift || 0.0;
+        const onePlusZ2 = Math.pow(1.0 + z, 2);
+        const relVelFraction = (onePlusZ2 - 1.0) / (onePlusZ2 + 1.0);
+        const recessionVelKmS = Math.round(relVelFraction * 299792.458);
+
+        // Lookback time approximation in Gigayears
+        const lookbackGyr = z > 0.05
+          ? (13.8 * (1.0 - Math.pow(1.0 + z, -1.5))).toFixed(2) + ' Gyr'
+          : (dObj.distMly / 1000).toFixed(3) + ' Gyr';
+
         document.getElementById('card-intel-name').innerText = dObj.name.toUpperCase();
-        document.getElementById('card-intel-subtitle').innerText = `${dObj.type} • Redshift z=${dObj.redshift.toFixed(5)}`;
-        document.getElementById('card-intel-badge').innerText = 'DEEP SPACE';
+        document.getElementById('card-intel-subtitle').innerText = `${dObj.type} • Redshift z=${z.toFixed(5)}`;
+        document.getElementById('card-intel-badge').innerText = 'DEEP SKY';
         document.getElementById('card-intel-badge').className = 'text-[9px] px-1.5 py-0.5 rounded font-bold border border-fuchsia-500/40 text-fuchsia-300 bg-fuchsia-500/10';
 
         const fallbackSvg = createFallbackMissionBanner(dObj.name, dObj.observatories, '#e879f9');
-        if (previewImg) {
-          previewImg.onerror = () => { previewImg.src = fallbackSvg; };
-          previewImg.src = fallbackSvg;
-        }
+        if (previewImg) { previewImg.onerror = () => { previewImg.src = fallbackSvg; }; previewImg.src = fallbackSvg; }
         if (imgCaption) imgCaption.innerText = `${dObj.name} • ${dObj.observatories}`;
+
         if (spectralTags) {
           spectralTags.innerHTML = `
-            <span class="px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 text-[9px]">JWST / CHANDRA</span>
-            <span class="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[9px]">MULTI-WAVELENGTH</span>
+            <span class="px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 text-[9px]">JWST / CHANDRA / HUBBLE</span>
+            <span class="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[9px]">RECESSION: ${recessionVelKmS.toLocaleString()} km/s</span>
           `;
         }
 
-        document.getElementById('card-grid-lbl-1').innerText = 'Distance';
-        document.getElementById('card-intel-alt').innerText = `${dObj.distMly} Mly`;
-        document.getElementById('card-grid-lbl-2').innerText = 'Redshift (z)';
-        document.getElementById('card-intel-vel').innerText = `z = ${dObj.redshift.toFixed(5)}`;
-        document.getElementById('card-grid-lbl-3').innerText = 'Scale 3D';
-        document.getElementById('card-intel-dist').innerText = `~${Math.round(dObj.scale3D * 12)} kly`;
-        document.getElementById('card-grid-lbl-4').innerText = 'Observatories';
-        document.getElementById('card-intel-coords').innerText = dObj.observatories;
+        document.getElementById('card-grid-lbl-1').innerText = 'Comoving Distance';
+        document.getElementById('card-intel-alt').innerText = `${dObj.distMly.toLocaleString()} Mly`;
+        document.getElementById('card-grid-lbl-2').innerText = 'Lookback Time';
+        document.getElementById('card-intel-vel').innerText = lookbackGyr;
+        document.getElementById('card-grid-lbl-3').innerText = 'Recession Velocity';
+        document.getElementById('card-intel-dist').innerText = `${recessionVelKmS.toLocaleString()} km/s`;
+        document.getElementById('card-grid-lbl-4').innerText = 'Redshift (z)';
+        document.getElementById('card-intel-coords').innerText = `z = ${z.toFixed(5)}`;
 
         document.getElementById('card-intel-vehicle').innerText = dObj.type;
-        document.getElementById('card-intel-launch-date').innerText = 'Cosmic Epoch';
-        document.getElementById('card-intel-site').innerText = 'Intergalactic Deep Sky';
+        document.getElementById('card-intel-launch-date').innerText = `Cosmic Era (${dObj.distMly > 10000 ? 'Cosmic Dawn' : 'Local Universe'})`;
+        document.getElementById('card-intel-site').innerText = `Observatories: ${dObj.observatories}`;
         document.getElementById('card-intel-method').innerText = dObj.description;
       }
 
@@ -4288,11 +4681,13 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
         const gObj = new THREE.Group();
         gObj.position.copy(data.pos);
 
-        const coreGeo = new THREE.SphereGeometry(data.scale3D * 0.28, 24, 24);
+        // 1. Core Stellar Population / Active Galactic Nucleus (AGN)
+        const coreGeo = new THREE.SphereGeometry(data.scale3D * 0.32, 24, 24);
         const coreMat = new THREE.MeshBasicMaterial({ color: data.coreColor });
         gObj.add(new THREE.Mesh(coreGeo, coreMat));
 
-        const particleCount = 2000;
+        // 2. Multi-Arm Volumetric Spiral / Starburst Disc Particles
+        const particleCount = 2800;
         const pGeo = new THREE.BufferGeometry();
         const pPos = new Float32Array(particleCount * 3);
         const pCol = new Float32Array(particleCount * 3);
@@ -4301,21 +4696,130 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
 
         for (let i = 0; i < particleCount; i++) {
           const theta = Math.random() * Math.PI * 2;
-          const radius = (Math.pow(Math.random(), 0.6)) * (data.scale3D * 2.5);
-          const armAngle = theta + radius * 0.8;
-          pPos[i * 3] = Math.cos(armAngle) * radius;
-          pPos[i * 3 + 1] = (Math.random() - 0.5) * (data.scale3D * 0.35);
+          const radius = (Math.pow(Math.random(), 0.65)) * (data.scale3D * 2.6);
+          const armAngle = theta + radius * 0.85;
+
+          pPos[i * 3]     = Math.cos(armAngle) * radius;
+          pPos[i * 3 + 1] = (Math.random() - 0.5) * (data.scale3D * 0.38);
           pPos[i * 3 + 2] = Math.sin(armAngle) * radius;
 
-          const col = c1.clone().lerp(c2, radius / (data.scale3D * 2.5));
+          const col = c1.clone().lerp(c2, radius / (data.scale3D * 2.6));
           pCol[i * 3] = col.r; pCol[i * 3 + 1] = col.g; pCol[i * 3 + 2] = col.b;
         }
         pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
         pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
 
-        gObj.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.14, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending })));
+        gObj.add(new THREE.Points(pGeo, new THREE.PointsMaterial({
+          size: 0.16,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.88,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })));
 
-        const hit = new THREE.Mesh(new THREE.SphereGeometry(data.scale3D * 2.5, 10, 10), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+        // 3. PHYSICAL ASTROPHYSICAL STRUCTURES PER OBJECT (NASA / JWST ACCURACY)
+
+        // A. Centaurus A (NGC 5128): Collimated Relativistic Synchrotron Plasma Jets
+        if (data.hasJet && data.jetVector) {
+          const jetLength = data.scale3D * 4.8;
+          const jetGeo = new THREE.CylinderGeometry(0.12, data.scale3D * 0.85, jetLength, 16);
+          jetGeo.translate(0, jetLength / 2, 0);
+          const jetMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.65,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+
+          const northJet = new THREE.Mesh(jetGeo, jetMat);
+          northJet.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), data.jetVector);
+          gObj.add(northJet);
+
+          const southJet = new THREE.Mesh(jetGeo, jetMat);
+          southJet.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), data.jetVector.clone().negate());
+          gObj.add(southJet);
+        }
+
+        // B. Messier 82 (Cigar Galaxy): Bipolar Galactic Superwind Plumes
+        if (data.hasBipolarOutflow) {
+          const plumeCount = 650;
+          const plumeGeo = new THREE.BufferGeometry();
+          const plumePos = new Float32Array(plumeCount * 3);
+          const plumeCols = new Float32Array(plumeCount * 3);
+          const cPlume = new THREE.Color(0xf43f5e);
+
+          for (let i = 0; i < plumeCount; i++) {
+            const side = i % 2 === 0 ? 1 : -1;
+            const distY = (0.2 + Math.random() * 2.8) * data.scale3D * side;
+            const spread = (Math.abs(distY) / (data.scale3D * 2.8)) * (data.scale3D * 0.95);
+            plumePos[i * 3]     = (Math.random() - 0.5) * spread;
+            plumePos[i * 3 + 1] = distY;
+            plumePos[i * 3 + 2] = (Math.random() - 0.5) * spread;
+
+            plumeCols[i * 3] = cPlume.r; plumeCols[i * 3 + 1] = cPlume.g; plumeCols[i * 3 + 2] = cPlume.b;
+          }
+          plumeGeo.setAttribute('position', new THREE.BufferAttribute(plumePos, 3));
+          plumeGeo.setAttribute('color', new THREE.BufferAttribute(plumeCols, 3));
+          gObj.add(new THREE.Points(plumeGeo, new THREE.PointsMaterial({
+            size: 0.18,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.82,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          })));
+        }
+
+        // C. Messier 104 (Sombrero Galaxy): Dark Interstellar Dust Absorption Ring
+        if (data.hasDustRing) {
+          const dustRingGeo = new THREE.RingGeometry(data.scale3D * 1.45, data.scale3D * 2.15, 64);
+          const dustRingMat = new THREE.MeshBasicMaterial({
+            color: 0x050811,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.92,
+            depthWrite: false
+          });
+          const dustRing = new THREE.Mesh(dustRingGeo, dustRingMat);
+          dustRing.rotation.x = Math.PI / 2.35;
+          gObj.add(dustRing);
+        }
+
+        // D. Ring Nebula (Messier 57): Expanding Planetary Nebula Torus
+        if (data.isPlanetaryNebula) {
+          const torusGeo = new THREE.TorusGeometry(data.scale3D * 1.15, data.scale3D * 0.42, 24, 48);
+          const torusMat = new THREE.MeshBasicMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.45,
+            blending: THREE.AdditiveBlending
+          });
+          gObj.add(new THREE.Mesh(torusGeo, torusMat));
+        }
+
+        // E. GN-z11: Primordial Lyman-Break Envelope (Cosmic Dawn Redshift Halo)
+        if (data.isPrimordial) {
+          const primordialHalo = new THREE.Mesh(
+            new THREE.SphereGeometry(data.scale3D * 1.85, 24, 24),
+            new THREE.MeshBasicMaterial({
+              color: 0xef4444,
+              wireframe: true,
+              transparent: true,
+              opacity: 0.35,
+              blending: THREE.AdditiveBlending
+            })
+          );
+          gObj.add(primordialHalo);
+        }
+
+        // 4. Interactive Raycast Hit Geometry
+        const hit = new THREE.Mesh(
+          new THREE.SphereGeometry(data.scale3D * 2.8, 10, 10),
+          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 })
+        );
         hit.userData = { deepSkyKey: key };
         gObj.add(hit);
         clickableMeshes.push(hit);
@@ -4330,6 +4834,10 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
       const isDeep = domain === 'deepsky';
 
       deepSkyGroup.visible = isDeep;
+// Phase 4: Dynamic Cosmic Fog Calibration for Deep Space
+      if (isDeep && typeof scene !== 'undefined' && scene.fog) {
+        scene.fog.density = 0.0000015; // Prevent cosmological objects from being obscured by dark fog
+      }
       const lblLayer = document.getElementById("deepspace-hud-labels");
       if (lblLayer) lblLayer.style.display = isDeep ? "block" : "none";
 
@@ -4717,7 +5225,7 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
       }
       mwGeo.setAttribute('position', new THREE.BufferAttribute(mwPos, 3));
       mwGeo.setAttribute('color', new THREE.BufferAttribute(mwCols, 3));
-      milkyWayGroup.add(new THREE.Points(mwGeo, new THREE.PointsMaterial({ size: 1.8, vertexColors: true, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending })));
+      milkyWayGroup.add(new THREE.Points(mwGeo, new THREE.PointsMaterial({ size: 1.8, map: circleStarTexture, vertexColors: true, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false })));
       universeRootGroup.add(milkyWayGroup);
 
       // 3. Local Group & Neighboring Galaxies (T5)
@@ -4871,9 +5379,9 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
       if (!tData) return;
       window.activeCosmicTier = targetTier;
 
-      // Adjust scene fog so deep space is never a black screen
-      if (typeof scene !== 'undefined' && scene && scene.fog) {
-        scene.fog.density = targetTier >= 5 ? 0.0000008 : (targetTier >= 3 ? 0.00001 : 0.00015);
+      // CRITICAL: Hide 60,000 deep space particles when in Solar System / Earth view
+      if (typeof universeRootGroup !== 'undefined' && universeRootGroup) {
+        universeRootGroup.visible = (targetTier >= 3 || currentViewDomain === 'deepsky');
       }
 
       // Smooth camera destination
@@ -5149,6 +5657,8 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
         } else if (hitObj.userData.deepSkyKey) {
           if (currentViewDomain !== 'deepsky') switchViewDomain('deepsky');
           flyToDeepSkyNASA(hitObj.userData.deepSkyKey);
+        } else if (hitObj.userData.moonKey) {
+          setFocusToMoon(hitObj.userData.moonKey);
         } else if (hitObj.userData.targetKey) {
           if (currentViewDomain !== 'solar') switchViewDomain('solar');
           setFocusTo(hitObj.userData.targetKey);
@@ -5259,6 +5769,36 @@ function animate() {
       const utcEl = document.getElementById('live-utc-display');
       if (utcEl) utcEl.innerText = astro.date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
 
+      // Update NASA Eyes Capsule HUD Clock & Rate
+      const hudDateEl = document.getElementById('nasa-hud-date');
+      const hudTimeEl = document.getElementById('nasa-hud-time');
+      const hudRateEl = document.getElementById('nasa-hud-rate');
+      if (hudDateEl && hudTimeEl) {
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const d = astro.date;
+        hudDateEl.innerText = `${months[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2, '0')}, ${d.getUTCFullYear()}`;
+        let h = d.getUTCHours();
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        h = h ? h : 12;
+        const m = String(d.getUTCMinutes()).padStart(2, '0');
+        const s = String(d.getUTCSeconds()).padStart(2, '0');
+        hudTimeEl.innerText = `${String(h).padStart(2, '0')}:${m}:${s} ${ampm}`;
+      }
+      if (hudRateEl) {
+        if (typeof isSimPaused !== 'undefined' && isSimPaused) {
+          hudRateEl.innerText = 'PAUSED';
+          hudRateEl.className = 'text-amber-400 font-bold uppercase tracking-wider';
+        } else if (timeScale === 1.0) {
+          hudRateEl.innerText = 'REAL RATE';
+          hudRateEl.className = 'text-emerald-400 font-bold uppercase tracking-wider';
+        } else {
+          hudRateEl.innerText = `${timeScale}X RATE`;
+          hudRateEl.className = 'text-cyan-400 font-bold uppercase tracking-wider';
+        }
+      }
+
+
       // 1. Earth Orbit & Diurnal Rotation
       const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
       earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
@@ -5267,6 +5807,55 @@ function animate() {
       earthMesh.rotation.y = -solarRotationAngle - (Math.PI / 2.0) + (astro.subsolarLngDeg * Math.PI / 180);
       earthMesh.updateMatrixWorld(true);
 
+      // Heliophysics Solar Uniforms & Parker Spiral In Situ Update
+      if (typeof sunShaderUniforms !== 'undefined') {
+        sunShaderUniforms.uTime.value = performance.now() * 0.001;
+        sunShaderUniforms.uCameraPos.value.copy(camera.position);
+      }
+      if (typeof sunCoronaMat !== 'undefined') {
+        sunCoronaMat.uniforms.uTime.value = performance.now() * 0.001;
+        sunCoronaMat.uniforms.uCameraPos.value.copy(camera.position);
+      }
+      if (typeof solarWindParticles !== 'undefined' && solarWindParticles.visible) {
+        const pArr = solarWindParticles.geometry.attributes.position.array;
+        const dtSw = (deltaRealMs / 1000) * (timeScale || 1.0);
+        for (let i = 0; i < solarWindData.length; i++) {
+          const pt = solarWindData[i];
+          pt.dist += pt.speed * dtSw * 4.0;
+          if (pt.dist > 90.0) pt.dist = 3.2; // Respawn at photosphere
+          const spiralTh = pt.arm - (pt.dist * 0.08) - (virtualEpochTime * 0.00003);
+          pArr[i * 3]     = Math.cos(spiralTh) * pt.dist;
+          pArr[i * 3 + 1] = pt.dist * pt.ySpread;
+          pArr[i * 3 + 2] = Math.sin(spiralTh) * pt.dist;
+        }
+        solarWindParticles.geometry.attributes.position.needsUpdate = true;
+      }
+      // Update Real-Time DSN Carrier Signal Beams
+      if (typeof activeDsnBeamMeshes !== 'undefined' && activeDsnBeamMeshes.length > 0) {
+        const earthPosWorld = new THREE.Vector3();
+        earthSystem.getWorldPosition(earthPosWorld);
+        const probeWorldPos = new THREE.Vector3();
+
+        activeDsnBeamMeshes.forEach(bm => {
+          let foundTarget = false;
+          if (typeof orbiterMeshes !== 'undefined' && orbiterMeshes[bm.probeKey]?.probeMesh) {
+            orbiterMeshes[bm.probeKey].probeMesh.getWorldPosition(probeWorldPos);
+            foundTarget = true;
+          }
+
+          if (foundTarget) {
+            const arr = bm.line.geometry.attributes.position.array;
+            arr[0] = earthPosWorld.x; arr[1] = earthPosWorld.y; arr[2] = earthPosWorld.z;
+            arr[3] = probeWorldPos.x; arr[4] = probeWorldPos.y; arr[5] = probeWorldPos.z;
+            bm.line.geometry.attributes.position.needsUpdate = true;
+            bm.line.computeLineDistances();
+            bm.line.material.dashOffset = -(performance.now() * 0.003 + bm.offset);
+            bm.line.visible = true;
+          } else {
+            bm.line.visible = false;
+          }
+        });
+      }
       sunMesh.getWorldPosition(_vSun);
       earthMesh.getWorldPosition(_vEarth);
       _vSunDir.subVectors(_vSun, _vEarth).normalize();
@@ -5285,6 +5874,26 @@ function animate() {
         const orbit = computeKeplerianOrbit(pObj.data, astro.d);
         pObj.group.position.set(orbit.xThree, orbit.yThree, orbit.zThree);
         pObj.mesh.rotation.y = (astro.d * (24.0 / pObj.data.rotPeriod) * Math.PI * 2) % (Math.PI * 2);
+      }
+
+      // Phase 3: Animate Natural Moons & Sync Saturn Ring Shadow
+      if (typeof moonMeshes !== 'undefined') {
+        const dtSec = (deltaRealMs / 1000) * timeScale;
+        Object.keys(moonMeshes).forEach(mk => {
+          const mObj = moonMeshes[mk];
+          if (!mObj || !mObj.mesh || !mObj.data) return;
+          const angSpd = (2.0 * Math.PI / (mObj.data.periodDays * 86400)) * 2500.0;
+          mObj.angle = (mObj.angle || 0) + angSpd * dtSec;
+          mObj.mesh.position.x = Math.cos(mObj.angle) * mObj.data.orbitRadius;
+          mObj.mesh.position.z = Math.sin(mObj.angle) * mObj.data.orbitRadius;
+        });
+      }
+      if (planetMeshes.saturn && planetMeshes.saturn.axialGroup) {
+        planetMeshes.saturn.axialGroup.traverse(child => {
+          if (child.material && child.material.uniforms && child.material.uniforms.uSunDir) {
+            child.material.uniforms.uSunDir.value.copy(_vSunDir);
+          }
+        });
       }
 
       // 3. Probes
@@ -5378,6 +5987,10 @@ function animate() {
 
       // 6. Camera Tracking (Unified Target Resolver for Satellites, Planets, Moons & Missions)
       focusWorldPos.set(0, 0, 0);
+      const hasActiveMoon = Boolean(typeof moonMeshes !== 'undefined' && moonMeshes[activeTargetKey]);
+      if (hasActiveMoon && moonMeshes[activeTargetKey].mesh) {
+        moonMeshes[activeTargetKey].mesh.getWorldPosition(focusWorldPos);
+      }
 
       const hasActiveSat = Boolean(activeTargetKey && MASSIVE_SATELLITE_CATALOG[activeTargetKey]);
       const hasActiveOrbiter = Boolean(activeTargetKey && ((typeof PLANETARY_ORBITERS !== 'undefined' && PLANETARY_ORBITERS[activeTargetKey]) || (typeof orbiterMeshes !== 'undefined' && orbiterMeshes[activeTargetKey])));
@@ -5439,9 +6052,12 @@ function animate() {
 
 // --- INITIALIZATION ---
   try {
+    build3DDeepSpaceNetworkBeams();
     renderCatalogs();
+    buildNaturalMoonsHierarchy();
     buildDeepSkyUniverseObjects();
     buildUnifiedNestedUniverse();
+    if (typeof universeRootGroup !== "undefined") universeRootGroup.visible = false;
     setCosmicTier(2); if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('solar', { skipCameraTransition: true }); setFocusTo('sun'); targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75;
     if (typeof BotSwarm !== 'undefined' && BotSwarm.init) BotSwarm.init();
     if (typeof handleHashRoute === 'function') handleHashRoute();
@@ -5461,7 +6077,57 @@ function animate() {
         __dismissOverlayOnReady.classList.add('opacity-0', 'pointer-events-none');
         setTimeout(() => __dismissOverlayOnReady.classList.add('hidden'), 400);
       }
-  animate();
+
+    // Dynamic Ingestion Bridge from Sentinel Mission Control
+    function syncSentinelInjections() {
+      try {
+        const injected = JSON.parse(localStorage.getItem('orbital_command_custom_sats') || '[]');
+        if (Array.isArray(injected) && typeof MASSIVE_SATELLITE_CATALOG !== 'undefined') {
+          injected.forEach(craft => {
+            if (!MASSIVE_SATELLITE_CATALOG[craft.id]) {
+              MASSIVE_SATELLITE_CATALOG[craft.id] = {
+                id: craft.id,
+                name: craft.name,
+                norad: craft.norad,
+                altKm: craft.altKm || 500,
+                incDeg: craft.incDeg || 51.6,
+                agency: craft.agency || 'CUSTOM',
+                agencyCat: 'isro',
+                color: craft.color || 0x00f0ff,
+                role: craft.role || 'Injected Asset',
+                raan0: Math.random() * 360,
+                argP: Math.random() * 360,
+                M0: Math.random() * 360,
+                ecc: 0.001
+              };
+              if (typeof massiveSatKeys !== 'undefined' && !massiveSatKeys.includes(craft.id)) {
+                massiveSatKeys.push(craft.id);
+                if (typeof totalMassiveCount !== 'undefined') totalMassiveCount = massiveSatKeys.length;
+                if (typeof instancedSatMesh !== 'undefined' && instancedSatMesh) {
+                  instancedSatMesh.count = massiveSatKeys.length;
+                  instancedSatMesh.setColorAt(massiveSatKeys.length - 1, new THREE.Color(craft.color || 0x00f0ff));
+                  instancedSatMesh.instanceColor.needsUpdate = true;
+                }
+              }
+            }
+          });
+        }
+        const defconLvl = localStorage.getItem('orbital_defcon_level');
+        const pill = document.getElementById('hud-defcon-pill');
+        if (defconLvl && pill) {
+          pill.innerText = 'DEFCON ' + defconLvl;
+          pill.className = (parseInt(defconLvl, 10) <= 2)
+            ? 'text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/40 font-mono font-bold animate-pulse'
+            : 'text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono';
+        }
+      } catch(_) {}
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', syncSentinelInjections);
+      setInterval(syncSentinelInjections, 3000);
+      syncSentinelInjections();
+    }
+    animate();
   </script>
 
   <!-- Autonomous Client-Side Dev Bot (Mobile Triple-Tap & Shift+D Trigger) -->
@@ -6937,16 +7603,35 @@ function animate() {
       function applyStorySlide() {
         if (!activeStory || !activeStory.slides[activeSlideIdx]) return;
         const slide = activeStory.slides[activeSlideIdx];
-        document.getElementById('story-player-badge').innerText = `${activeStory.title.toUpperCase()} • SLIDE ${activeSlideIdx + 1}/${activeStory.slides.length}`;
-        document.getElementById('story-player-title').innerText = slide.title;
-        document.getElementById('story-player-desc').innerText = slide.desc;
+        const badgeEl = document.getElementById('story-player-badge');
+        const titleEl = document.getElementById('story-player-title');
+        const descEl = document.getElementById('story-player-desc');
+
+        if (badgeEl) badgeEl.innerText = `${activeStory.title.toUpperCase()} • STEP ${activeSlideIdx + 1}/${activeStory.slides.length}`;
+        if (titleEl) titleEl.innerText = slide.title;
+        if (descEl) descEl.innerText = slide.desc;
 
         if (slide.epochIso) {
           const parsed = Date.parse(slide.epochIso);
-          if (!Number.isNaN(parsed)) virtualEpochTime = parsed;
+          if (!Number.isNaN(parsed)) {
+            virtualEpochTime = parsed;
+            const slider = document.getElementById('time-scrubber-slider');
+            if (slider) slider.value = 0;
+          }
         }
-        if (slide.target) setFocusTo(slide.target);
-        if (slide.dist) targetCameraDistance = slide.dist;
+
+        // Camera auto-framing with S-curve interpolation
+        if (slide.target) {
+          if (typeof switchExplicitViewMode === 'function') {
+            switchExplicitViewMode(slide.target === 'earth' ? 'earth' : 'solar', { skipCameraTransition: true });
+          }
+          if (typeof setFocusTo === 'function') setFocusTo(slide.target);
+        }
+        if (slide.dist) {
+          targetCameraDistance = slide.dist;
+          targetCameraPhi = 0.38;
+          targetCameraTheta = 0.82;
+        }
       }
 
       function stepStorySlide(dir) {
@@ -6956,6 +7641,8 @@ function animate() {
       }
 
       // URL Query Flag Parser (#/mars?lighting=flood&detailPanel=true&locked=false...)
+      // Complete URL Parameter Application
+      // Complete URL Parameter Application
       function applyURLQueryParameters() {
         const rawHash = window.location.hash.replace(/^#\/?/, '').trim();
         const [pathPart, queryPart] = rawHash.split('?');
@@ -6963,24 +7650,18 @@ function animate() {
           const storySlug = pathPart.replace('story/', '');
           setTimeout(() => startStoryTour(storySlug), 400);
         } else if (pathPart === 'home') {
-          setFocusTo('sun'); targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75;
+          if (typeof setFocusTo === 'function') setFocusTo('sun');
+          targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75;
         }
 
         if (!queryPart) return;
         const params = new URLSearchParams(queryPart);
 
-        // Auto-dismiss modal for embeds
         dismissIntroWithoutAudio();
 
-        if (params.has('lighting')) {
-          setLightingMode(params.get('lighting'));
-        }
-        if (params.get('detailPanel') === 'false') {
-          closeIntelCard();
-        }
-        if (params.get('search') === 'false') {
-          minimizeCatalog();
-        }
+        if (params.has('lighting')) setLightingMode(params.get('lighting'));
+        if (params.get('detailPanel') === 'false') closeIntelCard();
+        if (params.get('search') === 'false') minimizeCatalog();
         if (params.get('menu') === 'false') {
           const hdr = document.querySelector('header');
           if (hdr) hdr.style.display = 'none';
@@ -6998,35 +7679,29 @@ function animate() {
         }
       }
 
-      // Share & Embed Code Generator
-      async function refreshEmbedSnippet() {
+      function refreshEmbedSnippet() {
         const target = activeTargetKey || 'home';
-        const showDetail = document.getElementById('emb-detail')?.checked ?? true;
-        const showSearch = document.getElementById('emb-search')?.checked ?? false;
-        const showMenu = document.getElementById('emb-menu')?.checked ?? false;
-        const collapseTime = document.getElementById('emb-collapse-time')?.checked ?? false;
-        const locked = document.getElementById('emb-locked')?.checked ?? false;
-        const lighting = document.getElementById('emb-lighting')?.value || 'natural';
-
-        try {
-          const q = new URLSearchParams({
-            target,
-            lighting,
-            show_detail_panel: String(showDetail),
-            show_search: String(showSearch),
-            show_menu: String(showMenu),
-            collapse_time: String(collapseTime),
-            lock_navigation: String(locked)
-          });
-          const res = await fetch(`/api/v1/embed-builder?${q.toString()}`);
-          if (!res.ok) return;
-          const data = await res.json();
-          document.getElementById('emb-direct-url').value = data.direct_url;
-          document.getElementById('emb-iframe-code').value = data.iframe_embed;
-        } catch {}
+        const urlBox = document.getElementById('nasa-share-url-input');
+        const codeBox = document.getElementById('nasa-embed-code-input');
+        const stateUrl = `${window.location.origin}${window.location.pathname}#/${target}?epoch=${virtualEpochTime}`;
+        if (urlBox) urlBox.value = stateUrl;
+        if (codeBox) codeBox.value = `<iframe src="${stateUrl}&menu=false" width="100%" height="600" frameborder="0" allowfullscreen></iframe>`;
       }
 
-      // Kiosk Activity Listeners
+      window.copyShareField = function(inputId, btnId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.select();
+        navigator.clipboard?.writeText(input.value).then(() => {
+          const feedback = document.getElementById('share-copy-feedback');
+          if (feedback) {
+            feedback.classList.remove('hidden');
+            setTimeout(() => feedback.classList.add('hidden'), 2200);
+          }
+        }).catch(() => {});
+      };
+
+      // Kiosk Inactivity Listeners
       ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel'].forEach(evt => {
         window.addEventListener(evt, () => { lastActivityTime = Date.now(); }, { passive: true });
       });
@@ -7069,6 +7744,9 @@ function animate() {
             if (!m.classList.contains('hidden')) refreshEmbedSnippet();
           }
         },
+        closeEmbedModal: () => {
+          document.getElementById('nasa-embed-modal')?.classList.add('hidden');
+        },
         refreshEmbedSnippet,
         setLightingMode,
         toggleLayer,
@@ -7078,1489 +7756,23 @@ function animate() {
           const ms = Date.parse(val);
           if (!Number.isNaN(ms)) virtualEpochTime = ms;
         },
-        setExponentialRate: (expVal) => {
-          const v = parseFloat(expVal) || 0;
-          const rate = v === 0 ? 1 : Math.sign(v) * Math.round(Math.pow(10, Math.abs(v)));
-          timeScale = rate;
-          const lbl = document.getElementById('nasa-rate-readout');
-          if (lbl) lbl.innerText = `${rate.toLocaleString()}x`;
-        },
-        toggleKioskMode: (enabled) => {
-          isKioskEnabled = enabled;
-          lastActivityTime = Date.now();
-        },
-        forceRestartKioskSession: () => {
-          resetToLiveTime();
-          setFocusTo('sun'); targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75;
-          document.getElementById('nasa-kiosk-overlay')?.classList.add('hidden');
-        },
-        resumeKioskSession: (restart) => {
-          lastActivityTime = Date.now();
-          document.getElementById('nasa-kiosk-overlay')?.classList.add('hidden');
-          if (restart) {
-            resetToLiveTime();
-            setFocusTo('sun'); targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75;
-          }
-        }
-      };
-    })();
-  </script>
-<!-- ===================================================================== -->
-  <!-- UNIFIED NASA MULTI-PROGRAM TELEMETRY COMMAND CENTER DRAWER (INDEX.HTML)-->
-  <!-- ===================================================================== -->
-  <div id="nasa-multi-hub-modal-screen" class="hidden fixed inset-2 sm:inset-6 z-50 rounded-3xl hud-glass border border-cyan-500/40 p-4 font-mono text-slate-100 flex flex-col pointer-events-auto shadow-2xl overflow-hidden">
-    <!-- Header Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-800 shrink-0">
-      <div class="flex items-center gap-2.5">
-        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
-        <div>
-          <h2 class="text-sm sm:text-base font-bold tracking-widest uppercase text-cyan-400">
-            NASA Multi-Program Live Telemetry Hub
-          </h2>
-          <p class="text-[10px] text-slate-400">
-            Zero-DB Direct Stream • DSN Now (5s) • JPL Horizons Vectors • NeoWs Asteroids • EONET Earth • ISS
-          </p>
-        </div>
-      </div>
-
-      <!-- 3D App Switcher -->
-      <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
-        <button onclick="window.switchNasaHubViewport('https://eyes.nasa.gov/apps/solar-system/#/home?featured=false&logo=false')" class="px-2.5 py-1 bg-cyan-950 border border-cyan-500/50 text-cyan-300 rounded-lg hover:bg-cyan-900 font-bold">
-          ☀️ Solar System 3D
-        </button>
-        <button onclick="window.switchNasaHubViewport('https://eyes.nasa.gov/apps/asteroids/#/home?featured=false&logo=false')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800">
-          ☄️ Eyes on Asteroids
-        </button>
-        <button onclick="window.switchNasaHubViewport('https://eyes.nasa.gov/apps/earth/#/')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800">
-          🌍 Eyes on the Earth
-        </button>
-        <button onclick="window.switchNasaHubViewport('https://eyes.nasa.gov/apps/exo/#/')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800">
-          🪐 Exoplanets 3D
-        </button>
-        <button onclick="window.switchNasaHubViewport('https://eyes.nasa.gov/apps/dsn-now/')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 text-amber-300 rounded-lg hover:bg-slate-800">
-          📡 DSN Now Visual
-        </button>
-        <button onclick="window.toggleNasaMultiHub()" class="px-2.5 py-1 bg-rose-950/80 border border-rose-500/40 text-rose-300 rounded-lg hover:bg-rose-900 font-bold ml-1">
-          ✕ Close
-        </button>
-      </div>
-    </div>
-
-    <!-- Top Telemetry Strip -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-3 text-xs shrink-0">
-      <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl">
-        <div class="text-slate-400 text-[9px]">ISS LAT / LON</div>
-        <div id="hub-iss-coords" class="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5">-- / --</div>
-      </div>
-      <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl">
-        <div class="text-slate-400 text-[9px]">ISS ALTITUDE / SPEED</div>
-        <div id="hub-iss-speed" class="text-xs sm:text-sm font-bold text-cyan-400 mt-0.5">-- km • -- km/h</div>
-      </div>
-      <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl">
-        <div class="text-slate-400 text-[9px]">ACTIVE DSN DISHES</div>
-        <div id="hub-dsn-count" class="text-xs sm:text-sm font-bold text-amber-400 mt-0.5">-- Active Links</div>
-      </div>
-      <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl">
-        <div class="text-slate-400 text-[9px]">NEAR-EARTH ASTEROIDS TODAY</div>
-        <div id="hub-neo-count" class="text-xs sm:text-sm font-bold text-purple-400 mt-0.5">-- Close Approaches</div>
-      </div>
-      <div class="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl flex items-center justify-between">
-        <div>
-          <div class="text-slate-400 text-[9px]">LAST TELEMETRY SYNC</div>
-          <div id="hub-sync-clock" class="text-xs sm:text-sm font-bold text-slate-200 mt-0.5">SYNCING...</div>
-        </div>
-        <button onclick="window.refreshNasaMultiHub()" class="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/40 text-[10px] font-bold">
-          SYNC
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Workspace: 3D WebGL Viewport + Live Multi-API Feeds -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0">
-      <!-- Left 7 Cols: Interactive Official NASA Eyes 3D WebGL Canvas + Target Bar -->
-      <div class="lg:col-span-7 bg-black border border-slate-800 rounded-2xl overflow-hidden flex flex-col min-h-[280px]">
-        <div class="flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-950 border-b border-slate-800 text-[11px]">
-          <span class="text-cyan-400 font-bold">🚀 DIRECT TARGET TELEMETRY LINK:</span>
-          <div class="flex items-center gap-1.5">
-            <select id="nasa-target-select" onchange="window.syncSingleSolarTarget()" class="bg-slate-900 border border-slate-700 text-slate-100 px-2 py-1 rounded">
-              <option value="home">Solar System Overview</option>
-              <option value="sc_voyager_1">Voyager 1</option>
-              <option value="sc_voyager_2">Voyager 2</option>
-              <option value="sc_parker_solar_probe">Parker Solar Probe</option>
-              <option value="sc_europa_clipper">Europa Clipper</option>
-              <option value="sc_juice">JUICE</option>
-              <option value="sc_psyche">Psyche</option>
-              <option value="sc_lucy">Lucy</option>
-              <option value="earth">Earth</option>
-              <option value="mars">Mars</option>
-              <option value="jupiter">Jupiter</option>
-              <option value="3i_atlas">Comet 3I/ATLAS (C/2025 N1)</option>
-            </select>
-            <select id="nasa-lighting-select" onchange="window.syncSingleSolarTarget()" class="bg-slate-900 border border-slate-700 text-slate-100 px-2 py-1 rounded">
-              <option value="natural">Natural Light</option>
-              <option value="shadow">Shadow Light</option>
-              <option value="flood">Flood Light</option>
-            </select>
-          </div>
-        </div>
-        <iframe
-          id="nasa-main-viewport"
-          src="about:blank"
-          class="w-full flex-1 border-0"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <!-- Right 5 Cols: Real-Time Injected Data Panels -->
-      <div class="lg:col-span-5 flex flex-col gap-3 overflow-y-auto scroll-container pr-1">
-        <!-- Panel 1: Deep Space Network (DSN Now) Live Antenna Feed -->
-        <div class="bg-slate-950/85 border border-slate-800 rounded-2xl p-3">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
-            <span class="text-[11px] font-bold text-amber-400 uppercase">1. DSN Now — Live Dish Telemetry</span>
-            <span class="text-[9px] text-slate-400">Goldstone • Madrid • Canberra</span>
-          </div>
-          <div id="hub-dsn-feed" class="space-y-1.5 text-[11px] max-h-36 overflow-y-auto scroll-container">
-            Connecting to NASA Deep Space Network...
-          </div>
-        </div>
-
-        <!-- Panel 2: Eyes on Asteroids (NeoWs Close Approaches Today) -->
-        <div class="bg-slate-950/85 border border-slate-800 rounded-2xl p-3">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
-            <span class="text-[11px] font-bold text-purple-400 uppercase">2. Near-Earth Asteroids Today (NeoWs)</span>
-            <span class="text-[9px] text-slate-400">Click to Fly 3D</span>
-          </div>
-          <div id="hub-asteroid-feed" class="space-y-1.5 text-[11px] max-h-36 overflow-y-auto scroll-container">
-            Fetching today's close-approach objects...
-          </div>
-        </div>
-
-        <!-- Panel 3: Eyes on the Earth (EONET Active Satellite Events) -->
-        <div class="bg-slate-950/85 border border-slate-800 rounded-2xl p-3">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
-            <span class="text-[11px] font-bold text-emerald-400 uppercase">3. Eyes on the Earth — Live EONET Events</span>
-            <span class="text-[9px] text-slate-400">Plotted on 3D Globe</span>
-          </div>
-          <div id="hub-earth-feed" class="space-y-1.5 text-[11px] max-h-36 overflow-y-auto scroll-container">
-            Loading active Earth observatory events...
-          </div>
-        </div>
-
-        <!-- Panel 4: JPL Horizons State Vector Inspector -->
-        <div class="bg-slate-950/85 border border-slate-800 rounded-2xl p-3">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
-            <span class="text-[11px] font-bold text-cyan-400 uppercase">4. JPL Horizons 3D State Vector</span>
-            <select id="hub-horizons-target" onchange="window.refreshNasaMultiHub()" class="bg-slate-900 border border-slate-700 text-[10px] px-2 py-0.5 rounded text-cyan-300">
-              <option value="voyager1">Voyager 1 (-31)</option>
-              <option value="voyager2">Voyager 2 (-32)</option>
-              <option value="parker">Parker Solar Probe (-96)</option>
-              <option value="jwst">James Webb (-170)</option>
-              <option value="europa_clipper">Europa Clipper (-159)</option>
-              <option value="psyche">Psyche (-255)</option>
-              <option value="lucy">Lucy (-49)</option>
-              <option value="juice">JUICE (-28)</option>
-              <option value="mars">Mars (499)</option>
-            </select>
-          </div>
-          <pre id="hub-horizons-feed" class="text-[10px] text-emerald-300 bg-black/80 p-2 rounded-xl border border-slate-800 overflow-x-auto whitespace-pre-wrap max-h-40 scroll-container">Querying JPL Horizons state vectors...</pre>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function initUnifiedNasaHubClient() {
-      const eonetPinsGroup = new THREE.Group();
-      if (typeof earthMesh !== 'undefined') {
-        earthMesh.add(eonetPinsGroup);
-      }
-
-      window.toggleNasaMultiHub = function() {
-        const modal = document.getElementById('nasa-multi-hub-modal');
-        if (!modal) return;
-        const isOpening = modal.classList.contains('hidden');
-        modal.classList.toggle('hidden');
-        const iframe = document.getElementById('nasa-main-viewport');
-        if (isOpening) {
-          if (iframe && iframe.src === 'about:blank') {
-            iframe.src = 'https://eyes.nasa.gov/apps/solar-system/#/home?featured=false&logo=false';
-          }
-          window.refreshNasaMultiHub();
-        }
-      };
-
-      window.switchNasaHubViewport = function(url) {
-        const iframe = document.getElementById('nasa-main-viewport');
-        if (iframe) iframe.src = url;
-      };
-
-      window.syncSingleSolarTarget = async function() {
-        const target = document.getElementById('nasa-target-select')?.value || 'home';
-        const lighting = document.getElementById('nasa-lighting-select')?.value || 'natural';
-        window.switchNasaHubViewport(
-          `https://eyes.nasa.gov/apps/solar-system/#/${target}?featured=false&detailPanel=true&logo=false&search=false&shareButton=false&menu=false&collapseSettingsOptions=true&lighting=${lighting}`
-        );
-        try {
-          const res = await fetch(`/api/nasa-solar-live?target=${encodeURIComponent(target)}&lighting=${encodeURIComponent(lighting)}`);
-          if (!res.ok) return;
-          const data = await res.json();
-          const feedEl = document.getElementById('hub-horizons-feed');
-          if (feedEl && Array.isArray(data.liveState?.extractedTelemetryText)) {
-            feedEl.textContent = data.liveState.extractedTelemetryText.join('\n');
-          }
-        } catch (_) {}
-      };
-
-      function plotEonetEventsOn3DGlobe(events) {
-        if (!eonetPinsGroup || typeof CELESTIAL_BODIES === 'undefined') return;
-        while (eonetPinsGroup.children.length > 0) {
-          eonetPinsGroup.remove(eonetPinsGroup.children[0]);
-        }
-        const rE = CELESTIAL_BODIES.earth.radius + 0.018;
-        (events || []).forEach(ev => {
-          if (!Array.isArray(ev.coordinates) || ev.coordinates.length < 2) return;
-          const [lon, lat] = ev.coordinates;
-          if (typeof lat !== 'number' || typeof lon !== 'number') return;
-          const phi = (90 - lat) * (Math.PI / 180);
-          const theta = (lon + 180) * (Math.PI / 180);
-          const x = -(rE * Math.sin(phi) * Math.cos(theta));
-          const z = (rE * Math.sin(phi) * Math.sin(theta));
-          const y = (rE * Math.cos(phi));
-
-          const pin = new THREE.Mesh(
-            new THREE.SphereGeometry(0.036, 10, 10),
-            new THREE.MeshBasicMaterial({ color: 0xf43f5e })
-          );
-          pin.position.set(x, y, z);
-          eonetPinsGroup.add(pin);
-        });
-      }
-
-      window.refreshNasaMultiHub = async function() {
-        const target = document.getElementById('hub-horizons-target')?.value || 'voyager1';
-        const clockEl = document.getElementById('hub-sync-clock');
-        if (clockEl) clockEl.textContent = 'SYNCING...';
-
-        try {
-          const res = await fetch(`/api/nasa-live-hub?module=all&target=${encodeURIComponent(target)}`);
-          if (!res.ok) throw new Error('Fallback to browser stream');
-          const data = await res.json();
-          renderHubData(data);
-        } catch (_) {
-          // Direct Client-Side Fallback
-          const today = new Date().toISOString().split('T')[0];
-          const [issRes, earthRes, neoRes] = await Promise.allSettled([
-            fetch('https://api.wheretheiss.at/v1/satellites/25544').then(r => r.json()),
-            fetch('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=8').then(r => r.json()),
-            fetch(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${today}&api_key=DEMO_KEY`).then(r => r.json())
-          ]);
-          const rawNeos = neoRes.status === 'fulfilled' ? (neoRes.value.near_earth_objects?.[today] || []) : [];
-          renderHubData({
-            timestampUTC: new Date().toISOString(),
-            iss: issRes.status === 'fulfilled' ? {
-              latitude: Number(issRes.value.latitude).toFixed(4),
-              longitude: Number(issRes.value.longitude).toFixed(4),
-              altitudeKm: Number(issRes.value.altitude).toFixed(2),
-              velocityKmH: Math.round(issRes.value.velocity)
-            } : null,
-            earthEvents: earthRes.status === 'fulfilled' ? (earthRes.value.events || []).map(e => ({
-              title: e.title,
-              category: e.categories?.[0]?.title || 'Event',
-              coordinates: e.geometry?.[0]?.coordinates || []
-            })) : [],
-            asteroids: {
-              count: rawNeos.length,
-              asteroids: rawNeos.slice(0, 6).map(a => ({
-                name: a.name,
-                hazardous: a.is_potentially_hazardous_asteroid,
-                velocityKmS: Number(a.close_approach_data?.[0]?.relative_velocity?.kilometers_per_second || 0).toFixed(2),
-                missDistanceKm: Math.round(Number(a.close_approach_data?.[0]?.miss_distance?.kilometers || 0)),
-                eyesUrl: `https://eyes.nasa.gov/apps/asteroids/#/${a.name.replace(/[()]/g, '').trim().replace(/\s+/g, '_')}`
-              }))
-            }
-          });
-        }
-      };
-
-      function renderHubData(data) {
-        const clockEl = document.getElementById('hub-sync-clock');
-        if (clockEl) clockEl.textContent = new Date().toLocaleTimeString();
-
-        if (data.iss && !data.iss.error) {
-          document.getElementById('hub-iss-coords').textContent = `${data.iss.latitude}°, ${data.iss.longitude}°`;
-          document.getElementById('hub-iss-speed').textContent = `${data.iss.altitudeKm} km • ${Number(data.iss.velocityKmH).toLocaleString()} km/h`;
-        }
-
-        const dsnDishes = data.dsn?.activeDishes || [];
-        document.getElementById('hub-dsn-count').textContent = dsnDishes.length
-          ? `${dsnDishes.length} Active Dish Links`
-          : 'Standby / Carrier';
-
-        if (dsnDishes.length > 0) {
-          document.getElementById('hub-dsn-feed').innerHTML = dsnDishes.map(d => {
-            const sc = d.targets.map(t => `${t.name} (${t.downlegRangeKm ? (t.downlegRangeKm / 1e6).toFixed(1) + 'M km' : 'Locked'})`).join(', ');
-            const rate = d.downSignals[0]?.dataRateBps ? `${(d.downSignals[0].dataRateBps / 1000).toFixed(1)} kbps` : 'Carrier Lock';
-            return `<div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 flex justify-between items-center gap-2">
-              <span class="truncate"><strong class="text-amber-300">${d.dishName}</strong> → ${sc || 'Calibrating'}</span>
-              <span class="text-emerald-400 shrink-0 font-bold">${rate}</span>
-            </div>`;
-          }).join('');
-        }
-
-        const neos = data.asteroids?.asteroids || [];
-        document.getElementById('hub-neo-count').textContent = `${data.asteroids?.count ?? neos.length} Close Approaches`;
-        document.getElementById('hub-asteroid-feed').innerHTML = neos.map(a => `
-          <div onclick="window.switchNasaHubViewport('${a.eyesUrl}')" class="p-2 bg-slate-900/90 hover:bg-slate-800 cursor-pointer rounded-lg border border-slate-800 flex justify-between items-center">
-            <div>
-              <span class="font-bold text-slate-200">${a.name}</span>
-              ${a.hazardous ? '<span class="ml-1 px-1.5 py-0.5 text-[9px] bg-red-950 text-red-400 border border-red-800 rounded">HAZARDOUS</span>' : ''}
-            </div>
-            <div class="text-right text-[10px] text-cyan-300">
-              ${Number(a.missDistanceKm).toLocaleString()} km • ${a.velocityKmS} km/s
-            </div>
-          </div>
-        `).join('') || 'No close approaches today.';
-
-        const events = data.earthEvents || [];
-        plotEonetEventsOn3DGlobe(events);
-        document.getElementById('hub-earth-feed').innerHTML = events.map(ev => `
-          <div onclick="window.toggleNasaMultiHub(); setFocusTo('earth'); targetCameraDistance = 5.2;" class="p-2 bg-slate-900/90 hover:bg-slate-800 cursor-pointer rounded-lg border border-slate-800 flex justify-between items-center">
-            <span class="truncate pr-2 text-slate-200">${ev.title}</span>
-            <span class="text-[9px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500/30 rounded shrink-0">${ev.category}</span>
-          </div>
-        `).join('') || 'No open EONET alerts.';
-
-        if (data.horizons?.vectorBlock) {
-          document.getElementById('hub-horizons-feed').textContent = data.horizons.vectorBlock;
-        }
-      }
-
-      // Poll live multi-program feed every 20 seconds
-      window.refreshNasaMultiHub();
-      setInterval(window.refreshNasaMultiHub, 20000);
-    })();
-  </script>
-<script>
-    // ============================================================================
-    // ORBITAL COMMAND — SECTIONS 2 & 3 ARCHITECTURE CONTROLLER
-    // ============================================================================
-    (function () {
-      const WATCHLIST_STORAGE_KEY = 'orbital_command_watchlist_v1';
-      const LAST_VIEW_STORAGE_KEY = 'orbital_command_last_3d_view_v1';
-
-      window.OrbitalCommandState = {
-        viewMode: 'solar',         // 'earth' | 'solar' | 'deepsky'
-        domainTab: 'solar',   // 'artificial' | 'solar' | 'deepsky'
-        inspectorTab: 'overview',  // 'overview' | 'orbit' | 'facts' | 'sources'
-        selectedType: 'SOLAR_BODY',
-        selectedId: 'earth',
-        simOffsetMinutes: 0,
-        isLive: true,
-        dataStatus: 'LIVE UPDATE', // 'LIVE UPDATE' | 'CALCULATED' | 'CACHED' | 'STALE'
-        suppressHistoryPush: false
-      };
-
-      // 1. WebGL Support Verification & Loading Dismissal (Section 3A)
-      window.verifyWebGLAndDismissLoader = function () {
-        const overlay = document.getElementById('webgl-status-overlay');
-        const titleEl = document.getElementById('webgl-status-title');
-        const descEl = document.getElementById('webgl-status-desc');
-        const spinnerEl = document.getElementById('webgl-spinner');
-        const retryBtn = document.getElementById('webgl-retry-btn');
-        if (!overlay) return;
-
-        try {
-          const canvas = document.createElement('canvas');
-          const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-          if (!gl) {
-            if (spinnerEl) spinnerEl.classList.add('hidden');
-            if (titleEl) titleEl.textContent = 'WebGL Acceleration Unavailable';
-            if (descEl) descEl.textContent = 'Your browser or GPU currently blocks WebGL rendering. Enable hardware acceleration or open OrbitAlert to monitor passes and orbital events in tabular mode.';
-            if (retryBtn) retryBtn.classList.remove('hidden');
-            return;
-          }
-          // Dismiss overlay once Three.js canvas is mounted
-          setTimeout(() => {
-            overlay.classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => overlay.classList.add('hidden'), 500);
-          }, 450);
-        } catch (err) {
-          if (spinnerEl) spinnerEl.classList.add('hidden');
-          if (titleEl) titleEl.textContent = '3D Scene Initialization Error';
-          if (descEl) descEl.textContent = String(err && err.message ? err.message : 'Unable to initialize WebGL context.');
-          if (retryBtn) retryBtn.classList.remove('hidden');
-        }
-      };
-
-      // 2. Coordinate Frame & Scale Banner Notice (Section 3A Coordinate & Scale Rule)
-      function showScaleTransitionBanner(viewMode, preservedTargetName) {
-        const banner = document.getElementById('scale-transition-banner');
-        const text = document.getElementById('scale-transition-text');
-        if (!banner || !text) return;
-
-        const frameDescriptions = {
-          earth: 'Coordinate Frame: Geocentric ECI (Scale: km) • SGP4 / J2 Orbital Propagation',
-          solar: 'Coordinate Frame: Heliocentric Ecliptic J2000 (Scale: AU) • Keplerian Ephemeris',
-          deepsky: 'Coordinate Frame: Extragalactic / J2000 RA-Dec (Scale: Mly / Redshift z)'
-        };
-        const targetSuffix = preservedTargetName ? ` • Target Preserved: ${preservedTargetName}` : '';
-        text.textContent = (frameDescriptions[viewMode] || frameDescriptions.earth) + targetSuffix;
-
-        banner.classList.remove('hidden', 'opacity-0');
-        clearTimeout(window.__scaleBannerTimer);
-        window.__scaleBannerTimer = setTimeout(() => {
-          banner.classList.add('opacity-0');
-          setTimeout(() => banner.classList.add('hidden'), 300);
-        }, 3800);
-      }
-
-      // 3. Explicit 3-Mode View Switcher: Earth Orbit / Solar System / Deep Sky (Section 3B)
-      window.switchExplicitViewMode = function (mode, options) {
-        const opts = options || {};
-        const validMode = ['earth', 'solar', 'deepsky'].includes(mode) ? mode : 'earth';
-        window.OrbitalCommandState.viewMode = validMode;
-
-        // Update Top Command Bar button states
-        ['earth', 'solar', 'deepsky'].forEach((m) => {
-          const btn = document.getElementById('viewmode-btn-' + m);
-          if (!btn) return;
-          if (m === validMode) {
-            btn.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition whitespace-nowrap';
-          } else {
-            btn.className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap';
-          }
-        });
-
-        // Disable nonsensical warp speeds in static Deep Sky view (Section 3F)
-        const speedGroup = document.getElementById('dock-speed-group');
-        if (speedGroup) {
-          speedGroup.querySelectorAll('button').forEach((btn) => {
-            btn.disabled = validMode === 'deepsky';
-            btn.classList.toggle('opacity-40', validMode === 'deepsky');
-            btn.classList.toggle('cursor-not-allowed', validMode === 'deepsky');
-          });
-        }
-
-        // Sync Left Object Explorer domain tab to match view mode unless suppressed
-        if (!opts.keepExplorerTab) {
-          const domainMap = { earth: 'artificial', solar: 'solar', deepsky: 'deepsky' };
-          window.setMasterDomain(domainMap[validMode]);
-        }
-
-        // Preserve selected target if compatible, otherwise focus natural root of that scale
-        const currentTargetTitle = document.getElementById('card-intel-name')?.textContent || '';
-        if (!opts.skipCameraTransition) {
-          if (validMode === 'earth' && typeof window.setFocusTo === 'function') {
-            window.activeCosmicTier = 1;
-            window.setFocusTo('earth');
-          } else if (validMode === 'solar' && typeof window.setFocusTo === 'function') {
-            window.activeCosmicTier = 2;
-            window.setFocusTo('sun');
-          } else if (validMode === 'deepsky') {
-            window.activeCosmicTier = 4;
-            if (typeof window.switchViewDomain === 'function') window.switchViewDomain('deepsky');
-            if (typeof window.flyToDeepSkyNASA === 'function') window.flyToDeepSkyNASA('m82');
-          }
-        }
-
-        showScaleTransitionBanner(validMode, currentTargetTitle);
-        if (typeof updateOrbitAndGizmoVisibility === 'function') {
-          updateOrbitAndGizmoVisibility(window.OrbitalCommandState.selectedId);
-        }
-        saveLastValid3DView();
-        syncStateToURL();
-      };
-
-      // 4. Logo Action: Always return to 3D Explorer in its last valid view (Section 2)
-      function saveLastValid3DView() {
-        try {
-          localStorage.setItem(LAST_VIEW_STORAGE_KEY, JSON.stringify({
-            view: window.OrbitalCommandState.viewMode,
-            target: window.OrbitalCommandState.selectedId,
-            type: window.OrbitalCommandState.selectedType,
-            epochOffset: window.OrbitalCommandState.simOffsetMinutes
-          }));
-        } catch (e) {}
-      }
-
-      window.returnToLastValid3DView = function () {
-        try {
-          const saved = JSON.parse(localStorage.getItem(LAST_VIEW_STORAGE_KEY) || 'null');
-          if (saved && saved.view) {
-            window.switchExplicitViewMode(saved.view);
-            return;
-          }
-        } catch (e) {}
-        window.switchExplicitViewMode('earth');
-      };
-
-      // 5. Three-Domain Object Explorer Controller (Section 3C)
-      window.setMasterDomain = function (domain) {
-        const validDomain = ['artificial', 'solar', 'deepsky'].includes(domain) ? domain : 'artificial';
-        window.OrbitalCommandState.domainTab = validDomain;
-
-        ['artificial', 'solar', 'deepsky'].forEach((d) => {
-          const btn = document.getElementById('domain-btn-' + d);
-          if (!btn) return;
-          if (d === validDomain) {
-            btn.className = 'py-1.5 px-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
-          } else {
-            btn.className = 'py-1.5 px-1.5 rounded-lg font-medium flex items-center justify-center gap-1 transition text-slate-400 hover:text-white';
-          }
-        });
-
-        const panelArtificial = document.getElementById('domain-panel-artificial');
-        const panelNatural = document.getElementById('domain-panel-natural');
-        const agencyBar = document.getElementById('agency-filter-bar');
-        const subCategoryBar = document.getElementById('sub-category-bar');
-
-        if (validDomain === 'artificial') {
-          if (panelArtificial) panelArtificial.classList.remove('hidden');
-          if (panelNatural) panelNatural.classList.add('hidden');
-          if (agencyBar) agencyBar.classList.remove('hidden');
-          if (subCategoryBar) {
-            subCategoryBar.innerHTML = `
-              <button onclick="switchSubCategory('earth-sats')" id="subcat-earth-sats" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap">🛰️ Satellites & Stations</button>
-              <button onclick="switchSubCategory('deep-probes')" id="subcat-deep-probes" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white whitespace-nowrap">🚀 Interplanetary Probes</button>
-              <button onclick="switchSubCategory('telemetry-bots')" id="subcat-telemetry-bots" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white whitespace-nowrap">🤖 Sentinel Bots</button>
-            `;
-          }
-          if (typeof window.switchSubCategory === 'function') window.switchSubCategory('solar-system');
-        } else if (validDomain === 'solar') {
-          if (panelArtificial) panelArtificial.classList.add('hidden');
-          if (panelNatural) panelNatural.classList.remove('hidden');
-          if (agencyBar) agencyBar.classList.remove('hidden'); // Allow agency filtering for solar/planetary probes
-          if (subCategoryBar) {
-            subCategoryBar.innerHTML = `
-              <button onclick="switchSubCategory('solar-system')" id="subcat-solar-system" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap">🪐 Sun, Planets & Moons</button>
-              <button onclick="switchSubCategory('deep-probes')" id="subcat-deep-probes" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white whitespace-nowrap">🚀 Solar &amp; Planetary Missions</button>
-            `;
-          }
-          if (typeof window.switchSubCategory === 'function') window.switchSubCategory('solar-system');
-        } else {
-          if (panelArtificial) panelArtificial.classList.add('hidden');
-          if (panelNatural) panelNatural.classList.remove('hidden');
-          if (agencyBar) agencyBar.classList.add('hidden');
-          if (subCategoryBar) {
-            subCategoryBar.innerHTML = `
-              <button onclick="switchSubCategory('deep-sky')" id="subcat-deep-sky" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap">🌌 Messier & NGC Catalogue</button>
-              <button onclick="switchSubCategory('cosmic-hierarchy')" id="subcat-cosmic-hierarchy" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white whitespace-nowrap">🕸️ Large-Scale Structures</button>
-            `;
-          }
-          if (typeof window.switchSubCategory === 'function') window.switchSubCategory('deep-sky');
-        }
-      };
-
-     // Implement missing sub-category tab switcher for Object Explorer
-      window.switchSubCategory = function(cat) {
-        if (typeof activeArtificialSubTab !== 'undefined') activeArtificialSubTab = cat;
-        if (typeof activeNaturalSubTab !== 'undefined') activeNaturalSubTab = cat;
-
-        if (cat === 'earth-sats') {
-          if (typeof activeMasterDomain !== 'undefined') activeMasterDomain = 'artificial';
-          document.getElementById('domain-panel-artificial')?.classList.remove('hidden');
-          document.getElementById('domain-panel-natural')?.classList.add('hidden');
-          document.getElementById('subpanel-earth-sats')?.classList.remove('hidden');
-          document.getElementById('subpanel-deep-probes')?.classList.add('hidden');
-          document.getElementById('subpanel-telemetry-bots')?.classList.add('hidden');
-          document.getElementById('agency-filter-bar')?.classList.remove('hidden');
-        } else if (cat === 'deep-probes') {
-          document.getElementById('domain-panel-artificial')?.classList.remove('hidden');
-          document.getElementById('domain-panel-natural')?.classList.add('hidden');
-          document.getElementById('subpanel-earth-sats')?.classList.add('hidden');
-          document.getElementById('subpanel-deep-probes')?.classList.remove('hidden');
-          document.getElementById('subpanel-telemetry-bots')?.classList.add('hidden');
-          document.getElementById('agency-filter-bar')?.classList.remove('hidden');
-        } else if (cat === 'telemetry-bots') {
-          if (typeof activeMasterDomain !== 'undefined') activeMasterDomain = 'artificial';
-          document.getElementById('domain-panel-artificial')?.classList.remove('hidden');
-          document.getElementById('domain-panel-natural')?.classList.add('hidden');
-          document.getElementById('subpanel-earth-sats')?.classList.add('hidden');
-          document.getElementById('subpanel-deep-probes')?.classList.add('hidden');
-          document.getElementById('subpanel-telemetry-bots')?.classList.remove('hidden');
-          document.getElementById('agency-filter-bar')?.classList.add('hidden');
-          if (window.BotSwarm && typeof window.BotSwarm.init === 'function') {
-            window.BotSwarm.init();
-          }
-        } else if (cat === 'solar-system') {
-          if (typeof activeMasterDomain !== 'undefined') activeMasterDomain = 'solar';
-          document.getElementById('domain-panel-artificial')?.classList.add('hidden');
-          document.getElementById('domain-panel-natural')?.classList.remove('hidden');
-          document.getElementById('subpanel-solar-system')?.classList.remove('hidden');
-          document.getElementById('subpanel-deep-sky')?.classList.add('hidden');
-          document.getElementById('subpanel-cosmic-hierarchy')?.classList.add('hidden');
-        } else if (cat === 'deep-sky') {
-          if (typeof activeMasterDomain !== 'undefined') activeMasterDomain = 'deepsky';
-          document.getElementById('domain-panel-artificial')?.classList.add('hidden');
-          document.getElementById('domain-panel-natural')?.classList.remove('hidden');
-          document.getElementById('subpanel-solar-system')?.classList.add('hidden');
-          document.getElementById('subpanel-deep-sky')?.classList.remove('hidden');
-          document.getElementById('subpanel-cosmic-hierarchy')?.classList.add('hidden');
-        } else if (cat === 'cosmic-hierarchy') {
-          if (typeof activeMasterDomain !== 'undefined') activeMasterDomain = 'deepsky';
-          document.getElementById('domain-panel-artificial')?.classList.add('hidden');
-          document.getElementById('domain-panel-natural')?.classList.remove('hidden');
-          document.getElementById('subpanel-solar-system')?.classList.add('hidden');
-          document.getElementById('subpanel-deep-sky')?.classList.add('hidden');
-          document.getElementById('subpanel-cosmic-hierarchy')?.classList.remove('hidden');
-        }
-
-        // Active button styling in sub-category bar
-        document.querySelectorAll('#sub-category-bar button').forEach(btn => {
-          const isMatch = btn.id === `subcat-${cat}` || btn.getAttribute('onclick')?.includes(`'${cat}'`);
-          btn.className = isMatch
-            ? 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap'
-            : 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white whitespace-nowrap';
-        });
-
-        if (typeof applyMasterCatalogFilter === 'function') applyMasterCatalogFilter();
-      };
-
-      // Implement missing focusCatalogItem for Data Hub buttons and URL deep-linking
-      window.focusCatalogItem = function(category, targetQuery) {
-        if (!targetQuery) return;
-        const q = String(targetQuery).toLowerCase().trim();
-
-        // 1. Check in PLANETARY_ORBITERS (Aditya-L1, Chandrayaan, Mangalyaan, JWST, etc.)
-        const orbKeys = Object.keys(PLANETARY_ORBITERS);
-        const matchedOrb = orbKeys.find(k => {
-          const o = PLANETARY_ORBITERS[k];
-          return k === q || o.name.toLowerCase().includes(q) || (o.wikiKey && o.wikiKey.toLowerCase().includes(q));
-        });
-        if (matchedOrb) {
-          if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('solar', { skipCameraTransition: true });
-          setFocusToOrbiter(matchedOrb);
-          return;
-        }
-
-        // 2. Check in CELESTIAL_BODIES (Sun, Mars, Moon, Jupiter, etc.)
-        const celKeys = Object.keys(CELESTIAL_BODIES);
-        const matchedCel = celKeys.find(k => k === q || CELESTIAL_BODIES[k].name.toLowerCase().includes(q));
-        if (matchedCel) {
-          if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('solar', { skipCameraTransition: true });
-          setFocusTo(matchedCel);
-          return;
-        }
-
-        // 3. Check in MASSIVE_SATELLITE_CATALOG (ISS, Cartosat, etc.)
-        const satKeys = Object.keys(MASSIVE_SATELLITE_CATALOG);
-        const matchedSat = satKeys.find(k => {
-          const s = MASSIVE_SATELLITE_CATALOG[k];
-          return k === q || s.name.toLowerCase().includes(q) || String(s.norad) === q;
-        });
-        if (matchedSat) {
-          if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('earth', { skipCameraTransition: true });
-          setFocusTo(matchedSat);
-          return;
-        }
-
-        // 4. Check in DEEP_SKY_CATALOG
-        const deepKeys = Object.keys(DEEP_SKY_CATALOG);
-        const matchedDeep = deepKeys.find(k => k.toLowerCase() === q || DEEP_SKY_CATALOG[k].name.toLowerCase().includes(q));
-        if (matchedDeep) {
-          switchViewDomain('deepsky');
-          flyToDeepSkyNASA(matchedDeep);
-        }
-      };
-
-      window.openExplorerAndFocusSearch = function () {
-        if (typeof window.expandCatalog === 'function') window.expandCatalog();
-        const input = document.getElementById('search-input');
-        if (input) {
-          input.focus();
-          input.select();
-        }
-      };
-
-      // 6. Four-Tab Selected-Object Inspector Controller (Section 3D)
-      window.switchInspectorTab = function (tabName) {
-        const validTab = ['overview', 'orbit', 'facts', 'sources'].includes(tabName) ? tabName : 'overview';
-        window.OrbitalCommandState.inspectorTab = validTab;
-
-        ['overview', 'orbit', 'facts', 'sources'].forEach((t) => {
-          const btn = document.getElementById('insp-tab-btn-' + t);
-          const panel = document.getElementById('insp-panel-' + t);
-          if (btn) {
-            btn.className = (t === validTab)
-              ? 'py-1 px-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center transition'
-              : 'py-1 px-1 rounded-lg text-slate-400 hover:text-white text-center transition';
-          }
-          if (panel) {
-            panel.classList.toggle('hidden', t !== validTab);
-          }
-        });
-      };
-
-      // Hide unsupported Inspector rows when values are unavailable or placeholder '--'
-      window.sanitizeInspectorFields = function () {
-        const pairs = [
-          { row: 'fact-row-vehicle', val: 'card-intel-vehicle' },
-          { row: 'fact-row-date', val: 'card-intel-launch-date' },
-          { row: 'fact-row-site', val: 'card-intel-site' }
-        ];
-        pairs.forEach(({ row, val }) => {
-          const rowEl = document.getElementById(row);
-          const valEl = document.getElementById(val);
-          if (!rowEl || !valEl) return;
-          const text = (valEl.textContent || '').trim();
-          const isUnsupported = !text || text === '--' || text === 'N/A' || text === '0' || text === 'Unknown';
-          rowEl.classList.toggle('hidden', isUnsupported);
-        });
-
-        // Show Earth observation controls only when Earth or an Earth satellite is selected
-        const earthControls = document.getElementById('inspector-earth-controls');
-        const groundTrackBox = document.getElementById('insp-orbit-groundtrack-box');
-        const nameText = (document.getElementById('card-intel-name')?.textContent || '').toUpperCase();
-        const badgeText = (document.getElementById('card-intel-badge')?.textContent || '').toUpperCase();
-        const isEarthContext = nameText.includes('EARTH') || badgeText.includes('LEO') || badgeText.includes('MEO') || badgeText.includes('GEO') || badgeText.includes('SAT') || badgeText.includes('ISRO') || badgeText.includes('ISS');
-
-        if (earthControls) earthControls.classList.toggle('hidden', !isEarthContext);
-        if (groundTrackBox) groundTrackBox.classList.toggle('hidden', !isEarthContext);
-
-        updateInspectorWatchButtonState();
-      };
-
-      // 7. Watchlist Sync Between 3D Inspector and OrbitAlert (Section 2 & 3D)
-      function getWatchlist() {
-        try {
-          return JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
-        } catch (e) {
-          return [];
-        }
-      }
-
-      function saveWatchlist(list) {
-        try {
-          localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(list));
-        } catch (e) {}
-        updateOrbitAlertBadgeCount();
-      }
-
-      function updateInspectorWatchButtonState() {
-        const btn = document.getElementById('btn-inspector-watch');
-        const name = (document.getElementById('card-intel-name')?.textContent || '').trim();
-        if (!btn || !name) return;
-        const list = getWatchlist();
-        const exists = list.some((item) => item.name === name);
-        if (exists) {
-          btn.textContent = '★ Watched';
-          btn.className = 'px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold transition';
-        } else {
-          btn.textContent = '☆ Watch';
-          btn.className = 'px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px] font-bold transition';
-        }
-      }
-
-      window.toggleInspectorWatchlist = function () {
-        const name = (document.getElementById('card-intel-name')?.textContent || '').trim();
-        const subtitle = (document.getElementById('card-intel-subtitle')?.textContent || 'Orbital Object').trim();
-        if (!name) return;
-        let list = getWatchlist();
-        const exists = list.some((item) => item.name === name);
-        if (exists) {
-          list = list.filter((item) => item.name !== name);
-        } else {
-          list.push({
-            name,
-            type: subtitle,
-            view: window.OrbitalCommandState.viewMode,
-            addedAt: new Date().toISOString()
-          });
-        }
-        saveWatchlist(list);
-        updateInspectorWatchButtonState();
-      };
-
-      function updateOrbitAlertBadgeCount() {
-        const countEl = document.getElementById('header-orbitalert-count');
-        if (!countEl) return;
-        const watchCount = getWatchlist().length;
-        if (watchCount > 0) {
-          countEl.textContent = String(watchCount);
-          countEl.classList.remove('hidden');
-        } else {
-          countEl.classList.add('hidden');
-        }
-      }
-
-      // 8. Time Semantics & Keyboard Timeline Stepping (Section 3F)
-      window.stepSimulationMinutes = function (deltaMinutes) {
-        const slider = document.getElementById('time-scrubber-slider');
-        if (!slider) return;
-        const nextVal = Math.max(-1440, Math.min(1440, (parseFloat(slider.value) || 0) + deltaMinutes));
-        slider.value = String(nextVal);
-        if (typeof window.scrubSimulationTime === 'function') {
-          window.scrubSimulationTime(nextVal);
-        }
-        updateTimeSemanticsUI(nextVal);
-      };
-
-      function updateTimeSemanticsUI(offsetMinutes) {
-        const numOffset = parseFloat(offsetMinutes) || 0;
-        window.OrbitalCommandState.simOffsetMinutes = numOffset;
-        window.OrbitalCommandState.isLive = Math.abs(numOffset) < 0.5;
-
-        const statusBadge = document.getElementById('hud-data-status-badge');
-        const modePill = document.getElementById('sim-mode-pill-text');
-        const epochBtn = document.getElementById('dock-utc-epoch-btn');
-        const sourceQuality = document.getElementById('insp-source-quality');
-
-        const simDate = new Date(Date.now() + numOffset * 60000);
-        const isoShort = simDate.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
-
-        if (epochBtn) {
-          epochBtn.textContent = window.OrbitalCommandState.isLive ? 'Epoch: Live' : isoShort;
-        }
-
-        if (window.OrbitalCommandState.isLive) {
-          if (statusBadge) {
-            statusBadge.textContent = 'LIVE UPDATE';
-            statusBadge.className = 'text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap';
-          }
-          if (modePill) modePill.textContent = 'LIVE';
-          if (sourceQuality) sourceQuality.textContent = 'Calculated Position (Current Epoch SGP4/J2)';
-        } else {
-          if (statusBadge) {
-            statusBadge.textContent = 'CALCULATED';
-            statusBadge.className = 'text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono whitespace-nowrap';
-          }
-          if (modePill) modePill.textContent = 'RETURN LIVE';
-          if (sourceQuality) sourceQuality.textContent = 'Reconstructed Keplerian/SGP4 State (' + isoShort + ')';
-        }
-        syncStateToURL();
-      }
-
-      // Hook into existing scrubSimulationTime and resetToLiveTime
-      const origScrub = window.scrubSimulationTime;
-      window.scrubSimulationTime = function (val) {
-        if (typeof origScrub === 'function') origScrub(val);
-        updateTimeSemanticsUI(val);
-      };
-
-      const origResetLive = window.resetToLiveTime;
-      window.resetToLiveTime = function () {
-        if (typeof origResetLive === 'function') origResetLive();
-        updateTimeSemanticsUI(0);
-      };
-
-      // 9. More Menu, Video Lazy Loader & Share Clipboard Helper (Auto-collapsing overlapping cards)
-      window.toggleHeaderMoreMenu = function () {
-        const menu = document.getElementById('header-more-dropdown');
-        if (!menu) return;
-        const isOpening = menu.classList.contains('hidden');
-
-        if (isOpening) {
-          // 1. Automatically collapse the Info Card so it never covers the More menu
-          if (typeof closeIntelCard === 'function') {
-            closeIntelCard();
-          }
-
-          // 2. Close any conflicting drawers or modals on the right side
-          document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+        exitStoryTour: () => {
+          activeStory = null;
+          document.getElementById('active-story-player')?.classList.add('hidden');
           document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
-          document.getElementById('nasa-date-modal')?.classList.add('hidden');
-          document.getElementById('video-panel')?.classList.add('hidden');
-        }
-
-        menu.classList.toggle('hidden');
-      };
-
-      const origToggleVideo = window.toggleVideoPanel;
-      window.toggleVideoPanel = function () {
-        const panel = document.getElementById('video-panel');
-        const iframe = document.getElementById('iss-video-iframe');
-        if (typeof origToggleVideo === 'function') {
-          origToggleVideo();
-        } else if (panel) {
-          panel.classList.toggle('hidden');
-        }
-        if (panel && !panel.classList.contains('hidden') && iframe && iframe.getAttribute('src') === 'about:blank') {
-          iframe.setAttribute('src', iframe.getAttribute('data-src') || 'about:blank');
         }
       };
-
-      window.FocusTargetFromHub = function (category, targetIdOrName) {
-        const hub = document.getElementById('nasa-multi-hub-modal');
-        if (hub) hub.classList.add('hidden');
-        if (category === 'SOLAR_BODY' && typeof window.setFocusTo === 'function') {
-          if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('solar', { skipCameraTransition: true });
-          window.setFocusTo(targetIdOrName);
-        } else if (typeof window.focusCatalogItem === 'function') {
-          window.focusCatalogItem(category, targetIdOrName);
-        }
-      };
-
-      window.copyShareField = function (inputId, btnId) {
-        const input = document.getElementById(inputId);
-        const btn = document.getElementById(btnId);
-        const feedback = document.getElementById('share-copy-feedback');
-        if (!input) return;
-
-        input.select();
-        input.setSelectionRange(0, 99999);
-
-        const showSuccess = (msg) => {
-          if (feedback) {
-            feedback.textContent = msg;
-            feedback.classList.remove('hidden');
-          }
-          if (btn) {
-            const origText = btn.textContent;
-            btn.textContent = 'Copied ✓';
-            setTimeout(() => { btn.textContent = origText; }, 2000);
-          }
-        };
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(input.value)
-            .then(() => showSuccess('Copied reproducible state link to clipboard.'))
-            .catch(() => showSuccess('Clipboard blocked by browser — text is selected above, press Ctrl+C / Cmd+C to copy.'));
-        } else {
-          showSuccess('Text selected above — press Ctrl+C / Cmd+C to copy.');
-        }
-      };
-
-      // 10. URL State Synchronization & Predictable Browser Back/Forward (Section 2 Navigation Rules)
-      function syncStateToURL(pushEntry) {
-        if (window.OrbitalCommandState.suppressHistoryPush) return;
-        try {
-          const url = new URL(window.location.href);
-          url.searchParams.set('view', window.OrbitalCommandState.viewMode);
-          const activeName = (document.getElementById('card-intel-name')?.textContent || '').trim();
-          if (activeName) {
-            url.searchParams.set('target', activeName);
-          }
-          if (!window.OrbitalCommandState.isLive) {
-            url.searchParams.set('offsetMin', String(Math.round(window.OrbitalCommandState.simOffsetMinutes)));
-          } else {
-            url.searchParams.delete('offsetMin');
-          }
-          if (pushEntry) {
-            window.history.pushState({ ...window.OrbitalCommandState, target: activeName }, '', url.toString());
-          } else {
-            window.history.replaceState({ ...window.OrbitalCommandState, target: activeName }, '', url.toString());
-          }
-        } catch (e) {}
-      }
-
-      function applyStateFromURL() {
-        try {
-          const params = new URLSearchParams(window.location.search);
-          const viewParam = params.get('view');
-          const targetParam = params.get('target');
-          const offsetMin = params.get('offsetMin');
-
-          window.OrbitalCommandState.suppressHistoryPush = true;
-          if (viewParam && ['earth', 'solar', 'deepsky'].includes(viewParam)) {
-            window.switchExplicitViewMode(viewParam, { skipCameraTransition: Boolean(targetParam) });
-          }
-          if (offsetMin !== null && !isNaN(parseFloat(offsetMin))) {
-            const slider = document.getElementById('time-scrubber-slider');
-            if (slider) slider.value = offsetMin;
-            if (typeof window.scrubSimulationTime === 'function') window.scrubSimulationTime(parseFloat(offsetMin));
-          }
-          if (targetParam) {
-            setTimeout(() => {
-              const lower = targetParam.toLowerCase();
-              if (['sun', 'mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'].includes(lower) && typeof window.setFocusTo === 'function') {
-                window.setFocusTo(lower);
-              } else if (typeof window.focusCatalogItem === 'function') {
-                window.focusCatalogItem('EARTH_SAT', targetParam);
-              }
-            }, 600);
-          }
-          window.OrbitalCommandState.suppressHistoryPush = false;
-        } catch (e) {
-          window.OrbitalCommandState.suppressHistoryPush = false;
-        }
-      }
-
-      window.addEventListener('popstate', () => {
-        applyStateFromURL();
-      });
-
-      // Observe Inspector title changes to sanitize fields & push URL history
-      const titleNode = document.getElementById('card-intel-name');
-      if (titleNode && typeof MutationObserver !== 'undefined') {
-        const observer = new MutationObserver(() => {
-          window.sanitizeInspectorFields();
-          saveLastValid3DView();
-          syncStateToURL(true);
-        });
-        observer.observe(titleNode, { childList: true, characterData: true, subtree: true });
-      }
-
-      // Initialize on DOMContentLoaded or immediately if already loaded
-      function initializeOrbitalApp() {
-        if (typeof window.verifyWebGLAndDismissLoader === 'function') {
-          window.verifyWebGLAndDismissLoader();
-        }
-        if (typeof updateOrbitAlertBadgeCount === 'function') {
-          updateOrbitAlertBadgeCount();
-        }
-        if (typeof window.setMasterDomain === 'function') {
-          window.setMasterDomain('solar');
-        }
-        if (typeof window.switchSubCategory === 'function') {
-          window.switchSubCategory('solar-system');
-        }
-        if (typeof window.sanitizeInspectorFields === 'function') {
-          window.sanitizeInspectorFields();
-        }
-        if (typeof applyMasterCatalogFilter === 'function') {
-          applyMasterCatalogFilter();
-        }
-        if (typeof applyStateFromURL === 'function') {
-          applyStateFromURL();
-        }
-      }
-
-      if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', initializeOrbitalApp);
-      } else {
-        initializeOrbitalApp();
-      }
     })();
-  </script>
-  <!-- Tactical Command HUD Footer -->
-  <!-- ==================== J.A.R.V.I.S. VIBRANIUM ARC REACTOR HUD ==================== -->
-  <style>
-    @keyframes arc-spin-cw { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes arc-spin-ccw { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-    @keyframes arc-vibranium-glow {
-      0%, 100% { filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 20px rgba(0, 240, 255, 0.6)); }
-      50% { filter: drop-shadow(0 0 18px #38bdf8) drop-shadow(0 0 35px rgba(56, 189, 248, 0.95)); }
-    }
-    @keyframes arc-pulse-voice {
-      0%, 100% { filter: drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 28px #00f0ff); transform: scale(1.03); }
-      50% { filter: drop-shadow(0 0 28px #38bdf8) drop-shadow(0 0 50px #38bdf8); transform: scale(1.08); }
-    }
-    .arc-speaking-pulse { animation: arc-pulse-voice 0.6s infinite ease-in-out !important; }
-    .arc-listening-pulse { filter: drop-shadow(0 0 25px #ef4444) drop-shadow(0 0 45px #ef4444) !important; }
-    #jarvis-hud-panel ::-webkit-scrollbar { width: 4px; }
-    #jarvis-hud-panel ::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.4); border-radius: 4px; }
-    .jarvis-btn-chip:hover { background: rgba(0, 240, 255, 0.2) !important; border-color: #00f0ff !important; }
-  </style>
 
-  <div id="jarvis-root" style="position:fixed; bottom:45px; right:24px; z-index:9999999; font-family:'Courier New', monospace; pointer-events:auto;">
-    <div id="jarvis-arc-btn" onclick="toggleJarvisPanel()" title="Initiate J.A.R.V.I.S." style="width:64px; height:64px; border-radius:50%; background:radial-gradient(circle, #02121f 15%, #030712 90%); border:2px solid rgba(0, 240, 255, 0.8); cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; box-shadow:0 0 25px rgba(0, 240, 255, 0.6); animation:arc-vibranium-glow 3s infinite; transition:transform 0.25s ease;">
-      <svg style="position:absolute; inset:-4px; width:68px; height:68px; pointer-events:none; animation:arc-spin-cw 18s linear infinite;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="2.5" stroke-dasharray="10 6 16 6" />
-        <circle cx="50" cy="50" r="39" fill="none" stroke="rgba(56, 189, 248, 0.75)" stroke-width="1.5" stroke-dasharray="4 8" />
-      </svg>
-      <svg style="position:absolute; inset:2px; width:56px; height:56px; pointer-events:none; animation:arc-spin-ccw 9s linear infinite;" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-dasharray="18 10" opacity="0.85" />
-        <circle cx="50" cy="50" r="33" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="6 6" />
-      </svg>
-      <svg style="width:36px; height:36px; filter:drop-shadow(0 0 8px #00f0ff);" viewBox="0 0 100 100">
-        <polygon points="50,14 88,82 12,82" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" />
-        <polygon points="50,30 76,76 24,76" fill="rgba(0, 240, 255, 0.5)" stroke="#e0faff" stroke-width="3" stroke-linejoin="round" />
-        <polygon points="50,44 64,70 36,70" fill="#ffffff" opacity="0.95" />
-        <line x1="50" y1="14" x2="50" y2="30" stroke="#00f0ff" stroke-width="3" />
-        <line x1="88" y1="82" x2="76" y2="76" stroke="#00f0ff" stroke-width="3" />
-        <line x1="12" y1="82" x2="24" y2="76" stroke="#00f0ff" stroke-width="3" />
-      </svg>
-    </div>
-
-    <div id="jarvis-hud-panel" style="display:none; position:fixed; bottom:118px; right:24px; width:390px; max-width:calc(100vw - 32px); height:520px; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(22px); border:1px solid rgba(0, 240, 255, 0.5); border-radius:14px; box-shadow:0 0 50px rgba(0,0,0,0.95), 0 0 25px rgba(0, 240, 255, 0.35); flex-direction:column; overflow:hidden;">
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15, 23, 42, 0.95); border-bottom:1px solid rgba(0, 240, 255, 0.3);">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 10px #10b981;"></div>
-          <div>
-            <div style="font-size:12px; font-weight:800; color:#fff; letter-spacing:0.12em;">J.A.R.V.I.S. // ORBITAL CORE</div>
-            <div style="font-size:9px; color:#00f0ff;">CHIEF ARCHITECT: MR. SINGH</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <button id="jarvis-mute-btn" onclick="toggleJarvisVoice()" class="jarvis-btn-chip" style="background:rgba(0, 240, 255, 0.12); border:1px solid rgba(0, 240, 255, 0.4); border-radius:6px; color:#38bdf8; font-size:10px; padding:3px 8px; cursor:pointer;">VOICE: ON</button>
-          <button onclick="toggleJarvisPanel()" style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>
-        </div>
-      </div>
-
-      <div style="padding:8px 12px 0 12px; background:rgba(0,0,0,0.5);">
-        <canvas id="jarvis-oscilloscope" width="364" height="38" style="width:100%; height:38px; display:block; border-radius:6px; background:rgba(3,7,18,0.7); border:1px solid rgba(0, 240, 255, 0.25);"></canvas>
-      </div>
-
-      <div style="display:flex; gap:6px; padding:8px 10px; overflow-x:auto; background:rgba(0,0,0,0.35); border-bottom:1px solid rgba(255,255,255,0.06);">
-        <button onclick="sendJarvisQuery('Find and track the International Space Station.')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Track ISS</button>
-        <button onclick="sendJarvisQuery('Which satellites will pass over Pune tonight?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Passes: Pune</button>
-        <button onclick="sendJarvisQuery('Report status on active ISRO surveillance assets.')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">ISRO Fleet</button>
-        <button onclick="sendJarvisQuery('Why do satellites remain in orbit without falling?')" class="jarvis-btn-chip" style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.3); color:#38bdf8; font-size:10px; border-radius:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;">Orbital Physics</button>
-      </div>
-
-      <div id="jarvis-stream" style="flex:1; padding:12px; overflow-y:auto; font-size:11px; line-height:1.6; display:flex; flex-direction:column; gap:8px; color:#cbd5e1;">
-        <div style="align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:8px 10px; border-radius:0 8px 8px 0;">
-          At your service, Sir. Arc Reactor core online and synchronized with God's Eye telemetry. Speak or transmit your instructions.
-        </div>
-      </div>
-
-      <div style="padding:10px 12px; background:rgba(15, 23, 42, 0.95); border-top:1px solid rgba(0,240,255,0.25); display:flex; align-items:center; gap:6px;">
-        <button id="jarvis-mic-btn" onclick="toggleJarvisSpeech()" title="Click to Speak" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; border-radius:6px; color:#00f0ff; padding:7px 10px; cursor:pointer; font-size:13px; transition:all 0.2s;">🎙️</button>
-        <input id="jarvis-input" type="text" placeholder="Command J.A.R.V.I.S., Sir..." onkeydown="if(event.key==='Enter') executeJarvisChat()" style="flex:1; background:rgba(0,0,0,0.6); border:1px solid rgba(0,240,255,0.35); border-radius:6px; color:#fff; font-family:monospace; font-size:11px; padding:7px 10px; outline:none;" />
-        <button onclick="executeJarvisChat()" style="background:#00f0ff; border:none; border-radius:6px; color:#030712; font-weight:800; font-family:monospace; font-size:11px; padding:7px 12px; cursor:pointer;">EXEC</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    var jarvisState = {
-      isOpen: false,
-      voice: true,
-      listening: false,
-      neural: 'idle',
-      lastObj: 'ISS',
-      recognition: null,
-      phase: 0
+    // Global Safe Polyfill
+    window.openUniversalLocationModal = window.openUniversalLocationModal || function() {
+      if (typeof openCityModal === 'function') openCityModal();
+      else alert("Observation Station: Pune (18.52° N, 73.85° E). Navigate to OrbitAlert to calibrate stations.");
     };
 
-    function toggleJarvisPanel() {
-      jarvisState.isOpen = !jarvisState.isOpen;
-      var p = document.getElementById('jarvis-hud-panel');
-      if (p) {
-        p.style.display = jarvisState.isOpen ? 'flex' : 'none';
-        if (jarvisState.isOpen) document.getElementById('jarvis-input').focus();
-      }
-    }
-
-    function toggleJarvisVoice() {
-      jarvisState.voice = !jarvisState.voice;
-      var btn = document.getElementById('jarvis-mute-btn');
-      if (btn) {
-        btn.innerText = jarvisState.voice ? 'VOICE: ON' : 'VOICE: MUTED';
-        btn.style.color = jarvisState.voice ? '#38bdf8' : '#ef4444';
-      }
-      if (!jarvisState.voice && window.speechSynthesis) window.speechSynthesis.cancel();
-    }
-
-    // Oscilloscope Loop
-    (function loopWave() {
-      var c = document.getElementById('jarvis-oscilloscope');
-      if (c) {
-        var ctx = c.getContext('2d');
-        ctx.clearRect(0, 0, c.width, c.height);
-        var w = c.width, h = c.height, midY = h / 2;
-        var freq = 0.04, amp = 4, col = 'rgba(0, 240, 255, 0.45)';
-        if (jarvisState.neural === 'listening') { freq = 0.08; amp = 14; col = '#ef4444'; }
-        else if (jarvisState.neural === 'thinking') { freq = 0.12; amp = 9; col = '#f59e0b'; }
-        else if (jarvisState.neural === 'speaking') { freq = 0.09; amp = 15; col = '#38bdf8'; }
-
-        ctx.beginPath();
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = col;
-        for (var x = 0; x < w; x++) {
-          var y = midY + Math.sin(x * freq + jarvisState.phase) * amp * Math.sin((x / w) * Math.PI);
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-
-        for (var i = 1; i <= 5; i++) {
-          var nx = (w / 6) * i;
-          var ny = midY + Math.sin(nx * freq + jarvisState.phase) * amp * Math.sin((nx / w) * Math.PI);
-          ctx.beginPath();
-          ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = col;
-          ctx.fill();
-        }
-        jarvisState.phase += 0.08;
-      }
-      requestAnimationFrame(loopWave);
-    })();
-
-    // British Male Voice Synthesis
-    function jarvisSay(text) {
-      if (!jarvisState.voice || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-
-      var utt = new SpeechSynthesisUtterance(text);
-      var voices = window.speechSynthesis.getVoices();
-      var maleUkVoice = null;
-      for (var i = 0; i < voices.length; i++) {
-        var v = voices[i];
-        if ((v.lang === 'en-GB' || v.lang.indexOf('en') === 0) &&
-            (v.name.indexOf('George') !== -1 || v.name.indexOf('Male') !== -1 || v.name.indexOf('Ryan') !== -1 || v.name.indexOf('Daniel') !== -1)) {
-          maleUkVoice = v;
-          break;
-        }
-      }
-      if (!maleUkVoice) {
-        for (var j = 0; j < voices.length; j++) {
-          if (voices[j].lang === 'en-GB' && voices[j].name.indexOf('Female') === -1) {
-            maleUkVoice = voices[j];
-            break;
-          }
-        }
-      }
-      if (maleUkVoice) utt.voice = maleUkVoice;
-      utt.pitch = 0.88;
-      utt.rate = 1.02;
-
-      var orb = document.getElementById('jarvis-arc-btn');
-      utt.onstart = function() { jarvisState.neural = 'speaking'; if (orb) orb.classList.add('arc-speaking-pulse'); };
-      utt.onend = function() { jarvisState.neural = 'idle'; if (orb) orb.classList.remove('arc-speaking-pulse'); };
-      utt.onerror = function() { jarvisState.neural = 'idle'; if (orb) orb.classList.remove('arc-speaking-pulse'); };
-      window.speechSynthesis.speak(utt);
-    }
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
-    }
-
-    function toggleJarvisSpeech() {
-      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { alert('Speech recognition not supported in this browser. Please use Chrome or Edge.'); return; }
-      if (!jarvisState.recognition) {
-        jarvisState.recognition = new SR();
-        jarvisState.recognition.lang = 'en-US';
-        jarvisState.recognition.onstart = function() {
-          jarvisState.listening = true;
-          jarvisState.neural = 'listening';
-          document.getElementById('jarvis-mic-btn').style.background = '#ef4444';
-          var orb = document.getElementById('jarvis-arc-btn');
-          if (orb) orb.classList.add('arc-listening-pulse');
-        };
-        jarvisState.recognition.onresult = function(e) {
-          document.getElementById('jarvis-input').value = e.results[0][0].transcript;
-          executeJarvisChat();
-        };
-        var reset = function() {
-          jarvisState.listening = false;
-          if (jarvisState.neural === 'listening') jarvisState.neural = 'idle';
-          document.getElementById('jarvis-mic-btn').style.background = 'rgba(0, 240, 255, 0.15)';
-          var orb = document.getElementById('jarvis-arc-btn');
-          if (orb) orb.classList.remove('arc-listening-pulse');
-        };
-        jarvisState.recognition.onerror = reset;
-        jarvisState.recognition.onend = reset;
-      }
-      if (jarvisState.listening) jarvisState.recognition.stop();
-      else jarvisState.recognition.start();
-    }
-
-    function sendJarvisQuery(q) {
-      document.getElementById('jarvis-input').value = q;
-      executeJarvisChat();
-    }
-
-    function resolveSpaceIntel(rawText) {
-      var q = rawText.toLowerCase().replace(/[^a-z0-9\s\-]/g, ' ');
-      if (q.indexOf('adtiya') !== -1 || q.indexOf('aditya') !== -1) {
-        jarvisState.lastObj = 'Aditya-L1';
-        return "Aditya-L1 is stationed in a halo orbit around the Sun-Earth Lagrange Point 1, approximately 1.5 million kilometers from Earth, observing coronal mass ejections without occultation, Sir.";
-      }
-      if (q.indexOf('eos-06') !== -1 || q.indexOf('eos 06') !== -1 || q.indexOf('oceansat') !== -1) {
-        jarvisState.lastObj = 'EOS-06';
-        return "EOS-06 (Oceansat-3) operates in a 742 km Sun-Synchronous Orbit at 98.3° inclination, monitoring ocean color, sea surface temperatures, and wind vectors, Sir.";
-      }
-      if (q.indexOf('eos-04') !== -1 || q.indexOf('risat') !== -1) {
-        jarvisState.lastObj = 'EOS-04';
-        return "EOS-04 is ISRO's C-band Synthetic Aperture Radar reconnaissance satellite in a 529 km polar orbit, imaging through clouds and night conditions, Sir.";
-      }
-      if (q.indexOf('cartosat') !== -1) {
-        jarvisState.lastObj = 'Cartosat-3';
-        return "Cartosat-3 is ISRO's advanced optical reconnaissance satellite in a 505 km polar orbit with 0.28m ground resolution for defense and cartography, Sir.";
-      }
-      if (q.indexOf('iss') !== -1 || q.indexOf('space station') !== -1) {
-        jarvisState.lastObj = 'ISS';
-        return "The International Space Station is in Low Earth Orbit at approximately 418 km altitude, maintaining 27,600 km/h at 51.6° inclination. Aligning tracking vectors now, Sir.";
-      }
-      if (q.indexOf('hubble') !== -1) {
-        jarvisState.lastObj = 'Hubble';
-        return "The Hubble Space Telescope is positioned in Low Earth Orbit at approximately 535 km altitude with a 28.5° inclination, Sir.";
-      }
-      if (q.indexOf('why') !== -1 && (q.indexOf('fall') !== -1 || q.indexOf('orbit') !== -1 || q.indexOf('gravity') !== -1)) {
-        return "Satellites remain in orbit because high forward velocity (~7.8 km/s in LEO) ensures the spacecraft is in continuous free fall, where Earth's curvature drops away at the exact same rate, Sir.";
-      }
-      if (q.indexOf('pune') !== -1 || q.indexOf('pass') !== -1) {
-        return "For Pune ground station (18.52° N, 73.85° E), prime visual passes occur during twilight terminator windows. Navigating to the OrbitAlert pass table for elevation look-angles, Sir.";
-      }
-      if (q.indexOf('isro') !== -1) {
-        return "Tracking active ISRO orbital assets including Cartosat-3, EOS-04 radar imaging, EOS-06, and AstroSat. All telemetry downlinks are nominal, Sir.";
-      }
-      if (q.indexOf('sun') !== -1 || q.indexOf('solar') !== -1) {
-        return "The Sun is at our gravitational center, Sir. Current solar radiation flux and space weather indices are within nominal thresholds.";
-      }
-      if (q === 'hi' || q === 'hello' || q === 'hey') {
-        return "At your service, Sir. Orbital tracks and 3D globe telemetry are synchronized. What shall we observe?";
-      }
-      return null;
-    }
-
-    function createTelemetryCard(data) {
-      return '<div style="margin-top:8px; padding:10px; background:rgba(2, 18, 31, 0.85); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px; box-shadow:0 0 15px rgba(0, 240, 255, 0.15); font-family:monospace;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0, 240, 255, 0.2); padding-bottom:5px; margin-bottom:6px;">' +
-          '<span style="color:#00f0ff; font-weight:800; font-size:11px;">🛰️ ' + data.name + '</span>' +
-          '<span style="color:#10b981; font-size:9px; background:rgba(16,185,129,0.15); padding:1px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.3);">TRACKING ACTIVE</span>' +
-        '</div>' +
-        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:8px;">' +
-          '<div>NORAD: <strong style="color:#fff;">' + (data.norad || 'N/A') + '</strong></div>' +
-          '<div>ORBIT: <strong style="color:#fff;">' + (data.orbit || 'LEO') + '</strong></div>' +
-          '<div>ALTITUDE: <strong style="color:#38bdf8;">' + (data.alt || '~420 km') + '</strong></div>' +
-          '<div>VELOCITY: <strong style="color:#38bdf8;">' + (data.vel || '~27,600 km/h') + '</strong></div>' +
-          '<div>INC: <strong style="color:#fff;">' + (data.inc || '51.6°') + '</strong></div>' +
-          '<div>STATUS: <strong style="color:#10b981;">NOMINAL</strong></div>' +
-        '</div>' +
-        '<div style="display:flex; gap:6px;">' +
-          '<button onclick="window.GodsEyeController && window.GodsEyeController.focusSatellite(\'' + data.name + '\')" style="flex:1; background:rgba(0, 240, 255, 0.18); border:1px solid #00f0ff; border-radius:4px; color:#00f0ff; font-size:9px; font-weight:700; padding:4px 6px; cursor:pointer; font-family:monospace;">🎯 FLY TO TARGET</button>' +
-          '<button onclick="window.location.href=\'orbitalert.html\'" style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:4px; color:#38bdf8; font-size:9px; padding:4px 6px; cursor:pointer; font-family:monospace;">📡 PASSES</button>' +
-        '</div>' +
-      '</div>';
-    }
-
-    async function executeJarvisChat() {
-      var inp = document.getElementById('jarvis-input');
-      var rawText = inp.value.trim();
-      if (!rawText) return;
-
-      jarvisState.neural = 'thinking';
-      inp.value = '';
-
-      var stream = document.getElementById('jarvis-stream');
-      var uMsg = document.createElement('div');
-      uMsg.style.cssText = 'align-self:flex-end; max-width:85%; background:rgba(0, 240, 255, 0.15); border:1px solid rgba(0, 240, 255, 0.4); border-radius:8px 8px 0 8px; padding:7px 10px; color:#fff;';
-      uMsg.innerText = rawText;
-      stream.appendChild(uMsg);
-
-      var bMsg = document.createElement('div');
-      bMsg.style.cssText = 'align-self:flex-start; max-width:92%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:7px 10px; border-radius:0 8px 8px 0; color:#00f0ff; font-style:italic;';
-      bMsg.innerText = 'Calculating orbital trajectory, Sir...';
-      stream.appendChild(bMsg);
-      stream.scrollTop = stream.scrollHeight;
-      var answer = resolveSpaceIntel(rawText);
-      var telemetryData = null;
-      var q = rawText.toLowerCase();
-
-      if (q.indexOf('iss') !== -1 || q.indexOf('space station') !== -1) {
-        telemetryData = { name: 'ISS (ZARYA)', norad: '25544', orbit: 'LEO', alt: '418.4 km', vel: '27,600 km/h', inc: '51.64°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('ISS');
-      } else if (q.indexOf('adtiya') !== -1 || q.indexOf('aditya') !== -1) {
-        telemetryData = { name: 'ADITYA-L1', norad: '57721', orbit: 'Halo (Sun-Earth L1)', alt: '1,500,000 km', vel: '~1.0 km/s', inc: 'Solar Ecliptic' };
-      } else if (q.indexOf('eos-06') !== -1 || q.indexOf('oceansat') !== -1) {
-        telemetryData = { name: 'EOS-06 (OCEANSAT-3)', norad: '54361', orbit: 'SSO Polar', alt: '742.0 km', vel: '26,890 km/h', inc: '98.34°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-06');
-      } else if (q.indexOf('eos-04') !== -1 || q.indexOf('risat') !== -1) {
-        telemetryData = { name: 'EOS-04 (RISAT-1A)', norad: '51656', orbit: 'SSO Polar', alt: '529.0 km', vel: '27,320 km/h', inc: '97.60°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('EOS-04');
-      } else if (q.indexOf('cartosat') !== -1) {
-        telemetryData = { name: 'CARTOSAT-3', norad: '44804', orbit: 'SSO Polar', alt: '505.0 km', vel: '27,450 km/h', inc: '97.50°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Cartosat-3');
-      } else if (q.indexOf('hubble') !== -1) {
-        telemetryData = { name: 'HUBBLE SPACE TELESCOPE', norad: '20580', orbit: 'LEO', alt: '535.0 km', vel: '27,300 km/h', inc: '28.47°' };
-        if (window.GodsEyeController) window.GodsEyeController.focusSatellite('Hubble');
-      }
-
-      if (!answer) {
-        try {
-          var res = await fetch('/api/ai/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: rawText, lastSubject: jarvisState.lastObj })
-          });
-          if (res.ok) {
-            var data = await res.json();
-            answer = data.reply;
-          }
-        } catch (_) {}
-      }
-
-      if (!answer) {
-        answer = "Sensors operational, Sir. All orbital downlinks reporting nominal status across target sectors.";
-      }
-
-      bMsg.style.fontStyle = 'normal';
-      bMsg.style.color = '#cbd5e1';
-      bMsg.innerHTML = '<div>' + answer + '</div>' + (telemetryData ? createTelemetryCard(telemetryData) : '');
-      jarvisSay(answer);
-
-      if (q.indexOf('pass') !== -1 || q.indexOf('pune') !== -1) {
-        if (window.location.pathname.indexOf('orbitalert') === -1) {
-          setTimeout(function() { window.location.href = 'orbitalert.html'; }, 2600);
-        }
-      }
-      stream.scrollTop = stream.scrollHeight;
-    }
-  </script>
-
-  <!-- Centered Engineer Footer -->
-  <footer id="command-telemetry-footer" style="position:fixed; bottom:0; left:0; right:0; height:28px; background:rgba(3, 7, 18, 0.95); border-top:1px solid rgba(0, 240, 255, 0.25); display:flex; align-items:center; justify-content:center; font-size:10px; color:#64748b; letter-spacing:0.18em; z-index:9000;">
-    ENGINEERED BY: MR. SINGH
-  </footer>
-  <script>
-    // Engine Bootstrapper & Error Guard
-    window.addEventListener('error', function(e) {
-      console.error('[GodsEye Runtime Error Caught]:', e.message, 'at', e.filename, 'line:', e.lineno);
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-      // If UTC display is still frozen after 1 second, force-render fallback
-      setTimeout(function() {
-        var clockEl = document.getElementById('live-utc-display');
-        if (clockEl && (clockEl.innerText.indexOf('--') !== -1 || clockEl.innerText.trim() === '')) {
-          console.warn('[GodsEye] Simulation loop stall detected. Triggering forced re-init...');
-          if (typeof animate === 'function') {
-            try { animate(); } catch(err) { console.error('[GodsEye Animate Error]:', err); }
-          }
-          if (typeof renderCatalogs === 'function') {
-            try { renderCatalogs(); } catch(err) { console.error('[GodsEye Catalog Error]:', err); }
-          }
-          if (typeof setFocusTo === 'function') {
-            try { setFocusTo('sun'); targetCameraDistance = 115.0; cameraPhi = 0.52; cameraTheta = 0.75; } catch(_) {}
-          }
-        }
-      }, 800);
-    });
-  </script>
-
-  <script>
-    // Live SatNOGS Radio Downlink Hydrator
-    async function fetchSatNOGSRadioIntel(noradId) {
-      if (!noradId) return;
-      var tagsContainer = document.getElementById('card-spectral-tags');
-      if (!tagsContainer) return;
-
-      try {
-        var res = await fetch('/api/satnogs/transmitters/' + encodeURIComponent(noradId));
-        if (!res.ok) return;
-        var data = await res.json();
-        if (Array.isArray(data.transmitters) && data.transmitters.length > 0) {
-          var chips = data.transmitters.slice(0, 3).map(function(t) {
-            var f = t.frequencyMHz ? t.frequencyMHz + ' MHz' : 'Beacon';
-            return '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-mono">📻 ' + f + ' (' + t.mode + ')</span>';
-          }).join(' ');
-          tagsContainer.innerHTML += ' ' + chips;
-        }
-      } catch (_) {}
-    }
-
-    // Hook into existing satellite selection
-    var origDossier = window.updateUniversalDossier;
-    if (typeof origDossier === 'function') {
-      window.updateUniversalDossier = function(entityType, key, rawCoords) {
-        origDossier(entityType, key, rawCoords);
-        if (entityType === 'satellite' && window.MASSIVE_SATELLITE_CATALOG && window.MASSIVE_SATELLITE_CATALOG[key]) {
-          var norad = window.MASSIVE_SATELLITE_CATALOG[key].norad;
-          if (norad) fetchSatNOGSRadioIntel(norad);
-        }
-      };
-    }
-  </script>
-
-  <script src="js/universal_location_alerts.js"></script>
-
-  <script>
-    // Failsafe: Ensure black loading screen never permanently freezes
-    window.__fallbackOverlayDismissTimer = setTimeout(() => {
-      const ov = document.getElementById('webgl-status-overlay');
-      if (ov && !ov.classList.contains('hidden')) {
-        ov.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => ov.classList.add('hidden'), 500);
-      }
-    }, 2000);
+    function syncStateToURL() {}
   </script>
 </body>
 </html>
-
-
-
-
 
 
