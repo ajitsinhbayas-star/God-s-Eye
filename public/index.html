@@ -2752,139 +2752,71 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     }
 
     function updateNASASolarSystemAnimation(deltaRealMs, timeScale, astro) {
-      const dt = (deltaRealMs / 1000) * (timeScale || 1.0);
+      try {
+        const dt = (deltaRealMs / 1000) * (timeScale || 1.0);
 
-      // 1. Update Small Body Orbits and Orient Markers to Camera
-      Object.keys(smallBodyMeshes).forEach(id => {
-        const item = smallBodyMeshes[id];
-        // Keplerian angular speed (v proportional to a^-1.5)
-        const angVel = 0.00045 * Math.pow(1.0 / item.data.a, 1.5);
-        item.angle += angVel * dt * 25.0;
+        // 1. Update Small Body Orbits and Orient Markers to Camera
+        if (typeof smallBodyMeshes !== 'undefined') {
+          Object.keys(smallBodyMeshes).forEach(id => {
+            const item = smallBodyMeshes[id];
+            if (!item || !item.marker || !item.data) return;
+            // Keplerian angular speed (v proportional to a^-1.5)
+            const aVal = Number(item.data.a) || 1.0;
+            const angVel = 0.00045 * Math.pow(1.0 / aVal, 1.5);
+            item.angle += angVel * dt * 25.0;
 
-        const incRad = (item.data.I || 0) * (Math.PI / 180);
-        item.marker.position.x = Math.cos(item.angle) * item.distScene;
-        item.marker.position.y = Math.sin(item.angle) * item.distScene * Math.sin(incRad);
-        item.marker.position.z = Math.sin(item.angle) * item.distScene;
+            const incRad = (item.data.I || 0) * (Math.PI / 180);
+            item.marker.position.x = Math.cos(item.angle) * item.distScene;
+            item.marker.position.y = Math.sin(item.angle) * item.distScene * Math.sin(incRad);
+            item.marker.position.z = Math.sin(item.angle) * item.distScene;
 
-        // Billboarding: make the ring face the camera
-        item.marker.quaternion.copy(camera.quaternion);
-      });
-
-      // 2. Project Small Body Screen Labels (Only when in Solar System mode)
-      const currentMode = window.OrbitalCommandState?.viewMode || 'solar';
-      const labelsLayer = document.getElementById('nasa-small-bodies-labels-layer');
-      if (labelsLayer) {
-        if (currentMode === 'deepsky') {
-          labelsLayer.style.display = 'none';
-        } else {
-          labelsLayer.style.display = 'block';
-          const halfW = window.innerWidth / 2;
-          const halfH = window.innerHeight / 2;
-          const _pVec = new THREE.Vector3();
-
-          smallBodyLabels.forEach(lbl => {
-            lbl.marker.getWorldPosition(_pVec);
-            _pVec.project(camera);
-
-            const inFront = _pVec.z >= -1.0 && _pVec.z <= 1.0;
-            const inScreen = _pVec.x >= -0.92 && _pVec.x <= 0.92 && _pVec.y >= -0.90 && _pVec.y <= 0.90;
-
-            if (inFront && inScreen) {
-              lbl.el.style.display = 'block';
-              lbl.el.style.left = `${(_pVec.x * halfW) + halfW}px`;
-              lbl.el.style.top = `${-(_pVec.y * halfH) + halfH}px`;
-            } else {
-              lbl.el.style.display = 'none';
+            // Billboarding: make the ring face the camera
+            if (typeof camera !== 'undefined' && camera) {
+              item.marker.quaternion.copy(camera.quaternion);
             }
           });
         }
-      }
 
-      // 3. Sun Corona gentle breathing pulse
-      if (coronaMesh) {
-        const pulse = 12.5 + Math.sin(Date.now() * 0.002) * 0.8;
-        coronaMesh.scale.set(pulse, pulse, 1.0);
-      }
-    }
+        // 2. Project Small Body Screen Labels (Only when in Solar System mode)
+        const currentMode = window.OrbitalCommandState?.viewMode || 'solar';
+        const labelsLayer = document.getElementById('nasa-small-bodies-labels-layer');
+        if (labelsLayer) {
+          if (currentMode === 'deepsky' || (window.activeCosmicTier && window.activeCosmicTier > 2)) {
+            labelsLayer.style.display = 'none';
+          } else {
+            labelsLayer.style.display = 'block';
+            const halfW = window.innerWidth / 2;
+            const halfH = window.innerHeight / 2;
+            const _pVec = new THREE.Vector3();
 
-    function updateNASASolarSystemAnimation(deltaRealMs, timeScale, astro) {
-      const dt = (deltaRealMs / 1000) * (timeScale || 1.0);
+            if (Array.isArray(smallBodyLabels) && typeof camera !== 'undefined' && camera) {
+              smallBodyLabels.forEach(lbl => {
+                if (!lbl || !lbl.marker || !lbl.el) return;
+                lbl.marker.getWorldPosition(_pVec);
+                _pVec.project(camera);
 
-      // 1. Asteroid Belt orbital movement
-      if (asteroidBeltPoints && asteroidBeltPoints.visible) {
-        const pos = asteroidBeltPoints.geometry.attributes.position.array;
-        const orbitData = asteroidBeltPoints.userData.orbitData;
-        for (let i = 0; i < orbitData.length; i++) {
-          const item = orbitData[i];
-          item.theta += item.angVel * dt * 35.0;
-          pos[i * 3] = Math.cos(item.theta) * item.r;
-          pos[i * 3 + 1] = Math.sin(item.theta) * item.r * Math.sin(item.inc);
-          pos[i * 3 + 2] = Math.sin(item.theta) * item.r;
-        }
-        asteroidBeltPoints.geometry.attributes.position.needsUpdate = true;
-      }
+                const inFront = _pVec.z >= -1.0 && _pVec.z <= 1.0;
+                const inScreen = _pVec.x >= -0.92 && _pVec.x <= 0.92 && _pVec.y >= -0.90 && _pVec.y <= 0.90;
 
-      // 2. Jupiter Trojans follow Jupiter's orbital angle
-      if (trojanL4Points && trojanL5Points && planetMeshes.jupiter) {
-        const jupPos = planetMeshes.jupiter.group.position;
-        const jupAngle = Math.atan2(jupPos.z, jupPos.x);
-
-        [trojanL4Points, trojanL5Points].forEach(swarm => {
-          if (!swarm.visible) return;
-          const pos = swarm.geometry.attributes.position.array;
-          const offsets = swarm.userData.offsets;
-          const targetCenterAngle = jupAngle + swarm.userData.lagrangeOffsetAngle;
-          for (let i = 0; i < offsets.length; i++) {
-            const item = offsets[i];
-            const a = targetCenterAngle + item.angSpread;
-            pos[i * 3] = Math.cos(a) * item.radialDist;
-            pos[i * 3 + 1] = item.y;
-            pos[i * 3 + 2] = Math.sin(a) * item.radialDist;
+                if (inFront && inScreen) {
+                  lbl.el.style.display = 'block';
+                  lbl.el.style.left = ((_pVec.x * halfW) + halfW) + 'px';
+                  lbl.el.style.top = (-(_pVec.y * halfH) + halfH) + 'px';
+                } else {
+                  lbl.el.style.display = 'none';
+                }
+              });
+            }
           }
-          swarm.geometry.attributes.position.needsUpdate = true;
-        });
-      }
-
-      // 3. Kuiper Belt slow orbital drift
-      if (kuiperBeltPoints && kuiperBeltPoints.visible) {
-        const pos = kuiperBeltPoints.geometry.attributes.position.array;
-        const orbitData = kuiperBeltPoints.userData.orbitData;
-        for (let i = 0; i < orbitData.length; i++) {
-          const item = orbitData[i];
-          item.theta += item.angVel * dt * 25.0;
-          pos[i * 3] = Math.cos(item.theta) * item.r;
-          pos[i * 3 + 1] = Math.sin(item.theta) * item.r * Math.sin(item.inc);
-          pos[i * 3 + 2] = Math.sin(item.theta) * item.r;
         }
-        kuiperBeltPoints.geometry.attributes.position.needsUpdate = true;
-      }
 
-      // 4. Solar wind particles outward radial flow
-      if (solarWindParticles && solarWindParticles.visible) {
-        const pos = solarWindParticles.geometry.attributes.position.array;
-        const speeds = solarWindParticles.userData.speeds;
-        for (let i = 0; i < speeds.length; i++) {
-          const x = pos[i * 3];
-          const y = pos[i * 3 + 1];
-          const z = pos[i * 3 + 2];
-          let dist = Math.sqrt(x * x + y * y + z * z);
-          dist += speeds[i] * dt * 12.0;
-          if (dist > 105.0) dist = 3.5 + Math.random() * 2.0;
-
-          const normX = x / (dist || 1);
-          const normY = y / (dist || 1);
-          const normZ = z / (dist || 1);
-          pos[i * 3] = normX * dist;
-          pos[i * 3 + 1] = normY * dist;
-          pos[i * 3 + 2] = normZ * dist;
+        // 3. Sun Corona gentle breathing pulse
+        if (typeof coronaMesh !== 'undefined' && coronaMesh) {
+          const pulse = 12.5 + Math.sin(Date.now() * 0.002) * 0.8;
+          coronaMesh.scale.set(pulse, pulse, 1.0);
         }
-        solarWindParticles.geometry.attributes.position.needsUpdate = true;
-      }
-
-      // 5. Sun Corona gentle pulsation
-      if (coronaMesh) {
-        const pulse = 1.0 + Math.sin(Date.now() * 0.0025) * 0.06;
-        coronaMesh.scale.set(pulse, pulse, pulse);
+      } catch (err) {
+        // Safe fall-through: never let simulation step halt WebGL rendering
       }
     }
 
@@ -5474,6 +5406,8 @@ function animate() {
         focusWorldPos.copy(activeSatWorldPos);
       } else if (hasActiveOrbiter && typeof orbiterMeshes !== 'undefined' && orbiterMeshes[activeTargetKey] && orbiterMeshes[activeTargetKey].probeMesh) {
         orbiterMeshes[activeTargetKey].probeMesh.getWorldPosition(focusWorldPos);
+      } else if (typeof smallBodyMeshes !== 'undefined' && smallBodyMeshes[activeTargetKey] && smallBodyMeshes[activeTargetKey].marker) {
+        smallBodyMeshes[activeTargetKey].marker.getWorldPosition(focusWorldPos);
       } else if (activeTargetKey === 'sun') {
         sunMesh.getWorldPosition(focusWorldPos);
       } else if (activeTargetKey === 'moon') {
@@ -6918,28 +6852,32 @@ function animate() {
         } else if (layerName === 'comets') {
           if (orbiterMeshes['3i_atlas']?.orbGroup) orbiterMeshes['3i_atlas'].orbGroup.visible = visible;
         } else if (layerName === 'constellations') {
+          if (typeof constellationsGroup !== 'undefined' && constellationsGroup) constellationsGroup.visible = visible;
           if (typeof satelliteInertialGroup !== 'undefined') satelliteInertialGroup.visible = visible;
         } else if (layerName === 'heliosphere') {
-          if (heliosphereMesh) heliosphereMesh.visible = visible;
+          if (typeof heliosphereMesh !== 'undefined' && heliosphereMesh) heliosphereMesh.visible = visible;
         } else if (layerName === 'orbits') {
-          Object.keys(planetMeshes).forEach(k => { if (planetMeshes[k].orbitRing) planetMeshes[k].orbitRing.visible = visible; });
+          if (typeof planetMeshes !== 'undefined') {
+            Object.keys(planetMeshes).forEach(k => { if (planetMeshes[k] && planetMeshes[k].orbitRing) planetMeshes[k].orbitRing.visible = visible; });
+          }
           if (typeof satOrbitRingsGroup !== 'undefined') satOrbitRingsGroup.visible = visible;
         } else if (layerName === 'labels') {
           show3DLabels = visible;
-        } else if (layerName === 'asteroids') {
-          if (asteroidBeltPoints) asteroidBeltPoints.visible = visible;
-          if (trojanL4Points) trojanL4Points.visible = visible;
-          if (trojanL5Points) trojanL5Points.visible = visible;
-        } else if (layerName === 'kuiper') {
-          if (kuiperBeltPoints) kuiperBeltPoints.visible = visible;
+          const lblLayer = document.getElementById('nasa-small-bodies-labels-layer');
+          if (lblLayer) lblLayer.style.display = visible ? 'block' : 'none';
+        } else if (layerName === 'asteroids' || layerName === 'kuiper') {
+          if (typeof nasaSolarSystemGroup !== 'undefined' && nasaSolarSystemGroup) nasaSolarSystemGroup.visible = visible;
+          if (typeof smallBodyMeshes !== 'undefined') {
+            Object.values(smallBodyMeshes).forEach(b => { if (b && b.marker) b.marker.visible = visible; });
+          }
         } else if (layerName === 'habitable') {
-          if (habitableZoneMesh) habitableZoneMesh.visible = visible;
+          if (typeof habitableZoneMesh !== 'undefined' && habitableZoneMesh) habitableZoneMesh.visible = visible;
         } else if (layerName === 'distanceRings') {
-          if (distanceRingsGroup) distanceRingsGroup.visible = visible;
+          if (typeof distanceRingsGroup !== 'undefined' && distanceRingsGroup) distanceRingsGroup.visible = visible;
         } else if (layerName === 'trajectories') {
-          if (interplanetaryTrailsGroup) interplanetaryTrailsGroup.visible = visible;
+          if (typeof interplanetaryTrailsGroup !== 'undefined' && interplanetaryTrailsGroup) interplanetaryTrailsGroup.visible = visible;
         } else if (layerName === 'solarWind') {
-          if (solarWindParticles) solarWindParticles.visible = visible;
+          if (typeof solarWindParticles !== 'undefined' && solarWindParticles) solarWindParticles.visible = visible;
         }
       }
 
