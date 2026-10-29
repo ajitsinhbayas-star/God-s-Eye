@@ -5136,7 +5136,7 @@ function animate() {
    // 5. Fetch & Synchronize Catalog + Alerts from /api/space/bootstrap
     function showLocalFileProtocolBanner() { console.log('[SpaceDB] Standalone file:// mode verified.'); }
 
-    async async function pullSpaceDatabase() {
+    async async async function pullSpaceDatabase() {
       // Guard against file:// protocol execution
       if (window.location.protocol === 'file:') {
         console.warn('[SpaceDB] Running from file:// protocol. Express API endpoints (/api/*) require http://localhost:3000');
@@ -6547,6 +6547,7 @@ function animate() {
   </script>
 </body>
 </html>
+
 
 
 
