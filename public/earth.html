@@ -140,6 +140,15 @@
           var p = String(presetName).toUpperCase();
           if (p === 'GLOBAL') {
             if (typeof setFocusTo === 'function') setFocusTo('earth');
+
+  // Auto-dismiss WebGL status overlay immediately upon scene initialization
+  const statusOverlay = document.getElementById('webgl-status-overlay');
+  if (statusOverlay) {
+    statusOverlay.style.opacity = '0';
+    statusOverlay.style.pointerEvents = 'none';
+    setTimeout(() => { statusOverlay.style.display = 'none'; }, 400);
+  }
+
             targetCameraDistance = 5.2; cameraPhi = 0.35; cameraTheta = 0.85;
             return true;
           } else if (p === 'LEO') {
@@ -1575,25 +1584,844 @@ let activeIntroBlobUrl = null;
       pluto:   { distance: 2.8,   phi: 0.32, theta: 0.75, fov: 42, label: "Pluto" }
     };
 
-    
+    // ============================================================================
+    // NASA EYES NATURAL MOONS HIERARCHY (JOVIAN, SATURNIAN & MARTIAN SYSTEMS)
+    // ============================================================================
+    const NATURAL_MOONS = {
+      io:        { name: "Io", parent: "jupiter", radius: 0.38, orbitRadius: 4.8, periodDays: 1.769, color: 0xfacc15, desc: "Most volcanically active body in the Solar System.", wikiKey: "Io_(moon)" },
+      europa:    { name: "Europa", parent: "jupiter", radius: 0.35, orbitRadius: 6.0, periodDays: 3.551, color: 0xbae6fd, desc: "Global subsurface saltwater ocean under a cracked ice shell.", wikiKey: "Europa_(moon)" },
+      ganymede:  { name: "Ganymede", parent: "jupiter", radius: 0.52, orbitRadius: 7.5, periodDays: 7.155, color: 0xcbd5e1, desc: "Largest moon in the Solar System; possesses an intrinsic magnetosphere.", wikiKey: "Ganymede_(moon)" },
+      callisto:  { name: "Callisto", parent: "jupiter", radius: 0.48, orbitRadius: 9.6, periodDays: 16.689, color: 0x94a3b8, desc: "Heavily cratered, geologically ancient ice-rock surface.", wikiKey: "Callisto_(moon)" },
+      titan:     { name: "Titan", parent: "saturn", radius: 0.50, orbitRadius: 6.8, periodDays: 15.945, color: 0xfb923c, desc: "Dense nitrogen atmosphere with liquid methane lakes and dunes.", wikiKey: "Titan_(moon)" },
+      enceladus: { name: "Enceladus", parent: "saturn", radius: 0.28, orbitRadius: 3.9, periodDays: 1.370, color: 0xffffff, desc: "Active cryovolcanic water-ice geysers venting from south polar fractures.", wikiKey: "Enceladus" },
+      mimas:     { name: "Mimas", parent: "saturn", radius: 0.24, orbitRadius: 3.2, periodDays: 0.942, color: 0xa1a1aa, desc: "Dominated by the 130 km Herschel impact basin.", wikiKey: "Mimas_(moon)" },
+      phobos:    { name: "Phobos", parent: "mars", radius: 0.22, orbitRadius: 1.8, periodDays: 0.319, color: 0x78716c, desc: "Innermost moon of Mars; tidally decaying towards Roche limit.", wikiKey: "Phobos_(moon)" },
+      deimos:    { name: "Deimos", parent: "mars", radius: 0.18, orbitRadius: 2.7, periodDays: 1.263, color: 0xa8a29e, desc: "Outer Martian moon coated in thick regolith retention sheets.", wikiKey: "Deimos_(moon)" }
+    };
+    const moonMeshes = {};
+    const CELESTIAL_BODIES = {
+      sun: { name: "The Sun (Sol)", type: "G2V Star", a: 0, e: 0, I: 0, L0: 0, Lrate: 0, w: 0, node: 0, baseDist: 0, radius: 3.2, color: 0xfbbf24, rotPeriod: 609.1, tilt: 7.25, desc: "Gravitational Center of the Solar System", wikiKey: "Sun" },
+      mercury: { name: "Mercury", type: "Terrestrial Planet", a: 0.387098, e: 0.205630, I: 7.005, L0: 252.25, Lrate: 4.0923344, w: 77.456, node: 48.331, baseDist: 8.5, radius: 0.70, color: 0x94a3b8, rotPeriod: 1407.6, tilt: 0.034, desc: "0.39 AU • Rocky Core • Highly Eccentric Orbit", wikiKey: "Mercury_(planet)" },
+      venus: { name: "Venus", type: "Terrestrial Planet", a: 0.723332, e: 0.006773, I: 3.395, L0: 181.98, Lrate: 1.6021305, w: 131.53, node: 76.680, baseDist: 13.5, radius: 1.45, color: 0xfde047, rotPeriod: -5832.5, tilt: 177.36, desc: "0.72 AU • Acid Clouds • Retrograde Axial Spin", wikiKey: "Venus" },
+      earth: { name: "Earth (Terra)", type: "Terrestrial Planet", a: 1.000000, e: 0.016709, I: 0.000, L0: 100.46, Lrate: 0.9856091, w: 102.94, node: 0.0, baseDist: 20.0, radius: 1.85, color: 0x38bdf8, rotPeriod: 23.934, tilt: 23.44, desc: "1.00 AU • Home World • 23.44° Obliquity", wikiKey: "Earth" },
+      moon: { name: "The Moon (Luna)", type: "Natural Satellite", a: 0.00257, e: 0.0549, I: 5.14, L0: 218.32, Lrate: 13.176396, w: 83.35, node: 125.08, baseDist: 3.5, radius: 0.45, color: 0xcccccc, rotPeriod: 655.7, tilt: 1.54, desc: "384,400 km from Earth • Tidally Locked", wikiKey: "Moon" },
+      mars: { name: "Mars", type: "Terrestrial Planet", a: 1.523679, e: 0.093405, I: 1.850, L0: 355.45, Lrate: 0.5240208, w: 336.04, node: 49.557, baseDist: 28.5, radius: 1.15, color: 0xef4444, rotPeriod: 24.623, tilt: 25.19, desc: "1.52 AU • Polar Ice Caps & Olympus Mons", wikiKey: "Mars" },
+      jupiter: { name: "Jupiter", type: "Gas Giant", a: 5.204267, e: 0.048498, I: 1.303, L0: 34.40, Lrate: 0.0830853, w: 14.754, node: 100.45, baseDist: 42.0, radius: 3.00, color: 0xd97706, rotPeriod: 9.925, tilt: 3.13, desc: "5.20 AU • Rapid 9.9h Rotation & Great Red Spot", wikiKey: "Jupiter" },
+      saturn: { name: "Saturn & Rings", type: "Gas Giant & Rings", a: 9.582017, e: 0.055546, I: 2.484, L0: 49.94, Lrate: 0.0334442, w: 92.432, node: 113.67, baseDist: 55.0, radius: 2.45, color: 0xfcd34d, rotPeriod: 10.556, tilt: 26.73, desc: "9.58 AU • Majestic Ring System & Hexagon Storm", wikiKey: "Saturn" },
+      uranus: { name: "Uranus", type: "Ice Giant", a: 19.189165, e: 0.047218, I: 0.773, L0: 313.23, Lrate: 0.0117283, w: 170.96, node: 74.230, baseDist: 68.0, radius: 1.70, color: 0x67e8f9, rotPeriod: -17.24, tilt: 97.77, desc: "19.2 AU • 97.8° Sideways Axial Tilt", wikiKey: "Uranus" },
+      neptune: { name: "Neptune", type: "Ice Giant", a: 30.070327, e: 0.008606, I: 1.770, L0: 304.88, Lrate: 0.0059806, w: 44.971, node: 131.72, baseDist: 80.0, radius: 1.65, color: 0x2563eb, rotPeriod: 16.11, tilt: 28.32, desc: "30.1 AU • Supersonic Atmospheric Winds", wikiKey: "Neptune" },
+      pluto: { name: "Pluto", type: "Dwarf Planet", a: 39.481687, e: 0.248808, I: 17.16, L0: 238.92, Lrate: 0.003960, w: 224.07, node: 110.30, baseDist: 92.0, radius: 0.55, color: 0xd97706, rotPeriod: -153.29, tilt: 122.53, desc: "39.5 AU • 17.2° Inclined Eccentric Orbit", wikiKey: "Pluto" }
+    };
 
-    const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
+    // --- 5. 9-TIER COSMIC ADDRESS HIERARCHY ---
+    const COSMIC_HIERARCHY = [
+      { id: "level_1", level: 1, title: "Earth Subsystem", scale: "0.01 AU (~1.5M km)", domain: "Planetary Hill Sphere", binding: "Geomagnetic & Terrestrial Gravity", speed: "29.78 km/s", wikiKey: "Earth", summary: "Earth near-space environment bounded by geomagnetic field and Hill sphere.", nodes: ["Moon / Luna", "Atmosphere & Geocorona", "Van Allen Belts", "Earth Trojans (2010 TK7, 2020 XL5)", "Quasi-Satellites (Kamoʻoalewa)"] },
+      { id: "level_2", level: 2, title: "Solar System", scale: "~100,000 AU (1.6 - 2.0 ly)", domain: "Heliosphere & Oort Cloud", binding: "Solar Gravity & Solar Wind", speed: "230 km/s", wikiKey: "Solar_System", summary: "Gravitationally bound system of Sol and orbiting minor & major planets.", nodes: ["The Sun (Core, Photosphere, Corona)", "Terrestrial Planets (Mercury, Venus, Earth, Mars)", "Asteroid Belt (Ceres, Vesta, Pallas)", "Gas Giants (Jupiter, Saturn)", "Ice Giants (Uranus, Neptune)", "Kuiper Belt & Oort Cloud"] },
+      { id: "level_3", level: 3, title: "Orion Spiral Arm", scale: "3,500 ly (~1.1 kpc)", domain: "Local Interstellar Neighborhood", binding: "Local ISM Turbulence & Radcliffe Wave", speed: "19.4 km/s", wikiKey: "Orion_Arm", summary: "Minor spiral arm of the Milky Way between Perseus and Sagittarius containing our Sun.", nodes: ["Local Bubble (Supernova Cavity)", "Radcliffe Wave & Gould Belt", "Alpha Centauri & Sirius Systems", "Orion & Horsehead Nebulae"] },
+      { id: "level_4", level: 4, title: "Milky Way Galaxy", scale: "~100,000 ly (30 kpc)", domain: "Barred Spiral Disc & Dark Matter Halo", binding: "Dark Matter Halo & Sgr A* Potential", speed: "Period ≈ 230 Myr", wikiKey: "Milky_Way", summary: "Barred spiral galaxy with central SMBH Sagittarius A* and extensive stellar discs.", nodes: ["Galactic Center (Sagittarius A*)", "Central Bar & Nuclear Bulge", "Perseus & Scutum-Centaurus Arms", "Fermi & eROSITA Bubbles"] },
+      { id: "level_5", level: 5, title: "Local Group", scale: "~10 Million ly (3 Mpc)", domain: "Gravitationally Bound Cluster", binding: "Mutual Gravity (Milky Way - M31 Infall)", speed: "110 km/s", wikiKey: "Local_Group", summary: "The largest strictly gravitationally bound structure containing our galaxy.", nodes: ["Milky Way Galaxy", "Andromeda Galaxy (M31)", "Triangulum Galaxy (M33)", "Magellanic Clouds & Stream"] },
+      { id: "level_6", level: 6, title: "Virgo Supercluster", scale: "~110 Million ly (33 Mpc)", domain: "Local Supercluster Basin", binding: "Virgo Cluster Core Infall vs. Hubble Flow", speed: "250-400 km/s", wikiKey: "Virgo_Supercluster", summary: "Concentration of galaxy groups and clusters centered on the massive Virgo Cluster.", nodes: ["Virgo Cluster Core (M87 SMBH)", "Local Group", "Centaurus A Group", "Local Sheet & Local Void"] },
+      { id: "level_7", level: 7, title: "Laniakea Supercluster", scale: "~520 Million ly (160 Mpc)", domain: "Cosmic Velocity Watershed Basin", binding: "Peculiar Velocity Streamlines to Great Attractor", speed: "~600 km/s", wikiKey: "Laniakea_Supercluster", summary: "Gravitational basin of attraction defined by continuous galaxy motion toward the Great Attractor.", nodes: ["Great Attractor (Norma Cluster)", "Virgo Supercluster Branch", "Hydra-Centaurus Supercluster", "Pavo-Indus Filament"] },
+      { id: "level_8", level: 8, title: "Pisces–Cetus Complex", scale: "~1 Billion ly (300 Mpc)", domain: "Macro-Filament Complex", binding: "Large-Scale Filament Alignment & Void Walls", speed: "Shapley Infall", wikiKey: "Pisces–Cetus_Supercluster_Complex", summary: "Galaxy filament superstructure including Laniakea and the Perseus-Pisces Supercluster.", nodes: ["Laniakea Macro-Filament", "Perseus-Pisces Supercluster", "Boötes Great Void", "Shapley Attractor Basin"] },
+      { id: "level_9", level: 9, title: "The Observable Universe", scale: "93 Billion ly (28.5 Gpc)", domain: "Particle Horizon / Cosmic Web", binding: "FLRW Metric Expansion (Dark Energy / ΛCDM)", speed: "369.8 km/s", wikiKey: "Observable_universe", summary: "The entire spherical volume of space observable from Earth at the present cosmological epoch.", nodes: ["Cosmic Web Filaments (Sloan Great Wall)", "Cosmic Microwave Background (2.725 K)", "Hubble Sphere", "Particle Horizon (~46.5 Gly)"] }
+    ];
+
+    // --- 6. NASA DEEP-SKY TARGETS ---
+    const DEEP_SKY_CATALOG = {
+      ngc253: { id: "ngc253", wikiKey: "Sculptor_Galaxy", name: "NGC 253 (Sculptor Galaxy)", type: "Starburst Spiral (SABc)", distMly: 11.4, redshift: 0.00081, scale3D: 3.8, pos: new THREE.Vector3(120, -45, 110), coreColor: 0xffffff, diskColor: 0x38bdf8, outflowColor: 0xf43f5e, observatories: "Webb (MIRI) + Chandra + ESO", description: "Star-forming engine driving multi-phase superwinds heated to 10M Kelvin." },
+      sgrA_irs3: { id: "sgrA_irs3", wikiKey: "Sagittarius_A*", name: "IRS 3 / Sagittarius A* Core", type: "Galactic Nuclear Cluster", distMly: 0.0267, redshift: 0.00000, scale3D: 2.4, pos: new THREE.Vector3(0, 5, -80), coreColor: 0xfbbf24, diskColor: 0xf97316, outflowColor: 0x818cf8, observatories: "JWST (NIRCam + MIRI)", description: "Dense star field 0.5 ly from our supermassive black hole with water/dust shells." },
+      centaurusA: { id: "centaurusA", wikiKey: "Centaurus_A", name: "Centaurus A (NGC 5128)", type: "Peculiar Elliptical / AGN Jet", distMly: 12.0, redshift: 0.00183, scale3D: 4.2, pos: new THREE.Vector3(-140, 60, -90), coreColor: 0xffffff, diskColor: 0x9333ea, outflowColor: 0x38bdf8, hasJet: true, jetVector: new THREE.Vector3(1.2, 1.8, 0.4).normalize(), observatories: "Chandra + IXPE + Webb + Hubble", description: "Collimated relativistic plasma jet blasting tens of thousands of light-years." },
+      m82: { id: "m82", wikiKey: "Messier_82", name: "Messier 82 (Cigar Galaxy)", type: "Prototype Starburst Galaxy", distMly: 12.0, redshift: 0.00068, scale3D: 4.0, pos: new THREE.Vector3(150, 80, -60), coreColor: 0xffedd5, diskColor: 0x38bdf8, outflowColor: 0xe11d48, hasBipolarOutflow: true, observatories: "Chandra + NuSTAR + Hubble + Webb", description: "Bipolar galactic superwinds expelling hot matter thousands of light-years out." },
+      m104: { id: "m104", wikiKey: "Sombrero_Galaxy", name: "Messier 104 (Sombrero Galaxy)", type: "Unbarred Spiral / Giant Halo", distMly: 30.0, redshift: 0.00341, scale3D: 5.0, pos: new THREE.Vector3(160, -90, -140), coreColor: 0xffedd5, diskColor: 0xd97706, outflowColor: 0x60a5fa, hasDustRing: true, observatories: "Webb (MIRI) + Chandra + Hubble", description: "Colossal stellar bulge and razor-sharp dust ring wrapped in a million-degree X-ray halo." },
+      gn_z11: { id: "gn_z11", wikiKey: "GN-z11", name: "GN-z11 (Cosmic Dawn)", type: "Primordial Galaxy", distMly: 13400.0, redshift: 10.603, scale3D: 2.2, pos: new THREE.Vector3(70, 220, -260), coreColor: 0xffedd5, diskColor: 0xef4444, outflowColor: 0xfacc15, isPrimordial: true, observatories: "JWST (NIRCam/NIRSpec) + Hubble", description: "Primordial galaxy seen 430 million years after the Big Bang with ionized gas envelope." },
+      horsehead: { id: "horsehead", wikiKey: "Horsehead_Nebula", name: "Horsehead Nebula (Barnard 33)", type: "Dark Molecular Cloud / PDR", distMly: 0.001375, redshift: 0.00000, scale3D: 3.2, pos: new THREE.Vector3(-110, -50, 180), coreColor: 0xfbbf24, diskColor: 0x92400e, outflowColor: 0x38bdf8, isNebulaPillar: true, observatories: "JWST (NIRCam/MIRI) + Euclid", description: "Dense interstellar dust pillar shaped by UV radiation from nearby massive stars." },
+      ring_m57: { id: "ring_m57", wikiKey: "Ring_Nebula", name: "Ring Nebula (Messier 57)", type: "Planetary Nebula Shell", distMly: 0.00257, redshift: -0.00007, scale3D: 3.5, pos: new THREE.Vector3(30, -130, 190), coreColor: 0x67e8f9, diskColor: 0x22c55e, outflowColor: 0xf43f5e, isPlanetaryNebula: true, observatories: "JWST (MIRI/NIRCam) + Hubble", description: "Glowing shroud of dying star with concentric outer halos and central white dwarf bubble." }
+    };
+
+    // --- 7. SATELLITE ENGINE SETUP ---
+    const MASSIVE_SATELLITE_CATALOG = {};
+
+    function generateMassiveConstellations() {
+      const flagships = [
+        { id: "cartosat3", name: "Cartosat-3", norad: 44804, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 509, incDeg: 97.5, color: 0xfbbf24, role: "0.25m High-Resolution Optical Reconnaissance" },
+        { id: "cartosat2f", name: "Cartosat-2F", norad: 43111, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 505, incDeg: 97.5, color: 0xfbbf24, role: "Cartographic Satellite" },
+        { id: "eos04", name: "EOS-04 (RISAT-1A)", norad: 51656, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 529, incDeg: 97.6, color: 0x34d399, role: "C-Band Synthetic Aperture Radar" },
+        { id: "eos06", name: "EOS-06 (Oceansat-3)", norad: 54361, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 742, incDeg: 98.3, color: 0x38bdf8, role: "13-Channel Ocean Colour Monitor" },
+        { id: "eos08", name: "EOS-08 (Microsat)", norad: 60451, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 475, incDeg: 37.4, color: 0xf59e0b, role: "Electro-Optical Infrared & GNSS-Reflectometry" },
+        { id: "nisar", name: "NISAR (NASA-ISRO SAR)", norad: 63102, agency: "ISRO / NASA", country: "IND", agencyCat: "isro", altKm: 747, incDeg: 98.4, color: 0x22d3ee, role: "Dual-Frequency L & S Band Radar Earth Observatory" },
+        { id: "insat3ds", name: "INSAT-3DS", norad: 58990, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 35786, incDeg: 0.05, color: 0xf59e0b, role: "Geostationary Weather Sounder" },
+        { id: "astrosat", name: "AstroSat", norad: 40930, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 650, incDeg: 6.0, color: 0xa855f7, role: "Multi-Wavelength Space Observatory" },
+        { id: "xposat", name: "XPoSat (X-Ray Polarimeter)", norad: 58694, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 650, incDeg: 6.0, color: 0xe879f9, role: "Cosmic X-Ray Polarization Observatory" },
+        { id: "navic_irnss1i", name: "NavIC (IRNSS-1I / NVS-01)", norad: 56759, agency: "ISRO", country: "IND", agencyCat: "isro", altKm: 35786, incDeg: 29.0, color: 0xfbbf24, role: "Indian Regional Navigation Satellite System" },
+        { id: "iss", name: "ISS (Zarya)", norad: 25544, agency: "NASA / INT", country: "USA", agencyCat: "nasa", altKm: 418, incDeg: 51.64, color: 0x10b981, role: "International Space Station" },
+        { id: "hubble", name: "Hubble Space Telescope", norad: 20580, agency: "NASA / ESA", country: "USA", agencyCat: "nasa", altKm: 535, incDeg: 28.47, color: 0x06b6d4, role: "Optical/UV Deep Universe Telescope" },
+        { id: "sentinel2a", name: "Sentinel-2A", norad: 40697, agency: "ESA", country: "ESA", agencyCat: "esa", altKm: 786, incDeg: 98.62, color: 0x818cf8, role: "Copernicus Multispectral Earth Observation" },
+        { id: "sentinel6a", name: "Sentinel-6 Michael Freilich", norad: 46984, agency: "ESA / NASA", country: "ESA", agencyCat: "esa", altKm: 1336, incDeg: 66.0, color: 0x60a5fa, role: "High-Precision Radar Ocean Altimetry" },
+        { id: "landsat9", name: "Landsat 9", norad: 49260, agency: "NASA / USGS", country: "USA", agencyCat: "nasa", altKm: 705, incDeg: 98.2, color: 0x34d399, role: "Global Land Surface & Thermal Infrared Imaging" },
+        { id: "noaa21", name: "NOAA-21 (JPSS-2)", norad: 54234, agency: "NOAA / NASA", country: "USA", agencyCat: "nasa", altKm: 824, incDeg: 98.7, color: 0x38bdf8, role: "Polar-Orbiting Weather & Atmospheric Sounder" },
+        { id: "tiangong", name: "Tiangong Space Station", norad: 48274, agency: "CNSA", country: "CHN", agencyCat: "cnsa", altKm: 392, incDeg: 41.47, color: 0xef4444, role: "Modular Orbital Space Station" },
+        { id: "debris_1", name: "COSMOS-1408 Fragment / RB", norad: 49863, agency: "Tracked Debris", country: "CIS", agencyCat: "constellation", altKm: 485, incDeg: 82.5, color: 0xf43f5e, role: "High-Priority Tracked Orbital Debris" }
+      ];
+
+      flagships.forEach(f => {
+        f.raan0 = Math.random() * 360;
+        f.argP = Math.random() * 360;
+        f.M0 = Math.random() * 360;
+        f.ecc = 0.001;
+        MASSIVE_SATELLITE_CATALOG[f.id] = f;
+      });
+
+      function injectShell(prefix, label, count, agency, cat, altKm, incDeg, color, role) {
+        for (let i = 1; i <= count; i++) {
+          const id = `${prefix}_${i}`;
+          MASSIVE_SATELLITE_CATALOG[id] = {
+            id,
+            name: `${label}-${i}`,
+            norad: 60000 + Object.keys(MASSIVE_SATELLITE_CATALOG).length,
+            agency,
+            country: agency === 'ISRO' ? 'IND' : (agency === 'ESA' ? 'ESA' : 'USA'),
+            agencyCat: cat,
+            altKm: altKm + (Math.random() * 6 - 3),
+            incDeg: incDeg,
+            ecc: 0.0002,
+            raan0: (i * 13.5) % 360,
+            argP: (i * 27.0) % 360,
+            M0: (i * 19.3) % 360,
+            color,
+            role
+          };
+        }
+      }
+
+      injectShell('starlink_s1', 'Starlink', 1400, 'SpaceX', 'constellation', 550, 53.2, 0xc084fc, 'LEO Broadband Internet');
+      injectShell('starlink_s2', 'Starlink-V2', 700, 'SpaceX', 'constellation', 540, 53.0, 0xa855f7, 'Direct-to-Cell LEO Satellite');
+      injectShell('oneweb', 'OneWeb', 420, 'OneWeb', 'constellation', 1200, 87.9, 0x38bdf8, 'Polar High-Altitude Telecom');
+      injectShell('gps', 'GPS-NAVSTAR', 32, 'USSF', 'nasa', 20200, 55.0, 0x10b981, 'MEO Global Positioning System');
+      injectShell('galileo', 'Galileo', 30, 'ESA', 'esa', 23222, 56.0, 0x60a5fa, 'European Radionavigation Satellite');
+      injectShell('debris', 'COSMOS-DEBRIS', 500, 'Debris', 'constellation', 650, 65.0, 0x64748b, 'Tracked Orbital Spent Rocket Body');
+    }
+
+    generateMassiveConstellations();
+
+    const SATELLITES = MASSIVE_SATELLITE_CATALOG;
+
+    // --- 7B. CCSDS OMM (ORBIT MEAN-ELEMENTS MESSAGE) 6-DIGIT INGESTION ENGINE ---
+    window.parseCCSDS_OMM = function(ommRecord) {
+      if (!ommRecord) return null;
+      // Support both JSON object and raw CelesTrak OMM feed schemas
+      const noradId = parseInt(ommRecord.NORAD_CAT_ID || ommRecord.norad || ommRecord.OBJECT_ID, 10);
+      const name = ommRecord.OBJECT_NAME || ommRecord.name || ('OBJECT-' + noradId);
+      const meanMotion = parseFloat(ommRecord.MEAN_MOTION || ommRecord.mean_motion || 15.0);
+      const incDeg = parseFloat(ommRecord.INCLINATION || ommRecord.incDeg || 51.6);
+      const ecc = parseFloat(ommRecord.ECCENTRICITY || ommRecord.ecc || 0.001);
+      const raanDeg = parseFloat(ommRecord.RA_OF_ASC_NODE || ommRecord.raan0 || 0);
+      const argPDeg = parseFloat(ommRecord.ARG_OF_PERICENTER || ommRecord.argP || 0);
+      const meanAnomaly = parseFloat(ommRecord.MEAN_ANOMALY || ommRecord.M0 || 0);
+      const epochIso = ommRecord.EPOCH || ommRecord.epoch || new Date().toISOString();
+
+      // Compute semi-major axis in km: a = (mu / n^2)^(1/3)
+      const nRadS = meanMotion * (2 * Math.PI / 86400);
+      const aKm = Math.cbrt(398600.4418 / (nRadS * nRadS));
+      const altKm = Math.max(160, aKm - 6378.137);
+
+      return {
+        id: 'sat_' + noradId,
+        norad: noradId,
+        name: name,
+        agency: ommRecord.CENTER_NAME || ommRecord.agency || 'FLEET',
+        agencyCat: (name.includes('CARTOSAT') || name.includes('EOS') || name.includes('INSAT')) ? 'isro' : 'constellation',
+        altKm: altKm,
+        incDeg: incDeg,
+        ecc: ecc,
+        raan0: raanDeg,
+        argP: argPDeg,
+        M0: meanAnomaly,
+        epoch: epochIso,
+        color: noradId >= 60000 ? 0x38bdf8 : 0x00f0ff,
+        role: ommRecord.COMMENT || 'CCSDS OMM Ingested Spacecraft'
+      };
+    };
+
+
+    const PLANETARY_ORBITERS = {
+      // 1. ISRO Solar & Lunar Flagships
+      aditya_l1: { name: "Aditya-L1 Solar Observatory", parent: "sun", agency: "ISRO", country: "IND", orbitRadius: 18.5, inc: 4.5, speed: 0.0014, color: 0xfbbf24, altitude: "1.5M km (Sun-Earth L1 Halo)", velocity: "109,000 km/h", period: "177.8 days", role: "First Indian Solar L1 Observatory (VELC Coronagraph & SUIT)", launchDate: "02 Sep 2023", launchVeh: "PSLV-C57", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Aditya-L1", status: "HALO ORBIT L1" },
+      chandrayaan3: { name: "Chandrayaan-3 (Vikram & Pragyan)", parent: "moon", agency: "ISRO", country: "IND", orbitRadius: 0.65, inc: 88.5, speed: 0.0036, color: 0xfbbf24, altitude: "Lunar South Pole (69.37°S, 32.32°E)", velocity: "5,900 km/h", period: "Lunar Surface (Shiv Shakti Point)", role: "First Historic Lunar South Pole Soft Landing & In-Situ Rover Analysis", launchDate: "14 Jul 2023", launchVeh: "LVM3-M4", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Chandrayaan-3", status: "HISTORIC LANDER" },
+      chandrayaan2_orb: { name: "Chandrayaan-2 Lunar Orbiter", parent: "moon", agency: "ISRO", country: "IND", orbitRadius: 0.85, inc: 88.0, speed: 0.0032, color: 0xf59e0b, altitude: "100 × 100 km Polar Lunar", velocity: "5,900 km/h", period: "118 min", role: "0.25m OHRC High-Resolution Lunar Reconnaissance & Dual-Frequency SAR", launchDate: "22 Jul 2019", launchVeh: "GSLV Mk III-M1", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Chandrayaan-2", status: "OPERATIONAL" },
+      chandrayaan1: { name: "Chandrayaan-1 (Moon Impact Probe)", parent: "moon", agency: "ISRO", country: "IND", orbitRadius: 1.05, inc: 90.0, speed: 0.0028, color: 0xfde047, altitude: "200 km Polar Lunar Orbit", velocity: "5,750 km/h", period: "120 min", role: "First Indian Lunar Probe • Confirmed Widespread Hydroxyl / Water on Moon", launchDate: "22 Oct 2008", launchVeh: "PSLV-C11", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Chandrayaan-1", status: "LEGACY ARCHIVE" },
+      mom: { name: "Mangalyaan (Mars Orbiter Mission)", parent: "mars", agency: "ISRO", country: "IND", orbitRadius: 2.3, inc: 150.0, speed: 0.0016, color: 0xfbbf24, altitude: "421 × 76,993 km Areocentric", velocity: "14,800 km/h", period: "72.9 hrs", role: "First Indian Mars Exploration Probe • Exosphere & Methane Sensor", launchDate: "05 Nov 2013", launchVeh: "PSLV-XL C25", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Mars_Orbiter_Mission", status: "HISTORIC MARS" },
+      shukrayaan1: { name: "Shukrayaan-1 (Venus Orbiter Mission)", parent: "venus", agency: "ISRO", country: "IND", orbitRadius: 2.1, inc: 85.0, speed: 0.0022, color: 0xfde047, altitude: "200 × 600 km Polar Cytherean", velocity: "26,400 km/h", period: "98 min", role: "Synthetic Aperture Radar & Subsurface Volcanism Sounder for Venus", launchDate: "2028 Window", launchVeh: "LVM3", launchSite: "SDSC SHAR, Sriharikota", wikiKey: "Venus_Orbiter_Mission", status: "APPROVED FLAGSHIP" },
+
+      // 2. Solar & Deep Space Observatories
+      jwst: { name: "James Webb Space Telescope (JWST)", parent: "sun", agency: "NASA / ESA / CSA", country: "USA", orbitRadius: 21.2, inc: 5.0, speed: 0.0009, color: 0xf59e0b, altitude: "1.5M km (Sun-Earth L2 Halo)", velocity: "3,600 km/h (L2)", period: "180 days (Halo)", role: "6.5m Gold-Coated Infrared Deep Universe & Exoplanet Atmosphere Observatory", launchDate: "25 Dec 2021", launchVeh: "Ariane 5 ECA", launchSite: "Guiana Space Centre", wikiKey: "James_Webb_Space_Telescope", status: "OPERATIONAL L2" },
+      parker_solar: { name: "Parker Solar Probe", parent: "sun", agency: "NASA", country: "USA", orbitRadius: 5.5, inc: 3.4, speed: 0.0045, color: 0xef4444, altitude: "6.16M km Perihelion (Solar Corona)", velocity: "692,000 km/h", period: "88 days", role: "Fastest Human-Made Spacecraft • Direct In-Situ Solar Corona Sampling", launchDate: "12 Aug 2018", launchVeh: "Delta IV Heavy", launchSite: "Cape Canaveral SLC-37B", wikiKey: "Parker_Solar_Probe", status: "OPERATIONAL" },
+      bepicolombo: { name: "BepiColombo", parent: "mercury", agency: "ESA / JAXA", country: "ESA", orbitRadius: 1.45, inc: 85.0, speed: 0.0028, color: 0xa855f7, altitude: "Mercury Polar Insertion", velocity: "165,000 km/h", period: "88 days", role: "Dual-Spacecraft Mercury Planetary & Magnetospheric Orbiter", launchDate: "20 Oct 2018", launchVeh: "Ariane 5 ECA", launchSite: "Guiana Space Centre", wikiKey: "BepiColombo", status: "OPERATIONAL" },
+      akatsuki: { name: "Akatsuki (PLANET-C)", parent: "venus", agency: "JAXA", country: "JPN", orbitRadius: 2.4, inc: 3.0, speed: 0.0019, color: 0x38bdf8, altitude: "1,000 × 360,000 km Equatorial", velocity: "22,000 km/h", period: "10.5 days", role: "Venusian Atmospheric Super-Rotation & Lightning Sounder", launchDate: "20 May 2010", launchVeh: "H-IIA 202", launchSite: "Tanegashima Space Center", wikiKey: "Akatsuki_(spacecraft)", status: "EXTENDED ARCHIVE" },
+
+      // 3. Mars, Outer Planets & Interstellar Pioneers
+      mro: { name: "MRO (HiRISE)", parent: "mars", agency: "NASA", country: "USA", orbitRadius: 1.65, inc: 92.8, speed: 0.0028, color: 0x38bdf8, altitude: "250 × 316 km Sun-Synchronous", velocity: "12,240 km/h", period: "112 min", role: "High-Resolution Mars Reconnaissance, SHARAD Radar & Surface Relay", launchDate: "12 Aug 2005", launchVeh: "Atlas V 401", launchSite: "Cape Canaveral", wikiKey: "Mars_Reconnaissance_Orbiter", status: "OPERATIONAL" },
+      perseverance: { name: "Perseverance & Ingenuity (Mars 2020)", parent: "mars", agency: "NASA", country: "USA", orbitRadius: 1.25, inc: 18.4, speed: 0.0035, color: 0xf97316, altitude: "Jezero Crater Delta (18.38°N, 77.58°E)", velocity: "Mars Surface", period: "24.6h Sol", role: "Astrobiology Sample Caching Rover & Autonomous Rotorcraft Demonstrator", launchDate: "30 Jul 2020", launchVeh: "Atlas V 541", launchSite: "Cape Canaveral SLC-41", wikiKey: "Perseverance_(rover)", status: "SURFACE ACTIVE" },
+      juno: { name: "Juno", parent: "jupiter", agency: "NASA", country: "USA", orbitRadius: 4.8, inc: 90.5, speed: 0.0012, color: 0x38bdf8, altitude: "4,200 × 8,100,000 km Polar Jovian", velocity: "209,000 km/h", period: "33 days", role: "Jovian Polar Magnetosphere, Deep Atmosphere & Galilean Moons", launchDate: "05 Aug 2011", launchVeh: "Atlas V 551", launchSite: "Cape Canaveral", wikiKey: "Juno_(spacecraft)", status: "OPERATIONAL" },
+      europa_clipper: { name: "Europa Clipper", parent: "jupiter", agency: "NASA", country: "USA", orbitRadius: 5.5, inc: 22.0, speed: 0.0014, color: 0x22d3ee, altitude: "Interplanetary Cruise → Europa (49 Flybys)", velocity: "126,000 km/h", period: "Heliocentric Cruise", role: "Ice-Penetrating Radar & Ocean Habitability Assessment of Europa", launchDate: "14 Oct 2024", launchVeh: "Falcon Heavy", launchSite: "Kennedy Space Center LC-39A", wikiKey: "Europa_Clipper", status: "DEEP SPACE CRUISE" },
+      juice: { name: "JUICE (Jupiter Icy Moons Explorer)", parent: "jupiter", agency: "ESA", country: "ESA", orbitRadius: 6.2, inc: 18.5, speed: 0.0011, color: 0x818cf8, altitude: "Cruise → Ganymede Orbit Insertion", velocity: "118,000 km/h", period: "Heliocentric Cruise", role: "First Spacecraft Designed to Orbit an Outer-Planet Moon (Ganymede)", launchDate: "14 Apr 2023", launchVeh: "Ariane 5 ECA", launchSite: "Guiana Space Centre", wikiKey: "Jupiter_Icy_Moons_Explorer", status: "DEEP SPACE CRUISE" },
+      cassini: { name: "Cassini-Huygens", parent: "saturn", agency: "NASA / ESA", country: "USA", orbitRadius: 4.5, inc: 61.0, speed: 0.0011, color: 0xfbbf24, altitude: "Ring-Grazing Proximal Orbit", velocity: "122,000 km/h", period: "6.5 days", role: "Saturn Rings, Enceladus Geysers & Titan Huygens Atmospheric Landing", launchDate: "15 Oct 1997", launchVeh: "Titan IVB", launchSite: "Cape Canaveral", wikiKey: "Cassini–Huygens", status: "GRAND FINALE ARCHIVE" },
+      sc_voyager_1: { name: "Voyager 1", parent: "sun", agency: "NASA", country: "USA", orbitRadius: 105.0, inc: 35.0, speed: 0.0002, color: 0x38bdf8, altitude: "165+ AU (Interstellar Space)", velocity: "61,200 km/h", period: "Hyperbolic Escape", role: "Farthest Human-Made Object • Direct In-Situ Interstellar Plasma Sounder", launchDate: "05 Sep 1977", launchVeh: "Titan IIIE/Centaur", launchSite: "Cape Canaveral LC-41", wikiKey: "Voyager_1", status: "INTERSTELLAR" },
+      sc_voyager_2: { name: "Voyager 2", parent: "sun", agency: "NASA", country: "USA", orbitRadius: 98.0, inc: -48.0, speed: 0.0002, color: 0x38bdf8, altitude: "138+ AU (Interstellar Space)", velocity: "55,340 km/h", period: "Hyperbolic Escape", role: "Only Spacecraft to Survey Jupiter, Saturn, Uranus, and Neptune", launchDate: "20 Aug 1977", launchVeh: "Titan IIIE/Centaur", launchSite: "Cape Canaveral LC-41", wikiKey: "Voyager_2", status: "INTERSTELLAR" },
+      new_horizons: { name: "New Horizons", parent: "sun", agency: "NASA", country: "USA", orbitRadius: 92.0, inc: 2.4, speed: 0.0003, color: 0xa855f7, altitude: "60+ AU (Kuiper Belt)", velocity: "49,600 km/h", period: "Hyperbolic Escape", role: "First Close Reconnaissance of Pluto-Charon & Kuiper Belt Object Arrokoth", launchDate: "19 Jan 2006", launchVeh: "Atlas V 551", launchSite: "Cape Canaveral", wikiKey: "New_Horizons", status: "KUIPER BELT" }
+    };
+
+    let activeTargetKey = "earth";
+    let isTrackingPlanet = true;
+    let activeAgencyFilter = "all";
+    let activeMasterDomain = "artificial";
+    let activeArtificialSubTab = "earth-sats";
+    let activeNaturalSubTab = "solar-system";
+    let currentViewDomain = "solar";
+    let activeGalaxyKey = "m82";
+
+    // --- 8. THREE.JS VIEWPORT & SCENE GRAPH ---
+    const container = document.getElementById("globe-container");
+    const scene = new THREE.Scene();
+window.scene = scene;
+if (typeof THREE !== 'undefined') window.THREE = THREE;
+    scene.fog = new THREE.FogExp2(0x000208, 0.00015);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 200000);
+window.camera = camera;
+    const cameraTarget = new THREE.Vector3(0, 0, 0);
+    const focusWorldPos = new THREE.Vector3(0, 0, 0);
+
+    let cameraDistance = 145.0;
+    let targetCameraDistance = 5.2;
+    let cameraPhi = 0.58;
+    let targetCameraPhi = 0.58;
+    let cameraTheta = 0.75;
+    let targetCameraTheta = 0.75;
+
+    // Registry to isolate individual satellite and probe orbit lines
+    const satOrbitLines = {};
+
+    let flightProgress = 0.0;
+    let isFlyingToTarget = false;
+    const flightStartPos = new THREE.Vector3();
+    const flightStartLook = new THREE.Vector3();
+    const flightEndLook = new THREE.Vector3();
+
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true, 
+      powerPreference: "high-performance",
+      logarithmicDepthBuffer: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    container.appendChild(renderer.domElement);
+    renderer.domElement.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  console.warn('[WebGL] Context lost. Awaiting restoration...');
+}, false);
+
+renderer.domElement.addEventListener('webglcontextrestored', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}, false);
+
+    const ambientLight = new THREE.AmbientLight(0x081026, 0.12);
+    scene.add(ambientLight);
+
+    
+    // Soft Circular Star Sprite (Replaces raw square WebGL point primitives)
+    const circleStarTexture = (function() {
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0.0, 'rgba(255,255,255,1.0)');
+      g.addColorStop(0.25, 'rgba(255,255,255,0.85)');
+      g.addColorStop(0.55, 'rgba(255,255,255,0.25)');
+      g.addColorStop(1.0, 'rgba(255,255,255,0.0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 64, 64);
+      const tex = new THREE.CanvasTexture(c);
+      return tex;
+    })();
+
+    const starPos = new Float32Array(5000 * 3);
+    for (let i = 0; i < 5000 * 3; i++) starPos[i] = (Math.random() - 0.5) * 800;
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.08 })));
+
+    // --- 8A. ESA GAIA DR3 ASTROMETRIC STELLAR FIELD (ICRS J2016.0) ---
+    const GAIA_BRIGHT_STARS = [
+      { name: "Sirius (α CMa)", ra: 101.287, dec: -16.716, distLy: 8.6, mag: -1.46, col: 0xa0c8ff },
+      { name: "Canopus (α Car)", ra: 95.988, dec: -52.696, distLy: 310, mag: -0.74, col: 0xffffff },
+      { name: "Rigil Kentaurus (α Cen A)", ra: 219.902, dec: -60.834, distLy: 4.37, mag: -0.01, col: 0xfff4e8 },
+      { name: "Arcturus (α Boo)", ra: 213.915, dec: 19.182, distLy: 36.7, mag: -0.05, col: 0xffcaa8 },
+      { name: "Vega (α Lyr)", ra: 279.234, dec: 38.784, distLy: 25.0, mag: 0.03, col: 0xcae0ff },
+      { name: "Capella (α Aur)", ra: 79.172, dec: 45.998, distLy: 42.9, mag: 0.08, col: 0xfff1e0 },
+      { name: "Rigel (β Ori)", ra: 78.634, dec: -8.202, distLy: 860, mag: 0.13, col: 0xaecfff },
+      { name: "Procyon (α CMi)", ra: 114.825, dec: 5.225, distLy: 11.5, mag: 0.38, col: 0xfff8f0 },
+      { name: "Betelgeuse (α Ori)", ra: 88.793, dec: 7.407, distLy: 550, mag: 0.50, col: 0xff8c42 },
+      { name: "Achernar (α Eri)", ra: 24.429, dec: -57.237, distLy: 139, mag: 0.46, col: 0x9ebfff },
+      { name: "Hadar (β Cen)", ra: 210.956, dec: -60.373, distLy: 390, mag: 0.61, col: 0xaecfff },
+      { name: "Altair (α Aql)", ra: 297.696, dec: 8.868, distLy: 16.7, mag: 0.77, col: 0xf5f8ff },
+      { name: "Aldebaran (α Tau)", ra: 68.980, dec: 16.509, distLy: 65.3, mag: 0.86, col: 0xffa552 },
+      { name: "Spica (α Vir)", ra: 201.298, dec: -11.161, distLy: 250, mag: 0.96, col: 0xa6c4ff },
+      { name: "Antares (α Sco)", ra: 247.352, dec: -26.432, distLy: 550, mag: 1.06, col: 0xff6622 },
+      { name: "Pollux (β Gem)", ra: 116.329, dec: 28.026, distLy: 33.8, mag: 1.14, col: 0xffd29f },
+      { name: "Fomalhaut (α PsA)", ra: 344.413, dec: -29.622, distLy: 25.1, mag: 1.16, col: 0xd6e5ff },
+      { name: "Deneb (α Cyg)", ra: 310.358, dec: 45.280, distLy: 2600, mag: 1.25, col: 0xd0e2ff },
+      { name: "Mimosa (β Cru)", ra: 191.930, dec: -59.689, distLy: 280, mag: 1.25, col: 0xa0c0ff },
+      { name: "Regulus (α Leo)", ra: 152.093, dec: 11.967, distLy: 79.3, mag: 1.36, col: 0xaecaff },
+      { name: "Polaris (α UMi)", ra: 37.954, dec: 89.264, distLy: 433, mag: 1.98, col: 0xfff6ec }
+    ];
+
+    function buildGaiaAstrometricStarField() {
+      const starCount = GAIA_BRIGHT_STARS.length;
+      const pos = new Float32Array(starCount * 3);
+      const cols = new Float32Array(starCount * 3);
+      const starSphereRadius = 750.0;
+
+      for (let i = 0; i < starCount; i++) {
+        const s = GAIA_BRIGHT_STARS[i];
+        const raRad = s.ra * (Math.PI / 180);
+        const decRad = s.dec * (Math.PI / 180);
+
+        // Equatorial ICRS to Cartesian Three.js space
+        pos[i * 3]     = starSphereRadius * Math.cos(decRad) * Math.sin(raRad);
+        pos[i * 3 + 1] = starSphereRadius * Math.sin(decRad);
+        pos[i * 3 + 2] = starSphereRadius * Math.cos(decRad) * Math.cos(raRad);
+
+        const c = new THREE.Color(s.col);
+        cols[i * 3] = c.r; cols[i * 3 + 1] = c.g; cols[i * 3 + 2] = c.b;
+      }
+
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geom.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+      const mat = new THREE.PointsMaterial({
+        size: 2.2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.95
+      });
+      scene.add(new THREE.Points(geom, mat));
+    }
+    buildGaiaAstrometricStarField();
+// ============================================================================
+    // NASA 3D DEEP SPACE NETWORK (DSN NOW) CARRIER BEAMS & INTERPLANETARY LINKS
+    // ============================================================================
+    const dsnBeamsGroup = new THREE.Group();
+    scene.add(dsnBeamsGroup);
+
+    const DSN_COMPLEXES = [
+      { id: 'goldstone', name: 'Goldstone (DSS 14/25)', lat: 35.43, lon: -116.89, color: 0x10b981 },
+      { id: 'madrid',    name: 'Madrid (DSS 63/65)',    lat: 40.43, lon: -4.25,    color: 0x38bdf8 },
+      { id: 'canberra',  name: 'Canberra (DSS 35/43)',  lat: -35.40, lon: 148.98,  color: 0xc084fc }
+    ];
+
+    const DSN_TARGET_PROBES = [
+      { key: 'aditya_l1',    label: 'Aditya-L1 (ISRO L1)',     freqBand: 'X-Band (8.4 GHz)', rate: '128 kbps' },
+      { key: 'jwst',         label: 'James Webb (NASA/ESA L2)', freqBand: 'Ka-Band (25.9 GHz)', rate: '28 Mbps' },
+      { key: 'sc_voyager_1', label: 'Voyager 1 (Interstellar)', freqBand: 'S/X-Band (2.3 GHz)', rate: '160 bps' },
+      { key: 'parker_solar', label: 'Parker Solar Probe',      freqBand: 'X-Band (8.4 GHz)', rate: '512 kbps' }
+    ];
+
+    const activeDsnBeamMeshes = [];
+
+    function build3DDeepSpaceNetworkBeams() {
+      const beamGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, 0)
+      ]);
+
+      DSN_TARGET_PROBES.forEach(probe => {
+        DSN_COMPLEXES.forEach(complex => {
+          const lineMat = new THREE.LineDashedMaterial({
+            color: complex.color,
+            dashSize: 1.8,
+            gapSize: 0.9,
+            transparent: true,
+            opacity: 0.75,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const beamLine = new THREE.Line(beamGeo.clone(), lineMat);
+          beamLine.computeLineDistances();
+          beamLine.visible = true;
+          dsnBeamsGroup.add(beamLine);
+
+          activeDsnBeamMeshes.push({
+            probeKey: probe.key,
+            complexId: complex.id,
+            line: beamLine,
+            color: complex.color,
+            offset: Math.random() * 10.0
+          });
+        });
+      });
+    }
+
+
+    const clickableMeshes = [];
+
+    // ============================================================================
+    // NASA EYES HELIOPHYSICS: PHOTOSPHERE CONVECTION, CORONA & PARKER SPIRAL
+    // ============================================================================
+    const sunRadius = 2.4;
+
+    const sunShaderUniforms = {
+      uTime:      { value: 0.0 },
+      uCameraPos: { value: new THREE.Vector3(0, 0, 115) },
+      uCoreColor: { value: new THREE.Color(0xfffdf0) },
+      uGranColor: { value: new THREE.Color(0xf59e0b) },
+      uLimbColor: { value: new THREE.Color(0xd946ef) }
+    };
+
+    // 1. Photosphere with Simplex Noise Convective Cells & Physical Limb Darkening
+    const sunPhotosphereMat = new THREE.ShaderMaterial({
+      uniforms: sunShaderUniforms,
+      vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          vNormal = normalize(mat3(modelMatrix) * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          #include <logdepthbuf_vertex>
+        }
+      `,
+      fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
+        uniform float uTime;
+        uniform vec3 uCameraPos;
+        uniform vec3 uCoreColor;
+        uniform vec3 uGranColor;
+        uniform vec3 uLimbColor;
+
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+
+        // Procedural Solar Plasma Granulation
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float noise(vec2 p) {
+          vec2 i = floor(p); vec2 f = fract(p);
+          vec2 u = f*f*(3.0-2.0*f);
+          return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+                     mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+        }
+
+        void main() {
+          #include <logdepthbuf_fragment>
+          vec3 N = normalize(vNormal);
+          vec3 V = normalize(uCameraPos - vWorldPos);
+
+          // Physical Limb Darkening: I(mu) = 1.0 - u * (1.0 - mu)
+          float mu = max(0.0, dot(N, V));
+          float limbFactor = pow(mu, 0.65);
+
+          // Dynamic Convective Plasma Cells
+          vec2 uvCoords = vUv * 45.0;
+          float n1 = noise(uvCoords + vec2(uTime * 0.12, uTime * 0.08));
+          float n2 = noise(uvCoords * 2.0 - vec2(uTime * 0.09, uTime * 0.15));
+          float granulation = n1 * 0.65 + n2 * 0.35;
+
+          vec3 plasmaCol = mix(uGranColor, uCoreColor, granulation * 0.8 + 0.2);
+          vec3 finalSun = mix(uLimbColor, plasmaCol, limbFactor);
+
+          gl_FragColor = vec4(finalSun, 1.0);
+        }
+      `
+    });
+
+    const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(sunRadius, 48, 48), sunPhotosphereMat);
+    scene.add(sunMesh);
+
+    // 2. Coronal Streamers & Atmospheric Halo
+    const sunCoronaMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime:      { value: 0.0 },
+        uCameraPos: { value: new THREE.Vector3(0, 0, 115) }
+      },
+      vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        void main() {
+          vNormal = normalize(mat3(modelMatrix) * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          #include <logdepthbuf_vertex>
+        }
+      `,
+      fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
+        uniform float uTime;
+        uniform vec3 uCameraPos;
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+
+        void main() {
+          #include <logdepthbuf_fragment>
+          vec3 N = normalize(vNormal);
+          vec3 V = normalize(uCameraPos - vWorldPos);
+          float rim = 1.0 - max(0.0, dot(V, N));
+          float streamer = pow(rim, 3.2) * (0.8 + 0.2 * sin(uTime * 2.0 + N.x * 12.0));
+          vec3 coronaCol = mix(vec3(0.96, 0.62, 0.07), vec3(1.0, 0.95, 0.7), rim);
+          gl_FragColor = vec4(coronaCol, streamer * 0.75);
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+
+    const coronaMesh = new THREE.Mesh(new THREE.SphereGeometry(sunRadius * 1.35, 40, 40), sunCoronaMat);
+    sunMesh.add(coronaMesh);
+
+    // 3. Solar Raycast Hit Sphere
+    const sunHit = new THREE.Mesh(new THREE.SphereGeometry(sunRadius * 1.8, 12, 12), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001 }));
+    sunHit.userData = { targetKey: 'sun' };
+    sunMesh.add(sunHit);
+    clickableMeshes.push(sunHit);
+
+    // 4. Photometric Point Light Source
+    const sunLight = new THREE.PointLight(0xfffaed, 4.2, 0, 0.0);
+    sunLight.position.set(0, 0, 0);
+    scene.add(sunLight);
+
+    // 5. Interplanetary Magnetic Field (Parker Spiral) & Solar Wind Particles
+    const solarWindParticleCount = 1800;
+    const solarWindGeo = new THREE.BufferGeometry();
+    const solarWindPositions = new Float32Array(solarWindParticleCount * 3);
+    const solarWindData = [];
+
+    for (let i = 0; i < solarWindParticleCount; i++) {
+      const arm = (i % 4) * (Math.PI / 2.0);
+      const dist = 3.0 + Math.random() * 85.0;
+      // Archimedean Parker Spiral theta = -omega * (r - r0) / v_sw
+      const spiralTheta = arm - (dist * 0.08);
+
+      solarWindPositions[i * 3]     = Math.cos(spiralTheta) * dist;
+      solarWindPositions[i * 3 + 1] = (Math.random() - 0.5) * (dist * 0.12);
+      solarWindPositions[i * 3 + 2] = Math.sin(spiralTheta) * dist;
+
+      solarWindData.push({
+        arm,
+        dist,
+        speed: 0.18 + Math.random() * 0.22,
+        ySpread: (Math.random() - 0.5) * 0.12
+      });
+    }
+
+    solarWindGeo.setAttribute('position', new THREE.BufferAttribute(solarWindPositions, 3));
+    const solarWindMat = new THREE.PointsMaterial({
+      color: 0xfde047,
+      size: 1.2,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const solarWindParticles = new THREE.Points(solarWindGeo, solarWindMat);
+    scene.add(solarWindParticles);
+
+    function createKeplerianOrbitRing(pData, color) {
+      if (pData.a === 0) return null;
+      const segs = 128;
+      const pos = new Float32Array((segs + 1) * 3);
+      for (let i = 0; i <= segs; i++) {
+        const M_deg = (i / segs) * 360;
+        const M_rad = M_deg * (Math.PI / 180);
+        const a = pData.a, e = pData.e;
+        let E = M_rad + e * Math.sin(M_rad);
+        for (let iter = 0; iter < 3; iter++) {
+          E -= (E - e * Math.sin(E) - M_rad) / (1.0 - e * Math.cos(E));
+        }
+        const xP = a * (Math.cos(E) - e);
+        const yP = a * Math.sqrt(Math.max(0, 1.0 - e * e)) * Math.sin(E);
+        const rAU = Math.sqrt(xP * xP + yP * yP);
+        const nu = Math.atan2(yP, xP);
+        const u = nu + (pData.w - pData.node) * (Math.PI / 180);
+        const I_rad = pData.I * (Math.PI / 180);
+        const node_rad = pData.node * (Math.PI / 180);
+
+        const xAU = rAU * (Math.cos(node_rad) * Math.cos(u) - Math.sin(node_rad) * Math.sin(u) * Math.cos(I_rad));
+        const yAU = rAU * (Math.sin(node_rad) * Math.cos(u) + Math.cos(node_rad) * Math.sin(u) * Math.cos(I_rad));
+        const zAU = rAU * (Math.sin(u) * Math.sin(I_rad));
+
+        const rViz = pData.baseDist * (rAU / a);
+        pos[i * 3] = rViz * (xAU / rAU);
+        pos[i * 3 + 1] = rViz * (zAU / rAU);
+        pos[i * 3 + 2] = rViz * (yAU / rAU);
+      }
+      const ringGeo = new THREE.BufferGeometry();
+      ringGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const ring = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({
+        color: color, transparent: true, opacity: 0.35
+      }));
+      scene.add(ring);
+      return ring;
+    }
+
+    function computeKeplerianOrbit(pData, d) {
+      if (!pData || pData.a === 0) {
+        return {
+          rAU: 0, xAU: 0, yAU: 0, zAU: 0,
+          rViz: 0, xThree: 0, yThree: 0, zThree: 0,
+          velocityKmS: 0, trueAnomalyDeg: 0, eclipticLngDeg: 0
+        };
+      }
+
+      const a = pData.a;
+      const e = pData.e;
+      const I_rad = pData.I * (Math.PI / 180);
+      const w_rad = pData.w * (Math.PI / 180);
+      const node_rad = pData.node * (Math.PI / 180);
+
+      let M_deg = (pData.L0 + pData.Lrate * d - pData.w) % 360;
+      if (M_deg < 0) M_deg += 360;
+      const M_rad = M_deg * (Math.PI / 180);
+
+      // Newton-Raphson Solver for Eccentric Anomaly E
+      let E = M_rad + e * Math.sin(M_rad);
+      for (let i = 0; i < 4; i++) {
+        const dE = (E - e * Math.sin(E) - M_rad) / (1.0 - e * Math.cos(E));
+        E -= dE;
+        if (Math.abs(dE) < 1e-6) break;
+      }
+
+      // Orbital Plane Coordinates
+      const xPrime = a * (Math.cos(E) - e);
+      const yPrime = a * Math.sqrt(Math.max(0, 1.0 - e * e)) * Math.sin(E);
+      const rAU = Math.sqrt(xPrime * xPrime + yPrime * yPrime);
+      const nu = Math.atan2(yPrime, xPrime);
+
+      // Argument of latitude u
+      const u = nu + w_rad - node_rad;
+
+      // Heliocentric Ecliptic Coordinates in AU
+      const xAU = rAU * (Math.cos(node_rad) * Math.cos(u) - Math.sin(node_rad) * Math.sin(u) * Math.cos(I_rad));
+      const yAU = rAU * (Math.sin(node_rad) * Math.cos(u) + Math.cos(node_rad) * Math.sin(u) * Math.cos(I_rad));
+      const zAU = rAU * (Math.sin(u) * Math.sin(I_rad));
+
+      // Vis-Viva Orbital Velocity in km/s: v = sqrt(GM(2/r - 1/a))
+      const vKmS = 29.784 * Math.sqrt(Math.max(0, 2.0 / rAU - 1.0 / a));
+
+      let eclipticLng = (Math.atan2(yAU, xAU) * (180 / Math.PI)) % 360;
+      if (eclipticLng < 0) eclipticLng += 360;
+
+      // Coordinate Scaling to Three.js Scene:
+      const rViz = pData.baseDist * (rAU / a);
+      const xThree = rViz * (xAU / rAU);
+      const yThree = rViz * (zAU / rAU); // Vertical orbital inclination lift
+      const zThree = rViz * (yAU / rAU);
+
+      return {
+        rAU, xAU, yAU, zAU,
+        rViz, xThree, yThree, zThree,
+        velocityKmS: vKmS,
+        trueAnomalyDeg: (nu * 180 / Math.PI + 360) % 360,
+        eclipticLngDeg: eclipticLng
+      };
+    }
+
+    // --- 9. EARTH HOLOGRAPHIC RADAR GLOBE & TACTICAL LAYERS ---
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.crossOrigin = 'anonymous';
+
+    const NASA_TEXTURE_MAPS = {
+      mercury: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mercury.jpg',
+      venus:   'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/venus_atmosphere.jpg',
+      moon:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg',
+      mars:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mars_1k_color.jpg',
+      jupiter: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/jupiter.jpg',
+      saturn:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/saturn.jpg',
+      uranus:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/uranus.jpg',
+      neptune: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/neptune.jpg',
+      pluto:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
+    };
+
+    function createProceduralFallback(planetKey) {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 256;
+      const ctx = c.getContext('2d');
+      const colors = {
+        mercury: '#827d78', venus: '#e3bb76', moon: '#a1a1aa',
+        mars: '#c84e1d', jupiter: '#c99661', saturn: '#e2bf7d',
+        uranus: '#7fe3e8', neptune: '#2b52a1', pluto: '#946f51'
+      };
+      ctx.fillStyle = colors[planetKey] || '#888888';
+      ctx.fillRect(0, 0, 512, 256);
+      return new THREE.CanvasTexture(c);
+    }
+
+    function loadNASAPlanetTexture(planetKey, material) {
+      const url = NASA_TEXTURE_MAPS[planetKey];
+      if (!url) return;
+      textureLoader.load(url, (tex) => {
+        if (renderer?.capabilities) tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tex.encoding = THREE.sRGBEncoding;
+        material.map = tex;
+        material.needsUpdate = true;
+      });
+    }
+
+    const fallbackDayCanvas = document.createElement('canvas');
+    fallbackDayCanvas.width = 1024; fallbackDayCanvas.height = 512;
+    const fDayCtx = fallbackDayCanvas.getContext('2d');
+    fDayCtx.fillStyle = '#0a2342'; fDayCtx.fillRect(0, 0, 1024, 512);
+
+    // ============================================================================
+    // NASA EYES ON THE EARTH: DUAL-LAYER DAY/NIGHT TERMINATOR & ATMOSPHERE SHADER
+    // ============================================================================
+    const earthRadius = CELESTIAL_BODIES.earth.radius;
+
+    // NASA Blue Marble Day & Suomi NPP VIIRS Night Textures
+    const dayTex = textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg');
+    const nightTex = textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg');
+    dayTex.encoding = THREE.sRGBEncoding;
+    nightTex.encoding = THREE.sRGBEncoding;
+
+    const earthShaderUniforms = {
+      uDayTex:     { value: dayTex },
+      uNightTex:   { value: nightTex },
+      uSunDir:     { value: new THREE.Vector3(1, 0, 0) },
+      uCameraPos:  { value: new THREE.Vector3(0, 0, 5) },
+      uVitalMode:  { value: 0 }, // 0: True Color, 1: Air Temp, 2: CO2, 3: SST, 4: Ozone
+      uTime:       { value: 0.0 }
+    };
+
+    const earthCustomShaderMat = new THREE.ShaderMaterial({
+      uniforms: earthShaderUniforms,
+      vertexShader: `
+        #include <common>
+        #include <logdepthbuf_pars_vertex>
+        varying vec2 vUv;
+        varying vec3 vWorldNormal;
+        varying vec3 vWorldPos;
+
+        void main() {
+          vUv = uv;
+          vWorldNormal = normalize(mat3(modelMatrix) * normal);
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+          #include <logdepthbuf_vertex>
+        }
+      `,
+      fragmentShader: `
+        #include <common>
+        #include <logdepthbuf_pars_fragment>
+        uniform sampler2D uDayTex;
+        uniform sampler2D uNightTex;
+        uniform vec3 uSunDir;
+        uniform vec3 uCameraPos;
+        uniform int uVitalMode;
+        uniform float uTime;
+
+        varying vec2 vUv;
+        varying vec3 vWorldNormal;
+        varying vec3 vWorldPos;
+
+        void main() {
+          #include <logdepthbuf_fragment>
+          vec3 N = normalize(vWorldNormal);
+          vec3 L = normalize(uSunDir);
+          vec3 V = normalize(uCameraPos - vWorldPos);
+
+          float cosTheta = dot(N, L);
+          // NASA Smooth Day-to-Night Terminator Transition (-0.15 to +0.15)
+          float dayFactor = smoothstep(-0.15, 0.18, cosTheta);
+
+          vec4 dayColor = texture2D(uDayTex, vUv);
+          vec4 nightColor = texture2D(uNightTex, vUv);
+
+          // Specular Ocean Glint Calculation
+          float oceanMask = step(0.12, dayColor.b - dayColor.r * 1.1);
+          vec3 H = normalize(L + V);
+          float spec = pow(max(0.0, dot(N, H)), 32.0) * oceanMask * dayFactor * 0.45;
+
+          // Base Optical Surface Blend
+          vec3 surfaceColor = mix(nightColor.rgb * 1.35, dayColor.rgb + vec3(spec), dayFactor);
+
+          // NASA Eyes Vital Signs GPU Overlays
+          if (uVitalMode > 0) {
+            float lat = (vUv.y - 0.5) * 3.14159265;
+            float lon = (vUv.x - 0.5) * 6.2831853;
+            float wave = sin(lon * 4.0 + uTime * 0.3) * cos(lat * 3.0);
+
+            if (uVitalMode == 1) { // Air Temperature
+              float temp = clamp(cos(lat * 1.25) + 0.25 * wave, 0.0, 1.0);
+              vec3 thermalCol = mix(vec3(0.1, 0.4, 0.95), vec3(0.95, 0.2, 0.05), temp);
+              surfaceColor = mix(surfaceColor, thermalCol, 0.65);
+            } else if (uVitalMode == 2) { // Carbon Dioxide (CO2)
+              float co2 = smoothstep(-0.2, 0.8, sin(lat + 0.3) + 0.4 * wave);
+              vec3 co2Col = mix(vec3(1.0, 0.85, 0.2), vec3(0.85, 0.1, 0.1), co2);
+              surfaceColor = mix(surfaceColor, co2Col, 0.60);
+            } else if (uVitalMode == 3) { // Sea Surface Temperature (SST)
+              if (oceanMask > 0.5) {
+                float sst = clamp(cos(lat * 1.4) + 0.15 * wave, 0.0, 1.0);
+                vec3 sstCol = mix(vec3(0.02, 0.2, 0.8), vec3(1.0, 0.3, 0.05), sst);
+                surfaceColor = mix(surfaceColor, sstCol, 0.72);
+              }
+            } else if (uVitalMode == 4) { // Ozone Layer (O3)
+              float o3 = abs(sin(lat * 1.7)) + 0.2 * cos(lon * 2.0);
+              vec3 o3Col = mix(vec3(0.05, 0.8, 0.5), vec3(0.6, 0.1, 0.9), clamp(o3, 0.0, 1.0));
+              surfaceColor = mix(surfaceColor, o3Col, 0.65);
+            }
+          }
+
+          gl_FragColor = vec4(surfaceColor, 1.0);
+        }
+      `
+    });
+
+    // Verified Three.js Earth Scene Nodes
+    const earthOrbitRing = createKeplerianOrbitRing(CELESTIAL_BODIES.earth, 0x0284c7);
+    const earthSystem = new THREE.Group();
+    scene.add(earthSystem);
+    window.earthSystem = earthSystem;
+
+    const earthAxialGroup = new THREE.Group();
+    earthAxialGroup.rotation.z = CELESTIAL_BODIES.earth.tilt * (Math.PI / 180);
+    earthSystem.add(earthAxialGroup);
+
+    // Alias earthShaderMat for uniform Layer Controller compatibility
+    const earthShaderMat = earthCustomShaderMat;
+
+            const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMesh = new THREE.Mesh(earthGeo, earthCustomShaderMat);
     earthMesh.renderOrder = 0;
     earthAxialGroup.add(earthMesh);
 
-    // ============================================================================
+    window.earthMesh = earthMesh;
+
+// ============================================================================
     // GOOGLE EARTH COUNTRY BORDERS & VECTOR BOUNDARIES ENGINE
     // ============================================================================
     const countryBordersGroup = new THREE.Group();
     countryBordersGroup.name = "countryBordersGroup";
-    if (typeof earthMesh !== 'undefined' && earthMesh) {
-      earthMesh.add(countryBordersGroup);
-    }
+    earthMesh.add(countryBordersGroup);
 
     // Geographic Lat/Lon to Earth Mesh Local Coordinate Transform
     function geoToEarthVector(lat, lon, radiusOffset = 0.005) {
-      const r = (CELESTIAL_BODIES?.earth?.radius || 1.85) + radiusOffset;
+      const r = CELESTIAL_BODIES.earth.radius + radiusOffset;
       const phi = (90 - lat) * (Math.PI / 180);
       const theta = (lon + 180) * (Math.PI / 180);
       return new THREE.Vector3(
@@ -1603,7 +2431,7 @@ let activeIntroBlobUrl = null;
       );
     }
 
-    // Ingest and render country boundaries
+    // Ingest and render high-resolution country boundaries
     fetch('https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson')
       .then(res => res.json())
       .then(geoJson => {
@@ -1623,18 +2451,23 @@ let activeIntroBlobUrl = null;
             polygon.forEach(ring => {
               const points = [];
               for (let i = 0; i < ring.length; i++) {
-                points.push(geoToEarthVector(ring[i][1], ring[i][0], 0.005));
+                const lon = ring[i][0];
+                const lat = ring[i][1];
+                points.push(geoToEarthVector(lat, lon, 0.005));
               }
               const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-              countryBordersGroup.add(new THREE.Line(lineGeo, borderLinesMaterial));
+              const line = new THREE.Line(lineGeo, borderLinesMaterial);
+              countryBordersGroup.add(line);
             });
           });
         });
       })
       .catch(() => {
-        // Fallback Subcontinent & Continental Guides
+        // Fallback: Primary Continental & National Outlines
         const fallbackBorders = [
+          // Subcontinent Perimeter
           [[37.1, 74.5], [34.5, 76.5], [32.0, 78.9], [28.6, 80.5], [27.0, 88.0], [22.0, 89.0], [21.5, 87.0], [17.0, 82.3], [13.0, 80.3], [8.0, 77.5], [10.0, 76.0], [15.5, 73.8], [19.0, 72.8], [23.5, 68.5], [27.0, 70.0], [31.5, 74.5], [37.1, 74.5]],
+          // Equator Reference Band
           Array.from({length: 65}, (_, i) => [0, (i / 64) * 360 - 180])
         ];
         const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 });
@@ -1688,7 +2521,7 @@ let activeIntroBlobUrl = null;
       el.className = 'google-earth-label';
       el.style.position = 'absolute';
       el.style.transform = 'translate(-50%, -50%)';
-      el.style.fontFamily = 'ui-sans-serif, system-ui, sans-serif';
+      el.style.fontFamily = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       el.style.fontSize = c.isMajor ? '11px' : '9px';
       el.style.fontWeight = '700';
       el.style.letterSpacing = '0.08em';
@@ -1701,7 +2534,7 @@ let activeIntroBlobUrl = null;
 
       el.onclick = () => {
         targetCameraPhi = c.lat * (Math.PI / 180);
-        targetCameraTheta = Math.PI / 2 + (c.lon * (Math.PI / 180) + (earthMesh ? earthMesh.rotation.y : 0));
+        targetCameraTheta = Math.PI / 2 + (c.lon * (Math.PI / 180) + earthMesh.rotation.y);
         targetCameraDistance = 3.6;
       };
 
@@ -1719,7 +2552,6 @@ let activeIntroBlobUrl = null;
     const _cProjVec = new THREE.Vector3();
 
     function updateGoogleEarthCountryLabels() {
-      if (!countryLabelsLayer) return;
       const mode = window.OrbitalCommandState?.viewMode || 'earth';
       if (mode === 'deepsky') {
         countryLabelsLayer.style.display = 'none';
@@ -1727,7 +2559,6 @@ let activeIntroBlobUrl = null;
       }
       countryLabelsLayer.style.display = 'block';
 
-      if (typeof earthMesh === 'undefined' || !earthMesh) return;
       earthMesh.getWorldPosition(_cEarthWorld);
       _cCamDir.subVectors(camera.position, _cEarthWorld).normalize();
 
@@ -1738,6 +2569,7 @@ let activeIntroBlobUrl = null;
         _cWorldPos.copy(item.localVec);
         earthMesh.localToWorld(_cWorldPos);
 
+        // Hemispheric horizon culling: hide labels on the back side of Earth
         const normalToCenter = _cWorldPos.clone().sub(_cEarthWorld).normalize();
         const dotFacing = normalToCenter.dot(_cCamDir);
 
@@ -1759,6 +2591,8 @@ let activeIntroBlobUrl = null;
         }
       });
     }
+
+
 
 
     // Soft Blue Atmospheric Halo with Native Logarithmic Depth
@@ -2215,6 +3049,7 @@ let activeIntroBlobUrl = null;
 
     // --- 11. INERTIAL SATELLITE BEACONS, ORBIT RINGS, SWATH CONES & RADAR NODES ---
     const satelliteInertialGroup = new THREE.Group();
+    window.satelliteInertialGroup = satelliteInertialGroup;
     earthSystem.add(satelliteInertialGroup);
 
     const satOrbitRingsGroup = new THREE.Group();
@@ -4490,7 +5325,6 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
       }
     
 function animate() {
-      if (typeof updateGoogleEarthCountryLabels === 'function') updateGoogleEarthCountryLabels();
       updateDeepSpaceCallouts();
       requestAnimationFrame(animate);
       if (!isPageVisible) return;
@@ -4544,10 +5378,8 @@ function animate() {
       const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
       earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
 
-            if (typeof sunMesh !== 'undefined' && sunMesh && typeof earthSystem !== 'undefined' && earthSystem) {
-        sunMesh.getWorldPosition(_vSun);
-        earthSystem.getWorldPosition(_vEarth);
-      }
+      sunMesh.getWorldPosition(_vSun);
+      earthSystem.getWorldPosition(_vEarth);
       if (_vSun.distanceToSquared(_vEarth) > 0.0001) {
         _vSunDir.subVectors(_vSun, _vEarth).normalize();
       } else {
@@ -4840,18 +5672,12 @@ function animate() {
     console.error("[Init Warning]:", e);
   }
   setTimeout(() => { if (typeof switchEarthExplorerTab === 'function') switchEarthExplorerTab('satellites'); }, 200);
-  // Unconditional fail-safe dismissal of the loading screen
-  (function dismissLoaderImmediately() {
-    const el = document.getElementById('webgl-status-overlay');
-    if (el) {
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
-      setTimeout(() => {
-        el.style.display = 'none';
-        el.classList.add('hidden');
-      }, 200);
-    }
-  })();
+  // Auto-dismiss WebGL status overlay on successful canvas initialization
+      const __autoDismissStatusOverlay = document.getElementById('webgl-status-overlay');
+      if (__autoDismissStatusOverlay) {
+        __autoDismissStatusOverlay.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => __autoDismissStatusOverlay.classList.add('hidden'), 400);
+      }
   // Dismiss overlay once canvas loop initializes
       const __dismissOverlayOnReady = document.getElementById('webgl-status-overlay');
       if (__dismissOverlayOnReady) {
@@ -5134,9 +5960,7 @@ function animate() {
     }, 7000);
 
    // 5. Fetch & Synchronize Catalog + Alerts from /api/space/bootstrap
-    function showLocalFileProtocolBanner() { console.log('[SpaceDB] Standalone file:// mode verified.'); }
-
-    async async async function pullSpaceDatabase() {
+    async function pullSpaceDatabase() {
       // Guard against file:// protocol execution
       if (window.location.protocol === 'file:') {
         console.warn('[SpaceDB] Running from file:// protocol. Express API endpoints (/api/*) require http://localhost:3000');
@@ -6547,9 +7371,6 @@ function animate() {
   </script>
 </body>
 </html>
-
-
-
 
 
 
