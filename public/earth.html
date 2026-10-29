@@ -5710,6 +5710,11 @@ function animate() {
               if (typeof massiveSatKeys !== 'undefined' && !massiveSatKeys.includes(craft.id)) {
                 massiveSatKeys.push(craft.id);
                 if (typeof totalMassiveCount !== 'undefined') totalMassiveCount = massiveSatKeys.length;
+                const countBadge = document.getElementById('sat-count-badge');
+                if (countBadge) countBadge.innerText = ${massiveSatKeys.length.toLocaleString()} Loaded;
+                const badgeArt = document.getElementById('badge-count-artificial');
+                if (badgeArt) badgeArt.innerText = ${massiveSatKeys.length.toLocaleString()} Active;
+                if (typeof renderCatalogs === 'function') renderCatalogs();
                 if (typeof instancedSatMesh !== 'undefined' && instancedSatMesh) {
                   instancedSatMesh.count = massiveSatKeys.length;
                   instancedSatMesh.setColorAt(massiveSatKeys.length - 1, new THREE.Color(craft.color || 0x00f0ff));

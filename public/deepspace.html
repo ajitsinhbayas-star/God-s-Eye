@@ -2267,7 +2267,6 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     earthAxialGroup.rotation.z = CELESTIAL_BODIES.earth.tilt * (Math.PI / 180);
     earthSystem.add(earthAxialGroup);
 
-    const earthRadius = CELESTIAL_BODIES.earth.radius;
     const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMesh = new THREE.Mesh(earthGeo, earthShaderMat);
     earthAxialGroup.add(earthMesh);
@@ -5277,6 +5276,8 @@ function animate() {
     if (el) {
       el.style.opacity = '0';
       el.style.pointerEvents = 'none';
+      el.style.display = 'none';
+      el.classList.add('hidden', 'opacity-0', 'pointer-events-none');
       setTimeout(() => {
         el.style.display = 'none';
         el.classList.add('hidden');
@@ -5566,7 +5567,7 @@ function animate() {
 
    // 5. Fetch & Synchronize Catalog + Alerts from /api/space/bootstrap
     async function showLocalFileProtocolBanner() { console.log('[SpaceDB] Standalone file:// mode active.'); }
-    async async function pullSpaceDatabase() {
+    async function pullSpaceDatabase() {
       // Guard against file:// protocol execution
       if (window.location.protocol === 'file:') {
         console.warn('[SpaceDB] Running from file:// protocol. Express API endpoints (/api/*) require http://localhost:3000');
