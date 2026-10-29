@@ -2574,6 +2574,186 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     earthSystem.add(earthAxialGroup);
 
     const earthRadius = CELESTIAL_BODIES.earth.radius;
+        // ============================================================================
+    // GOOGLE EARTH COUNTRY BORDERS & VECTOR BOUNDARIES ENGINE
+    // ============================================================================
+    const countryBordersGroup = new THREE.Group();
+    countryBordersGroup.name = "countryBordersGroup";
+    earthMesh.add(countryBordersGroup);
+
+    // Geographic Lat/Lon to Earth Mesh Local Coordinate Transform
+    function geoToEarthVector(lat, lon, radiusOffset = 0.005) {
+      const r = CELESTIAL_BODIES.earth.radius + radiusOffset;
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      return new THREE.Vector3(
+        -(r * Math.sin(phi) * Math.cos(theta)),
+        r * Math.cos(phi),
+        r * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+
+    // Ingest and render high-resolution country boundaries
+    fetch('https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries.geojson')
+      .then(res => res.json())
+      .then(geoJson => {
+        const borderLinesMaterial = new THREE.LineBasicMaterial({
+          color: 0x38bdf8,
+          transparent: true,
+          opacity: 0.45,
+          depthWrite: false
+        });
+
+        geoJson.features.forEach(feature => {
+          const geom = feature.geometry;
+          if (!geom) return;
+
+          const coordinates = geom.type === 'Polygon' ? [geom.coordinates] : (geom.type === 'MultiPolygon' ? geom.coordinates : []);
+          coordinates.forEach(polygon => {
+            polygon.forEach(ring => {
+              const points = [];
+              for (let i = 0; i < ring.length; i++) {
+                const lon = ring[i][0];
+                const lat = ring[i][1];
+                points.push(geoToEarthVector(lat, lon, 0.005));
+              }
+              const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+              const line = new THREE.Line(lineGeo, borderLinesMaterial);
+              countryBordersGroup.add(line);
+            });
+          });
+        });
+      })
+      .catch(() => {
+        // Fallback: Primary Continental & National Outlines
+        const fallbackBorders = [
+          // Subcontinent Perimeter
+          [[37.1, 74.5], [34.5, 76.5], [32.0, 78.9], [28.6, 80.5], [27.0, 88.0], [22.0, 89.0], [21.5, 87.0], [17.0, 82.3], [13.0, 80.3], [8.0, 77.5], [10.0, 76.0], [15.5, 73.8], [19.0, 72.8], [23.5, 68.5], [27.0, 70.0], [31.5, 74.5], [37.1, 74.5]],
+          // Equator Reference Band
+          Array.from({length: 65}, (_, i) => [0, (i / 64) * 360 - 180])
+        ];
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 });
+        fallbackBorders.forEach(ring => {
+          const pts = ring.map(coord => geoToEarthVector(coord[0], coord[1], 0.005));
+          countryBordersGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+        });
+      });
+
+    // ============================================================================
+    // GOOGLE EARTH COUNTRY LABELS WITH HEMISPHERIC OCCLUSION CULLING
+    // ============================================================================
+    const COUNTRY_LABELS_DATA = [
+      { name: "INDIA", lat: 20.5937, lon: 78.9629, isMajor: true },
+      { name: "CHINA", lat: 35.8617, lon: 104.1954 },
+      { name: "RUSSIA", lat: 61.5240, lon: 105.3188 },
+      { name: "UNITED STATES", lat: 37.0902, lon: -95.7129, isMajor: true },
+      { name: "BRAZIL", lat: -14.2350, lon: -51.9253 },
+      { name: "AUSTRALIA", lat: -25.2744, lon: 133.7751 },
+      { name: "UNITED KINGDOM", lat: 55.3781, lon: -3.4360 },
+      { name: "GERMANY", lat: 51.1657, lon: 10.4515 },
+      { name: "FRANCE", lat: 46.2276, lon: 2.2137 },
+      { name: "JAPAN", lat: 36.2048, lon: 138.2529 },
+      { name: "CANADA", lat: 56.1304, lon: -106.3468 },
+      { name: "SOUTH AFRICA", lat: -30.5595, lon: 22.9375 },
+      { name: "SAUDI ARABIA", lat: 23.8859, lon: 45.0792 },
+      { name: "EGYPT", lat: 26.8206, lon: 30.8025 },
+      { name: "INDONESIA", lat: -0.7893, lon: 113.9213 },
+      { name: "TURKEY", lat: 38.9637, lon: 35.2433 },
+      { name: "IRAN", lat: 32.4279, lon: 53.6880 },
+      { name: "MEXICO", lat: 23.6345, lon: -102.5528 },
+      { name: "ARGENTINA", lat: -38.4161, lon: -63.6167 },
+      { name: "KAZAKHSTAN", lat: 48.0196, lon: 66.9237 }
+    ];
+
+    let countryLabelsLayer = document.getElementById('google-earth-country-labels');
+    if (!countryLabelsLayer) {
+      countryLabelsLayer = document.createElement('div');
+      countryLabelsLayer.id = 'google-earth-country-labels';
+      countryLabelsLayer.style.position = 'fixed';
+      countryLabelsLayer.style.inset = '0';
+      countryLabelsLayer.style.pointerEvents = 'none';
+      countryLabelsLayer.style.zIndex = '20';
+      countryLabelsLayer.style.overflow = 'hidden';
+      document.body.appendChild(countryLabelsLayer);
+    }
+
+    const countryLabelElements = [];
+    COUNTRY_LABELS_DATA.forEach(c => {
+      const el = document.createElement('div');
+      el.className = 'google-earth-label';
+      el.style.position = 'absolute';
+      el.style.transform = 'translate(-50%, -50%)';
+      el.style.fontFamily = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      el.style.fontSize = c.isMajor ? '11px' : '9px';
+      el.style.fontWeight = '700';
+      el.style.letterSpacing = '0.08em';
+      el.style.color = c.name === 'INDIA' ? '#fde047' : '#e2e8f0';
+      el.style.textShadow = '0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.9)';
+      el.style.pointerEvents = 'auto';
+      el.style.cursor = 'pointer';
+      el.style.userSelect = 'none';
+      el.innerText = c.name;
+
+      el.onclick = () => {
+        targetCameraPhi = c.lat * (Math.PI / 180);
+        targetCameraTheta = Math.PI / 2 + (c.lon * (Math.PI / 180) + earthMesh.rotation.y);
+        targetCameraDistance = 3.6;
+      };
+
+      countryLabelsLayer.appendChild(el);
+      countryLabelElements.push({
+        data: c,
+        el,
+        localVec: geoToEarthVector(c.lat, c.lon, 0.015)
+      });
+    });
+
+    const _cWorldPos = new THREE.Vector3();
+    const _cEarthWorld = new THREE.Vector3();
+    const _cCamDir = new THREE.Vector3();
+    const _cProjVec = new THREE.Vector3();
+
+    function updateGoogleEarthCountryLabels() {
+      const mode = window.OrbitalCommandState?.viewMode || 'earth';
+      if (mode === 'deepsky') {
+        countryLabelsLayer.style.display = 'none';
+        return;
+      }
+      countryLabelsLayer.style.display = 'block';
+
+      earthMesh.getWorldPosition(_cEarthWorld);
+      _cCamDir.subVectors(camera.position, _cEarthWorld).normalize();
+
+      const halfW = window.innerWidth / 2;
+      const halfH = window.innerHeight / 2;
+
+      countryLabelElements.forEach(item => {
+        _cWorldPos.copy(item.localVec);
+        earthMesh.localToWorld(_cWorldPos);
+
+        // Hemispheric horizon culling: hide labels on the back side of Earth
+        const normalToCenter = _cWorldPos.clone().sub(_cEarthWorld).normalize();
+        const dotFacing = normalToCenter.dot(_cCamDir);
+
+        if (dotFacing < 0.20) {
+          item.el.style.display = 'none';
+          return;
+        }
+
+        _cProjVec.copy(_cWorldPos).project(camera);
+        const inFront = _cProjVec.z >= -1.0 && _cProjVec.z <= 1.0;
+        const inScreen = _cProjVec.x >= -0.92 && _cProjVec.x <= 0.92 && _cProjVec.y >= -0.90 && _cProjVec.y <= 0.90;
+
+        if (inFront && inScreen) {
+          item.el.style.display = 'block';
+          item.el.style.left = ((_cProjVec.x * halfW) + halfW) + 'px';
+          item.el.style.top = (-(_cProjVec.y * halfH) + halfH) + 'px';
+        } else {
+          item.el.style.display = 'none';
+        }
+      });
+    }
+
     const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
     const earthMesh = new THREE.Mesh(earthGeo, earthShaderMat);
     earthMesh.renderOrder = 0;
@@ -7955,6 +8135,7 @@ function animate() {
   </script>
 </body>
 </html>
+
 
 
 
