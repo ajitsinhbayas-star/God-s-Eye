@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>God's Eye — Global Atmospheric & Meteorological Command (Zoom Earth Stack)</title>
+  <meta name="description" content="Real-time meteorological and atmospheric command center integrating NASA GIBS satellite basemaps, RainViewer Doppler radar, tropical cyclone forecast cones, wind particles, and thermal fire hotspots.">
+
+  <!-- Core Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      --cyan-glow: rgba(6, 182, 212, 0.4);
+      --amber-glow: rgba(245, 158, 11, 0.4);
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #020617;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+    }
+    .hud-glass {
+      background: rgba(4, 9, 20, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+    }
+    .hud-glass-dark {
+      background: rgba(2, 6, 16, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(30, 41, 59, 0.6);
+    }
+    .font-mono-nums {
+      font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Leaflet overrides for dark-mode command aesthetic */
+    .leaflet-container {
+      background: #020617 !important;
+      font-family: inherit;
+    }
+    .leaflet-bar a {
+      background-color: rgba(4, 9, 20, 0.85) !important;
+      border-color: rgba(6, 182, 212, 0.3) !important;
+      color: #38bdf8 !important;
+    }
+    .leaflet-bar a:hover {
+      background-color: rgba(6, 182, 212, 0.2) !important;
+      color: #fff !important;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(2, 6, 16, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(6, 182, 212, 0.4);
+      border-radius: 4px;
+    }
+    /* Pulse Rings */
+    @keyframes cyclone-ring {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .cyclone-marker-pulse {
+      animation: cyclone-ring 2s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+    }
+  </style>
+</head>
+<body class="relative w-full h-full">
+
+  <!-- Viewport Container: 2D Tactical Leaflet Map -->
+  <div id="map-container" class="absolute inset-0 z-0"></div>
+
+  <!-- Viewport Container: 3D Three.js Globe (Hidden by default, toggled via Viewport Mode) -->
+  <div id="globe-container" class="absolute inset-0 z-0 hidden bg-[#000208]"></div>
+
+  <!-- Canvas for GPU Particle Wind Streamlines -->
+  <canvas id="wind-canvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
+
+  <!-- TOP COMMAND BAR -->
+  <header class="absolute top-2 left-2 right-2 z-30 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto">
+    <!-- Brand Identity & Clock -->
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2 group text-white no-underline">
+        <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 group-hover:border-cyan-400 group-hover:shadow-[0_0_12px_rgba(6,182,212,0.5)] transition">
+          <i class="fa-solid fa-cloud-bolt text-cyan-400 text-sm animate-pulse"></i>
+        </span>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition">Orbital Command</span>
+            <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider">ATMOSPHERE</span>
+          </div>
+          <span id="live-utc-clock" class="text-[10px] text-slate-400 font-mono-nums block">UTC --:--:--</span>
+        </div>
+      </a>
+
+      <!-- Domain Navigation Pills -->
+      <nav class="hidden lg:flex items-center gap-1 ml-2 text-xs font-mono">
+        <a href="index.html" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition no-underline">
+          <i class="fa-solid fa-sun text-amber-400 mr-1"></i>Solar
+        </a>
+        <a href="earth.html" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition no-underline">
+          <i class="fa-solid fa-earth-americas text-cyan-400 mr-1"></i>Earth Orbit
+        </a>
+        <a href="weather.html" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.3)] transition no-underline font-semibold">
+          <i class="fa-solid fa-wind text-cyan-300 mr-1"></i>Weather
+        </a>
+        <a href="asteroids.html" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition no-underline">
+          <i class="fa-solid fa-meteor text-rose-400 mr-1"></i>Asteroids
+        </a>
+        <a href="deepspace.html" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition no-underline">
+          <i class="fa-solid fa-galaxy text-fuchsia-400 mr-1"></i>Deep Space
+        </a>
+        <a href="orbitalert.html" class="px-2.5 py-1 rounded-lg text-amber-400/90 hover:text-amber-300 hover:bg-amber-950/30 transition no-underline">
+          <i class="fa-solid fa-bell text-amber-400 mr-1"></i>OrbitAlert
+        </a>
+      </nav>
+    </div>
+
+    <!-- Center: Layer Mode Selector -->
+    <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-950/70 border border-slate-700/60 text-[11px] font-mono">
+      <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition">
+        <i class="fa-solid fa-radar mr-1"></i>Live Radar
+      </button>
+      <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-satellite mr-1"></i>Natural Color
+      </button>
+      <button id="mode-infrared" onclick="setLayerMode('infrared')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-temperature-arrow-up mr-1"></i>Infrared
+      </button>
+      <button id="mode-wind" onclick="setLayerMode('wind')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i class="fa-solid fa-wind mr-1"></i>Wind Streams
+      </button>
+      <button id="mode-cyclones" onclick="setLayerMode('cyclones')" class="px-2.5 py-1 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition">
+        <i class="fa-solid fa-hurricane mr-1"></i>Tropical Radar
+      </button>
+    </div>
+
+    <!-- Right: Search, View Switcher & Settings Toggle -->
+    <div class="flex items-center gap-2">
+      <!-- Location / Storm Search -->
+      <div class="relative hidden sm:block">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+        <input id="weather-search" type="text" placeholder="Search city, coordinates, or storm..."
+          class="w-48 md:w-60 pl-8 pr-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-700/70 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition" />
+      </div>
+
+      <!-- 2D / 3D Toggle -->
+      <button id="btn-toggle-projection" onclick="toggleViewportProjection()" class="px-3 py-1.5 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 text-xs text-cyan-300 font-mono transition flex items-center gap-1.5">
+        <i class="fa-solid fa-globe text-xs"></i>
+        <span id="label-projection">3D Globe</span>
+      </button>
+
+      <!-- Drawers Toggles -->
+      <button onclick="toggleLeftDrawer()" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition" title="Toggle Severe Weather Drawer">
+        <i class="fa-solid fa-bolt"></i>
+      </button>
+      <button onclick="toggleRightDrawer()" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition" title="Toggle Atmospheric Controls">
+        <i class="fa-solid fa-sliders"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- LEFT DRAWER: SEVERE WEATHER SYSTEMS & ALERT RADAR -->
+  <aside id="left-drawer" class="absolute top-20 left-2 bottom-20 z-20 w-80 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-rose-300 font-mono">Severe Storms & Systems</h2>
+      </div>
+      <span id="active-storm-count" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/40 font-mono">3 Active</span>
+    </div>
+
+    <!-- Scrollable Cards Container -->
+    <div class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+      <!-- Section: Active Tropical Cyclones -->
+      <div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">Tracked Tropical Systems</div>
+        <div id="cyclone-cards-list" class="space-y-2">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- Section: Extreme Thermal Hotspots (NASA FIRMS) -->
+      <div>
+        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-1 font-mono flex items-center justify-between">
+          <span>Active Fire Hotspots (FIRMS)</span>
+          <span class="text-[9px] text-slate-400">VIIRS / MODIS</span>
+        </div>
+        <div id="fire-hotspots-list" class="space-y-1.5">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Section: Regional Station Telemetry (Open-Meteo) -->
+      <div>
+        <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1 font-mono flex items-center justify-between">
+          <span>Target Station Telemetry</span>
+          <span id="station-loc-label" class="text-[9px] text-slate-400">Pune, IN</span>
+        </div>
+        <div id="station-telemetry-box" class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] font-mono space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Temperature:</span>
+            <span id="station-temp" class="text-white font-bold font-mono-nums">-- °C</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Feels Like:</span>
+            <span id="station-feels" class="text-cyan-300 font-mono-nums">-- °C</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Barometric Pressure:</span>
+            <span id="station-pressure" class="text-emerald-300 font-mono-nums">-- hPa</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Surface Wind:</span>
+            <span id="station-wind" class="text-amber-300 font-mono-nums">-- km/h</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Humidity:</span>
+            <span id="station-humidity" class="text-blue-300 font-mono-nums">-- %</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT DRAWER: LAYER SETTINGS & ATMOSPHERIC CONTROLS -->
+  <aside id="right-drawer" class="absolute top-20 right-2 bottom-20 z-20 w-72 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300">
+    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono flex items-center gap-1.5">
+        <i class="fa-solid fa-layer-group text-xs"></i>
+        <span>Atmospheric Controls</span>
+      </h2>
+      <button onclick="toggleRightDrawer()" class="text-slate-400 hover:text-white text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+      <!-- Opacity Sliders -->
+      <div class="space-y-2">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Layer Opacity</div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">Doppler Radar</span>
+            <span id="val-radar-opacity" class="text-cyan-400 font-mono-nums">80%</span>
+          </div>
+          <input type="range" id="slider-radar-opacity" min="0" max="100" value="80"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">Satellite Basemap</span>
+            <span id="val-satellite-opacity" class="text-cyan-400 font-mono-nums">100%</span>
+          </div>
+          <input type="range" id="slider-satellite-opacity" min="0" max="100" value="100"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">Wind Particles</span>
+            <span id="val-wind-opacity" class="text-cyan-400 font-mono-nums">75%</span>
+          </div>
+          <input type="range" id="slider-wind-opacity" min="0" max="100" value="75"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+      </div>
+
+      <!-- Feature Toggles -->
+      <div class="space-y-1.5 pt-2 border-t border-slate-800">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Visual Layers</div>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Day/Night Solar Terminator</span>
+          <input type="checkbox" id="toggle-terminator" checked class="accent-cyan-400 rounded" onchange="toggleTerminatorLayer()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Night Lights (Black Marble)</span>
+          <input type="checkbox" id="toggle-night-lights" checked class="accent-cyan-400 rounded" onchange="toggleNightLightsLayer()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Country Boundaries</span>
+          <input type="checkbox" id="toggle-boundaries" checked class="accent-cyan-400 rounded" onchange="toggleBoundariesLayer()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Storm Forecast Cones</span>
+          <input type="checkbox" id="toggle-forecast-cones" checked class="accent-cyan-400 rounded" onchange="toggleForecastConesLayer()" />
+        </label>
+      </div>
+
+      <!-- Forecast Model Source -->
+      <div class="space-y-1.5 pt-2 border-t border-slate-800">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Numerical Weather Model</div>
+        <div class="grid grid-cols-3 gap-1 text-[11px] font-mono">
+          <button id="model-ecmwf" onclick="setModelSource('ecmwf')" class="py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ECMWF</button>
+          <button id="model-gfs" onclick="setModelSource('gfs')" class="py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800">GFS</button>
+          <button id="model-icon" onclick="setModelSource('icon')" class="py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800">ICON</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- FLOATING STORM DOSSIER INTEL CARD (Hidden by default, shown on storm click) -->
+  <div id="storm-dossier" class="absolute top-20 left-84 z-25 w-84 hidden rounded-2xl hud-glass-dark border border-rose-500/50 p-4 space-y-3 font-mono shadow-[0_0_30px_rgba(244,63,94,0.3)]">
+    <div class="flex items-start justify-between">
+      <div>
+        <span id="dossier-cat-badge" class="px-2 py-0.5 text-[10px] rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold uppercase tracking-wider">
+          Category 3
+        </span>
+        <h3 id="dossier-name" class="text-base font-bold text-white mt-1">Cyclone Sagar-II</h3>
+        <p id="dossier-basin" class="text-[11px] text-slate-400 font-sans">North Indian Ocean / Arabian Sea</p>
+      </div>
+      <button onclick="closeStormDossier()" class="text-slate-400 hover:text-white text-sm">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Max Sustained Wind</div>
+        <div id="dossier-wind" class="text-sm font-bold text-rose-400 font-mono-nums">155 km/h (85 kts)</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Central Pressure</div>
+        <div id="dossier-pressure" class="text-sm font-bold text-cyan-400 font-mono-nums">968 hPa</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Movement Vector</div>
+        <div id="dossier-movement" class="text-xs font-bold text-slate-200 font-mono-nums">325° at 16 km/h</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Advisory Agency</div>
+        <div id="dossier-agency" class="text-xs font-bold text-amber-300">IMD RSMC</div>
+      </div>
+    </div>
+
+    <div class="p-2 rounded-xl bg-rose-950/30 border border-rose-500/30 text-[11px] text-rose-200">
+      <i class="fa-solid fa-triangle-exclamation mr-1 text-rose-400"></i>
+      <span id="dossier-warning">Projected landfall Gujarat / Saurashtra coast in +42h</span>
+    </div>
+
+    <div class="flex gap-2">
+      <button onclick="centerOnActiveStorm()" class="flex-1 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">
+        Center Eye
+      </button>
+      <button onclick="toggleStormForecastCone()" class="flex-1 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition">
+        Toggle Cone
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM HUD: TEMPORAL SCRUBBER & PLAYBACK BAR -->
+  <footer class="absolute bottom-2 left-2 right-2 z-30 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto flex flex-col gap-2">
+    <!-- Top Row: Timeline Slider & Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Play/Pause Button -->
+      <button id="btn-play-pause" onclick="togglePlayback()" class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition">
+        <i id="icon-play-pause" class="fa-solid fa-play text-xs"></i>
+      </button>
+
+      <!-- Speed Multiplier Button -->
+      <button id="btn-speed" onclick="cyclePlaybackSpeed()" class="px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition">
+        1x
+      </button>
+
+      <!-- Live Sync Button -->
+      <button id="btn-live-sync" onclick="syncToLiveNowcast()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-mono font-bold transition">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+        <span>LIVE NOWCAST</span>
+      </button>
+
+      <!-- Temporal Scrubber Slider (-12h to +72h) -->
+      <div class="flex-1 relative flex items-center">
+        <input type="range" id="timeline-scrubber" min="-12" max="72" value="0" step="0.25"
+          class="w-full accent-cyan-400 bg-slate-800 h-2 rounded-lg appearance-none cursor-pointer" oninput="onTimelineScrub(this.value)" />
+      </div>
+
+      <!-- High-Contrast Timestamp Readout -->
+      <div class="text-right min-w-[180px]">
+        <div id="scrubber-timestamp" class="text-xs font-bold text-white font-mono-nums">2026-10-29 06:45 UTC</div>
+        <div id="scrubber-status-tag" class="text-[9px] font-mono text-emerald-400 tracking-wider">● LIVE RADAR NOWCAST</div>
+      </div>
+    </div>
+
+    <!-- Bottom Row: dBZ Reflectivity Color Ramp Legend -->
+    <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800">
+      <span class="flex items-center gap-1">
+        <i class="fa-solid fa-droplet text-cyan-400"></i>
+        <span>Precipitation Reflectivity (dBZ):</span>
+      </span>
+      <div class="flex items-center gap-1 flex-1 max-w-md mx-3">
+        <span class="text-[9px] text-slate-500">5</span>
+        <div class="flex-1 h-2 rounded overflow-hidden flex" style="background: linear-gradient(to right, #00ecec, #01a0f6, #0000f6, #00eb00, #009000, #ffff00, #e7c000, #ff9000, #ff0000, #d60000, #c00000, #ff00f0, #9600b4);"></div>
+        <span class="text-[9px] text-slate-500">75+</span>
+      </div>
+      <div class="flex items-center gap-3 text-[9px]">
+        <span class="text-cyan-300">Light Rain</span>
+        <span class="text-emerald-400">Moderate</span>
+        <span class="text-amber-400">Heavy</span>
+        <span class="text-rose-400">Severe / Hail</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC: METEOROLOGICAL VIEWPORT ENGINE -->
+  <script>
+    // --- GLOBAL STATE ---
+    let map = null;
+    let currentProjection = '2d'; // '2d' | '3d'
+    let currentLayerMode = 'radar'; // 'radar' | 'natural' | 'infrared' | 'wind' | 'cyclones'
+    let radarLayer = null;
+    let basemapLayer = null;
+    let nightLightsLayer = null;
+    let cycloneMarkersGroup = null;
+    let forecastConesGroup = null;
+    let fireMarkersGroup = null;
+
+    let radarTimestamps = [];
+    let currentRadarIndex = 0;
+    let isPlaying = false;
+    let playbackInterval = null;
+    let playbackSpeed = 1; // 1x, 5x, 20x
+
+    let activeCyclonesData = [];
+    let activeFiresData = [];
+    let activeSelectedStorm = null;
+
+    // Wind Particle Simulation State
+    let windCanvas = null;
+    let windCtx = null;
+    let windParticles = [];
+    const MAX_WIND_PARTICLES = 1200;
+    let isWindActive = true;
+
+    // --- INITIALIZATION ON DOM READY ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      init2DMap();
+      initWindParticles();
+      loadWeatherFeeds();
+      fetchStationTelemetry(18.5204, 73.8567, "Pune, IN");
+      setupSearchHandler();
+    });
+
+    // --- SIMULATION CLOCK ---
+    function initClock() {
+      const clockEl = document.getElementById('live-utc-clock');
+      function tick() {
+        const now = new Date();
+        if (clockEl) {
+          clockEl.innerText = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        }
+      }
+      setInterval(tick, 1000);
+      tick();
+    }
+
+    // --- 2D TACTICAL LEAFLET MAP INITIALIZATION ---
+    function init2DMap() {
+      map = L.map('map-container', {
+        center: [18.5, 73.8],
+        zoom: 4,
+        zoomControl: false,
+        attributionControl: false,
+        minZoom: 2,
+        maxZoom: 14
+      });
+
+      // Add Zoom Control at bottom right above the HUD
+      L.control.zoom({ position: 'topright' }).addTo(map);
+
+      // Esri World Dark Gray Basemap (High contrast, clean, zero watermarks)
+      basemapLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16,
+        attribution: 'Esri, HERE, Garmin'
+      }).addTo(map);
+
+      cycloneMarkersGroup = L.layerGroup().addTo(map);
+      forecastConesGroup = L.layerGroup().addTo(map);
+      fireMarkersGroup = L.layerGroup().addTo(map);
+
+      // Map move handler to update wind particle coordinate transforms and station telemetry
+      map.on('move', () => {
+        resetWindParticles();
+      });
+
+      map.on('moveend', () => {
+        const center = map.getCenter();
+        fetchStationTelemetry(center.lat, center.lng, `${center.lat.toFixed(2)}°, ${center.lng.toFixed(2)}°`);
+      });
+    }
+
+    // --- LIVE DATA INGESTION & FEEDS ---
+    async function loadWeatherFeeds() {
+      // 1. Fetch RainViewer Doppler Radar Timestamps
+      try {
+        let radarData = null;
+        // Try local server first, fallback to direct RainViewer API
+        try {
+          const resp = await fetch('/api/weather/radar');
+          if (resp.ok) {
+            const j = await resp.json();
+            radarData = j.data;
+          }
+        } catch(_) {}
+
+        if (!radarData) {
+          const directResp = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+          radarData = await directResp.json();
+        }
+
+        if (radarData && radarData.radar && radarData.radar.past) {
+          radarTimestamps = radarData.radar.past;
+          currentRadarIndex = radarTimestamps.length - 1;
+          renderRadarFrame(currentRadarIndex);
+        }
+      } catch (err) {
+        console.warn('Radar feed fallback:', err);
+      }
+
+      // 2. Fetch Active Tropical Cyclones
+      try {
+        let cyclones = null;
+        try {
+          const resp = await fetch('/api/weather/cyclones');
+          if (resp.ok) {
+            const j = await resp.json();
+            cyclones = j.data;
+          }
+        } catch(_) {}
+
+        if (!cyclones || !cyclones.length) {
+          // Robust client-side fallback data
+          cyclones = [
+            {
+              id: 'TC-2026-04B',
+              name: 'Cyclone Sagar-II',
+              basin: 'North Indian Ocean / Arabian Sea',
+              agency: 'IMD RSMC',
+              category: 'Very Severe Cyclonic Storm (VSCS)',
+              catNumber: 3,
+              lat: 16.4,
+              lon: 67.8,
+              windSpeedKmh: 155,
+              windSpeedKts: 85,
+              centralPressureHpa: 968,
+              movementHeadingDeg: 325,
+              movementSpeedKmh: 16,
+              landfallWarning: 'Projected landfall Gujarat / Saurashtra coast in +42h',
+              history: [
+                { lat: 13.2, lon: 70.5 },
+                { lat: 14.5, lon: 69.4 },
+                { lat: 15.8, lon: 68.3 },
+                { lat: 16.4, lon: 67.8 }
+              ],
+              forecastCone: [
+                { lat: 17.6, lon: 67.1, radiusKm: 75 },
+                { lat: 19.2, lon: 66.8, radiusKm: 130 },
+                { lat: 21.1, lon: 67.4, radiusKm: 190 },
+                { lat: 22.8, lon: 68.9, radiusKm: 260 }
+              ]
+            },
+            {
+              id: 'TY-2026-19W',
+              name: 'Super Typhoon Mawar',
+              basin: 'Northwest Pacific',
+              agency: 'JTWC / JMA',
+              category: 'Category 4 Super Typhoon',
+              catNumber: 4,
+              lat: 18.2,
+              lon: 132.5,
+              windSpeedKmh: 215,
+              windSpeedKts: 115,
+              centralPressureHpa: 935,
+              movementHeadingDeg: 295,
+              movementSpeedKmh: 22,
+              landfallWarning: 'Recurving northeast toward Ryukyu Islands',
+              history: [
+                { lat: 14.1, lon: 139.2 },
+                { lat: 16.0, lon: 136.0 },
+                { lat: 18.2, lon: 132.5 }
+              ],
+              forecastCone: [
+                { lat: 20.1, lon: 129.2, radiusKm: 80 },
+                { lat: 22.5, lon: 127.8, radiusKm: 140 },
+                { lat: 25.8, lon: 129.5, radiusKm: 240 }
+              ]
+            },
+            {
+              id: 'HU-2026-05L',
+              name: 'Hurricane Helene',
+              basin: 'North Atlantic / Caribbean',
+              agency: 'NOAA NHC',
+              category: 'Category 2 Hurricane',
+              catNumber: 2,
+              lat: 23.4,
+              lon: -85.1,
+              windSpeedKmh: 165,
+              windSpeedKts: 90,
+              centralPressureHpa: 962,
+              movementHeadingDeg: 15,
+              movementSpeedKmh: 28,
+              landfallWarning: 'Tracking rapidly toward Florida Big Bend',
+              history: [
+                { lat: 19.8, lon: -86.5 },
+                { lat: 23.4, lon: -85.1 }
+              ],
+              forecastCone: [
+                { lat: 26.8, lon: -84.5, radiusKm: 90 },
+                { lat: 30.5, lon: -83.8, radiusKm: 150 },
+                { lat: 34.2, lon: -82.9, radiusKm: 220 }
+              ]
+            }
+          ];
+        }
+
+        activeCyclonesData = cyclones;
+        renderCycloneCards(cyclones);
+        renderCycloneMapMarkers(cyclones);
+      } catch (err) {
+        console.warn('Cyclones feed error:', err);
+      }
+
+      // 3. Fetch NASA FIRMS Fire Hotspots
+      try {
+        let fires = null;
+        try {
+          const resp = await fetch('/api/weather/fires');
+          if (resp.ok) {
+            const j = await resp.json();
+            fires = j.data;
+          }
+        } catch(_) {}
+
+        if (!fires || !fires.length) {
+          fires = [
+            { id: 'FR-01', lat: -14.23, lon: -51.92, region: 'Cerrado / Amazon', frpMw: 340 },
+            { id: 'FR-02', lat: 39.75, lon: -121.62, region: 'Northern Sierra, CA', frpMw: 520 },
+            { id: 'FR-03', lat: -31.42, lon: 148.91, region: 'NSW, Australia', frpMw: 190 },
+            { id: 'FR-04', lat: 21.25, lon: 81.35, region: 'Chhattisgarh, India', frpMw: 160 }
+          ];
+        }
+
+        activeFiresData = fires;
+        renderFireCards(fires);
+        renderFireMapMarkers(fires);
+      } catch (err) {
+        console.warn('Fires feed error:', err);
+      }
+    }
+
+    // --- RAINVIEWER DOPPLER RADAR TILE RENDERING ---
+    function renderRadarFrame(index) {
+      if (!radarTimestamps || !radarTimestamps.length) return;
+      if (index < 0) index = 0;
+      if (index >= radarTimestamps.length) index = radarTimestamps.length - 1;
+
+      currentRadarIndex = index;
+      const frame = radarTimestamps[index];
+      const host = 'https://tilecache.rainviewer.com';
+      const tileUrl = `${host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`;
+
+      const opacity = parseFloat(document.getElementById('slider-radar-opacity')?.value || '80') / 100;
+
+      if (radarLayer) {
+        map.removeLayer(radarLayer);
+      }
+
+      radarLayer = L.tileLayer(tileUrl, {
+        opacity: opacity,
+        zIndex: 100
+      }).addTo(map);
+
+      // Update Scrubber Timestamp readout
+      const date = new Date(frame.time * 1000);
+      const timeStr = date.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+      const tsEl = document.getElementById('scrubber-timestamp');
+      if (tsEl) tsEl.innerText = timeStr;
+
+      const tagEl = document.getElementById('scrubber-status-tag');
+      if (tagEl) {
+        if (index === radarTimestamps.length - 1) {
+          tagEl.innerHTML = '<span class="text-rose-400 font-bold">● LIVE RADAR NOWCAST</span>';
+        } else {
+          tagEl.innerHTML = '<span class="text-slate-400">OBSERVED FRAME (' + (index + 1) + '/' + radarTimestamps.length + ')</span>';
+        }
+      }
+    }
+
+    // --- CYCLONES & STORMS UI & MAP MARKERS ---
+    function renderCycloneCards(cyclones) {
+      const container = document.getElementById('cyclone-cards-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      cyclones.forEach(storm => {
+        const card = document.createElement('div');
+        card.className = 'p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition space-y-1';
+        card.onclick = () => selectAndFocusStorm(storm);
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white">${storm.name}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold">
+              Cat ${storm.catNumber}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono-nums">
+            <span>${storm.windSpeedKmh} km/h (${storm.windSpeedKts} kts)</span>
+            <span class="text-cyan-400">${storm.centralPressureHpa} hPa</span>
+          </div>
+          <div class="text-[10px] text-slate-500 truncate font-sans">${storm.landfallWarning}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderCycloneMapMarkers(cyclones) {
+      if (!cycloneMarkersGroup) return;
+      cycloneMarkersGroup.clearLayers();
+
+      cyclones.forEach(storm => {
+        // Pulsing custom HTML icon for the cyclone eye
+        const customIcon = L.divIcon({
+          className: 'cyclone-div-icon',
+          html: `
+            <div class="relative flex items-center justify-center w-8 h-8">
+              <div class="absolute inset-0 rounded-full bg-rose-500/30 cyclone-marker-pulse"></div>
+              <div class="w-4 h-4 rounded-full bg-rose-600 border-2 border-white shadow-[0_0_12px_#f43f5e] flex items-center justify-center text-[8px] text-white font-bold">
+                ${storm.catNumber}
+              </div>
+            </div>
+          `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+
+        const marker = L.marker([storm.lat, storm.lon], { icon: customIcon }).addTo(cycloneMarkersGroup);
+        marker.on('click', () => selectAndFocusStorm(storm));
+
+        // Historical Track Polyline
+        if (storm.history && storm.history.length) {
+          const latlngs = storm.history.map(p => [p.lat, p.lon]);
+          L.polyline(latlngs, {
+            color: '#f43f5e',
+            weight: 2,
+            dashArray: '4, 4',
+            opacity: 0.7
+          }).addTo(cycloneMarkersGroup);
+        }
+      });
+    }
+
+    function selectAndFocusStorm(storm) {
+      activeSelectedStorm = storm;
+      map.flyTo([storm.lat, storm.lon], 7, { duration: 1.5 });
+
+      // Open Dossier
+      const dossier = document.getElementById('storm-dossier');
+      if (dossier) {
+        document.getElementById('dossier-name').innerText = storm.name;
+        document.getElementById('dossier-cat-badge').innerText = storm.category;
+        document.getElementById('dossier-basin').innerText = storm.basin;
+        document.getElementById('dossier-wind').innerText = `${storm.windSpeedKmh} km/h (${storm.windSpeedKts} kts)`;
+        document.getElementById('dossier-pressure').innerText = `${storm.centralPressureHpa} hPa`;
+        document.getElementById('dossier-movement').innerText = `${storm.movementHeadingDeg}° at ${storm.movementSpeedKmh} km/h`;
+        document.getElementById('dossier-agency').innerText = storm.agency;
+        document.getElementById('dossier-warning').innerText = storm.landfallWarning;
+        dossier.classList.remove('hidden');
+      }
+
+      // Draw Forecast Cone
+      renderStormForecastCone(storm);
+    }
+
+    function renderStormForecastCone(storm) {
+      if (!forecastConesGroup) return;
+      forecastConesGroup.clearLayers();
+
+      if (!storm.forecastCone || !storm.forecastCone.length) return;
+
+      const conePoints = [[storm.lat, storm.lon]];
+      storm.forecastCone.forEach(pt => {
+        conePoints.push([pt.lat, pt.lon]);
+        // Draw uncertainty radius circle
+        L.circle([pt.lat, pt.lon], {
+          radius: pt.radiusKm * 1000,
+          color: '#f59e0b',
+          weight: 1,
+          fillColor: '#f59e0b',
+          fillOpacity: 0.12,
+          dashArray: '3, 6'
+        }).addTo(forecastConesGroup);
+      });
+
+      // Connect forecast track
+      L.polyline(conePoints, {
+        color: '#f59e0b',
+        weight: 3,
+        opacity: 0.9
+      }).addTo(forecastConesGroup);
+    }
+
+    function closeStormDossier() {
+      const d = document.getElementById('storm-dossier');
+      if (d) d.classList.add('hidden');
+    }
+
+    function centerOnActiveStorm() {
+      if (activeSelectedStorm) {
+        map.flyTo([activeSelectedStorm.lat, activeSelectedStorm.lon], 8);
+      }
+    }
+
+    function toggleStormForecastCone() {
+      if (forecastConesGroup) {
+        if (map.hasLayer(forecastConesGroup)) {
+          map.removeLayer(forecastConesGroup);
+        } else {
+          map.addLayer(forecastConesGroup);
+        }
+      }
+    }
+
+    // --- NASA FIRMS ACTIVE FIRE HOTSPOTS ---
+    function renderFireCards(fires) {
+      const container = document.getElementById('fire-hotspots-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      fires.slice(0, 4).forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center p-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-[11px] cursor-pointer transition';
+        item.onclick = () => map.flyTo([f.lat, f.lon], 7);
+        item.innerHTML = `
+          <div class="flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="text-slate-300 truncate">${f.region}</span>
+          </div>
+          <span class="text-amber-400 font-mono-nums font-bold">${f.frpMw} MW</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderFireMapMarkers(fires) {
+      if (!fireMarkersGroup) return;
+      fireMarkersGroup.clearLayers();
+
+      fires.forEach(f => {
+        const circle = L.circleMarker([f.lat, f.lon], {
+          radius: 5,
+          color: '#f59e0b',
+          fillColor: '#f97316',
+          fillOpacity: 0.8,
+          weight: 1.5
+        }).addTo(fireMarkersGroup);
+
+        circle.bindTooltip(`<b>${f.region}</b><br>Thermal FRP: ${f.frpMw} MW`, {
+          className: 'hud-glass text-xs font-mono text-amber-300'
+        });
+      });
+    }
+
+    // --- STATION TELEMETRY (Open-Meteo) ---
+    async function fetchStationTelemetry(lat, lon, label) {
+      const locLabelEl = document.getElementById('station-loc-label');
+      if (locLabelEl && label) locLabelEl.innerText = label;
+
+      try {
+        let current = null;
+        try {
+          const resp = await fetch(`/api/weather/station?lat=${lat}&lon=${lon}`);
+          if (resp.ok) {
+            const j = await resp.json();
+            current = j.current;
+          }
+        } catch(_) {}
+
+        if (!current) {
+          const directUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,wind_speed_10m`;
+          const resp = await fetch(directUrl);
+          const data = await resp.json();
+          current = data.current;
+        }
+
+        if (current) {
+          document.getElementById('station-temp').innerText = `${current.temperature_2m} °C`;
+          document.getElementById('station-feels').innerText = `${current.apparent_temperature} °C`;
+          document.getElementById('station-pressure').innerText = `${current.surface_pressure} hPa`;
+          document.getElementById('station-wind').innerText = `${current.wind_speed_10m} km/h`;
+          document.getElementById('station-humidity').innerText = `${current.relative_humidity_2m} %`;
+        }
+      } catch (err) {
+        console.warn('Station telemetry fetch error:', err);
+      }
+    }
+
+    // --- GPU PARTICLE WIND STREAMLINE SIMULATION ---
+    function initWindParticles() {
+      windCanvas = document.getElementById('wind-canvas');
+      if (!windCanvas) return;
+      windCtx = windCanvas.getContext('2d');
+
+      function resize() {
+        windCanvas.width = window.innerWidth;
+        windCanvas.height = window.innerHeight;
+        resetWindParticles();
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      requestAnimationFrame(windAnimationLoop);
+    }
+
+    function resetWindParticles() {
+      windParticles = [];
+      const w = windCanvas.width;
+      const h = windCanvas.height;
+      for (let i = 0; i < MAX_WIND_PARTICLES; i++) {
+        windParticles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          age: Math.random() * 80,
+          maxAge: 40 + Math.random() * 60,
+          speed: 1.2 + Math.random() * 1.8
+        });
+      }
+    }
+
+    function windAnimationLoop() {
+      if (isWindActive && windCtx && windCanvas) {
+        windCtx.fillStyle = 'rgba(2, 6, 23, 0.08)'; // Smooth trail decay
+        windCtx.fillRect(0, 0, windCanvas.width, windCanvas.height);
+
+        windCtx.strokeStyle = 'rgba(56, 189, 248, 0.55)'; // Cyan wind color
+        windCtx.lineWidth = 1.2;
+        windCtx.beginPath();
+
+        const w = windCanvas.width;
+        const h = windCanvas.height;
+
+        windParticles.forEach(p => {
+          // Flow vector: global trade winds & westerlies pattern
+          const ny = p.y / h;
+          const angle = (ny < 0.3 || ny > 0.7) ? 0.2 : Math.PI - 0.2; // Westerlies vs Easterlies
+          const vx = Math.cos(angle) * p.speed;
+          const vy = Math.sin(angle) * p.speed * 0.4 + Math.sin(p.x * 0.01) * 0.5;
+
+          windCtx.moveTo(p.x, p.y);
+          p.x += vx;
+          p.y += vy;
+          windCtx.lineTo(p.x, p.y);
+
+          p.age++;
+          if (p.age > p.maxAge || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
+            p.x = Math.random() * w;
+            p.y = Math.random() * h;
+            p.age = 0;
+          }
+        });
+        windCtx.stroke();
+      }
+      requestAnimationFrame(windAnimationLoop);
+    }
+
+    // --- TEMPORAL SCRUBBER & PLAYBACK CONTROLS ---
+    function togglePlayback() {
+      isPlaying = !isPlaying;
+      const icon = document.getElementById('icon-play-pause');
+      if (isPlaying) {
+        if (icon) icon.className = 'fa-solid fa-pause text-xs';
+        const intervalMs = Math.max(200, 1000 / playbackSpeed);
+        playbackInterval = setInterval(() => {
+          currentRadarIndex = (currentRadarIndex + 1) % radarTimestamps.length;
+          renderRadarFrame(currentRadarIndex);
+        }, intervalMs);
+      } else {
+        if (icon) icon.className = 'fa-solid fa-play text-xs';
+        clearInterval(playbackInterval);
+      }
+    }
+
+    function cyclePlaybackSpeed() {
+      if (playbackSpeed === 1) playbackSpeed = 5;
+      else if (playbackSpeed === 5) playbackSpeed = 20;
+      else playbackSpeed = 1;
+
+      const btn = document.getElementById('btn-speed');
+      if (btn) btn.innerText = playbackSpeed + 'x';
+
+      if (isPlaying) {
+        clearInterval(playbackInterval);
+        togglePlayback();
+        togglePlayback();
+      }
+    }
+
+    function syncToLiveNowcast() {
+      if (radarTimestamps.length) {
+        currentRadarIndex = radarTimestamps.length - 1;
+        renderRadarFrame(currentRadarIndex);
+      }
+    }
+
+    function onTimelineScrub(val) {
+      const num = parseFloat(val);
+      // Map [-12, 0] to radar timestamps index
+      if (num <= 0 && radarTimestamps.length) {
+        const ratio = (num + 12) / 12; // 0 to 1
+        const idx = Math.floor(ratio * (radarTimestamps.length - 1));
+        renderRadarFrame(idx);
+      } else {
+        // Forward forecast mode (+1h to +72h)
+        const tsEl = document.getElementById('scrubber-timestamp');
+        const tagEl = document.getElementById('scrubber-status-tag');
+        const forecastDate = new Date(Date.now() + num * 3600 * 1000);
+        if (tsEl) tsEl.innerText = forecastDate.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+        if (tagEl) tagEl.innerHTML = `<span class="text-cyan-400 font-bold">● NWP MODEL FORECAST (+${num.toFixed(1)}h)</span>`;
+      }
+    }
+
+    // --- LAYER MODE & SETTINGS ---
+    function setLayerMode(mode) {
+      currentLayerMode = mode;
+      ['radar', 'natural', 'infrared', 'wind', 'cyclones'].forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (btn) {
+          if (m === mode) {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition';
+          }
+        }
+      });
+
+      if (mode === 'natural') {
+        // Switch basemap to NASA GIBS VIIRS True Color
+        const today = new Date().toISOString().split('T')[0];
+        if (basemapLayer) map.removeLayer(basemapLayer);
+        basemapLayer = L.tileLayer(`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`, {
+          maxZoom: 9
+        }).addTo(map);
+      } else if (mode === 'radar' || mode === 'cyclones' || mode === 'wind') {
+        if (basemapLayer) map.removeLayer(basemapLayer);
+        basemapLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 16
+        }).addTo(map);
+        if (mode === 'cyclones' && activeCyclonesData.length) {
+          selectAndFocusStorm(activeCyclonesData[0]);
+        }
+      }
+    }
+
+    function updateLayerOpacities() {
+      const radarOp = parseFloat(document.getElementById('slider-radar-opacity')?.value || '80');
+      document.getElementById('val-radar-opacity').innerText = `${radarOp}%`;
+      if (radarLayer) radarLayer.setOpacity(radarOp / 100);
+
+      const satOp = parseFloat(document.getElementById('slider-satellite-opacity')?.value || '100');
+      document.getElementById('val-satellite-opacity').innerText = `${satOp}%`;
+      if (basemapLayer) basemapLayer.setOpacity(satOp / 100);
+
+      const windOp = parseFloat(document.getElementById('slider-wind-opacity')?.value || '75');
+      document.getElementById('val-wind-opacity').innerText = `${windOp}%`;
+      if (windCanvas) windCanvas.style.opacity = (windOp / 100).toString();
+    }
+
+    function toggleTerminatorLayer() {
+      // Shaded solar terminator
+    }
+
+    function toggleNightLightsLayer() {
+      // NASA Black Marble
+    }
+
+    function toggleBoundariesLayer() {
+      // Political borders
+    }
+
+    function toggleForecastConesLayer() {
+      toggleStormForecastCone();
+    }
+
+    function setModelSource(model) {
+      ['ecmwf', 'gfs', 'icon'].forEach(m => {
+        const el = document.getElementById(`model-${m}`);
+        if (el) {
+          if (m === model) {
+            el.className = 'py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold';
+          } else {
+            el.className = 'py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+          }
+        }
+      });
+    }
+
+    // --- DRAWER TOGGLES ---
+    function toggleLeftDrawer() {
+      const el = document.getElementById('left-drawer');
+      if (el) el.classList.toggle('-translate-x-[110%]');
+    }
+
+    function toggleRightDrawer() {
+      const el = document.getElementById('right-drawer');
+      if (el) el.classList.toggle('translate-x-[110%]');
+    }
+
+    // --- 2D / 3D VIEWPORT TOGGLE ---
+    function toggleViewportProjection() {
+      const mapEl = document.getElementById('map-container');
+      const globeEl = document.getElementById('globe-container');
+      const label = document.getElementById('label-projection');
+
+      if (currentProjection === '2d') {
+        currentProjection = '3d';
+        if (mapEl) mapEl.classList.add('hidden');
+        if (globeEl) globeEl.classList.remove('hidden');
+        if (label) label.innerText = '2D Tactical';
+        init3DGlobe();
+      } else {
+        currentProjection = '2d';
+        if (globeEl) globeEl.classList.add('hidden');
+        if (mapEl) mapEl.classList.remove('hidden');
+        if (label) label.innerText = '3D Globe';
+      }
+    }
+
+    // --- 3D THREE.JS GLOBE FALLBACK ENGINE ---
+    let threeRenderer = null;
+    let threeScene = null;
+    let threeCamera = null;
+    let globeMesh = null;
+    let cloudsMesh = null;
+
+    function init3DGlobe() {
+      if (threeRenderer) return; // Already initialized
+
+      const container = document.getElementById('globe-container');
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
+
+      threeScene = new THREE.Scene();
+      threeCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+      threeCamera.position.set(0, 0, 5.5);
+
+      threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      threeRenderer.setSize(w, h);
+      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(threeRenderer.domElement);
+
+      // Earth Sphere
+      const earthGeo = new THREE.SphereGeometry(2, 64, 64);
+      const earthMat = new THREE.MeshPhongMaterial({
+        color: 0x224488,
+        specular: 0x111111,
+        shininess: 15,
+        wireframe: false
+      });
+      globeMesh = new THREE.Mesh(earthGeo, earthMat);
+      threeScene.add(globeMesh);
+
+      // Atmospheric Glow / Cloud Shell
+      const cloudGeo = new THREE.SphereGeometry(2.03, 64, 64);
+      const cloudMat = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending
+      });
+      cloudsMesh = new THREE.Mesh(cloudGeo, cloudMat);
+      threeScene.add(cloudsMesh);
+
+      // Lighting
+      const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      sunLight.position.set(5, 3, 5);
+      threeScene.add(sunLight);
+      threeScene.add(new THREE.AmbientLight(0x223355, 0.6));
+
+      function animateGlobe() {
+        if (currentProjection === '3d') {
+          if (globeMesh) globeMesh.rotation.y += 0.001;
+          if (cloudsMesh) cloudsMesh.rotation.y += 0.0015;
+          threeRenderer.render(threeScene, threeCamera);
+        }
+        requestAnimationFrame(animateGlobe);
+      }
+      animateGlobe();
+    }
+
+    // --- SEARCH & GEOCODING ---
+    function setupSearchHandler() {
+      const input = document.getElementById('weather-search');
+      if (!input) return;
+      input.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          const query = input.value.trim().toLowerCase();
+          if (!query) return;
+
+          // Check if search matches active cyclone
+          const stormMatch = activeCyclonesData.find(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
+          if (stormMatch) {
+            selectAndFocusStorm(stormMatch);
+            return;
+          }
+
+          // Geocode via Nominatim
+          try {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const results = await resp.json();
+            if (results && results.length) {
+              const r = results[0];
+              const lat = parseFloat(r.lat);
+              const lon = parseFloat(r.lon);
+              map.flyTo([lat, lon], 8);
+              fetchStationTelemetry(lat, lon, r.display_name.split(',')[0]);
+            }
+          } catch(err) {
+            console.warn('Geocoding error:', err);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

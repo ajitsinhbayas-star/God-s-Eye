@@ -13,36 +13,36 @@
     "spaceWeather": {
       "kpIndex": 2,
       "stormLevel": "G0 (Quiet)",
-      "updatedAt": "2026-10-27T17:03:31.237Z"
+      "updatedAt": "2026-10-29T06:48:48.208Z"
     },
     "neoApproaches": [
       {
-        "des": "2026 TB94",
-        "distKm": 1954821
+        "des": "2026 UE2",
+        "distKm": 123727
       },
       {
-        "des": "2018 GS1",
-        "distKm": 4240878
+        "des": "2022 UV21",
+        "distKm": 5649289
       },
       {
-        "des": "2026 UB1",
-        "distKm": 3666145
+        "des": "2026 UC2",
+        "distKm": 1021422
       }
     ],
     "missionNews": [
       {
-        "id": 40597,
-        "title": "How a Johnson Mentor Shapes the Next Generation of NASA Talent",
+        "id": 40628,
+        "title": "APOD: 29 October 2026 – The Horns of Venus",
         "newsSite": "NASA"
       },
       {
-        "id": 40596,
-        "title": "APOD: 2026 October 27 – Noctilucent Clouds over Sweden",
+        "id": 40627,
+        "title": "Arnab Strikes India",
         "newsSite": "NASA"
       },
       {
-        "id": 40595,
-        "title": "A-81 Reaches South Georgia",
+        "id": 40626,
+        "title": "Caltech Names Artemis II Commander Reid Wiseman as NASA JPL Deputy",
         "newsSite": "NASA"
       }
     ]
@@ -63,7 +63,7 @@
       "detail": "Active satellite TLE vectors",
       "status": "ok",
       "label": "Synced (8 NORAD vectors)",
-      "lastFetch": "2026-10-27T09:00:32.209Z",
+      "lastFetch": "2026-10-29T06:48:48.885Z",
       "latencyMs": 210
     },
     {

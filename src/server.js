@@ -1,6 +1,4 @@
-const sentinelAuth = require('./supervisor/admin-auth');
-const sentinelRoutes = require('./routes/sentinel');
-﻿import path from 'path';
+import path from 'path';
 import compression from 'compression';
 import express from 'express';
 import http from 'http';
@@ -8,10 +6,12 @@ import { PORT, PUBLIC_DIR } from './config/constants.js';
 import { getDatabase } from './db/sqlite.js';
 import { getSpaceStore } from './db/space-store.js';
 import { initWebSocketServer } from './realtime/ws-server.js';
+import * as sentinelAuth from './supervisor/admin-auth.js';
 
 import { spaceRouter } from './routes/space.js';
 import { sentinelRouter } from './routes/sentinel.js';
 import { objectsRouter } from './routes/objects.js';
+import { weatherRouter } from './routes/weather.js';
 
 import { startIssPoller } from './daemons/iss-poller.js';
 import { startCelesTrakDaemon } from './daemons/celestrak-worker.js';
@@ -19,6 +19,7 @@ import { startNoaaDaemon } from './daemons/noaa-weather-worker.js';
 import { startJplCadDaemon } from './daemons/jpl-cad-worker.js';
 import { startNewsDaemon } from './daemons/news-harvester.js';
 import { startKeepAliveDaemon } from './daemons/keep-alive.js';
+import { startWeatherDaemon } from './daemons/weather-worker.js';
 
 const app = express();
 app.use(express.json());
@@ -52,7 +53,7 @@ app.get('/api/health', (req, res) => {
 
 // Mount Routes
 app.use('/api/space', spaceRouter);
-
+app.use('/api/weather', weatherRouter);
 app.use('/api', objectsRouter);
 
 app.get('/api/passes', (req, res) => {
@@ -60,7 +61,9 @@ app.get('/api/passes', (req, res) => {
 });
 
 // HTML Pages
-
+app.get(['/weather', '/weather/', '/weather.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'weather.html'));
+});
 
 app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'orbitalert.html'));
@@ -69,17 +72,17 @@ app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
 // Static files from public/
 
 // ==================== SENTINEL ADMIN SECURITY GUARDS ====================
-app.use('/api/sentinel', sentinelRoutes);
+app.use('/api/sentinel', sentinelRouter);
 
 app.get('/sentinel-login', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  res.sendFile(path.join(__dirname, '../public/sentinel-login.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'sentinel-login.html'));
 });
 
 // Intercept all /sentinel variants BEFORE express.static
 app.get(['/sentinel', '/sentinel/', '/sentinel.html'], sentinelAuth.requireAdminAuth, (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  res.sendFile(path.join(__dirname, '../public/sentinel.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'sentinel.html'));
 });
 // =========================================================================
 
@@ -110,6 +113,7 @@ startNoaaDaemon();
 startJplCadDaemon();
 startNewsDaemon();
 startKeepAliveDaemon();
+startWeatherDaemon();
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[SYS] Orbital Command Engine active on port ${PORT}`);

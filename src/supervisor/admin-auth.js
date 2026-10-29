@@ -1,10 +1,14 @@
 /**
  * GOD'S EYE — SENTINEL BOT ADMIN AUTHENTICATION SUPERVISOR
- * Zero-dependency native loader with constant-time equality and brute-force mitigation.
+ * Zero-dependency native loader with constant-time equality and brute-force mitigation (ESM).
  */
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Auto-load .env natively if dotenv is absent
 (function loadEnvNative() {
@@ -39,7 +43,7 @@ const MAX_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
 const SESSION_LIFETIME_MS = 8 * 60 * 60 * 1000;
 
-function getCredentials() {
+export function getCredentials() {
   return {
     username: process.env.SENTINEL_ADMIN_USERNAME || 'Ajitsinh96',
     password: process.env.SENTINEL_ADMIN_PASSWORD || 'Ajitsinh@#9699',
@@ -47,12 +51,12 @@ function getCredentials() {
   };
 }
 
-function isAuthConfigured() {
+export function isAuthConfigured() {
   const c = getCredentials();
   return Boolean(c.username && c.password && c.password.length >= 8);
 }
 
-function timingSafeEqual(a, b) {
+export function timingSafeEqual(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') return false;
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
@@ -60,11 +64,11 @@ function timingSafeEqual(a, b) {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
-function getClientIp(req) {
+export function getClientIp(req) {
   return (req.ip || req.connection?.remoteAddress || '127.0.0.1').replace(/^.*:/, '');
 }
 
-function checkRateLimit(ip) {
+export function checkRateLimit(ip) {
   const now = Date.now();
   const entry = loginAttempts.get(ip);
   if (!entry) return { allowed: true };
@@ -79,7 +83,7 @@ function checkRateLimit(ip) {
   return { allowed: true };
 }
 
-function recordFailedAttempt(ip) {
+export function recordFailedAttempt(ip) {
   const now = Date.now();
   const entry = loginAttempts.get(ip) || { count: 0, firstAttempt: now, lockedUntil: 0 };
   entry.count++;
@@ -89,11 +93,11 @@ function recordFailedAttempt(ip) {
   loginAttempts.set(ip, entry);
 }
 
-function clearRateLimit(ip) {
+export function clearRateLimit(ip) {
   loginAttempts.delete(ip);
 }
 
-function parseCookies(req) {
+export function parseCookies(req) {
   const list = {};
   const header = req.headers.cookie;
   if (!header) return list;
@@ -105,7 +109,7 @@ function parseCookies(req) {
   return list;
 }
 
-function createSession(username) {
+export function createSession(username) {
   const sessionId = crypto.randomBytes(32).toString('hex');
   const now = Date.now();
   const session = { sessionId, username, createdAt: now, expiresAt: now + SESSION_LIFETIME_MS };
@@ -113,7 +117,7 @@ function createSession(username) {
   return session;
 }
 
-function getSession(id) {
+export function getSession(id) {
   if (!id) return null;
   const s = activeSessions.get(id);
   if (!s) return null;
@@ -124,11 +128,11 @@ function getSession(id) {
   return s;
 }
 
-function destroySession(id) {
+export function destroySession(id) {
   if (id) activeSessions.delete(id);
 }
 
-function requireAdminAuth(req, res, next) {
+export function requireAdminAuth(req, res, next) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
   if (!isAuthConfigured()) {
@@ -151,18 +155,3 @@ function requireAdminAuth(req, res, next) {
   req.adminSession = session;
   next();
 }
-
-module.exports = {
-  getCredentials,
-  isAuthConfigured,
-  timingSafeEqual,
-  getClientIp,
-  checkRateLimit,
-  recordFailedAttempt,
-  clearRateLimit,
-  parseCookies,
-  createSession,
-  getSession,
-  destroySession,
-  requireAdminAuth
-};

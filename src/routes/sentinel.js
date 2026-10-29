@@ -1,8 +1,6 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
 import express from 'express';
+import * as auth from '../supervisor/admin-auth.js';
 const router = express.Router();
-const auth = require('../supervisor/admin-auth');
 
 // Public Telemetry Intake (sendBeacon / client diagnostic events)
 router.post('/telemetry', express.json({ limit: '64kb' }), (req, res) => {
