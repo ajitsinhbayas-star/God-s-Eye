@@ -1001,7 +1001,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <span>🌍 EARTH OBSERVATION & CAMERA PRESETS</span>
           </div>
           <div class="grid grid-cols-3 gap-1 text-[10px]">
-            <button onclick="setFocusTo('earth')" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold">Global</button>
+            <button onclick="window.focusIndiaView()" class="py-1.5 px-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">🇮🇳 India</button><button onclick="setFocusTo('earth')" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold">Global</button>
             <button onclick="setEarthLEOView()" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-700 font-bold">LEO Horizon</button>
             <button onclick="toggleChaseCameraMode()" id="btn-chase-cam" class="py-1.5 px-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-200 border border-cyan-500/40 font-bold">Fly-Along</button>
           </div>
@@ -5187,12 +5187,32 @@ function animate() {
 
 
       // 1. Earth Orbit & Diurnal Rotation
+            // 1. Earth Orbit Position & Accurate Sun Vector
       const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
       earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
 
-      const solarRotationAngle = (astro.utcHours / 24.0) * Math.PI * 2.0;
-      earthMesh.rotation.y = -solarRotationAngle - (Math.PI / 2.0) + (astro.subsolarLngDeg * Math.PI / 180);
+      sunMesh.getWorldPosition(_vSun);
+      earthSystem.getWorldPosition(_vEarth);
+      if (_vSun.distanceToSquared(_vEarth) > 0.0001) {
+        _vSunDir.subVectors(_vSun, _vEarth).normalize();
+      } else {
+        _vSunDir.set(1, 0, 0);
+      }
+
+      // 2. Exact Physical Diurnal Rotation: Align Subsolar Longitude with World Sun Vector
+      const sunDirInAxial = _vSunDir.clone();
+      sunDirInAxial.applyAxisAngle(new THREE.Vector3(0, 0, 1), -CELESTIAL_BODIES.earth.tilt * (Math.PI / 180));
+      const sunAzimuth = Math.atan2(sunDirInAxial.z, sunDirInAxial.x);
+      const subsolarLonRad = astro.subsolarLngDeg * (Math.PI / 180);
+
+      earthMesh.rotation.y = -sunAzimuth - subsolarLonRad;
       earthMesh.updateMatrixWorld(true);
+
+      if (typeof earthShaderUniforms !== 'undefined' && earthShaderUniforms.uSunDir) {
+        earthShaderUniforms.uSunDir.value.copy(_vSunDir);
+        earthShaderUniforms.uCameraPos.value.copy(camera.position);
+        earthShaderUniforms.uTime.value = performance.now() * 0.001;
+      }
 
       // Heliophysics Solar Uniforms & Parker Spiral In Situ Update
       if (typeof sunShaderUniforms !== 'undefined') {
@@ -7164,6 +7184,7 @@ function animate() {
   </script>
 </body>
 </html>
+
 
 
 
