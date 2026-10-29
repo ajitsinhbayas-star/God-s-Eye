@@ -634,38 +634,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       </div>
     </div>
 
-    <!-- Loading & WebGL Fallback State -->
-    <div id="webgl-status-overlay" class="fixed inset-0 z-20 flex items-center justify-center bg-[#000208]/90 backdrop-blur-md pointer-events-auto transition-opacity duration-500">
-      <div class="max-w-md w-full mx-4 p-6 rounded-2xl hud-glass border border-cyan-500/40 text-center space-y-3 font-mono">
-        <div id="webgl-spinner" class="w-8 h-8 mx-auto rounded-full border-2 border-cyan-400 border-t-transparent animate-spin"></div>
-        <h2 id="webgl-status-title" class="text-sm font-bold uppercase tracking-wider text-white">Initializing 3D Orbital Environment</h2>
-        <p id="webgl-status-desc" class="text-xs text-slate-400 font-sans">Loading Earth ephemeris, SGP4/J2 satellite propagation, and J2000 planetary vectors…</p>
-        <button id="webgl-dismiss-btn" onclick="const o=document.getElementById('webgl-status-overlay');if(o){o.style.display='none';o.classList.add('hidden');}" class="mt-2 inline-block px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-500/40 text-xs text-cyan-300 font-mono tracking-wider cursor-pointer transition">
-          ENTER 3D COMMAND &rarr;
-        </button>
-        <button id="webgl-retry-btn" onclick="window.location.reload()" class="hidden mx-auto px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
-          Retry Initialization
-        </button>
-      </div>
-    </div>
-    <script>
-      (function() {
-        function hardDismissStatusOverlay() {
-          const ov = document.getElementById('webgl-status-overlay');
-          if (ov) {
-            ov.style.setProperty('display', 'none', 'important');
-            ov.style.setProperty('opacity', '0', 'important');
-            ov.style.setProperty('pointer-events', 'none', 'important');
-            ov.classList.add('hidden');
-          }
-        }
-        document.addEventListener('DOMContentLoaded', hardDismissStatusOverlay);
-        window.addEventListener('load', hardDismissStatusOverlay);
-        setTimeout(hardDismissStatusOverlay, 600);
-        setTimeout(hardDismissStatusOverlay, 1500);
-        window.forceDismissStatusOverlay = hardDismissStatusOverlay;
-      })();
-    </script>
+    <!-- Non-blocking WebGL Fallback (Permanently hidden by default) -->
+    <div id="webgl-status-overlay" class="hidden" style="display: none !important; opacity: 0 !important; pointer-events: none !important;"></div>
   </div>
 
   <!-- Coordinate Frame & Scale Transition Notice -->
@@ -679,8 +649,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </main>
 
   <!-- Audio Elements -->
-  <audio id="audio-cinematic" loop preload="auto" src="cinematic-drift.mp3"></audio>
-  <audio id="audio-intro" loop preload="auto" src="intro-ambient.mp3"></audio>
+  <!-- Audio stream initialized via Web Audio API -->
+  <!-- Audio stream initialized via Web Audio API -->
 
  
  <!-- Top Command Bar (Elevated z-50 to keep dropdowns and overlays unobstructed) -->

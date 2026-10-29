@@ -1,7 +1,14 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
+Allow: /earth
+Allow: /weather
 Allow: /orbitalert
-Allow: /sentinel
+Allow: /asteroids
+Allow: /deepspace
+Disallow: /sentinel
+Disallow: /sentinel/
+Disallow: /sentinel.html
+Disallow: /sentinel-login
 Disallow: /api/
 Disallow: /.env
 Disallow: /data/

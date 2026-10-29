@@ -60,9 +60,21 @@ app.get('/api/passes', (req, res) => {
   res.json({ ok: true, meta: { generatedAt: new Date().toISOString() }, data: [] });
 });
 
-// HTML Pages
+// HTML Clean Routing & Canonical Endpoints for Search Engines
 app.get(['/weather', '/weather/', '/weather.html'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'weather.html'));
+});
+
+app.get(['/earth', '/earth/', '/earth.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'earth.html'));
+});
+
+app.get(['/deepspace', '/deepspace/', '/deepspace.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'deepspace.html'));
+});
+
+app.get(['/asteroids', '/asteroids/', '/asteroids.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'asteroids.html'));
 });
 
 app.get(['/orbitalert', '/orbitalert/'], (req, res) => {
