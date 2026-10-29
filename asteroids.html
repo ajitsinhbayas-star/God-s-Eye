@@ -115,6 +115,27 @@
       <a href="orbitalert.html?tab=nea" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold transition flex items-center gap-1">
         <span>☄️</span><span class="hidden sm:inline">Close Passes</span>
       </a>
+      <!-- Compact More Menu -->
+      <div class="relative">
+        <button onclick="toggleHeaderMoreMenu(event)" id="btn-header-more" class="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition font-bold" title="More Options">
+          More ▾
+        </button>
+        <div id="header-more-dropdown" class="hidden absolute right-0 top-full mt-2 w-56 rounded-2xl bg-[#081024]/95 backdrop-blur-2xl border border-cyan-500/40 p-2 shadow-2xl z-[60] space-y-1 text-[11px] font-mono">
+          <a href="orbitalert.html?tab=nea" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-amber-300 flex items-center justify-between no-underline">
+            <span>☄️ CNEOS Radar</span>
+            <span class="text-[9px] text-slate-500">Close Passes</span>
+          </a>
+          <button onclick="targetCameraDistance = 145.0; targetCameraPhi = 1.55; targetCameraTheta = 0.0; toggleHeaderMoreMenu();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between">
+            <span>🔭 Polar View</span>
+            <span class="text-[9px] text-slate-500">Top-Down</span>
+          </button>
+          <div class="border-t border-slate-800 my-1"></div>
+          <a href="sentinel-login.html" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between no-underline">
+            <span>🛡️ Sentinel Control</span>
+            <span class="text-[9px] text-amber-400 font-bold border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded">LOGIN 🔒</span>
+          </a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -629,6 +650,18 @@
     const _focusPos = new THREE.Vector3();
     const _pVec = new THREE.Vector3();
 
+        function toggleHeaderMoreMenu(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      const dd = document.getElementById('header-more-dropdown');
+      if (dd) dd.classList.toggle('hidden');
+    }
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById('header-more-dropdown');
+      if (dd && !dd.classList.contains('hidden') && !e.target.closest('#btn-header-more, #header-more-dropdown')) {
+        dd.classList.add('hidden');
+      }
+    });
+
     function animate() {
       requestAnimationFrame(animate);
       const nowReal = performance.now();
@@ -700,4 +733,5 @@
   </script>
 </body>
 </html>
+
 

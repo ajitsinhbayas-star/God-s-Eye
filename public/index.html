@@ -3574,6 +3574,44 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
       }
     }
 
+    
+// --- HEADER MORE DROPDOWN & MISSIONS HUB CONTROLLERS ---
+function toggleHeaderMoreMenu(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  const dropdown = document.getElementById('header-more-dropdown');
+  if (dropdown) {
+    dropdown.classList.toggle('hidden');
+  }
+}
+window.toggleHeaderMoreMenu = toggleHeaderMoreMenu;
+
+window.toggleNasaMultiHub = function() {
+  const hub = document.getElementById('nasa-multi-hub-modal');
+  if (hub) {
+    hub.classList.toggle('hidden');
+  }
+};
+
+window.FocusTargetFromHub = function(category, targetName) {
+  const nameMap = {
+    'Voyager 1': 'sc_voyager_1',
+    'ISS (ZARYA)': 'iss',
+    'mars': 'mars',
+    'Aditya-L1': 'aditya_l1',
+    'Chandrayaan-2 Orbiter': 'chandrayaan2_orb',
+    'James Webb (JWST)': 'jwst',
+    'JUICE': 'juice'
+  };
+  const key = nameMap[targetName] || targetName.toLowerCase().replace(/\s+/g, '_');
+  if (typeof setFocusTo === 'function') {
+    setFocusTo(key);
+  } else if (typeof setFocusToOrbiter === 'function' && typeof PLANETARY_ORBITERS !== 'undefined' && PLANETARY_ORBITERS[key]) {
+    setFocusToOrbiter(key);
+  }
+  const hub = document.getElementById('nasa-multi-hub-modal');
+  if (hub) hub.classList.add('hidden');
+};
+
     // Auto-close Header More dropdown when clicking anywhere else
     document.addEventListener('click', (e) => {
       const moreBtn = document.getElementById('btn-header-more');
@@ -7774,5 +7812,6 @@ function animate() {
   </script>
 </body>
 </html>
+
 
 

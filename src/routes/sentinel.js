@@ -1,4 +1,6 @@
-const express = require('express');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+import express from 'express';
 const router = express.Router();
 const auth = require('../supervisor/admin-auth');
 
@@ -111,4 +113,5 @@ router.get('/logs', auth.requireAdminAuth, (req, res) => {
   res.json({ success: true, count: filtered.length, logs: filtered });
 });
 
-module.exports = router;
+export const sentinelRouter = router;
+export default router;
