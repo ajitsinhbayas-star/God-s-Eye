@@ -128,13 +128,13 @@
 
     <!-- Center: Layer Mode Selector (Includes Precipitation Analysis & All Fixed Toggles) -->
     <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
-      <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition">
+      <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
         <i class="fa-solid fa-radar mr-1"></i>Live Radar
       </button>
       <button id="mode-precipitation" onclick="setLayerMode('precipitation')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60 transition">
         <i class="fa-solid fa-cloud-showers-heavy mr-1 text-cyan-400"></i>Precipitation Analysis
       </button>
-      <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+      <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition">
         <i class="fa-solid fa-earth-americas mr-1"></i>Natural 3D
       </button>
       <button id="mode-infrared" onclick="setLayerMode('infrared')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
@@ -178,39 +178,39 @@
 
   <!-- ON-SCREEN TACTICAL NAVIGATION & ZOOM CONTROLS (Desktop Mouse & Mobile Touch Pad) -->
   <div id="tactical-nav-pad" class="absolute bottom-24 right-4 z-25 flex flex-col items-center gap-1.5 p-2 rounded-2xl hud-glass shadow-[0_0_25px_rgba(6,182,212,0.35)] select-none pointer-events-auto">
-    <!-- Zoom In Button (+) -->
-    <button id="btn-zoom-in" onclick="zoomIn()" class="w-9 h-9 rounded-xl bg-slate-900/90 hover:bg-cyan-500/30 active:bg-cyan-500/50 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer" title="Zoom In (+)">
-      <i class="fa-solid fa-plus"></i>
+    <!-- Zoom In Button (+) with Click & Hold support -->
+    <button id="btn-zoom-in" onclick="zoomIn()" onpointerdown="startZoom('in')" onpointerup="stopZoom()" onpointerleave="stopZoom()" class="w-9 h-9 rounded-xl bg-slate-900/95 hover:bg-cyan-500/30 active:bg-cyan-500/60 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-base font-extrabold font-mono transition shadow cursor-pointer select-none" title="Zoom In (+)">
+      +
     </button>
 
-    <!-- D-Pad Directional Orbit / Pan Arrows -->
+    <!-- D-Pad Directional Orbit / Pan Arrows with Click & Continuous Hold -->
     <div class="grid grid-cols-3 gap-1 my-0.5">
       <div></div>
-      <button id="btn-nav-up" onmousedown="startNav('up')" onmouseup="stopNav()" onmouseleave="stopNav()" ontouchstart="startNav('up')" ontouchend="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/40 text-slate-300 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer" title="Orbit Up">
-        <i class="fa-solid fa-caret-up"></i>
+      <button id="btn-nav-up" onclick="performNav('up')" onpointerdown="startNav('up')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Up">
+        ▲
       </button>
       <div></div>
 
-      <button id="btn-nav-left" onmousedown="startNav('left')" onmouseup="stopNav()" onmouseleave="stopNav()" ontouchstart="startNav('left')" ontouchend="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/40 text-slate-300 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer" title="Orbit Left">
-        <i class="fa-solid fa-caret-left"></i>
+      <button id="btn-nav-left" onclick="performNav('left')" onpointerdown="startNav('left')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Left">
+        ◀
       </button>
-      <button onclick="resetCameraHome()" class="w-8 h-8 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 active:bg-cyan-500/40 text-cyan-400 border border-cyan-500/50 flex items-center justify-center text-xs transition shadow cursor-pointer" title="Reset View / Home (India/Asia)">
-        <i class="fa-solid fa-crosshairs"></i>
+      <button onclick="resetCameraHome()" class="w-8 h-8 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 active:bg-cyan-500/50 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer select-none" title="Reset View / Home (India/Asia)">
+        ⌖
       </button>
-      <button id="btn-nav-right" onmousedown="startNav('right')" onmouseup="stopNav()" onmouseleave="stopNav()" ontouchstart="startNav('right')" ontouchend="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/40 text-slate-300 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer" title="Orbit Right">
-        <i class="fa-solid fa-caret-right"></i>
+      <button id="btn-nav-right" onclick="performNav('right')" onpointerdown="startNav('right')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Right">
+        ▶
       </button>
 
       <div></div>
-      <button id="btn-nav-down" onmousedown="startNav('down')" onmouseup="stopNav()" onmouseleave="stopNav()" ontouchstart="startNav('down')" ontouchend="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/40 text-slate-300 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer" title="Orbit Down">
-        <i class="fa-solid fa-caret-down"></i>
+      <button id="btn-nav-down" onclick="performNav('down')" onpointerdown="startNav('down')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Down">
+        ▼
       </button>
       <div></div>
     </div>
 
-    <!-- Zoom Out Button (-) -->
-    <button id="btn-zoom-out" onclick="zoomOut()" class="w-9 h-9 rounded-xl bg-slate-900/90 hover:bg-cyan-500/30 active:bg-cyan-500/50 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer" title="Zoom Out (-)">
-      <i class="fa-solid fa-minus"></i>
+    <!-- Zoom Out Button (-) with Click & Hold support -->
+    <button id="btn-zoom-out" onclick="zoomOut()" onpointerdown="startZoom('out')" onpointerup="stopZoom()" onpointerleave="stopZoom()" class="w-9 h-9 rounded-xl bg-slate-900/95 hover:bg-cyan-500/30 active:bg-cyan-500/60 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-base font-extrabold font-mono transition shadow cursor-pointer select-none" title="Zoom Out (-)">
+      −
     </button>
   </div>
 
@@ -584,7 +584,7 @@
   <script>
     // --- GLOBAL VARIABLES ---
     let currentProjection = '3d'; // '3d' (default) | '2d'
-    let currentLayerMode = 'radar'; // 'radar' | 'precipitation' | 'natural' | 'infrared' | 'wind' | 'cyclones'
+    let currentLayerMode = 'natural'; // 'radar' | 'precipitation' | 'natural' | 'infrared' | 'wind' | 'cyclones'
     let isGeoLabelsEnabled = true;
 
     // 3D Three.js Engine Variables
@@ -618,75 +618,157 @@
     let activeFiresData = [];
     let activeSelectedStorm = null;
 
-    // --- GOOGLE EARTH-STYLE COMPREHENSIVE GEOGRAPHIC DATABASE (LOD 1: Continents/Oceans, LOD 2: Countries/Capitals, LOD 3: Major Cities) ---
+       // --- GOOGLE EARTH-STYLE COMPREHENSIVE GEOGRAPHIC DATABASE (132 Cities & Landmarks across Continents, Capitals & Megacities) ---
     const GEOGRAPHIC_LANDMARKS = [
       // Continents & Oceans (LOD 1 - visible always / zoomed out)
-      { name: "ASIA", lat: 34.04, lon: 100.61, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
-      { name: "EUROPE", lat: 54.52, lon: 15.25, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
-      { name: "AFRICA", lat: 1.65, lon: 17.32, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
-      { name: "NORTH AMERICA", lat: 40.0, lon: -100.0, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
-      { name: "SOUTH AMERICA", lat: -15.0, lon: -60.0, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
-      { name: "AUSTRALIA", lat: -25.0, lon: 134.0, type: "continent", minZoom: 5.5, maxZoom: 18.0 },
+      { name: "ASIA", lat: 34.04, lon: 100.61, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "EUROPE", lat: 54.52, lon: 15.25, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "AFRICA", lat: 1.65, lon: 17.32, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "NORTH AMERICA", lat: 40.0, lon: -100.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "SOUTH AMERICA", lat: -15.0, lon: -60.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "AUSTRALIA", lat: -25.0, lon: 134.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
       { name: "PACIFIC OCEAN", lat: 0.0, lon: -160.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
       { name: "ATLANTIC OCEAN", lat: 15.0, lon: -35.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
       { name: "INDIAN OCEAN", lat: -10.0, lon: 80.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
       { name: "ARCTIC OCEAN", lat: 78.0, lon: 0.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
 
-      // Countries & Capitals (LOD 2 - visible when camera approaches)
-      { name: "India", lat: 20.59, lon: 78.96, type: "country", minZoom: 3.2, maxZoom: 9.0 },
-      { name: "New Delhi", lat: 28.61, lon: 77.20, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "United States", lat: 37.09, lon: -95.71, type: "country", minZoom: 3.2, maxZoom: 9.0 },
-      { name: "Washington, D.C.", lat: 38.90, lon: -77.03, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "China", lat: 35.86, lon: 104.19, type: "country", minZoom: 3.2, maxZoom: 9.0 },
-      { name: "Beijing", lat: 39.90, lon: 116.40, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Japan", lat: 36.20, lon: 138.25, type: "country", minZoom: 3.0, maxZoom: 8.0 },
-      { name: "Tokyo", lat: 35.67, lon: 139.65, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "United Kingdom", lat: 55.37, lon: -3.43, type: "country", minZoom: 3.0, maxZoom: 8.0 },
-      { name: "London", lat: 51.50, lon: -0.12, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "France", lat: 46.22, lon: 2.21, type: "country", minZoom: 3.0, maxZoom: 8.0 },
-      { name: "Paris", lat: 48.85, lon: 2.35, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Germany", lat: 51.16, lon: 10.45, type: "country", minZoom: 3.0, maxZoom: 8.0 },
-      { name: "Berlin", lat: 52.52, lon: 13.40, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Brazil", lat: -14.23, lon: -51.92, type: "country", minZoom: 3.2, maxZoom: 9.0 },
-      { name: "Brasília", lat: -15.79, lon: -47.88, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Russia", lat: 61.52, lon: 105.31, type: "country", minZoom: 3.5, maxZoom: 10.0 },
-      { name: "Moscow", lat: 55.75, lon: 37.61, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Egypt", lat: 26.82, lon: 30.80, type: "country", minZoom: 3.2, maxZoom: 8.0 },
-      { name: "Cairo", lat: 30.04, lon: 31.23, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Saudi Arabia", lat: 23.88, lon: 45.07, type: "country", minZoom: 3.2, maxZoom: 8.0 },
-      { name: "Riyadh", lat: 24.71, lon: 46.67, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "UAE / Dubai", lat: 25.20, lon: 55.27, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
-      { name: "Canada", lat: 56.13, lon: -106.34, type: "country", minZoom: 3.5, maxZoom: 9.0 },
-      { name: "Canberra", lat: -35.28, lon: 149.13, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      // India & South Asia (Capitals & Regional Metropolises)
+      { name: "New Delhi", lat: 28.61, lon: 77.20, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Mumbai", lat: 19.07, lon: 72.87, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Pune", lat: 18.52, lon: 73.85, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Bengaluru", lat: 12.97, lon: 77.59, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Hyderabad", lat: 17.38, lon: 78.48, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Chennai", lat: 13.08, lon: 80.27, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Kolkata", lat: 22.57, lon: 88.36, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Ahmedabad", lat: 23.02, lon: 72.57, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Surat", lat: 21.17, lon: 72.83, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Jaipur", lat: 26.91, lon: 75.78, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Lucknow", lat: 26.84, lon: 80.94, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Kochi", lat: 9.93, lon: 76.26, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Goa (Panaji)", lat: 15.49, lon: 73.82, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Nagpur", lat: 21.14, lon: 79.08, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Indore", lat: 22.71, lon: 75.85, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Bhopal", lat: 23.25, lon: 77.41, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Patna", lat: 25.59, lon: 85.13, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Chandigarh", lat: 30.73, lon: 76.77, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Guwahati", lat: 26.14, lon: 91.73, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Bhubaneswar", lat: 20.29, lon: 85.82, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Visakhapatnam", lat: 17.68, lon: 83.21, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Colombo", lat: 6.92, lon: 79.86, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Dhaka", lat: 23.81, lon: 90.41, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kathmandu", lat: 27.71, lon: 85.32, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Islamabad", lat: 33.68, lon: 73.04, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Karachi", lat: 24.86, lon: 67.00, type: "city", minZoom: 2.2, maxZoom: 5.0 },
 
-      // Major Regional Cities (LOD 3 - revealed automatically upon zoom-in)
-      { name: "Pune", lat: 18.52, lon: 73.85, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Mumbai", lat: 19.07, lon: 72.87, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Bengaluru", lat: 12.97, lon: 77.59, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Kolkata", lat: 22.57, lon: 88.36, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Chennai", lat: 13.08, lon: 80.27, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Hyderabad", lat: 17.38, lon: 78.48, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "Ahmedabad", lat: 23.02, lon: 72.57, type: "city", minZoom: 2.2, maxZoom: 4.8 },
-      { name: "New York", lat: 40.71, lon: -74.00, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Los Angeles", lat: 34.05, lon: -118.24, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Miami", lat: 25.76, lon: -80.19, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "San Francisco", lat: 37.77, lon: -122.41, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Chicago", lat: 41.87, lon: -87.62, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Houston", lat: 29.76, lon: -95.36, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Toronto", lat: 43.65, lon: -79.38, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Sydney", lat: -33.86, lon: 151.20, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Melbourne", lat: -37.81, lon: 144.96, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "São Paulo", lat: -23.55, lon: -46.63, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Buenos Aires", lat: -34.60, lon: -58.38, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Rome", lat: 41.90, lon: 12.49, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Madrid", lat: 40.41, lon: -3.70, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Istanbul", lat: 41.00, lon: 28.97, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Seoul", lat: 37.56, lon: 126.97, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Singapore", lat: 1.35, lon: 103.81, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Bangkok", lat: 13.75, lon: 100.50, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Jakarta", lat: -6.20, lon: 106.81, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Johannesburg", lat: -26.20, lon: 28.04, type: "city", minZoom: 2.2, maxZoom: 5.0 },
-      { name: "Nairobi", lat: -1.29, lon: 36.82, type: "city", minZoom: 2.2, maxZoom: 5.0 }
+      // East & Southeast Asia
+      { name: "Tokyo", lat: 35.67, lon: 139.65, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Osaka", lat: 34.69, lon: 135.50, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Seoul", lat: 37.56, lon: 126.97, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Beijing", lat: 39.90, lon: 116.40, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Shanghai", lat: 31.23, lon: 121.47, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Guangzhou", lat: 23.12, lon: 113.26, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Shenzhen", lat: 22.54, lon: 114.05, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Chengdu", lat: 30.57, lon: 104.06, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Hong Kong", lat: 22.31, lon: 114.16, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Taipei", lat: 25.03, lon: 121.56, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Singapore", lat: 1.35, lon: 103.81, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Bangkok", lat: 13.75, lon: 100.50, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Jakarta", lat: -6.20, lon: 106.81, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Kuala Lumpur", lat: 3.13, lon: 101.68, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Manila", lat: 14.59, lon: 120.98, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Hanoi", lat: 21.02, lon: 105.83, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Ho Chi Minh City", lat: 10.82, lon: 106.62, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+
+      // Middle East & Central Asia
+      { name: "Dubai", lat: 25.20, lon: 55.27, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Abu Dhabi", lat: 24.45, lon: 54.37, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Riyadh", lat: 24.71, lon: 46.67, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Jeddah", lat: 21.54, lon: 39.17, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Doha", lat: 25.28, lon: 51.53, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Muscat", lat: 23.58, lon: 58.40, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kuwait City", lat: 29.37, lon: 47.97, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Tehran", lat: 35.68, lon: 51.38, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Tel Aviv", lat: 32.08, lon: 34.78, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Jerusalem", lat: 31.76, lon: 35.21, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Istanbul", lat: 41.00, lon: 28.97, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Ankara", lat: 39.93, lon: 32.85, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Europe
+      { name: "London", lat: 51.50, lon: -0.12, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Manchester", lat: 53.48, lon: -2.24, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Paris", lat: 48.85, lon: 2.35, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Marseille", lat: 43.29, lon: 5.36, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Berlin", lat: 52.52, lon: 13.40, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Munich", lat: 48.13, lon: 11.58, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Frankfurt", lat: 50.11, lon: 8.68, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Rome", lat: 41.90, lon: 12.49, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Milan", lat: 45.46, lon: 9.19, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Madrid", lat: 40.41, lon: -3.70, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Barcelona", lat: 41.38, lon: 2.17, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Amsterdam", lat: 52.36, lon: 4.90, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Brussels", lat: 50.85, lon: 4.35, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Zurich", lat: 47.37, lon: 8.54, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Vienna", lat: 48.20, lon: 16.37, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Warsaw", lat: 52.22, lon: 21.01, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Prague", lat: 50.07, lon: 14.43, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Athens", lat: 37.98, lon: 23.72, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Stockholm", lat: 59.32, lon: 18.06, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Oslo", lat: 59.91, lon: 10.75, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Copenhagen", lat: 55.67, lon: 12.56, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Helsinki", lat: 60.16, lon: 24.93, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Dublin", lat: 53.34, lon: -6.26, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Lisbon", lat: 38.72, lon: -9.13, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kyiv", lat: 50.45, lon: 30.52, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Moscow", lat: 55.75, lon: 37.61, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+
+      // North America
+      { name: "Washington, D.C.", lat: 38.90, lon: -77.03, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "New York", lat: 40.71, lon: -74.00, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Los Angeles", lat: 34.05, lon: -118.24, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Chicago", lat: 41.87, lon: -87.62, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Houston", lat: 29.76, lon: -95.36, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Dallas", lat: 32.77, lon: -96.79, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Miami", lat: 25.76, lon: -80.19, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "San Francisco", lat: 37.77, lon: -122.41, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Seattle", lat: 47.60, lon: -122.33, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Boston", lat: 42.36, lon: -71.05, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Atlanta", lat: 33.74, lon: -84.38, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Denver", lat: 39.73, lon: -104.99, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Toronto", lat: 43.65, lon: -79.38, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Montreal", lat: 45.50, lon: -73.56, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Vancouver", lat: 49.28, lon: -123.12, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Ottawa", lat: 45.42, lon: -75.69, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Mexico City", lat: 19.43, lon: -99.13, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Guadalajara", lat: 20.65, lon: -103.34, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Monterrey", lat: 25.68, lon: -100.31, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+
+      // South America
+      { name: "São Paulo", lat: -23.55, lon: -46.63, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Rio de Janeiro", lat: -22.90, lon: -43.17, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Brasília", lat: -15.79, lon: -47.88, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Buenos Aires", lat: -34.60, lon: -58.38, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Santiago", lat: -33.44, lon: -70.66, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Lima", lat: -12.04, lon: -77.04, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Bogotá", lat: 4.71, lon: -74.07, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Quito", lat: -0.18, lon: -78.46, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Africa
+      { name: "Cairo", lat: 30.04, lon: 31.23, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Johannesburg", lat: -26.20, lon: 28.04, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Cape Town", lat: -33.92, lon: 18.42, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Nairobi", lat: -1.29, lon: 36.82, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Lagos", lat: 6.52, lon: 3.37, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Casablanca", lat: 33.57, lon: -7.58, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Addis Ababa", lat: 9.03, lon: 38.74, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Oceania
+      { name: "Sydney", lat: -33.86, lon: 151.20, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Melbourne", lat: -37.81, lon: 144.96, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Brisbane", lat: -27.46, lon: 153.02, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Perth", lat: -31.95, lon: 115.86, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Auckland", lat: -36.84, lon: 174.76, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Canberra", lat: -35.28, lon: 149.13, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Honolulu", lat: 21.30, lon: -157.85, type: "city", minZoom: 2.2, maxZoom: 5.2 }
     ];
 
     let cachedLabelNodes = [];
@@ -721,6 +803,7 @@
       fetchStationTelemetry(18.5204, 73.8567, "Pune, IN");
       setupSearchHandler();
       setupGlobeClickListener();
+      setLayerMode('natural');
     });
 
     // --- SIMULATION CLOCK ---
@@ -1056,11 +1139,14 @@
         blending: THREE.NormalBlending
       });
       radarShellMesh = new THREE.Mesh(radarGeo, radarMat);
+      radarShellMesh.visible = false; // Start hidden for natural view
       scene.add(radarShellMesh);
 
       // 10. 3D Storms, Cones, Fire Hotspots & Target Pin Groups
       cyclonesGroup3D = new THREE.Group();
+      cyclonesGroup3D.visible = false; // Start hidden for natural view
       forecastConesGroup3D = new THREE.Group();
+      forecastConesGroup3D.visible = false; // Start hidden for natural view
       fireHotspotsGroup3D = new THREE.Group();
       clickTargetPinGroup3D = new THREE.Group();
       scene.add(cyclonesGroup3D);
@@ -1206,7 +1292,28 @@
       renderer.setSize(w, h);
     }
 
-    // --- ON-SCREEN TACTICAL D-PAD & ZOOM CONTROLS (DESKTOP & MOBILE) ---
+       // --- ON-SCREEN TACTICAL D-PAD & ZOOM CONTROLS (DESKTOP & MOBILE TOUCH) ---
+    let zoomInterval = null;
+
+    function performNav(dir) {
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const spherical = new THREE.Spherical().setFromVector3(offset);
+      const step = 0.055;
+      if (dir === 'left') {
+        spherical.theta -= step;
+      } else if (dir === 'right') {
+        spherical.theta += step;
+      } else if (dir === 'up') {
+        spherical.phi = Math.max(0.08, Math.min(Math.PI - 0.08, spherical.phi - step));
+      } else if (dir === 'down') {
+        spherical.phi = Math.max(0.08, Math.min(Math.PI - 0.08, spherical.phi + step));
+      }
+      offset.setFromSpherical(spherical);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    }
+
     function startNav(dir) {
       stopNav();
       performNav(dir);
@@ -1220,37 +1327,56 @@
       }
     }
 
-    function performNav(dir) {
-      if (!controls) return;
-      const step = 0.055;
-      if (dir === 'left') {
-        controls.rotateLeft(step);
-      } else if (dir === 'right') {
-        controls.rotateLeft(-step);
-      } else if (dir === 'up') {
-        controls.rotateUp(step);
-      } else if (dir === 'down') {
-        controls.rotateUp(-step);
-      }
-      controls.update();
-    }
-
     function zoomIn() {
-      if (!controls) return;
-      controls.dollyIn(1.25);
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const curDist = offset.length();
+      const newDist = Math.max(controls.minDistance || 2.25, curDist * 0.82);
+      offset.setLength(newDist);
+      camera.position.copy(controls.target).add(offset);
       controls.update();
     }
 
     function zoomOut() {
-      if (!controls) return;
-      controls.dollyOut(1.25);
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const curDist = offset.length();
+      const newDist = Math.min(controls.maxDistance || 18.0, curDist * 1.22);
+      offset.setLength(newDist);
+      camera.position.copy(controls.target).add(offset);
       controls.update();
+    }
+
+    function startZoom(dir) {
+      stopZoom();
+      if (dir === 'in') zoomIn();
+      else zoomOut();
+      zoomInterval = setInterval(() => {
+        if (dir === 'in') zoomIn();
+        else zoomOut();
+      }, 90);
+    }
+
+    function stopZoom() {
+      if (zoomInterval) {
+        clearInterval(zoomInterval);
+        zoomInterval = null;
+      }
     }
 
     function resetCameraHome() {
       flyToLatLon3D(18.52, 73.85, 4.6); // Fly home to India / Pune
       fetchStationTelemetry(18.52, 73.85, "Pune, IN");
     }
+
+    window.zoomIn = zoomIn;
+    window.zoomOut = zoomOut;
+    window.startNav = startNav;
+    window.stopNav = stopNav;
+    window.startZoom = startZoom;
+    window.stopZoom = stopZoom;
+    window.performNav = performNav;
+    window.resetCameraHome = resetCameraHome;
 
     // --- INTERACTIVE 3D RAYCASTING INSPECTOR ---
     function setupGlobeClickListener() {
@@ -1837,20 +1963,41 @@
         }
       });
 
-      if (mode === 'precipitation') {
-        togglePrecipitationPanel();
-        if (radarShellMesh) radarShellMesh.visible = true;
-      } else if (mode === 'natural') {
+      const radarCb = document.getElementById('toggle-radar-layer');
+      const conesCb = document.getElementById('toggle-forecast-cones');
+
+      if (mode === 'natural') {
         if (radarShellMesh) radarShellMesh.visible = false;
         if (cloudsMesh) cloudsMesh.visible = true;
+        if (forecastConesGroup3D) forecastConesGroup3D.visible = false;
+        if (cyclonesGroup3D) cyclonesGroup3D.visible = false;
+        if (windParticlesMesh) windParticlesMesh.visible = false;
+        if (radarCb) radarCb.checked = false;
+        if (conesCb) conesCb.checked = false;
       } else if (mode === 'radar') {
         if (radarShellMesh) radarShellMesh.visible = true;
+        if (cloudsMesh) cloudsMesh.visible = true;
+        if (forecastConesGroup3D) forecastConesGroup3D.visible = false;
+        if (radarCb) radarCb.checked = true;
+      } else if (mode === 'precipitation') {
+        const pPanel = document.getElementById('precipitation-panel');
+        if (pPanel && pPanel.classList.contains('translate-x-[110%]')) {
+          togglePrecipitationPanel();
+        }
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (radarCb) radarCb.checked = true;
       } else if (mode === 'infrared') {
         if (radarShellMesh) radarShellMesh.visible = true;
+        if (cloudsMesh) cloudsMesh.visible = true;
       } else if (mode === 'wind') {
         if (windParticlesMesh) windParticlesMesh.visible = true;
+        if (radarShellMesh) radarShellMesh.visible = false;
+        if (cloudsMesh) cloudsMesh.visible = true;
       } else if (mode === 'cyclones') {
         if (forecastConesGroup3D) forecastConesGroup3D.visible = true;
+        if (cyclonesGroup3D) cyclonesGroup3D.visible = true;
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (conesCb) conesCb.checked = true;
         if (activeCyclonesData.length) {
           selectAndFocusStorm(activeCyclonesData[0]);
         }

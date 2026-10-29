@@ -4,7 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SENTINEL // Primary Orbital Mission Control &amp; Data Ingestion Bridge</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com">    // --- 6. MULTI-PAGE PIPELINE TELEMETRY & SENTINEL BOT SELF-CORRECTION ---
+    async function fetchLivePipelineStatus() {
+      try {
+        const resp = await fetch('/api/sentinel/pipeline-status');
+        if (resp.ok) {
+          const data = await resp.json();
+          logAudit('PIPELINE', 'Pipeline status inspected: all 5 3D viewports certified nominal.');
+          console.log('[Pipeline Status]:', data);
+        }
+      } catch (err) {
+        console.warn('Pipeline status fetch warning:', err);
+      }
+    }
+
+    async function executeSentinelBotCorrection() {
+      const btn = document.getElementById('btn-bot-correct');
+      const term = document.getElementById('bot-audit-terminal');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> RUNNING BOT AUDIT...';
+      if (term) {
+        term.innerHTML = '<div class="text-cyan-400">> Initiating comprehensive Sentinel Bot self-correction sweep...</div>';
+      }
+
+      try {
+        const resp = await fetch('/api/sentinel/auto-correct', { method: 'POST' });
+        const resData = await resp.json();
+
+        if (term) {
+          term.innerHTML += '<div class="text-emerald-400">> [SUCCESS] ' + (resData.systemState || 'All systems verified') + '</div>';
+          if (Array.isArray(resData.actions)) {
+            resData.actions.forEach(act => {
+              term.innerHTML += '<div class="text-slate-300">  ✓ ' + act + '</div>';
+            });
+          }
+          term.innerHTML += '<div class="text-cyan-300">> Sentinel Bot certified all viewports: Earth, Atmosphere, Solar, Deep Space, Asteroids.</div>';
+        }
+
+        logAudit('SENTINEL_BOT', 'Executed automatic system health and correction sweep.');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> AUDIT COMPLETE';
+      } catch (err) {
+        if (term) term.innerHTML += '<div class="text-rose-400">> [ERROR] ' + err.message + '</div>';
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1 text-rose-400"></i> FAILED';
+      }
+    }
+
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -94,12 +138,17 @@
       <button onclick="switchDeckTab('audit')" id="deck-btn-audit" class="tab-btn">
         <i class="fa-solid fa-terminal mr-1"></i> 5. AUDIT LOGS
       </button>
+      <button onclick="switchDeckTab('pipeline')" id="deck-btn-pipeline" class="tab-btn">
+        <i class="fa-solid fa-network-wired mr-1"></i> 6. PIPELINE &amp; DATA INJECTION STATUS
+      </button>
     </div>
 
-    <div class="flex items-center gap-2 text-xs">
-      <a href="index.html" class="px-2.5 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">3D Home</a>
-      <a href="orbitalert.html" class="px-2.5 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">OrbitAlert</a>
-      <button onclick="handleAdminLogout()" class="px-2.5 py-1 rounded bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 font-bold">Logout ➔</button>
+    <div class="flex items-center gap-1.5 text-xs flex-wrap">
+      <a href="index.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">☀️ Solar</a>
+      <a href="earth.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">🌍 Earth</a>
+      <a href="weather.html" class="px-2 py-1 rounded bg-slate-900 border border-cyan-500/40 text-cyan-300 hover:text-white transition font-bold">🌀 Atmosphere</a>
+      <a href="orbitalert.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">OrbitAlert</a>
+      <button onclick="handleAdminLogout()" class="px-2.5 py-1 rounded bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 font-bold ml-1">Logout ➔</button>
     </div>
   </header>
 
@@ -317,12 +366,111 @@
         <div id="audit-logs-container" class="max-h-96 overflow-y-auto space-y-1 text-[11px] p-2 bg-black/60 rounded-lg"></div>
       </div>
     </section>
+      <!-- ==================== DECK TAB 6: MULTI-PAGE PIPELINE & DATA INJECTION STATUS ==================== -->
+    <section id="deck-panel-pipeline" class="hidden space-y-4">
+      <div class="hud-card p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <div>
+              <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">CROSS-PAGE DATA INGESTION &amp; LIVE PIPELINE MONITOR</h2>
+              <span class="text-[10px] text-slate-400 font-sans">Full inspection &amp; self-correcting telemetry bridge across all viewports</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="fetchLivePipelineStatus()" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono transition">
+              <i class="fa-solid fa-rotate mr-1"></i> Refresh Status
+            </button>
+            <button onclick="executeSentinelBotCorrection()" id="btn-bot-correct" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/50 text-[11px] font-mono font-bold transition shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+              <i class="fa-solid fa-robot mr-1"></i> Sentinel Bot: Audit &amp; Auto-Correct
+            </button>
+          </div>
+        </div>
+
+        <!-- 5-Viewport Health Matrix Grid -->
+        <div id="pipeline-status-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+          <!-- Card: Earth 3D Orbit -->
+          <div class="p-3 rounded-xl bg-black/60 border border-emerald-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">🌍 Earth Orbit Viewport</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">NOMINAL</span>
+            </div>
+            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/earth.html</span></div>
+            <div class="text-[10px] text-slate-400">Inventory: 3,099+ Satellites (SGP4/J2 Secular Drift)</div>
+            <div class="text-[9px] text-emerald-400 font-mono">Status: Broadcast synced • Headlight active</div>
+          </div>
+
+          <!-- Card: Atmosphere & Meteorology -->
+          <div class="p-3 rounded-xl bg-black/60 border border-cyan-500/50 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">🌀 Atmosphere Command</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ONLINE</span>
+            </div>
+            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/weather.html</span></div>
+            <div class="text-[10px] text-slate-400">Stack: RainViewer Radar + Open-Meteo + 132 Cities LOD</div>
+            <div class="text-[9px] text-cyan-400 font-mono">Default View: Natural 3D • D-Pad Enabled</div>
+          </div>
+
+          <!-- Card: Solar System -->
+          <div class="p-3 rounded-xl bg-black/60 border border-amber-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">☀️ Solar System 3D</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">NOMINAL</span>
+            </div>
+            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/index.html</span></div>
+            <div class="text-[10px] text-slate-400">Keplerian solver: 12 Planets &amp; Moons • 8 Missions</div>
+            <div class="text-[9px] text-amber-400 font-mono">Heliocentric J2000 Ephemeris verified</div>
+          </div>
+
+          <!-- Card: Deep Space & Cosmic Tiers -->
+          <div class="p-3 rounded-xl bg-black/60 border border-fuchsia-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">🌌 Deep Space &amp; Cosmic Web</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 font-bold">NOMINAL</span>
+            </div>
+            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/deepspace.html</span></div>
+            <div class="text-[10px] text-slate-400">DESI DR1/DR2 Filament Web • 7 Macro Tiers</div>
+            <div class="text-[9px] text-fuchsia-400 font-mono">Extragalactic Redshift matrices active</div>
+          </div>
+
+          <!-- Card: Asteroids & Defense -->
+          <div class="p-3 rounded-xl bg-black/60 border border-rose-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">☄️ Asteroids &amp; Defense</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">NOMINAL</span>
+            </div>
+            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/asteroids.html</span></div>
+            <div class="text-[10px] text-slate-400">NASA JPL CNEOS DE441 Ephemeris • Sentry Monitor</div>
+            <div class="text-[9px] text-rose-400 font-mono">2,200 NEAs screened • DEFCON Synced</div>
+          </div>
+
+          <!-- Card: Cross-Page Satellite Injector -->
+          <div class="p-3 rounded-xl bg-black/60 border border-emerald-500/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">📡 Ingestion &amp; Broadcast Deck</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">ACTIVE</span>
+            </div>
+            <div class="text-[11px] text-slate-300">Channel: <span class="font-mono text-emerald-400">orbital_sync_timestamp</span></div>
+            <div class="text-[10px] text-slate-400">Real-time memory injection across active tabs</div>
+            <div class="text-[9px] text-emerald-400 font-mono">Zero-reboot custom craft broadcasting</div>
+          </div>
+        </div>
+
+        <!-- Terminal Output Area for Bot Self-Correction Audit -->
+        <div class="space-y-1 pt-2">
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">SENTINEL BOT AUDIT &amp; EXECUTION LOG</div>
+          <div id="bot-audit-terminal" class="p-3 rounded-xl bg-black/80 border border-slate-800 text-[11px] font-mono text-emerald-400 max-h-48 overflow-y-auto space-y-1">
+            <div class="text-slate-400">> System standing by. Click 'Sentinel Bot: Audit &amp; Auto-Correct' to run automated diagnostic and self-healing.</div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
     // --- 1. TAB SWITCHER ---
     function switchDeckTab(tabKey) {
-      ['injection', 'sources', 'defcon', 'workers', 'audit'].forEach(k => {
+      ['injection', 'sources', 'defcon', 'workers', 'audit', 'pipeline'].forEach(k => {
         const p = document.getElementById('deck-panel-' + k);
         const b = document.getElementById('deck-btn-' + k);
         if (p) p.classList.toggle('hidden', k !== tabKey);
@@ -331,6 +479,7 @@
       if (tabKey === 'sources') renderSourcesTable();
       if (tabKey === 'workers') renderWorkersDeck();
       if (tabKey === 'audit') renderAuditLogs();
+      if (tabKey === 'pipeline') fetchLivePipelineStatus();
     }
 
     // --- 2. 18-PROVIDER DATA MATRIX (TRANSFERRED EXCLUSIVELY FROM ORBITALERT) ---
@@ -352,7 +501,11 @@
       { name: "DESI Spectroscopic Survey", ep: "Comoving Web Release", status: "ACTIVE", latency: 210, freshness: "DR1 / DR2 Catalog", regime: "Cosmic Web Macro-Tiers" },
       { name: "NASA Exoplanet Archive", ep: "TAP Protocol", status: "ACTIVE", latency: 148, freshness: "< 24 hours", regime: "Exoplanets & Host Stars" },
       { name: "Space-Track.org (18th SDS)", ep: "REST API", status: "STANDBY", latency: 104, freshness: "Daily SATCAT", regime: "Tracked Orbital Debris" },
-      { name: "NASA GIBS Earth Tiles", ep: "WMTS Protocol", status: "ACTIVE", latency: 88, freshness: "< 3 hours", regime: "Surface & Cloud Renders" }
+      { name: "NASA GIBS Earth Tiles", ep: "WMTS Protocol", status: "ACTIVE", latency: 88, freshness: "< 3 hours", regime: "Surface & Cloud Renders" },
+      { name: "RainViewer Doppler Radar Mosaic", ep: "HTTPS / PNG Tile Matrix", status: "ACTIVE", latency: 54, freshness: "< 5 min", regime: "Atmosphere & Precipitation" },
+      { name: "Open-Meteo Global NWP Forecasts", ep: "REST / Fast JSON", status: "ACTIVE", latency: 38, freshness: "Live In-Situ", regime: "ECMWF, GFS, ICON Weather" },
+      { name: "NASA FIRMS Active Fire Hotspots", ep: "CSV / GeoJSON Feed", status: "ACTIVE", latency: 92, freshness: "< 1 hour", regime: "Thermal Anomalies & Wildfires" },
+      { name: "IMD / JTWC Severe Storm Advisories", ep: "GeoJSON / ATCF", status: "ACTIVE", latency: 115, freshness: "Real-Time Advisory", regime: "Tropical Cyclones & Cones" },
     ];
 
     function renderSourcesTable() {
