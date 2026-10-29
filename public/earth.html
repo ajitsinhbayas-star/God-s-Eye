@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- Core Libraries -->
@@ -615,31 +615,55 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
   <!-- 3D Three.js WebGL Viewport -->
   <div id="globe-container" class="cursor-grab active:cursor-grabbing">
+    <!-- Deep Space Sci-Fi HUD Callouts Layer -->
+    <div id="deepspace-hud-labels" class="fixed inset-0 pointer-events-none z-15 overflow-hidden hidden font-mono">
+      <div id="callout-filament" class="absolute hidden items-center gap-2 text-[10px] text-cyan-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+        <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-cyan-500/50 shadow-lg tracking-wider">COSMIC FILAMENT</span>
+        <div class="w-16 h-[1px] bg-cyan-400/60"></div>
+      </div>
+      <div id="callout-cluster" class="absolute hidden items-center gap-2 text-[10px] text-amber-300">
+        <div class="w-20 h-[1px] bg-amber-400/60"></div>
+        <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-amber-500/50 shadow-lg tracking-wider">GALAXY CLUSTER</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+      </div>
+      <div id="callout-deepfield" class="absolute hidden items-center gap-2 text-[10px] text-fuchsia-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-ping"></span>
+        <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-fuchsia-500/50 shadow-lg tracking-wider">DEEP FIELD</span>
+        <div class="w-24 h-[1px] bg-fuchsia-400/60"></div>
+      </div>
+    </div>
+
     <!-- Loading & WebGL Fallback State -->
     <div id="webgl-status-overlay" class="fixed inset-0 z-20 flex items-center justify-center bg-[#000208]/90 backdrop-blur-md pointer-events-auto transition-opacity duration-500">
       <div class="max-w-md w-full mx-4 p-6 rounded-2xl hud-glass border border-cyan-500/40 text-center space-y-3 font-mono">
         <div id="webgl-spinner" class="w-8 h-8 mx-auto rounded-full border-2 border-cyan-400 border-t-transparent animate-spin"></div>
-      <!-- Deep Space Sci-Fi HUD Callouts Layer -->
-      <div id="deepspace-hud-labels" class="fixed inset-0 pointer-events-none z-15 overflow-hidden hidden font-mono">
-        <div id="callout-filament" class="absolute hidden items-center gap-2 text-[10px] text-cyan-300">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-          <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-cyan-500/50 shadow-lg tracking-wider">COSMIC FILAMENT</span>
-          <div class="w-16 h-[1px] bg-cyan-400/60"></div>
-        </div>
-        <div id="callout-cluster" class="absolute hidden items-center gap-2 text-[10px] text-amber-300">
-          <div class="w-20 h-[1px] bg-amber-400/60"></div>
-          <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-amber-500/50 shadow-lg tracking-wider">GALAXY CLUSTER</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
-        </div>
-        <div id="callout-deepfield" class="absolute hidden items-center gap-2 text-[10px] text-fuchsia-300">
-          <span class="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-ping"></span>
-          <span class="px-2 py-0.5 rounded bg-slate-950/90 border border-fuchsia-500/50 shadow-lg tracking-wider">DEEP FIELD</span>
-          <div class="w-24 h-[1px] bg-fuchsia-400/60"></div>
-        </div>
-      </div>
         <h2 id="webgl-status-title" class="text-sm font-bold uppercase tracking-wider text-white">Initializing 3D Orbital Environment</h2>
         <p id="webgl-status-desc" class="text-xs text-slate-400 font-sans">Loading Earth ephemeris, SGP4/J2 satellite propagation, and J2000 planetary vectors…</p>
+        <button id="webgl-dismiss-btn" onclick="const o=document.getElementById('webgl-status-overlay');if(o){o.style.display='none';o.classList.add('hidden');}" class="mt-2 inline-block px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-500/40 text-xs text-cyan-300 font-mono tracking-wider cursor-pointer transition">
+          ENTER 3D COMMAND &rarr;
+        </button>
         <button id="webgl-retry-btn" onclick="window.location.reload()" class="hidden mx-auto px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
+          Retry Initialization
+        </button>
+      </div>
+    </div>
+    <script>
+      (function() {
+        function hardDismissStatusOverlay() {
+          const ov = document.getElementById('webgl-status-overlay');
+          if (ov) {
+            ov.style.setProperty('display', 'none', 'important');
+            ov.style.setProperty('opacity', '0', 'important');
+            ov.style.setProperty('pointer-events', 'none', 'important');
+            ov.classList.add('hidden');
+          }
+        }
+        window.addEventListener('load', () => setTimeout(hardDismissStatusOverlay, 500));
+        setTimeout(hardDismissStatusOverlay, 2000);
+        window.forceDismissStatusOverlay = hardDismissStatusOverlay;
+      })();
+    </script>
           Retry Initialization
         </button>
       </div>
@@ -5711,9 +5735,9 @@ function animate() {
                 massiveSatKeys.push(craft.id);
                 if (typeof totalMassiveCount !== 'undefined') totalMassiveCount = massiveSatKeys.length;
                 const countBadge = document.getElementById('sat-count-badge');
-                if (countBadge) countBadge.innerText = ${massiveSatKeys.length.toLocaleString()} Loaded;
+                if (countBadge) countBadge.innerText = `${massiveSatKeys.length.toLocaleString()} Loaded`;
                 const badgeArt = document.getElementById('badge-count-artificial');
-                if (badgeArt) badgeArt.innerText = ${massiveSatKeys.length.toLocaleString()} Active;
+                if (badgeArt) badgeArt.innerText = `${massiveSatKeys.length.toLocaleString()} Active`;
                 if (typeof renderCatalogs === 'function') renderCatalogs();
                 if (typeof instancedSatMesh !== 'undefined' && instancedSatMesh) {
                   instancedSatMesh.count = massiveSatKeys.length;
