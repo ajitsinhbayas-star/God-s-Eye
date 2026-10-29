@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
@@ -147,12 +147,86 @@
       </button>
     </div>
 
-    <div class="flex items-center gap-1.5 text-xs flex-wrap">
-      <a href="index.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">☀️ Solar</a>
-      <a href="earth.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">🌍 Earth</a>
-      <a href="weather.html" class="px-2 py-1 rounded bg-slate-900 border border-cyan-500/40 text-cyan-300 hover:text-white transition font-bold">🌀 Atmosphere</a>
-      <a href="orbitalert.html" class="px-2 py-1 rounded bg-slate-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition">OrbitAlert</a>
-      <button onclick="handleAdminLogout()" class="px-2.5 py-1 rounded bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 font-bold ml-1">Logout ➔</button>
+    <div class="relative flex items-center gap-2 text-xs">
+      <!-- Single Unified Viewports Launcher Button -->
+      <button onclick="togglePublicViewportsMenu(event)" id="btn-viewports-launcher" class="px-3 py-1.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono font-bold transition flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.35)] cursor-pointer">
+        <i class="fa-solid fa-satellite-dish text-cyan-400"></i>
+        <span>PUBLIC VIEWPORTS</span>
+        <span class="text-[9px] text-slate-400">▾</span>
+      </button>
+
+      <!-- Viewports Dropdown Tab / List -->
+      <div id="viewports-dropdown-menu" class="hidden absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[#030917]/95 backdrop-blur-2xl border border-cyan-500/50 p-2.5 shadow-2xl z-[100] space-y-1.5 font-mono text-xs">
+        <div class="text-[10px] text-cyan-400 uppercase tracking-wider font-bold px-2 py-1 border-b border-slate-800 flex justify-between items-center">
+          <span>Active 3D Viewports</span>
+          <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded">6 SITES</span>
+        </div>
+        <a href="index.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-amber-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">☀️</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-amber-300">Solar System 3D</div>
+              <div class="text-[9px] text-slate-400">Keplerian orbits & helio physics</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-amber-400 font-bold">OPEN ↗</span>
+        </a>
+        <a href="earth.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-cyan-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">🌍</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-cyan-300">Earth Orbit & Satellites</div>
+              <div class="text-[9px] text-slate-400">SGP4/J2 propagation & ISS tracking</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-cyan-400 font-bold">OPEN ↗</span>
+        </a>
+        <a href="weather.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-cyan-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">🌀</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-cyan-300">Atmosphere Radar</div>
+              <div class="text-[9px] text-slate-400">Doppler precipitation & cyclones</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-cyan-400 font-bold">OPEN ↗</span>
+        </a>
+        <a href="asteroids.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-rose-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">☄️</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-rose-300">Asteroids & Planetary Defense</div>
+              <div class="text-[9px] text-slate-400">Near-Earth objects & Apophis</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-rose-400 font-bold">OPEN ↗</span>
+        </a>
+        <a href="deepspace.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-fuchsia-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">🌌</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-fuchsia-300">Deep Space Probes</div>
+              <div class="text-[9px] text-slate-400">JWST, Voyager 1/2 & cosmic tiers</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-fuchsia-400 font-bold">OPEN ↗</span>
+        </a>
+        <a href="orbitalert.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-emerald-400/50 text-left text-white flex items-center justify-between no-underline transition group">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">🔔</span>
+            <div>
+              <div class="font-bold text-slate-100 group-hover:text-emerald-300">OrbitAlert Radar</div>
+              <div class="text-[9px] text-slate-400">Observer pass predictions & DSN</div>
+            </div>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-bold">OPEN ↗</span>
+        </a>
+      </div>
+
+      <button onclick="handleAdminLogout()" class="px-2.5 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 font-bold transition ml-1 flex items-center gap-1 cursor-pointer">
+        <span>Logout</span>
+        <span>➔</span>
+      </button>
     </div>
   </header>
 
@@ -698,6 +772,19 @@
       renderAuditLogs();
     }
 
+    function togglePublicViewportsMenu(e) {
+      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+      const m = document.getElementById('viewports-dropdown-menu');
+      if (m) m.classList.toggle('hidden');
+    }
+    document.addEventListener('click', function(e) {
+      const m = document.getElementById('viewports-dropdown-menu');
+      const btn = document.getElementById('btn-viewports-launcher');
+      if (m && !m.classList.contains('hidden') && !m.contains(e.target) && (!btn || !btn.contains(e.target))) {
+        m.classList.add('hidden');
+      }
+    });
+
     function handleAdminLogout() {
       localStorage.removeItem('sentinel_admin_logged_in');
       window.location.href = 'sentinel-login.html';
@@ -709,5 +796,7 @@
     renderWorkersDeck();
     renderAuditLogs();
   </script>
+  <script src="js/universal_location_alerts.js"></script>
+  <script src="js/jarvis.js"></script>
 </body>
 </html>

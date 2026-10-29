@@ -614,6 +614,15 @@
       document.getElementById('intel-card').classList.add('is-hidden');
     }
 
+    function handleAsteroidHash() {
+      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+      if (hash && asteroidMeshes[hash]) {
+        selectAsteroid(hash);
+      }
+    }
+    window.addEventListener('hashchange', handleAsteroidHash);
+    setTimeout(handleAsteroidHash, 300);
+
     function toggleExplorer() {
       const panel = document.getElementById('catalog-panel');
       const expandBtn = document.getElementById('btn-expand-catalog');

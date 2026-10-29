@@ -853,6 +853,23 @@
       setupSearchHandler();
       setupGlobeClickListener();
       setLayerMode('natural');
+
+    function handleWeatherHash() {
+      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+      if (!hash) return;
+      if (['radar', 'precipitation', 'natural', 'infrared', 'wind', 'cyclones'].includes(hash)) {
+        if (typeof setLayerMode === 'function') setLayerMode(hash);
+      } else if (typeof GEOGRAPHIC_LANDMARKS !== 'undefined') {
+        const matched = GEOGRAPHIC_LANDMARKS.find(l => l.name.toLowerCase() === hash || l.name.toLowerCase().includes(hash));
+        if (matched && typeof flyToLatLon3D === 'function') {
+          flyToLatLon3D(matched.lat, matched.lon, 2.5);
+          if (typeof analyzePrecipitationForPoint === 'function') analyzePrecipitationForPoint(matched.lat, matched.lon, matched.name);
+        }
+      }
+    }
+    window.addEventListener('hashchange', handleWeatherHash);
+    setTimeout(handleWeatherHash, 300);
+  
     });
 
     // --- SIMULATION CLOCK ---
@@ -2248,5 +2265,7 @@
       <li>NASA FIRMS VIIRS and MODIS thermal fire anomaly detection.</li>
     </ul>
   </main>
+  <script src="js/universal_location_alerts.js"></script>
+  <script src="js/jarvis.js"></script>
 </body>
 </html>
