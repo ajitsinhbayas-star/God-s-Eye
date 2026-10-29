@@ -4544,8 +4544,10 @@ function animate() {
       const earthOrbit = computeKeplerianOrbit(CELESTIAL_BODIES.earth, astro.d);
       earthSystem.position.set(earthOrbit.xThree, earthOrbit.yThree, earthOrbit.zThree);
 
-      sunMesh.getWorldPosition(_vSun);
-      earthSystem.getWorldPosition(_vEarth);
+            if (typeof sunMesh !== 'undefined' && sunMesh && typeof earthSystem !== 'undefined' && earthSystem) {
+        sunMesh.getWorldPosition(_vSun);
+        earthSystem.getWorldPosition(_vEarth);
+      }
       if (_vSun.distanceToSquared(_vEarth) > 0.0001) {
         _vSunDir.subVectors(_vSun, _vEarth).normalize();
       } else {
@@ -4838,12 +4840,18 @@ function animate() {
     console.error("[Init Warning]:", e);
   }
   setTimeout(() => { if (typeof switchEarthExplorerTab === 'function') switchEarthExplorerTab('satellites'); }, 200);
-  // Auto-dismiss WebGL status overlay on successful canvas initialization
-      const __autoDismissStatusOverlay = document.getElementById('webgl-status-overlay');
-      if (__autoDismissStatusOverlay) {
-        __autoDismissStatusOverlay.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => __autoDismissStatusOverlay.classList.add('hidden'), 400);
-      }
+  // Unconditional fail-safe dismissal of the loading screen
+  (function dismissLoaderImmediately() {
+    const el = document.getElementById('webgl-status-overlay');
+    if (el) {
+      el.style.opacity = '0';
+      el.style.pointerEvents = 'none';
+      setTimeout(() => {
+        el.style.display = 'none';
+        el.classList.add('hidden');
+      }, 200);
+    }
+  })();
   // Dismiss overlay once canvas loop initializes
       const __dismissOverlayOnReady = document.getElementById('webgl-status-overlay');
       if (__dismissOverlayOnReady) {
@@ -5126,9 +5134,9 @@ function animate() {
     }, 7000);
 
    // 5. Fetch & Synchronize Catalog + Alerts from /api/space/bootstrap
-    async function showLocalFileProtocolBanner() { console.log('[SpaceDB] Standalone file:// mode verified.'); }
+    function showLocalFileProtocolBanner() { console.log('[SpaceDB] Standalone file:// mode verified.'); }
 
-    function pullSpaceDatabase() {
+    async async function pullSpaceDatabase() {
       // Guard against file:// protocol execution
       if (window.location.protocol === 'file:') {
         console.warn('[SpaceDB] Running from file:// protocol. Express API endpoints (/api/*) require http://localhost:3000');
@@ -6539,6 +6547,7 @@ function animate() {
   </script>
 </body>
 </html>
+
 
 
 
