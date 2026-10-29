@@ -358,7 +358,7 @@
       // Append Bot Bubble (Consulting status)
       const botBubble = document.createElement('div');
       botBubble.style.cssText = 'align-self:flex-start; max-width:94%; background:rgba(0, 240, 255, 0.08); border-left:3px solid #00f0ff; padding:9px 12px; border-radius:0 10px 10px 0; color:#00f0ff; font-style:italic; line-height:1.6;';
-      botBubble.innerText = 'Calculating orbital vectors, Sir...';
+      botBubble.innerText = 'Calculating orbital telemetry & intelligence vectors, Sir...';
       stream.appendChild(botBubble);
       stream.scrollTop = stream.scrollHeight;
 
@@ -372,110 +372,109 @@
       let answer = '';
       let actions = [];
 
-      // 1. ISS & Space Stations
+      // Attempt backend AI & live telemetry query first
+      let backendReply = null;
+      try {
+        const aiResp = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: query }),
+          signal: AbortSignal.timeout(6000)
+        });
+        if (aiResp.ok) {
+          const aiJson = await aiResp.json();
+          if (aiJson && aiJson.reply) {
+            backendReply = aiJson.reply;
+          }
+        }
+      } catch (_) {}
+
+      // Contextual Action Pills & Telemetry Mapping
       if (q.includes('ISS') || q.includes('SPACE STATION') || q.includes('ZARYA') || q.includes('TIANGONG')) {
         session.lastTrackedObject = 'ISS';
-        answer = `I have locked onto the <b>International Space Station (ZARYA)</b>.<br>
-        • Altitude: ~418 km (LEO)<br>
-        • Orbital Speed: 27,600 km/h (7.66 km/s)<br>
-        • Inclination: 51.64° | Period: ~92.9 minutes<br>
-        Centering camera and plotting its live ground-track swath now, Sir.`;
         actions.push({ label: '🛰️ Lock ISS in Earth Orbit', type: 'FOCUS_ISS' });
         actions.push({ label: '🔔 Check Local ISS Passes', type: 'NAV_ALERT', hash: 'passes' });
-      }
-
-      // 2. Atmosphere, Weather, Doppler Radar & Zoom Earth
-      else if (q.includes('ATMOSPHERE') || q.includes('WEATHER') || q.includes('RADAR') || q.includes('PRECIPITATION') || q.includes('CYCLONE') || q.includes('RAIN') || q.includes('WIND') || q.includes('HURRICANE')) {
-        answer = `Accessing our <b>Atmospheric & Meteorological Viewport</b>.<br>
-        Features multi-source RainViewer Doppler radar mosaics, zoom-adaptive precipitation analysis, NASA FIRMS active fire hotspots, and real-time tropical cyclone forecast cones.`;
+      } else if (q.includes('ATMOSPHERE') || q.includes('WEATHER') || q.includes('RADAR') || q.includes('PRECIPITATION') || q.includes('CYCLONE') || q.includes('RAIN') || q.includes('WIND') || q.includes('HURRICANE')) {
         actions.push({ label: '🌀 Open Atmosphere Radar', type: 'NAV_WEATHER' });
         actions.push({ label: '🌧️ Precipitation Analysis', type: 'NAV_WEATHER', hash: 'precipitation' });
-      }
-
-      // 3. Asteroids, Near-Earth Objects & CNEOS
-      else if (q.includes('ASTEROID') || q.includes('CNEOS') || q.includes('BENNU') || q.includes('APOPHIS') || q.includes('DEFENSE') || q.includes('METEOR') || q.includes('COLLISION')) {
+      } else if (q.includes('ASTEROID') || q.includes('CNEOS') || q.includes('BENNU') || q.includes('APOPHIS') || q.includes('DEFENSE') || q.includes('METEOR') || q.includes('COLLISION')) {
         session.lastTrackedObject = 'Asteroids';
-        answer = `Monitoring NASA CNEOS Near-Earth Objects (NEOs).<br>
-        • Asteroid <b>99942 Apophis</b> (~340m diameter) will have a safe close flyby within geostationary distance on April 13, 2029.<br>
-        • Asteroid <b>101955 Bennu</b> is monitored under NASA planetary defense protocols.<br>
-        No hazardous impact trajectories detected within standard observation horizons, Sir.`;
         actions.push({ label: '☄️ Launch 3D Asteroids', type: 'NAV_ASTEROIDS' });
         actions.push({ label: '🔭 View CNEOS Pass Table', type: 'NAV_ALERT', hash: 'nea' });
-      }
-
-      // 4. Solar System, Planets & Keplerian Orbits
-      else if (q.includes('SOLAR SYSTEM') || q.includes('SUN') || q.includes('MARS') || q.includes('JUPITER') || q.includes('SATURN') || q.includes('VENUS') || q.includes('MERCURY') || q.includes('MOON')) {
+      } else if (q.includes('SOLAR SYSTEM') || q.includes('SUN') || q.includes('MARS') || q.includes('JUPITER') || q.includes('SATURN') || q.includes('VENUS') || q.includes('MERCURY') || q.includes('MOON')) {
         session.lastTrackedObject = 'Solar System';
-        answer = `The <b>Solar System</b> model is running on full Keplerian kinematics.<br>
-        Simulating all 8 planets, major dwarf planets, and natural satellites with correct heliocentric distances, axial tilts, and diurnal rotational rates.`;
         actions.push({ label: '☀️ Explore Solar System 3D', type: 'NAV_SOLAR' });
         actions.push({ label: '🪐 Planets Visible Tonight', type: 'NAV_ALERT', hash: 'planets' });
-      }
-
-      // 5. Deep Space, JWST, Voyager & Observatories
-      else if (q.includes('DEEP SPACE') || q.includes('VOYAGER') || q.includes('JWST') || q.includes('JAMES WEBB') || q.includes('GALAXY') || q.includes('NEBULA') || q.includes('CIGAR') || q.includes('M82')) {
+      } else if (q.includes('DEEP SPACE') || q.includes('VOYAGER') || q.includes('JWST') || q.includes('JAMES WEBB') || q.includes('GALAXY') || q.includes('NEBULA') || q.includes('CIGAR') || q.includes('M82')) {
         session.lastTrackedObject = 'Deep Space';
-        answer = `Tracking humanity's deepest emissaries in interstellar space:<br>
-        • <b>Voyager 1</b>: Beyond the heliopause at ~163 AU from Earth.<br>
-        • <b>James Webb Space Telescope (JWST)</b>: Stationed at Sun-Earth L2 Lagrange point (~1.5 million km).<br>
-        • Deep field galaxy clusters and cosmic tiers loaded in full 3D coordinates.`;
         actions.push({ label: '🌌 Launch Deep Space View', type: 'NAV_DEEPSPACE' });
         actions.push({ label: '📡 NASA DSN Live Antennas', type: 'NAV_ALERT', hash: 'dsn' });
-      }
-
-      // 6. ISRO Fleet & Space Missions
-      else if (q.includes('ISRO') || q.includes('CHANDRAYAAN') || q.includes('ADITYA') || q.includes('CARTOSAT') || q.includes('GAGANYAAN') || q.includes('MOM') || q.includes('MANGALYAAN')) {
+      } else if (q.includes('ISRO') || q.includes('CHANDRAYAAN') || q.includes('ADITYA') || q.includes('CARTOSAT') || q.includes('GAGANYAAN') || q.includes('MOM') || q.includes('MANGALYAAN')) {
         session.lastTrackedObject = 'ISRO Fleet';
-        answer = `Tracking the <b>ISRO Space Exploration Fleet</b>:<br>
-        • <b>Chandrayaan-3</b>: Historic south-polar lunar landing mission.<br>
-        • <b>Aditya-L1</b>: India's premier solar observatory operating at Sun-Earth L1.<br>
-        • <b>Cartosat-3 & EOS-04</b>: High-resolution sub-meter and synthetic aperture radar imaging in sun-synchronous orbits.<br>
-        • <b>Gaganyaan</b>: Orbital crewed test configuration underway.`;
         actions.push({ label: '🌍 View ISRO Assets in LEO', type: 'NAV_EARTH' });
         actions.push({ label: '☀️ View Aditya-L1 at L1', type: 'NAV_SOLAR', hash: 'aditya_l1' });
-      }
-
-      // 7. Passes, Observer Stations & Location
-      else if (q.includes('PUNE') || q.includes('PASS') || q.includes('STATION') || q.includes('LOCATION') || q.includes('OVERHEAD') || q.includes('TONIGHT')) {
-        answer = `Active observation station: <b>${session.activeLocation}</b>.<br>
-        Pass predictions compute azimuth (AOS/LOS), zenith peak elevation (TCA), and solar twilight illumination criteria. Satellites are brightest when sunlit against a darkened sky.`;
+      } else if (q.includes('PUNE') || q.includes('PASS') || q.includes('STATION') || q.includes('LOCATION') || q.includes('OVERHEAD') || q.includes('TONIGHT')) {
         actions.push({ label: '📍 Change Observation Station', type: 'OPEN_LOCATION_MODAL' });
         actions.push({ label: '🔔 Topocentric Sky Radar', type: 'NAV_ALERT', hash: 'passes' });
-      }
-
-      // 8. Sentinel Mission Control & Telemetry Daemon Bot
-      else if (q.includes('ADMIN') || q.includes('SENTINEL') || q.includes('DAEMON') || q.includes('CONTROL') || q.includes('TELEMETRY') || q.includes('PIPELINE') || q.includes('LOGIN')) {
-        answer = `Accessing <b>Sentinel Mission Control & Data Ingestion Bridge</b>.<br>
-        Supervises 7 background ingestion daemons (CelesTrak, ISS Poller, JPL CAD, NOAA Weather, RainViewer, Space News, Keep-Alive), pipeline self-correction, and audit logs.`;
+      } else if (q.includes('ADMIN') || q.includes('SENTINEL') || q.includes('DAEMON') || q.includes('CONTROL') || q.includes('TELEMETRY') || q.includes('PIPELINE') || q.includes('LOGIN')) {
         actions.push({ label: '🛡️ Open Sentinel Mission Control', type: 'NAV_SENTINEL' });
-      }
-
-      // 9. Physics, Gravity & Orbital Mechanics
-      else if (q.includes('WHY') && (q.includes('FALL') || q.includes('FLOAT') || q.includes('GRAVITY') || q.includes('ORBIT'))) {
-        answer = `Satellites remain in orbit due to <b>centrifugal balance in free fall</b>.<br>
-        At ~7.8 km/s in Low Earth Orbit, as Earth's gravity pulls the satellite downward, the spacecraft moves forward fast enough that the Earth curves away beneath it at the exact same rate. It is constantly falling around the planet, Sir.`;
-        actions.push({ label: '🌍 See 3D Orbital Swath', type: 'NAV_EARTH' });
-      }
-
-      // 10. Greetings & Identity
-      else if (q === 'HI' || q === 'HELLO' || q === 'HEY' || q.startsWith('HELLO JARVIS') || q.includes('WHO ARE YOU') || q.includes('HELP')) {
-        answer = `Greetings, Sir. I am <b>J.A.R.V.I.S.</b>, chief orbital tactical AI for the <b>God’s Eye Platform</b>, engineered by Mr. Singh.<br>
-        I have full command over 3D Solar System kinematics, Earth LEO tracking, Doppler weather, Near-Earth asteroids, deep space missions, and pass predictions. What is your destination?`;
-        actions.push({ label: '☀️ Solar', type: 'NAV_SOLAR' });
-        actions.push({ label: '🌍 Earth', type: 'NAV_EARTH' });
-        actions.push({ label: '🌀 Atmosphere', type: 'NAV_WEATHER' });
-        actions.push({ label: '☄️ Asteroids', type: 'NAV_ASTEROIDS' });
-        actions.push({ label: '🌌 Deep Space', type: 'NAV_DEEPSPACE' });
-      }
-
-      // Fallback Answer with Quick Teleports
-      else {
-        answer = `Sensors operational, Sir. Orbital telemetry is nominal. I can transport you to any astronomical viewport, track active spacecraft, or calculate local pass look-angles.`;
+      } else {
         actions.push({ label: '☀️ Solar System', type: 'NAV_SOLAR' });
         actions.push({ label: '🌍 Earth Orbit', type: 'NAV_EARTH' });
         actions.push({ label: '🌀 Atmosphere', type: 'NAV_WEATHER' });
         actions.push({ label: '☄️ Asteroids', type: 'NAV_ASTEROIDS' });
       }
+
+      if (backendReply) {
+        answer = backendReply;
+      } else {
+        // High-fidelity fallback when offline
+        if (q.includes('ISS') || q.includes('SPACE STATION')) {
+          answer = `I have locked onto the <b>International Space Station (ZARYA)</b>.<br>
+          • Altitude: ~418 km (LEO)<br>
+          • Orbital Speed: 27,600 km/h (7.66 km/s)<br>
+          • Inclination: 51.64° | Period: ~92.9 minutes<br>
+          Centering camera and plotting its live ground-track swath now, Sir.`;
+        } else if (q.includes('ATMOSPHERE') || q.includes('WEATHER') || q.includes('RADAR')) {
+          answer = `Accessing our <b>Atmospheric & Meteorological Viewport</b>.<br>
+          Features multi-source RainViewer Doppler radar mosaics, zoom-adaptive precipitation analysis, NASA FIRMS active fire hotspots, and real-time tropical cyclone forecast cones.`;
+        } else if (q.includes('ASTEROID') || q.includes('CNEOS') || q.includes('BENNU') || q.includes('APOPHIS')) {
+          answer = `Monitoring NASA CNEOS Near-Earth Objects (NEOs).<br>
+          • Asteroid <b>99942 Apophis</b> (~340m diameter) will have a safe close flyby within geostationary distance on April 13, 2029.<br>
+          • Asteroid <b>101955 Bennu</b> is monitored under NASA planetary defense protocols.<br>
+          No hazardous impact trajectories detected within standard observation horizons, Sir.`;
+        } else if (q.includes('ISRO') || q.includes('CHANDRAYAAN') || q.includes('ADITYA')) {
+          answer = `Tracking the <b>ISRO Space Exploration Fleet</b>:<br>
+          • <b>Chandrayaan-3</b>: Historic south-polar lunar landing mission.<br>
+          • <b>Aditya-L1</b>: India's premier solar observatory operating at Sun-Earth L1.<br>
+          • <b>Cartosat-3 & EOS-04</b>: High-resolution optical and synthetic aperture radar imaging in sun-synchronous orbits.<br>
+          • <b>Gaganyaan</b>: Orbital crewed test configuration underway.`;
+        } else {
+          answer = `Greetings, Sir. Orbital telemetry is nominal. SGP4 propagation and atmospheric Doppler feeds are synchronizing continuously across all orbital viewports.`;
+        }
+      }
+
+      // Render Bot Bubble with Interactive Action Buttons
+      botBubble.style.fontStyle = 'normal';
+      botBubble.style.color = '#cbd5e1';
+      botBubble.innerHTML = `<div>${answer}</div>`;
+
+      if (actions.length > 0) {
+        const actCont = document.createElement('div');
+        actCont.style.cssText = 'margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;';
+        actions.forEach(act => {
+          const btn = document.createElement('button');
+          btn.className = 'jarvis-action-pill';
+          btn.innerHTML = act.label;
+          btn.onclick = () => dispatchAction(act.type, act.hash);
+          actCont.appendChild(btn);
+        });
+        botBubble.appendChild(actCont);
+      }
+
+      speak(answer);
+      stream.scrollTop = stream.scrollHeight;
+    }
 
       // Render Bot Bubble with Interactive Action Buttons
       botBubble.style.fontStyle = 'normal';

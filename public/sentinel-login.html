@@ -123,14 +123,11 @@
         } catch (_) {}
       }
 
-      // 2. Client-side authentication fallback (for standalone file:// protocol)
-      if (u === 'Ajitsinh96' && p === 'Ajitsinh@#9699') {
-        submitBtn.innerText = 'Access Granted ✓ Redirecting...';
-        localStorage.setItem('sentinel_admin_logged_in', 'true');
-        sessionStorage.setItem('sentinel_admin_user', u);
-        setTimeout(() => { window.location.href = 'sentinel.html'; }, 400);
+      // 2. Offline fallback (for file:// protocol without backend server)
+      if (window.location.protocol === 'file:') {
+        showError('Sentinel Console requires live God\'s Eye server connection.');
       } else {
-        showError('Access Denied: Invalid username or password.');
+        showError('Access Denied: Invalid administrator credentials.');
       }
 
       function showError(msg) {

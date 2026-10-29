@@ -43,12 +43,42 @@ const MAX_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
 const SESSION_LIFETIME_MS = 8 * 60 * 60 * 1000;
 
+let ephemeralCredentials = null;
+
 export function getCredentials() {
-  return {
-    username: process.env.SENTINEL_ADMIN_USERNAME || 'Ajitsinh96',
-    password: process.env.SENTINEL_ADMIN_PASSWORD || 'Ajitsinh@#9699',
-    secret: process.env.SENTINEL_SESSION_SECRET || 'sentinel_master_crypto_secret_32bytes'
-  };
+  const envUser = process.env.SENTINEL_ADMIN_USERNAME;
+  const envPass = process.env.SENTINEL_ADMIN_PASSWORD;
+  const envSecret = process.env.SENTINEL_SESSION_SECRET;
+
+  if (envUser && envPass) {
+    return {
+      username: envUser,
+      password: envPass,
+      secret: envSecret || 'sentinel_master_crypto_secret_32bytes',
+      isEphemeral: false
+    };
+  }
+
+  // Never use hardcoded credentials in production or version control.
+  // Generate high-entropy ephemeral credentials on boot if environment variables are not provided.
+  if (!ephemeralCredentials) {
+    const generatedPass = crypto.randomBytes(16).toString('hex');
+    ephemeralCredentials = {
+      username: envUser || 'sentinel-admin',
+      password: generatedPass,
+      secret: envSecret || crypto.randomBytes(32).toString('hex'),
+      isEphemeral: true
+    };
+    console.warn('\n============================================================');
+    console.warn('[SECURITY] SENTINEL_ADMIN_PASSWORD not set in environment.');
+    console.warn('[SECURITY] Ephemeral credentials generated for this server process:');
+    console.warn(`[SECURITY]   Username: ${ephemeralCredentials.username}`);
+    console.warn(`[SECURITY]   Password: ${ephemeralCredentials.password}`);
+    console.warn('[SECURITY] Set SENTINEL_ADMIN_USERNAME and SENTINEL_ADMIN_PASSWORD in .env');
+    console.warn('============================================================\n');
+  }
+
+  return ephemeralCredentials;
 }
 
 export function isAuthConfigured() {
@@ -58,10 +88,10 @@ export function isAuthConfigured() {
 
 export function timingSafeEqual(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') return false;
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
-  return crypto.timingSafeEqual(bufA, bufB);
+  // Constant-time comparison using fixed 256-bit digests prevents length-leak timing attacks
+  const hashA = crypto.createHash('sha256').update(a).digest();
+  const hashB = crypto.createHash('sha256').update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
 }
 
 export function getClientIp(req) {
@@ -135,8 +165,11 @@ export function destroySession(id) {
 export function requireAdminAuth(req, res, next) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
+  const fullPath = req.originalUrl || req.baseUrl + req.path || req.path || '';
+  const isApi = fullPath.startsWith('/api/');
+
   if (!isAuthConfigured()) {
-    if (req.accepts && req.accepts('html') && !req.path.startsWith('/api/')) {
+    if (!isApi && req.accepts && req.accepts('html')) {
       return res.status(503).send('<h2 style="font-family:monospace;color:#f87171;text-align:center;padding:40px;">503 // SENTINEL ADMIN SETUP REQUIRED</h2>');
     }
     return res.status(503).json({ error: 'Sentinel admin authentication setup required.' });
@@ -146,7 +179,7 @@ export function requireAdminAuth(req, res, next) {
   const session = getSession(cookies.sentinel_session);
 
   if (!session) {
-    if (req.accepts && req.accepts('html') && !req.path.startsWith('/api/')) {
+    if (!isApi && req.accepts && req.accepts('html')) {
       return res.redirect('/sentinel-login');
     }
     return res.status(401).json({ error: 'Unauthorized: Administrator session required.' });

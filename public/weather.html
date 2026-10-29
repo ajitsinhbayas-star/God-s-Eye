@@ -1597,98 +1597,14 @@
       }
 
       try {
-        let cyclones = null;
+        let cyclones = [];
         try {
           const resp = await fetch('/api/weather/cyclones');
           if (resp.ok) {
             const j = await resp.json();
-            cyclones = j.data;
+            cyclones = Array.isArray(j.data) ? j.data : [];
           }
         } catch(_) {}
-
-        if (!cyclones || !cyclones.length) {
-          cyclones = [
-            {
-              id: 'TC-2026-04B',
-              name: 'Cyclone Sagar-II',
-              basin: 'North Indian Ocean / Arabian Sea',
-              agency: 'IMD RSMC',
-              category: 'Very Severe Cyclonic Storm (VSCS)',
-              catNumber: 3,
-              lat: 16.4,
-              lon: 67.8,
-              windSpeedKmh: 155,
-              windSpeedKts: 85,
-              centralPressureHpa: 968,
-              movementHeadingDeg: 325,
-              movementSpeedKmh: 16,
-              landfallWarning: 'Projected landfall Gujarat / Saurashtra coast in +42h',
-              history: [
-                { lat: 13.2, lon: 70.5 },
-                { lat: 14.5, lon: 69.4 },
-                { lat: 15.8, lon: 68.3 },
-                { lat: 16.4, lon: 67.8 }
-              ],
-              forecastCone: [
-                { lat: 17.6, lon: 67.1, radiusKm: 75 },
-                { lat: 19.2, lon: 66.8, radiusKm: 130 },
-                { lat: 21.1, lon: 67.4, radiusKm: 190 },
-                { lat: 22.8, lon: 68.9, radiusKm: 260 }
-              ]
-            },
-            {
-              id: 'TY-2026-19W',
-              name: 'Super Typhoon Mawar',
-              basin: 'Northwest Pacific',
-              agency: 'JTWC / JMA',
-              category: 'Category 4 Super Typhoon',
-              catNumber: 4,
-              lat: 18.2,
-              lon: 132.5,
-              windSpeedKmh: 215,
-              windSpeedKts: 115,
-              centralPressureHpa: 935,
-              movementHeadingDeg: 295,
-              movementSpeedKmh: 22,
-              landfallWarning: 'Recurving northeast toward Ryukyu Islands',
-              history: [
-                { lat: 14.1, lon: 139.2 },
-                { lat: 16.0, lon: 136.0 },
-                { lat: 18.2, lon: 132.5 }
-              ],
-              forecastCone: [
-                { lat: 20.1, lon: 129.2, radiusKm: 80 },
-                { lat: 22.5, lon: 127.8, radiusKm: 140 },
-                { lat: 25.8, lon: 129.5, radiusKm: 240 }
-              ]
-            },
-            {
-              id: 'HU-2026-05L',
-              name: 'Hurricane Helene',
-              basin: 'North Atlantic / Caribbean',
-              agency: 'NOAA NHC',
-              category: 'Category 2 Hurricane',
-              catNumber: 2,
-              lat: 23.4,
-              lon: -85.1,
-              windSpeedKmh: 165,
-              windSpeedKts: 90,
-              centralPressureHpa: 962,
-              movementHeadingDeg: 15,
-              movementSpeedKmh: 28,
-              landfallWarning: 'Tracking rapidly toward Florida Big Bend',
-              history: [
-                { lat: 19.8, lon: -86.5 },
-                { lat: 23.4, lon: -85.1 }
-              ],
-              forecastCone: [
-                { lat: 26.8, lon: -84.5, radiusKm: 90 },
-                { lat: 30.5, lon: -83.8, radiusKm: 150 },
-                { lat: 34.2, lon: -82.9, radiusKm: 220 }
-              ]
-            }
-          ];
-        }
 
         activeCyclonesData = cyclones;
         renderCycloneCards(cyclones);
@@ -1698,23 +1614,14 @@
       }
 
       try {
-        let fires = null;
+        let fires = [];
         try {
           const resp = await fetch('/api/weather/fires');
           if (resp.ok) {
             const j = await resp.json();
-            fires = j.data;
+            fires = Array.isArray(j.data) ? j.data : [];
           }
         } catch(_) {}
-
-        if (!fires || !fires.length) {
-          fires = [
-            { id: 'FR-01', lat: -14.23, lon: -51.92, region: 'Cerrado / Amazon', frpMw: 340 },
-            { id: 'FR-02', lat: 39.75, lon: -121.62, region: 'Northern Sierra, CA', frpMw: 520 },
-            { id: 'FR-03', lat: -31.42, lon: 148.91, region: 'NSW, Australia', frpMw: 190 },
-            { id: 'FR-04', lat: 21.25, lon: 81.35, region: 'Chhattisgarh, India', frpMw: 160 }
-          ];
-        }
 
         activeFiresData = fires;
         renderFireCards(fires);
@@ -1729,6 +1636,11 @@
       const container = document.getElementById('cyclone-cards-list');
       if (!container) return;
       container.innerHTML = '';
+
+      if (!cyclones || !cyclones.length) {
+        container.innerHTML = '<div class="p-4 text-center text-xs text-slate-500 font-mono">No active tropical systems tracked by NOAA NHC / JTWC.</div>';
+        return;
+      }
 
       cyclones.forEach(storm => {
         const card = document.createElement('div');
@@ -1895,6 +1807,11 @@
       const container = document.getElementById('fire-hotspots-list');
       if (!container) return;
       container.innerHTML = '';
+
+      if (!fires || !fires.length) {
+        container.innerHTML = '<div class="p-3 text-center text-xs text-slate-500 font-mono">No active thermal anomalies reported.</div>';
+        return;
+      }
 
       fires.slice(0, 4).forEach(f => {
         const item = document.createElement('div');
