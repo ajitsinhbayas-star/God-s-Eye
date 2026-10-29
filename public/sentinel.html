@@ -6,7 +6,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SENTINEL // Primary Orbital Mission Control &amp; Data Ingestion Bridge</title>
-  <script src="https://cdn.tailwindcss.com">    // --- 6. MULTI-PAGE PIPELINE TELEMETRY & SENTINEL BOT SELF-CORRECTION ---
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // --- 6. MULTI-PAGE PIPELINE TELEMETRY & SENTINEL BOT SELF-CORRECTION ---
     async function fetchLivePipelineStatus() {
       try {
         const resp = await fetch('/api/sentinel/pipeline-status');
