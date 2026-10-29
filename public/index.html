@@ -641,15 +641,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             ov.classList.add('hidden');
           }
         }
-        window.addEventListener('load', () => setTimeout(hardDismissStatusOverlay, 500));
-        setTimeout(hardDismissStatusOverlay, 2000);
+        document.addEventListener('DOMContentLoaded', hardDismissStatusOverlay);
+        window.addEventListener('load', hardDismissStatusOverlay);
+        setTimeout(hardDismissStatusOverlay, 600);
+        setTimeout(hardDismissStatusOverlay, 1500);
         window.forceDismissStatusOverlay = hardDismissStatusOverlay;
       })();
     </script>
-          Retry Initialization
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- Coordinate Frame & Scale Transition Notice -->
