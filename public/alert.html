@@ -352,7 +352,7 @@
 
   <!-- Top Navigation Bar -->
   <header>
-    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:nowrap; overflow-x:auto;">
       <a href="/" style="display:flex; align-items:center; gap:10px; text-decoration:none;" title="Return to Orbital Eye Home">
         <span style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(8, 47, 73, 0.9); border:1px solid rgba(0, 240, 255, 0.4); box-shadow:0 0 10px rgba(0,240,255,0.25);">
           <span style="width:10px; height:10px; border-radius:50%; background:#00f0ff; box-shadow:0 0 8px #00f0ff;"></span>
@@ -445,7 +445,7 @@
 
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
       <span id="hud-defcon-badge" class="defcon-ribbon-badge defcon-5">● DEFCON 5 // NOMINAL</span>
       
       <button onclick="openCityModal()" id="hud-location-selector-btn" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">

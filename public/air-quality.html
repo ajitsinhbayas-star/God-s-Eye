@@ -109,7 +109,8 @@
       </div>
 
       <!-- Navigation Pill Links -->
-      <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
+      <div class="flex-1 flex items-center justify-center min-w-0 mx-2 overflow-hidden">
+        <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
       <a href="/earth" data-nav="earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Earth</a>
@@ -118,7 +119,8 @@
       <a href="/atmosphere" data-nav="atmosphere" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Atmosphere</a>
       <a href="/air-quality" data-nav="air-quality" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap text-xs" aria-current="page">Air Quality</a>
       <a href="/alert" data-nav="alert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Alert</a>
-    </nav>
+      </nav>
+      </div>
     
   <script>
     (function(){
@@ -186,7 +188,7 @@
   </script>
 
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <button onclick="document.getElementById('selected-aqi-panel').classList.toggle('hidden')" class="px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition flex items-center gap-1.5 shadow-sm">
           <i class="fa-solid fa-chart-simple"></i>
           <span class="hidden sm:inline">Desk Panel</span>
@@ -253,7 +255,7 @@
   </header>
 
   <!-- SIDE DESK PANEL (Collapsible on mobile and desktop) -->
-  <aside id="selected-aqi-panel" class="absolute top-28 left-4 bottom-8 z-30 w-80 md:w-96 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
+  <aside id="selected-aqi-panel" class="absolute top-28 sm:top-32 left-4 bottom-8 z-30 w-80 md:w-96 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
     <!-- Panel Header -->
     <div class="px-4 py-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/40">
       <div class="flex items-center gap-2">

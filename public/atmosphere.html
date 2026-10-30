@@ -224,9 +224,9 @@
   <!-- TOP COMMAND BAR -->
   <header class="absolute top-2 left-2 right-2 z-30 flex flex-col gap-2 p-2 sm:px-3 rounded-2xl hud-glass pointer-events-auto transition-all">
     <!-- Row 1: Brand, Mode Switcher Pills & Action Controls -->
-    <div class="flex items-center justify-between gap-2 w-full">
+    <div class="flex items-center justify-between gap-2 w-full flex-nowrap">
       <!-- Brand & Mode Indicator -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <a href="/" class="flex items-center gap-2 text-white no-underline">
           <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.4)]">
             <i class="fa-solid fa-cloud-bolt text-cyan-400 text-sm"></i>
@@ -253,7 +253,7 @@
       </div>
 
       <!-- CENTER: UNIFIED NAVIGATION RIBBON -->
-      <div class="hidden md:flex items-center overflow-x-auto">
+      <div class="hidden md:flex flex-1 items-center justify-center min-w-0 mx-2 overflow-hidden">
         <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
@@ -333,7 +333,7 @@
       </div>
 
       <!-- Right Action Controls -->
-      <div class="flex items-center gap-1.5 font-mono">
+      <div class="flex items-center gap-1.5 font-mono shrink-0">
         <!-- Advanced Tools Dropdown Toggle -->
         <button onclick="toggleAdvancedToolsMenu()" id="btn-adv-tools" class="px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition flex items-center gap-1" title="Advanced Weather & Radar Tools">
           <i class="fa-solid fa-sliders text-cyan-400"></i>
@@ -354,9 +354,9 @@
 
     <!-- Row 2: Dynamic Mode Controls -->
     <!-- Mode B: Kisan District Map Controls (Active by Default) -->
-    <div id="farmer-top-controls" class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+    <div id="farmer-top-controls" class="flex items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono overflow-x-auto no-scrollbar">
       <!-- Search District with Autocomplete -->
-      <div id="farmer-search-wrapper" class="relative flex-1 min-w-[200px]">
+      <div id="farmer-search-wrapper" class="relative flex-1 min-w-[170px] max-w-xs sm:max-w-sm">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
         <input id="top-farmer-search-input" type="text" autocomplete="off"
           placeholder="Search your district or city (e.g. Pune / पुणे, Patna / पटना)..."
@@ -366,33 +366,33 @@
       </div>
 
       <!-- State Filter Selector -->
-      <div class="min-w-[140px]">
+      <div class="w-36 sm:w-44 shrink-0">
         <select id="top-farmer-state-select" onchange="onFarmerStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
           <option value="">All States & UTs (35)</option>
         </select>
       </div>
 
       <!-- District Selector -->
-      <div class="min-w-[140px]">
+      <div class="w-36 sm:w-44 shrink-0">
         <select id="top-farmer-district-select" onchange="onFarmerDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
           <option value="">Select District...</option>
         </select>
       </div>
 
       <!-- GPS Button -->
-      <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Detect Location via Device GPS">
+      <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap shrink-0" title="Detect Location via Device GPS">
         <span>📍</span>
         <span>My Location</span>
       </button>
 
       <!-- Zoom All India Button -->
-      <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap" title="Zoom to All India">
+      <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap shrink-0" title="Zoom to All India">
         <span>🇮🇳</span>
         <span>All India</span>
       </button>
 
       <!-- Basemap Toggle: Satellite vs Street -->
-      <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm" title="Toggle Satellite Imagery / Street Map">
+      <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Satellite Imagery / Street Map">
         <span id="basemap-icon">🛰️</span>
         <span id="basemap-text">Satellite</span>
       </button>
@@ -513,7 +513,7 @@
 
   <!-- SELECTED DISTRICT WEATHER PANEL (Desktop Right Floating Card / Mobile Bottom Sheet) -->
   <aside id="selected-district-panel" class="fixed z-30 transition-all duration-300
-    sm:top-28 sm:right-4 sm:bottom-auto sm:w-96 sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl sm:border sm:border-emerald-500/50 sm:shadow-2xl sm:bg-slate-950/95 sm:backdrop-blur-xl sm:p-4 sm:overflow-y-auto
+    sm:top-[7.75rem] sm:left-auto sm:right-4 sm:bottom-auto sm:w-96 sm:max-h-[calc(100vh-9rem)] sm:rounded-2xl sm:border sm:border-emerald-500/50 sm:shadow-2xl sm:bg-slate-950/95 sm:backdrop-blur-xl sm:p-4 sm:overflow-y-auto
     bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
     <!-- Panel Header & Drag Handle -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/30">
