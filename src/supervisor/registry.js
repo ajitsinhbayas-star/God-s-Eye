@@ -298,7 +298,7 @@ export class ProviderRegistry {
 
       if (p.requiresCredentials) {
         if (p.id === 'space_track' && !process.env.SPACE_TRACK_USER) hasCredentials = false;
-        if (p.id === 'satnogs_db' && !(process.env.SATNOGS_API_KEY || process.env.SATNOGS_API_TOKEN)) hasCredentials = false;
+        if (p.id === 'satnogs_db' && !(process.env.SATNOGS_API_KEY || process.env.SATNOGS_API_TOKEN || (process.env.SATNOGS_USERNAME && process.env.SATNOGS_PASSWORD))) hasCredentials = false;
         if (p.id === 'esa_discos' && !(process.env.ESA_DISCOS_TOKEN || process.env.DISCOSWEB_API_TOKEN || process.env.DISCOS_API_TOKEN)) hasCredentials = false;
         if (p.id === 'nasa_firms' && !process.env.FIRMS_MAP_KEY) hasCredentials = false;
         if (p.id === 'google_air_quality' && !(process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_AIR_QUALITY_API_KEY)) hasCredentials = false;
@@ -530,16 +530,20 @@ export class ProviderRegistry {
     }
 
     // 10. SatNOGS Open DB (when SATNOGS_API_TOKEN or SATNOGS_API_KEY is configured)
-    const satnogsToken = process.env.SATNOGS_API_TOKEN || process.env.SATNOGS_API_KEY;
+    const satnogsToken = (process.env.SATNOGS_API_TOKEN || process.env.SATNOGS_API_KEY || '').replace(/^"|"$/g, '').trim();
     if (satnogsToken) {
       pings.push((async () => {
         try {
           const t0 = Date.now();
           const ctrl = new AbortController();
           const timer = setTimeout(() => ctrl.abort(), 6000);
+          const headers = {
+            'User-Agent': 'GodsEye-OrbitalCommand/3.0',
+            'Authorization': `Token ${satnogsToken}`
+          };
           const res = await fetch('https://db.satnogs.org/api/transmitters/?limit=1', {
             signal: ctrl.signal,
-            headers: { 'Authorization': `Token ${satnogsToken}` }
+            headers
           });
           clearTimeout(timer);
           if (res.ok) {
