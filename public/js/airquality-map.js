@@ -524,6 +524,9 @@
 
     // Click anywhere on map
     leafletMap.on('click', e => {
+      if (typeof window.toggleMobileNavMenu === 'function') {
+        window.toggleMobileNavMenu(false);
+      }
       handleCoordinateClick(e.latlng);
     });
 

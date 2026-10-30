@@ -149,6 +149,9 @@
 
   // Explore button behavior per page
   window.handleMobileExploreTap = function() {
+    if (typeof window.toggleMobileNavMenu === 'function') {
+      window.toggleMobileNavMenu(false);
+    }
     // 1. Solar System / Earth / Deep Space / Asteroids catalogue expand button
     const expandCatBtn = document.getElementById('btn-expand-catalog');
     if (expandCatBtn) {
@@ -198,6 +201,9 @@
     const shouldOpen = typeof forceState === 'boolean' ? forceState : !isCurrentlyOpen;
 
     if (shouldOpen) {
+      if (typeof window.toggleMobileNavMenu === 'function') {
+        window.toggleMobileNavMenu(false);
+      }
       sheet.classList.remove('hidden');
       if (btn) btn.setAttribute('aria-expanded', 'true');
     } else {

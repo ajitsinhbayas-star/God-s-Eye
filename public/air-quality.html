@@ -336,17 +336,29 @@
       </div>
     </div>
   </header>
+  <!-- Mobile Navigation Backdrop Overlay -->
+  <div id="mobile-nav-backdrop" style="display: none;" onclick="window.toggleMobileNavMenu(false)" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm lg:hidden transition-opacity" aria-hidden="true"></div>
+
   <!-- Mobile Navigation Drawer -->
-  <div id="mobile-nav-drawer" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/30 backdrop-blur-2xl shadow-2xl lg:hidden font-mono">
+  <div id="mobile-nav-drawer" style="display: none;" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/40 backdrop-blur-2xl shadow-2xl lg:hidden font-mono max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Observatory Destinations</span>
+      </div>
+      <button type="button" onclick="window.toggleMobileNavMenu(false)" class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" aria-label="Close Navigation Menu">
+        ✕
+      </button>
+    </div>
     <div class="grid grid-cols-2 gap-2 text-xs">
-      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Home</a>
-      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Solar System</a>
-      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Earth Satellites</a>
-      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Deep Space</a>
-      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Asteroids</a>
-      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Atmosphere</a>
-      <a href="/air-quality" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center">Air Quality</a>
-      <a href="/alert" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Alert</a>
+      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Home</a>
+      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Solar System</a>
+      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Earth Satellites</a>
+      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Deep Space</a>
+      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Asteroids</a>
+      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Atmosphere</a>
+      <a href="/air-quality" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center transition" aria-current="page">Air Quality</a>
+      <a href="/alert" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Alert</a>
     </div>
   </div>
 
@@ -472,6 +484,10 @@
     };
 
     window.toggleDeskPanel = function() {
+      // Auto-close mobile navigation drawer if open
+      if (typeof window.toggleMobileNavMenu === 'function') {
+        window.toggleMobileNavMenu(false);
+      }
       const p = document.getElementById('selected-aqi-panel');
       if (!p) return;
       if (p.classList.contains('hidden') || window.getComputedStyle(p).display === 'none') {
@@ -493,13 +509,26 @@
       }
     };
 
-    window.toggleMobileNavMenu = function() {
+    window.toggleMobileNavMenu = function(forceState) {
       const drawer = document.getElementById('mobile-nav-drawer');
+      const backdrop = document.getElementById('mobile-nav-backdrop');
       const btn = document.getElementById('btn-toggle-mobile-nav');
       if (!drawer) return;
-      const willOpen = drawer.classList.contains('hidden');
+
+      const isCurrentlyOpen = !drawer.classList.contains('hidden') && drawer.style.display !== 'none';
+      const willOpen = typeof forceState === 'boolean' ? forceState : !isCurrentlyOpen;
+
       if (willOpen) {
+        // Auto-close mobile more sheet if active
+        if (typeof window.toggleMobileMoreSheet === 'function') {
+          window.toggleMobileMoreSheet(false);
+        }
         drawer.classList.remove('hidden');
+        drawer.style.display = 'block';
+        if (backdrop) {
+          backdrop.classList.remove('hidden');
+          backdrop.style.display = 'block';
+        }
         if (btn) {
           btn.setAttribute('aria-expanded', 'true');
           const icon = btn.querySelector('i');
@@ -507,6 +536,11 @@
         }
       } else {
         drawer.classList.add('hidden');
+        drawer.style.display = 'none';
+        if (backdrop) {
+          backdrop.classList.add('hidden');
+          backdrop.style.display = 'none';
+        }
         if (btn) {
           btn.setAttribute('aria-expanded', 'false');
           const icon = btn.querySelector('i');
@@ -518,18 +552,11 @@
     // Close mobile nav drawer when resizing to desktop
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 1024) {
-        const drawer = document.getElementById('mobile-nav-drawer');
-        const btn = document.getElementById('btn-toggle-mobile-nav');
-        if (drawer) drawer.classList.add('hidden');
-        if (btn) {
-          btn.setAttribute('aria-expanded', 'false');
-          const icon = btn.querySelector('i');
-          if (icon) icon.className = 'fa-solid fa-bars';
-        }
+        window.toggleMobileNavMenu(false);
       }
     });
 
-    // Sync initial ARIA state on load
+    // Sync initial ARIA state and outside/link dismiss listeners
     document.addEventListener('DOMContentLoaded', () => {
       const p = document.getElementById('selected-aqi-panel');
       const btn = document.getElementById('btn-toggle-desk-panel');
@@ -537,6 +564,28 @@
         const isClosed = p.classList.contains('hidden') || window.getComputedStyle(p).display === 'none';
         btn.setAttribute('aria-expanded', isClosed ? 'false' : 'true');
       }
+
+      // Auto-close mobile nav drawer when clicking any nav link
+      document.querySelectorAll('#mobile-nav-drawer a').forEach(a => {
+        a.addEventListener('click', () => {
+          window.toggleMobileNavMenu(false);
+        });
+      });
+
+      // Close when tapping map container
+      const mapEl = document.getElementById('map-container');
+      if (mapEl) {
+        mapEl.addEventListener('click', () => {
+          window.toggleMobileNavMenu(false);
+        });
+      }
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          window.toggleMobileNavMenu(false);
+        }
+      });
     });
   </script>
   <script src="js/mobile-nav.js"></script>

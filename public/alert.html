@@ -614,7 +614,7 @@
 
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+    <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
       <span id="hud-defcon-badge" class="defcon-ribbon-badge defcon-5">● DEFCON 5 // NOMINAL</span>
       
       <button onclick="openCityModal()" id="hud-location-selector-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="city-modal-overlay" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">
@@ -624,19 +624,34 @@
       </button>
       <span id="live-utc-clock" style="font-size:11px; color:#38bdf8; letter-spacing:0.05em;">UTC --:--:--</span>
       <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></div>
+      <button onclick="window.toggleMobileNavMenu()" id="btn-toggle-mobile-nav" aria-expanded="false" aria-controls="mobile-nav-drawer" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
     </div>
   </header>
+  <!-- Mobile Navigation Backdrop Overlay -->
+  <div id="mobile-nav-backdrop" style="display: none;" onclick="window.toggleMobileNavMenu(false)" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm lg:hidden transition-opacity" aria-hidden="true"></div>
+
   <!-- Mobile Navigation Drawer -->
-  <div id="mobile-nav-drawer" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/30 backdrop-blur-2xl shadow-2xl lg:hidden font-mono">
+  <div id="mobile-nav-drawer" style="display: none;" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/40 backdrop-blur-2xl shadow-2xl lg:hidden font-mono max-h-[calc(100vh-5rem)] overflow-y-auto">
+    <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Observatory Destinations</span>
+      </div>
+      <button type="button" onclick="window.toggleMobileNavMenu(false)" class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" aria-label="Close Navigation Menu">
+        ✕
+      </button>
+    </div>
     <div class="grid grid-cols-2 gap-2 text-xs">
-      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Home</a>
-      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Solar System</a>
-      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Earth Satellites</a>
-      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Deep Space</a>
-      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Asteroids</a>
-      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Atmosphere</a>
-      <a href="/air-quality" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Air Quality</a>
-      <a href="/alert" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center">Alert</a>
+      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Home</a>
+      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Solar System</a>
+      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Earth Satellites</a>
+      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Deep Space</a>
+      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Asteroids</a>
+      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Atmosphere</a>
+      <a href="/air-quality" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Air Quality</a>
+      <a href="/alert" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center transition" aria-current="page">Alert</a>
     </div>
   </div>
 
@@ -1453,13 +1468,25 @@
       ));
     }
     
-    window.toggleMobileNavMenu = function() {
+    window.toggleMobileNavMenu = function(forceState) {
       const drawer = document.getElementById('mobile-nav-drawer');
+      const backdrop = document.getElementById('mobile-nav-backdrop');
       const btn = document.getElementById('btn-toggle-mobile-nav');
       if (!drawer) return;
-      const willOpen = drawer.classList.contains('hidden');
+
+      const isCurrentlyOpen = !drawer.classList.contains('hidden') && drawer.style.display !== 'none';
+      const willOpen = typeof forceState === 'boolean' ? forceState : !isCurrentlyOpen;
+
       if (willOpen) {
+        if (typeof window.toggleMobileMoreSheet === 'function') {
+          window.toggleMobileMoreSheet(false);
+        }
         drawer.classList.remove('hidden');
+        drawer.style.display = 'block';
+        if (backdrop) {
+          backdrop.classList.remove('hidden');
+          backdrop.style.display = 'block';
+        }
         if (btn) {
           btn.setAttribute('aria-expanded', 'true');
           const icon = btn.querySelector('i');
@@ -1467,6 +1494,11 @@
         }
       } else {
         drawer.classList.add('hidden');
+        drawer.style.display = 'none';
+        if (backdrop) {
+          backdrop.classList.add('hidden');
+          backdrop.style.display = 'none';
+        }
         if (btn) {
           btn.setAttribute('aria-expanded', 'false');
           const icon = btn.querySelector('i');
@@ -1474,17 +1506,25 @@
         }
       }
     };
+
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 1024) {
-        const drawer = document.getElementById('mobile-nav-drawer');
-        const btn = document.getElementById('btn-toggle-mobile-nav');
-        if (drawer) drawer.classList.add('hidden');
-        if (btn) {
-          btn.setAttribute('aria-expanded', 'false');
-          const icon = btn.querySelector('i');
-          if (icon) icon.className = 'fa-solid fa-bars';
-        }
+        window.toggleMobileNavMenu(false);
       }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('#mobile-nav-drawer a').forEach(a => {
+        a.addEventListener('click', () => {
+          window.toggleMobileNavMenu(false);
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          window.toggleMobileNavMenu(false);
+        }
+      });
     });
     function detectGPSLocation(btn) {
       if (!navigator.geolocation) return;
