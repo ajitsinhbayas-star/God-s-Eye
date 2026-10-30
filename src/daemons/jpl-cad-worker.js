@@ -1,10 +1,12 @@
-﻿import { getSpaceStore, saveSpaceStore } from '../db/space-store.js';
+import { getSpaceStore, saveSpaceStore } from '../db/space-store.js';
+import { providerRegistry } from '../supervisor/registry.js';
 
 export async function syncJplAsteroids() {
   const spaceStore = getSpaceStore();
+  const t0 = Date.now();
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const timer = setTimeout(() => ctrl.abort(), 6000);
     const res = await fetch('https://ssd-api.jpl.nasa.gov/cad.api?dist-max=0.05&date-min=now&limit=3', { signal: ctrl.signal });
     clearTimeout(timer);
     if (res.ok) {
@@ -15,9 +17,14 @@ export async function syncJplAsteroids() {
           distKm: Math.round(parseFloat(r[4] || 0.02) * 149597870.7)
         }));
         await saveSpaceStore();
+        providerRegistry.recordSuccess('nasa_jpl_cad', Date.now() - t0);
+        return;
       }
     }
-  } catch {}
+    providerRegistry.recordFailure('nasa_jpl_cad', `HTTP ${res.status}`);
+  } catch (err) {
+    providerRegistry.recordFailure('nasa_jpl_cad', err.message);
+  }
 }
 
 export function startJplCadDaemon() {

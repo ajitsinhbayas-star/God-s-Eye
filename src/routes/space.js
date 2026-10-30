@@ -5,7 +5,9 @@ import { INDIAN_CITIES_REGISTRY } from '../config/cities.js';
 import { computeTopocentricLookAngles } from '../math/topocentric.js';
 import { computeSolarAndVisibilityState } from '../math/solar-visibility.js';
 import { registerSseClient } from '../realtime/sse-manager.js';
-import { propagateSatelliteSGP4 } from '../daemons/celestrak-worker.js';
+import { propagateSatelliteSGP4, getSatrec } from '../daemons/celestrak-worker.js';
+import { PUBLIC_GROUND_STATIONS } from '../config/ground-stations.js';
+import * as satellite from 'satellite.js';
 
 export const spaceRouter = express.Router();
 
@@ -187,14 +189,37 @@ spaceRouter.get('/above-me', (req, res) => {
   });
 });
 
-spaceRouter.get('/passes', (req, res) => {
+export function handlePassesRequest(req, res) {
   const store = getSpaceStore();
-  const obsLat = req.query.lat ? parseFloat(req.query.lat) : (store.preferences?.observerLat || 18.5204);
-  const obsLon = req.query.lon ? parseFloat(req.query.lon) : (store.preferences?.observerLon || 73.8567);
+  let obsLat = store.preferences?.observerLat ?? 18.5204;
+  let obsLon = store.preferences?.observerLon ?? 73.8567;
+
+  if (req.query.lat !== undefined) {
+    obsLat = parseFloat(req.query.lat);
+    if (isNaN(obsLat) || obsLat < -90 || obsLat > 90) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Invalid observer latitude: must be a real number between -90 and 90 degrees.'
+      });
+    }
+  }
+
+  if (req.query.lon !== undefined) {
+    obsLon = parseFloat(req.query.lon);
+    if (isNaN(obsLon) || obsLon < -180 || obsLon > 180) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Invalid observer longitude: must be a real number between -180 and 180 degrees.'
+      });
+    }
+  }
+
   const hours = parseFloat(req.query.hours) || 48;
   const minElevation = parseFloat(req.query.minElevation) || 10.0;
 
   let targetSat = null;
+  const isSpecified = Boolean(req.query.norad || req.query.satId);
+
   if (req.query.norad) {
     const noradNum = parseInt(req.query.norad, 10);
     targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.norad === noradNum);
@@ -203,7 +228,13 @@ spaceRouter.get('/passes', (req, res) => {
     targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id.toLowerCase() === sId);
   }
 
-  // Default to ISS (NORAD 25544) if unspecified or not matched
+  if (isSpecified && !targetSat) {
+    return res.status(404).json({
+      ok: false,
+      error: 'Target satellite not found in orbital catalog.'
+    });
+  }
+
   if (!targetSat) {
     targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id === 'iss') || {
       id: 'iss',
@@ -214,16 +245,38 @@ spaceRouter.get('/passes', (req, res) => {
     };
   }
 
+  if (targetSat.parent !== 'earth') {
+    return res.status(422).json({
+      ok: false,
+      error: `Pass prediction only applies to Earth-orbiting satellites. Target '${targetSat.name}' is a ${targetSat.category || 'deep-space'} object orbiting ${targetSat.parent}.`
+    });
+  }
+
+  if (targetSat.status === 'PLANNED_MISSION') {
+    return res.status(422).json({
+      ok: false,
+      error: `Target satellite '${targetSat.name}' is a planned pre-launch mission with no active orbital propagation.`
+    });
+  }
+
   const passes = computePassesForSatellite(targetSat, obsLat, obsLon, hours, minElevation);
 
   res.json({
     ok: true,
+    meta: {
+      generatedAt: new Date().toISOString(),
+      observer: { lat: obsLat, lon: obsLon },
+      satellite: { id: targetSat.id, name: targetSat.name, norad: targetSat.norad },
+      predictionWindowHours: Math.min(Math.max(Number(hours) || 48, 6), 72)
+    },
     count: passes.length,
-    observer: { lat: obsLat, lon: obsLon },
-    satellite: { id: targetSat.id, name: targetSat.name, norad: targetSat.norad },
-    passes
+    message: passes.length === 0 ? 'No visible topocentric passes computed in the requested observation window.' : undefined,
+    passes,
+    data: passes
   });
-});
+}
+
+spaceRouter.get('/passes', handlePassesRequest);
 
 spaceRouter.get('/missions', (req, res) => {
   res.json({ ok: true, count: MASTER_TRACKABLE_CATALOG.length, missions: MASTER_TRACKABLE_CATALOG });
@@ -246,3 +299,243 @@ spaceRouter.post('/preferences', async (req, res) => {
   }
   res.json({ ok: true, preferences: store.preferences });
 });
+
+/**
+ * Historical Timeline & Time Travel Propagation
+ * Propagates all Earth orbiters or a target satellite to any requested UTC date.
+ */
+export function handleTimeTravel(req, res) {
+  const timeParam = req.query.time || req.body?.time;
+  if (!timeParam) {
+    return res.status(400).json({ ok: false, error: 'Missing required UTC time parameter (ISO-8601 string or epoch ms).' });
+  }
+
+  const targetDate = new Date(timeParam);
+  if (isNaN(targetDate.getTime())) {
+    return res.status(400).json({ ok: false, error: 'Invalid UTC date or timestamp provided.' });
+  }
+
+  const now = Date.now();
+  const timeDiffDays = Math.abs((targetDate.getTime() - now) / (86400 * 1000));
+  const isNominalWindow = timeDiffDays <= 30.0;
+
+  const satId = req.query.satId || req.body?.satId;
+  let targets = MASTER_TRACKABLE_CATALOG.filter(s => s.parent === 'earth' && s.norad);
+
+  if (satId) {
+    const matched = MASTER_TRACKABLE_CATALOG.find(s => s.id.toLowerCase() === String(satId).toLowerCase());
+    if (!matched) return res.status(404).json({ ok: false, error: `Satellite '${satId}' not found in catalog.` });
+    if (matched.parent !== 'earth') {
+      return res.status(422).json({ ok: false, error: `Time-travel propagation only applies to Earth orbiters. Target is a ${matched.category} (${matched.name}).` });
+    }
+    targets = [matched];
+  }
+
+  const propagated = targets.map(sat => {
+    const state = propagateSatelliteSGP4(sat, targetDate);
+    return {
+      id: sat.id,
+      name: sat.name,
+      norad: sat.norad,
+      category: sat.category,
+      objectType: sat.objectType || 'operational_spacecraft',
+      regime: sat.regime || 'LEO',
+      telemetry: state
+    };
+  });
+
+  res.json({
+    ok: true,
+    meta: {
+      requestedTimeUTC: targetDate.toISOString(),
+      currentServerTimeUTC: new Date().toISOString(),
+      deltaDaysFromNow: Number(timeDiffDays.toFixed(2)),
+      isNominalSgp4Window: isNominalWindow,
+      propagationModel: 'SGP4 / SDP4 (Simplified General Perturbations)',
+      provenance: 'CelesTrak GP Ephemerides',
+      limitation: isNominalWindow
+        ? 'Propagated from validated mean elements. Does not replace archived sensor downlinks.'
+        : 'Propagation delta exceeds 30-day SGP4 validity envelope. Unperturbed mathematical projection without atmospheric variations.'
+    },
+    count: propagated.length,
+    satellites: propagated
+  });
+}
+
+spaceRouter.get('/propagate-time', handleTimeTravel);
+spaceRouter.post('/propagate-time', handleTimeTravel);
+
+/**
+ * Geometric Conjunction Screening
+ * Screens Earth-orbiting catalog pairs for geometric close encounters over a 24h window.
+ */
+export function handleConjunctions(req, res) {
+  const earthSats = MASTER_TRACKABLE_CATALOG.filter(s => s.parent === 'earth' && s.norad);
+  const startMs = Date.now();
+  const windowHours = Math.min(Math.max(parseInt(req.query.hours, 10) || 24, 6), 48);
+  const stepMs = 15 * 60 * 1000; // 15-minute screening step
+  const endMs = startMs + windowHours * 3600 * 1000;
+
+  const closeEncounters = [];
+
+  // Screen pairs across time
+  for (let t = startMs; t < endMs; t += stepMs) {
+    const d = new Date(t);
+    const gmst = satellite.gstime(d);
+
+    // Compute ECI coordinates for each sat at time t
+    const states = [];
+    for (const sat of earthSats) {
+      const satrec = getSatrec(sat.norad);
+      if (!satrec) continue;
+      const pv = satellite.propagate(satrec, d);
+      if (pv && pv.position && typeof pv.position.x === 'number') {
+        states.push({ sat, pos: pv.position });
+      }
+    }
+
+    // Compare pairs
+    for (let i = 0; i < states.length; i++) {
+      for (let j = i + 1; j < states.length; j++) {
+        const s1 = states[i];
+        const s2 = states[j];
+        const dx = s1.pos.x - s2.pos.x;
+        const dy = s1.pos.y - s2.pos.y;
+        const dz = s1.pos.z - s2.pos.z;
+        const distKm = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        // Screen for proximity under 100 km
+        if (distKm <= 100.0) {
+          closeEncounters.push({
+            id: `CONJ-${s1.sat.norad}-${s2.sat.norad}-${t}`,
+            object1: { id: s1.sat.id, name: s1.sat.name, norad: s1.sat.norad, type: s1.sat.objectType },
+            object2: { id: s2.sat.id, name: s2.sat.name, norad: s2.sat.norad, type: s2.sat.objectType },
+            missDistanceKm: Number(distKm.toFixed(2)),
+            tcaTimeUTC: new Date(t).toISOString(),
+            screeningMethod: 'Geometric Proximity (ECI SGP4 Vector Distance)',
+            severity: distKm < 25.0 ? 'elevated_proximity' : 'informational_proximity',
+            disclaimer: 'INFORMATIONAL ONLY: Simple geometric proximity screening. Does not compute covariance-based collision probability (Pc) or represent an official 18th SDS Conjunction Data Message (CDM).'
+          });
+        }
+      }
+    }
+  }
+
+  // Deduplicate and keep closest per pair
+  const bestPairMap = new Map();
+  for (const enc of closeEncounters) {
+    const pairKey = [enc.object1.norad, enc.object2.norad].sort().join('-');
+    const existing = bestPairMap.get(pairKey);
+    if (!existing || enc.missDistanceKm < existing.missDistanceKm) {
+      bestPairMap.set(pairKey, enc);
+    }
+  }
+
+  const results = Array.from(bestPairMap.values()).sort((a, b) => a.missDistanceKm - b.missDistanceKm);
+
+  res.json({
+    ok: true,
+    meta: {
+      generatedAt: new Date().toISOString(),
+      screeningWindowHours: windowHours,
+      thresholdDistanceKm: 100.0,
+      totalCatalogScreened: earthSats.length,
+      provenance: 'God\'s Eye Astrodynamics Geometric Screener',
+      disclaimer: 'INFORMATIONAL ONLY: Simple geometric proximity screening. Does not compute covariance-based collision probability (Pc) or represent an official 18th SDS Conjunction Data Message (CDM).'
+    },
+    count: results.length,
+    encounters: results,
+    notice: results.length === 0 ? 'No geometric encounters within 100 km detected in the screening window.' : undefined
+  });
+}
+spaceRouter.get('/conjunctions', handleConjunctions);
+
+/**
+ * Public Ground Stations Directory & Line-of-Sight Coverage
+ */
+export function handleGroundStations(req, res) {
+  const satId = req.query.satId || 'iss';
+  let targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id.toLowerCase() === String(satId).toLowerCase() && s.parent === 'earth');
+  if (!targetSat) {
+    targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id === 'iss');
+  }
+
+  const now = new Date();
+  const satTelemetry = propagateSatelliteSGP4(targetSat, now);
+
+  const stationsWithSight = PUBLIC_GROUND_STATIONS.map(st => {
+    const look = computeTopocentricLookAngles(st.lat, st.lon, satTelemetry.lat, satTelemetry.lon, satTelemetry.altKm);
+    const hasLineOfSight = look.elevationDeg >= 5.0; // 5 degree horizon mask
+
+    return {
+      ...st,
+      lookAngles: {
+        elevationDeg: look.elevationDeg,
+        azimuthDeg: look.azimuthDeg,
+        compass: look.compass,
+        slantRangeKm: look.rangeKm
+      },
+      hasGeometricLineOfSight: hasLineOfSight
+    };
+  });
+
+  const activeInView = stationsWithSight.filter(s => s.hasGeometricLineOfSight);
+
+  res.json({
+    ok: true,
+    meta: {
+      timestampUTC: now.toISOString(),
+      targetSatellite: { id: targetSat.id, name: targetSat.name, norad: targetSat.norad, altKm: satTelemetry.altKm },
+      totalStations: PUBLIC_GROUND_STATIONS.length,
+      stationsInLineOfSight: activeInView.length,
+      disclaimer: 'Geometric line of sight indicates antenna elevation > 5° above station horizon. Does NOT imply an active communication session, scheduled pass, or telemetry reception.'
+    },
+    stations: stationsWithSight
+  });
+}
+spaceRouter.get('/ground-stations', handleGroundStations);
+
+/**
+ * Responsible Re-entry & Orbital Decay Monitoring
+ */
+export function handleReentry(req, res) {
+  // Query supported catalog items with low perigee or decay status
+  const decayingCandidates = MASTER_TRACKABLE_CATALOG.filter(s =>
+    s.status === 'DECAY MONITORING' || (s.perigeeKm && s.perigeeKm < 200) || s.category === 'debris'
+  );
+
+  const events = decayingCandidates.map(sat => {
+    const currentTelemetry = propagateSatelliteSGP4(sat, new Date());
+    const isImminent = (currentTelemetry.altKm || sat.altKm) < 200;
+
+    return {
+      id: `REENTRY-${sat.norad || sat.id}`,
+      name: sat.name,
+      norad: sat.norad,
+      cospar: sat.cospar,
+      objectType: sat.objectType,
+      category: sat.category,
+      agency: sat.agency,
+      currentAltitudeKm: currentTelemetry.altKm || sat.altKm,
+      perigeeKm: sat.perigeeKm,
+      apogeeKm: sat.apogeeKm,
+      inclinationDeg: sat.incDeg,
+      decayClassification: isImminent ? 'DECAY_PREDICTED' : 'LOW_ORBIT_DECAY_MONITORING',
+      predictedWindowUTC: isImminent ? 'Within 30 to 90 Days' : 'Orbital Decay Monitoring Active (> 6 Months)',
+      uncertaintyHours: isImminent ? 72 : 720,
+      inclinationBand: `Between ${sat.incDeg}°S and ${sat.incDeg}°N`,
+      provider: '18th Space Defense Squadron / CelesTrak SATCAT Decay'
+    };
+  });
+
+  res.json({
+    ok: true,
+    meta: {
+      generatedAt: new Date().toISOString(),
+      trackedDecayCount: events.length,
+      disclaimer: 'NO PREDICTED IMPACT COORDINATES: Atmospheric break-up points cannot be deterministically computed in advance. Only the orbital inclination band and predicted time window are provided.'
+    },
+    events
+  });
+}
+spaceRouter.get('/reentry', handleReentry);

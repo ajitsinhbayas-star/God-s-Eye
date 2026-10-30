@@ -153,48 +153,68 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- Primary Meta Tags -->
-  <title>God's Eye — 3D Orbital Command & Space Situational Awareness</title>
-  <meta name="title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta name="description" content="Track the ISS, ISRO satellites, and deep-space missions in real-time 3D WebGL. High-accuracy pass predictions, conjunction alerts, and space weather monitoring." />
-  <meta name="keywords" content="satellite tracker, ISS live tracker, ISRO Cartosat, 3D WebGL space, space situational awareness, orbit pass predictions, satellite pass Pune" />
-  <meta name="author" content="Ajitsinh" />
+  <!-- Primary Meta Tags -->
+  <title>Orbital Eye — 3D Space Observatory & Interactive Solar System</title>
+  <meta name="title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
+  <meta name="description" content="Explore Orbital Eye, an interactive 3D WebGL space observatory. Real-time Solar System simulation, live satellite tracking, space probes, and near-Earth asteroid monitoring." />
+  <meta name="keywords" content="Orbital Eye, 3D space observatory, interactive solar system, satellite tracker, ISS live tracker, ISRO satellites, asteroid tracker, space situational awareness" />
+  <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/" />
+  <link rel="canonical" href="https://orbitaleye.in/" />
   <link rel="manifest" href="manifest.json" />
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/" />
-  <meta property="og:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta property="og:description" content="Real-time 3D orbital visualization, ISS live tracking, and ISRO satellite pass predictions." />
-  <meta property="og:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta property="og:site_name" content="Orbital Eye Space Observatory" />
+  <meta property="og:url" content="https://orbitaleye.in/" />
+  <meta property="og:title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
+  <meta property="og:description" content="Interactive 3D space observatory featuring Keplerian planetary orbits, live Earth satellite tracking, and deep-space exploration." />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://god-s-eye-ah3d.onrender.com/" />
-  <meta name="twitter:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta name="twitter:description" content="Live 3D WebGL orbital command platform and satellite tracking engine." />
+  <meta name="twitter:url" content="https://orbitaleye.in/" />
+  <meta name="twitter:title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
+  <meta name="twitter:description" content="Explore an interactive 3D WebGL space observatory with real-time Solar System simulation and satellite tracking." />
+  <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "God's Eye Orbital Command",
-    "url": "https://god-s-eye-ah3d.onrender.com/",
-    "description": "3D WebGL Space Situational Awareness platform featuring live orbital propagation, ISRO asset tracking, and observer pass predictions.",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "All modern browsers (WebGL 2.0)",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "creator": {
-      "@type": "Person",
-      "name": "Ajitsinh"
-    }
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://orbitaleye.in/#webapp",
+        "name": "Orbital Eye Space Observatory",
+        "url": "https://orbitaleye.in/",
+        "description": "Interactive 3D WebGL space observatory inspired by NASA Eyes, providing real-time Keplerian orbital simulation, Earth satellite tracking, planetary science, and near-Earth object screening.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All modern web browsers (WebGL 2.0)",
+        "inLanguage": "en",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Orbital Eye Project",
+          "url": "https://orbitaleye.in/"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Orbital Eye Home",
+            "item": "https://orbitaleye.in/"
+          }
+        ]
+      }
+    ]
   }
   </script>
 
@@ -624,10 +644,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <div id="scale-transition-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-30 px-3.5 py-1.5 rounded-xl hud-glass border border-cyan-500/40 font-mono text-[11px] text-cyan-200 shadow-lg pointer-events-none transition-opacity duration-300">
     <span id="scale-transition-text">Coordinate Frame: Geocentric ECI (km)</span>
   </div>
-  <!-- Accessible Semantic Text for Search Crawlers -->
+  <!-- Accessible Semantic Content for Search Engines & Screen Readers -->
   <main class="sr-only">
-    <h1>Interactive 3D Solar System, Earth Satellites &amp; Observable Universe</h1>
-    <p>Real-time orbital propagation using Keplerian orbital mechanics, diurnal planet rotations, and NASA Eyes-grade atmospheric scattering. Powered by Three.js WebGL.</p>
+    <h1>Orbital Eye: Real-Time 3D Space Observatory &amp; Interactive Solar System</h1>
+    <p>Orbital Eye is an immersive, interactive 3D WebGL space observatory inspired by NASA Eyes. It simulates the Solar System using verified Keplerian physics, tracks Earth satellites via validated SGP4 propagation, monitors interplanetary space probes, and scans for near-Earth asteroid encounters.</p>
+
+    <section>
+      <h2>Core Astronomical &amp; Orbital Features</h2>
+      <p>Explore real-time celestial mechanics, planetary diurnal rotations, true axial tilts, atmospheric scattering, and authoritative ephemerides from NASA JPL Horizons, CelesTrak, and the 18th Space Defense Squadron.</p>
+    </section>
+
+    <nav aria-label="Orbital Eye Public Navigation">
+      <h2>Explore Space Observatory Viewports</h2>
+      <ul>
+        <li><a href="/earth" title="Track Live Earth Orbiting Satellites">Live Earth Orbit &amp; Satellite Tracking — Real-time SGP4 positions for ISS, Cartosat, and Starlink</a></li>
+        <li><a href="/weather" title="Global Atmospheric Radar & Indian District Weather">Atmosphere, Doppler Radar &amp; Indian District Kisan Weather — RainViewer Doppler mosaics and 594 Indian district boundaries</a></li>
+        <li><a href="/asteroids" title="Track Near-Earth Asteroids & Planetary Defense">Near-Earth Asteroid Tracking &amp; Planetary Defense — 2,200+ NEAs, close approaches, and Sentry risk data</a></li>
+        <li><a href="/deepspace" title="Explore Deep Space Probes and Telescopes">Deep Space Probes &amp; Telescopes — JWST, Aditya-L1, Voyager, and 9-tier cosmic hierarchy</a></li>
+        <li><a href="/orbitalert" title="Satellite Pass Predictions & Space Weather Alerts">Satellite Pass Predictions &amp; Space Weather Alerts — Topocentric pass look angles and NOAA Kp geomagnetic storm warnings</a></li>
+      </ul>
+    </nav>
   </main>
 
   <!-- Audio Elements -->
@@ -8125,6 +8161,12 @@ function animate() {
 
     function syncStateToURL() {}
   </script>
+  <!-- Resilient Client, Status Alerts, User Preferences & PWA Engine -->
+  <script type="module" src="js/resilient-client.js"></script>
+  <script type="module" src="js/user-preferences.js"></script>
+  <script type="module" src="js/status-manager.js"></script>
+  <script type="module" src="js/pwa-manager.js"></script>
+  <script type="module" src="js/scientific-workspace.js"></script>
   <!-- Universal Station Calibration & J.A.R.V.I.S. Tactical AI Assistant -->
   <script src="js/universal_location_alerts.js"></script>
   <script src="js/jarvis.js"></script>

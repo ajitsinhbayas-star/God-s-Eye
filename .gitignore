@@ -4,3 +4,6 @@ node_modules/
 diagnostics-db.json
 *.db
 *.db-journal
+data/*.bak
+data/*.tmp*
+.github/

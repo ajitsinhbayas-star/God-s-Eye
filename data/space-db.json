@@ -2,12 +2,12 @@
   "lastUpdated": "2026-10-24T16:55:36.984Z",
   "syncCycles": 0,
   "liveISS": {
-    "latitude": 26.909356940805,
-    "longitude": -153.62142272383,
-    "altitude": 418.96132330189,
-    "velocity": 27591.912407824,
+    "latitude": 2.0646782169173,
+    "longitude": -120.30819077792,
+    "altitude": 415.97778774463,
+    "velocity": 27594.35704705,
     "visibility": "eclipsed",
-    "timestamp": 1793264521867
+    "timestamp": 1793336477975
   },
   "externalIntel": {
     "spaceWeather": {
@@ -15,39 +15,39 @@
       "stormLevel": "G0 (Quiet / Nominal)",
       "gScaleCode": "G0",
       "severity": "nominal",
-      "observationTimeUTC": "2026-10-29T09:01:56.986Z",
-      "updatedAt": "2026-10-29T09:01:56.986Z",
+      "observationTimeUTC": "2026-10-30T05:00:19.297Z",
+      "updatedAt": "2026-10-30T05:00:19.297Z",
       "quality": "fresh",
       "provider": "NOAA Space Weather Prediction Center (SWPC)"
     },
     "neoApproaches": [
       {
-        "des": "2026 UE2",
-        "distKm": 123727
+        "des": "2026 UD",
+        "distKm": 4458856
       },
       {
-        "des": "2022 UV21",
-        "distKm": 5649289
+        "des": "2025 UK9",
+        "distKm": 314648
       },
       {
-        "des": "2026 UC2",
-        "distKm": 1021422
+        "des": "524522",
+        "distKm": 6018477
       }
     ],
     "missionNews": [
       {
-        "id": 40630,
-        "title": "UK MOD Awards £15 Million Orbital Warfare Project to Astroscale",
-        "newsSite": "European Spaceflight"
-      },
-      {
-        "id": 40628,
-        "title": "APOD: 29 October 2026 – The Horns of Venus",
+        "id": 40651,
+        "title": "APOD: 2026 October 30 – Haunting the Cepheus Flare",
         "newsSite": "NASA"
       },
       {
-        "id": 40627,
-        "title": "Arnab Strikes India",
+        "id": 40652,
+        "title": "Vega Island Frozen in Fright",
+        "newsSite": "NASA"
+      },
+      {
+        "id": 40650,
+        "title": "Map Showing Potential Origins of Martian Meteorite Teghaza 001",
         "newsSite": "NASA"
       }
     ]
@@ -67,8 +67,8 @@
       "name": "CelesTrak / NORAD GP Elements",
       "detail": "Active satellite TLE vectors",
       "status": "ok",
-      "label": "Active SGP4 Pipeline (8 Live TLEs, 8 Cached)",
-      "lastFetch": "2026-10-29T09:01:57.764Z",
+      "label": "Active SGP4 Pipeline (15 Live TLEs, 17 Cached)",
+      "lastFetch": "2026-10-30T04:55:19.106Z",
       "latencyMs": 210,
       "quality": "fresh"
     },
@@ -93,7 +93,6 @@
   ],
   "watchlist": [
     "ISS",
-    "CARTOSAT3",
     "ADITYA_L1",
     "EOS04"
   ],
@@ -105,7 +104,10 @@
     "prefHealth": true,
     "observerLat": 18.5204,
     "observerLon": 73.8567,
-    "observerName": "Pune / India Sector"
+    "observerName": "Pune / India Sector",
+    "minElevation": 15,
+    "spaceWeatherKpThreshold": 5,
+    "enablePassAlerts": true
   },
   "events": []
 }

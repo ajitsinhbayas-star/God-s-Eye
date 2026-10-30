@@ -1,4 +1,4 @@
-﻿export const PROVIDER_STATUS = {
+export const PROVIDER_STATUS = {
   ACTIVE: 'ACTIVE',
   NEEDS_CREDENTIALS: 'NEEDS_CREDENTIALS',
   NEEDS_AUTHORIZATION: 'NEEDS_AUTHORIZATION',
@@ -23,11 +23,24 @@ export class ProviderRegistry {
       { id: 'nasa_horizons', name: 'NASA/JPL Horizons System', category: 'SCIENTIFIC_EPHEMERIS', status: PROVIDER_STATUS.ACTIVE, attribution: 'NASA/JPL Solar System Dynamics' },
       { id: 'nasa_jpl_cad', name: 'NASA/JPL Small-Body CAD', category: 'PREDICTION', status: PROVIDER_STATUS.ACTIVE, attribution: 'NASA/JPL CNEOS' },
       { id: 'noaa_swpc', name: 'NOAA Space Weather Prediction Center', category: 'MEASURED', status: PROVIDER_STATUS.ACTIVE, attribution: 'NOAA SWPC' },
-      { id: 'wheretheiss', name: 'WhereTheISS.at', category: 'MEASURED', status: PROVIDER_STATUS.ACTIVE, attribution: 'Bill Shupp / WhereTheISS.at' }
+      { id: 'wheretheiss', name: 'WhereTheISS.at', category: 'MEASURED', status: PROVIDER_STATUS.ACTIVE, attribution: 'Bill Shupp / WhereTheISS.at' },
+      { id: 'rainviewer', name: 'RainViewer Doppler Radar', category: 'MEASURED_RADAR', status: PROVIDER_STATUS.ACTIVE, attribution: 'RainViewer API v2' },
+      { id: 'noaa_nhc', name: 'NOAA National Hurricane Center', category: 'TROPICAL_CYCLONES', status: PROVIDER_STATUS.ACTIVE, attribution: 'NOAA NHC RSMC' },
+      { id: 'nasa_firms', name: 'NASA FIRMS Active Fires', category: 'THERMAL_ANOMALIES', status: process.env.FIRMS_MAP_KEY ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'NASA FIRMS (MODIS/VIIRS)' },
+      { id: 'open_meteo', name: 'Open-Meteo Global Forecast Models', category: 'NWP_FORECAST', status: PROVIDER_STATUS.ACTIVE, attribution: 'Open-Meteo' }
     ];
 
     list.forEach(p => {
-      this.providers.set(p.id, { ...p, lastAttempt: null, lastSuccess: null, lastError: null, latencyMs: 0 });
+      this.providers.set(p.id, {
+        ...p,
+        lastAttempt: null,
+        lastSuccess: null,
+        lastError: null,
+        latencyMs: 0,
+        successCount: 0,
+        failureCount: 0,
+        totalCalls: 0
+      });
       this.circuitBreakers.set(p.id, { failures: 0, state: 'CLOSED', nextAttempt: 0 });
     });
   }
@@ -55,6 +68,8 @@ export class ProviderRegistry {
     prov.lastError = null;
     prov.latencyMs = latencyMs;
     prov.status = PROVIDER_STATUS.ACTIVE;
+    prov.successCount = (prov.successCount || 0) + 1;
+    prov.totalCalls = (prov.totalCalls || 0) + 1;
     breaker.failures = 0;
     breaker.state = 'CLOSED';
   }
@@ -65,6 +80,8 @@ export class ProviderRegistry {
     if (!prov) return;
     prov.lastAttempt = new Date().toISOString();
     prov.lastError = errorMsg;
+    prov.failureCount = (prov.failureCount || 0) + 1;
+    prov.totalCalls = (prov.totalCalls || 0) + 1;
     breaker.failures += 1;
     if (breaker.failures >= 3) {
       breaker.state = 'OPEN';

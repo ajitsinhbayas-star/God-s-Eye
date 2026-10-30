@@ -1,4 +1,5 @@
 import { getSpaceStore, saveSpaceStore } from '../db/space-store.js';
+import { providerRegistry } from '../supervisor/registry.js';
 
 /**
  * Maps NOAA Planetary Kp Index to official NOAA Geomagnetic Storm Scale (G-Scale).
@@ -19,6 +20,7 @@ export function mapKpToNoaaGScale(kp) {
 
 export async function syncNoaaSpaceWeather() {
   const spaceStore = getSpaceStore();
+  const t0 = Date.now();
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 6000);
@@ -48,10 +50,13 @@ export async function syncNoaaSpaceWeather() {
           provider: 'NOAA Space Weather Prediction Center (SWPC)'
         };
         await saveSpaceStore();
+        providerRegistry.recordSuccess('noaa_swpc', Date.now() - t0);
         return spaceStore.externalIntel.spaceWeather;
       }
     }
+    providerRegistry.recordFailure('noaa_swpc', `HTTP ${res.status}`);
   } catch (err) {
+    providerRegistry.recordFailure('noaa_swpc', err.message);
     if (spaceStore.externalIntel?.spaceWeather) {
       spaceStore.externalIntel.spaceWeather.quality = 'stale';
     }

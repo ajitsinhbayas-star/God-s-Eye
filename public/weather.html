@@ -4,51 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- Primary SEO Meta Tags -->
-  <title>God's Eye — 3D Atmospheric &amp; Meteorological Command | Live Weather Radar</title>
-  <meta name="title" content="God's Eye — 3D Atmospheric & Meteorological Command | Live Weather Radar" />
-  <meta name="description" content="Explore real-time multi-band Doppler radar mosaics, live precipitation rate analysis, 132 Google Earth cities, active tropical cyclone cones, and NASA FIRMS fire hotspots in full-daylight interactive 3D WebGL." />
+  <title>Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye</title>
+  <meta name="title" content="Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye" />
+  <meta name="description" content="Live global Doppler radar mosaics, precipitation rates, active tropical cyclone cones, and 594 verified Indian district boundaries with localized kisan weather forecasts." />
   <meta name="keywords" content="live weather radar, Zoom Earth 3D, Doppler radar live, real-time precipitation analysis, 3D Earth atmosphere, live tropical cyclones tracker, NASA FIRMS fire hotspots, global weather simulator, Open-Meteo ECMWF GFS radar, interactive weather globe, Pune weather radar, India live Doppler weather, free live weather globe" />
   <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/weather" />
+  <link rel="canonical" href="https://orbitaleye.in/weather" />
   <meta name="theme-color" content="#010409" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="God's Eye Atmospheric Command" />
-  <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/weather" />
-  <meta property="og:title" content="God's Eye — 3D Atmospheric & Meteorological Command | Live Weather Radar" />
-  <meta property="og:description" content="Real-time multi-band Doppler radar mosaics, global precipitation analysis, 132 Google Earth cities, live tropical cyclones, and NASA FIRMS active fire hotspots in full-daylight 3D WebGL." />
-  <meta property="og:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta property="og:site_name" content="Orbital Eye Weather &amp; Atmosphere" />
+  <meta property="og:url" content="https://orbitaleye.in/weather" />
+  <meta property="og:title" content="Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye" />
+  <meta property="og:description" content="Real-time multi-band Doppler radar mosaics, active cyclones, and 594 verified Indian district boundaries with localized kisan agricultural forecasts." />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://god-s-eye-ah3d.onrender.com/weather" />
+  <meta name="twitter:url" content="https://orbitaleye.in/weather" />
   <meta name="twitter:title" content="God's Eye — 3D Atmospheric & Meteorological Command | Live Weather Radar" />
-  <meta name="twitter:description" content="Global Doppler radar nowcasts, precipitation rates, live tropical storm cones, and Google Earth place names in 3D." />
-  <meta name="twitter:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta name="twitter:description" content="Global Doppler radar nowcasts and 594 verified Indian district boundaries with kisan agricultural weather." />
+  <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- JSON-LD Structured Data Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "God's Eye 3D Atmospheric Command",
-    "url": "https://god-s-eye-ah3d.onrender.com/weather",
-    "description": "3D interactive Earth atmosphere and meteorological command center with full-time daylight visualization, Google Earth-style dynamic place labeling, multi-band Doppler radar precipitation analysis, live tropical cyclones, and on-screen zoom/navigation controls.",
-    "applicationCategory": "WeatherApplication",
-    "operatingSystem": "All",
-    "author": {
-      "@type": "Person",
-      "name": "Ajitsinh Bayas"
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "USD"
-    }
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://orbitaleye.in/weather#webapp",
+        "name": "Orbital Eye Meteorological & Farmer Weather Engine",
+        "url": "https://orbitaleye.in/weather",
+        "description": "Interactive 3D WebGL atmosphere and Doppler radar viewer featuring 594 verified Indian district administrative boundaries, agricultural forecasts, and storm tracking.",
+        "applicationCategory": "WeatherApplication",
+        "operatingSystem": "All modern browsers (WebGL 2.0)",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Dataset",
+        "@id": "https://orbitaleye.in/weather#dataset",
+        "name": "Indian Administrative District Boundary & NWP Weather Data",
+        "description": "594 verified multi-polygon district boundaries for India with Open-Meteo high-resolution NWP forecasts and meteorological alerts.",
+        "creator": {
+          "@type": "Organization",
+          "name": "Orbital Eye Space Observatory"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://orbitaleye.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Atmosphere & Kisan District Weather",
+            "item": "https://orbitaleye.in/weather"
+          }
+        ]
+      }
+    ]
   }
   </script>
 
@@ -58,6 +82,9 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data/india-districts-index.js"></script>
+  <script src="data/india-states-data.js"></script>
+  <script src="data/india-districts-data.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
@@ -119,6 +146,68 @@
       transform: translate(-50%, -50%) scale(1.15);
       z-index: 30;
     }
+
+    .dark-tiles {
+      filter: invert(100%) hue-rotate(180deg) brightness(75%) contrast(125%) saturate(70%);
+    }
+
+    /* Kisan District Popup */
+    .kisan-popup .leaflet-popup-content-wrapper {
+      background: rgba(3, 12, 8, 0.96) !important;
+      border: 1px solid rgba(16, 185, 129, 0.8) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.95), 0 0 20px rgba(16, 185, 129, 0.3) !important;
+      color: #f1f5f9 !important;
+      padding: 0 !important;
+    }
+    .kisan-popup .leaflet-popup-content {
+      margin: 0 !important;
+      line-height: 1.4 !important;
+    }
+    .kisan-popup .leaflet-popup-tip {
+      background: rgba(3, 12, 8, 0.96) !important;
+      border: 1px solid rgba(16, 185, 129, 0.8) !important;
+    }
+    .kisan-popup .leaflet-popup-close-button {
+      color: #6ee7b7 !important;
+      padding: 6px 8px !important;
+      font-size: 16px !important;
+    }
+    .kisan-popup .leaflet-popup-close-button:hover {
+      color: #ffffff !important;
+    }
+
+    /* Dynamic Kisan Map District Labels */
+    .farmer-district-map-label {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    .farmer-district-badge {
+      background: rgba(2, 6, 23, 0.92);
+      border: 1px solid rgba(16, 185, 129, 0.65);
+      color: #a7f3d0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+      white-space: nowrap;
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+      transition: all 0.15s ease-in-out;
+      letter-spacing: 0.2px;
+    }
+    .farmer-district-badge:hover {
+      background: #10b981;
+      color: #020617;
+      border-color: #34d399;
+      transform: scale(1.12);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.85);
+      z-index: 9999 !important;
+    }
   </style>
 </head>
 <body class="relative w-full h-full bg-[#010409]">
@@ -133,97 +222,256 @@
   <div id="map-container" class="absolute inset-0 z-0 hidden"></div>
 
   <!-- TOP COMMAND BAR -->
-  <header class="absolute top-2 left-2 right-2 z-30 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto">
-    <!-- Brand Identity & Simulation Clock -->
-    <div class="flex items-center gap-3">
-      <a href="index.html" class="flex items-center gap-2 group text-white no-underline">
-        <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.6)] transition">
-          <i class="fa-solid fa-cloud-bolt text-cyan-400 text-sm animate-pulse"></i>
-        </span>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition">Orbital Command</span>
-            <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider">DAYLIGHT RADAR</span>
+  <header class="absolute top-2 left-2 right-2 z-30 flex flex-col gap-2 p-2 sm:px-3 rounded-2xl hud-glass pointer-events-auto transition-all">
+    <!-- Row 1: Brand, Mode Switcher Pills & Action Controls -->
+    <div class="flex items-center justify-between gap-2 w-full">
+      <!-- Brand & Mode Indicator -->
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="flex items-center gap-2 text-white no-underline">
+          <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.4)]">
+            <i class="fa-solid fa-cloud-bolt text-cyan-400 text-sm"></i>
+          </span>
+          <div class="hidden sm:block">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold tracking-wider uppercase text-white font-mono">Orbital Eye</span>
+              <span id="header-mode-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/40 font-mono font-bold tracking-wider">KISAN MAP</span>
+            </div>
           </div>
-          <span id="live-utc-clock" class="text-[10px] text-slate-400 font-mono-nums block">UTC --:--:--</span>
-        </div>
-      </a>
+        </a>
 
-      <!-- Domain Navigation Pills -->
-      <nav class="hidden lg:flex items-center gap-1 ml-2 text-xs font-mono">
-        <a href="index.html" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition no-underline">
-          ☀️ Solar
+        <!-- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP <-> NATURAL 3D GLOBE -->
+        <div class="inline-flex items-center p-0.5 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono">
+          <button id="btn-mode-farmer" onclick="setAtmosphereExperience('farmer')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold transition flex items-center gap-1 shadow-sm">
+            <span>🌾</span>
+            <span class="whitespace-nowrap">Kisan District Map</span>
+          </button>
+          <button id="btn-mode-natural3d" onclick="setAtmosphereExperience('natural3d')" class="px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1">
+            <span>🌍</span>
+            <span class="whitespace-nowrap">Natural 3D Globe</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-1.5 font-mono">
+        <!-- Advanced Tools Dropdown Toggle -->
+        <button onclick="toggleAdvancedToolsMenu()" id="btn-adv-tools" class="px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition flex items-center gap-1" title="Advanced Weather & Radar Tools">
+          <i class="fa-solid fa-sliders text-cyan-400"></i>
+          <span class="hidden md:inline text-[11px]">Advanced Tools</span>
+        </button>
+
+        <!-- Sentinel Admin Link -->
+        <a href="sentinel-login.html" class="p-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Operations Console">
+          <i class="fa-solid fa-shield-halved"></i>
         </a>
-        <a href="earth.html" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition no-underline">
-          🌍 Earth Orbit
+
+        <!-- Mobile Navigation Hamburger -->
+        <button onclick="toggleMobileNavMenu()" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Dynamic Mode Controls -->
+    <!-- Mode B: Kisan District Map Controls (Active by Default) -->
+    <div id="farmer-top-controls" class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+      <!-- Search District with Autocomplete -->
+      <div id="farmer-search-wrapper" class="relative flex-1 min-w-[200px]">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
+        <input id="top-farmer-search-input" type="text" autocomplete="off"
+          placeholder="Search your district or city (e.g. Pune / पुणे, Patna / पटना)..."
+          oninput="onFarmerDistrictSearchInput()"
+          class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950/90 border border-emerald-500/50 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition" />
+        <div id="farmer-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-slate-950/98 border border-emerald-500/60 rounded-xl shadow-2xl z-50 divide-y divide-slate-800/80"></div>
+      </div>
+
+      <!-- State Filter Selector -->
+      <div class="min-w-[140px]">
+        <select id="top-farmer-state-select" onchange="onFarmerStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
+          <option value="">All States & UTs (35)</option>
+        </select>
+      </div>
+
+      <!-- District Selector -->
+      <div class="min-w-[140px]">
+        <select id="top-farmer-district-select" onchange="onFarmerDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
+          <option value="">Select District...</option>
+        </select>
+      </div>
+
+      <!-- GPS Button -->
+      <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Detect Location via Device GPS">
+        <span>📍</span>
+        <span>My Location</span>
+      </button>
+
+      <!-- Zoom All India Button -->
+      <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap" title="Zoom to All India">
+        <span>🇮🇳</span>
+        <span>All India</span>
+      </button>
+
+      <!-- Basemap Toggle: Satellite vs Street -->
+      <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm" title="Toggle Satellite Imagery / Street Map">
+        <span id="basemap-icon">🛰️</span>
+        <span id="basemap-text">Satellite</span>
+      </button>
+    </div>
+
+    <!-- Mode A: Natural 3D Globe Controls (Visible in 3D Mode) -->
+    <div id="natural3d-top-controls" class="hidden flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+      <!-- Layer Selector -->
+      <div class="flex items-center gap-1 overflow-x-auto pb-0.5">
+        <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-radar mr-1"></i>Live Radar
+        </button>
+        <button id="mode-precipitation" onclick="setLayerMode('precipitation')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-cloud-showers-heavy mr-1 text-cyan-400"></i>Precipitation Analysis
+        </button>
+        <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition whitespace-nowrap">
+          <i class="fa-solid fa-earth-americas mr-1"></i>Natural 3D
+        </button>
+        <button id="mode-infrared" onclick="setLayerMode('infrared')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-temperature-arrow-up mr-1"></i>Infrared
+        </button>
+        <button id="mode-wind" onclick="setLayerMode('wind')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-wind mr-1"></i>3D Wind
+        </button>
+        <button id="mode-cyclones" onclick="setLayerMode('cyclones')" class="px-2.5 py-1 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition whitespace-nowrap">
+          <i class="fa-solid fa-hurricane mr-1"></i>Tropical Cones
+        </button>
+      </div>
+
+      <!-- 3D Storm / Landmark Search -->
+      <div class="relative min-w-[180px]">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
+        <input id="weather-search" type="text" placeholder="Search city or storm..."
+          class="w-full pl-8 pr-3 py-1 rounded-xl bg-slate-950/90 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition" />
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DROPDOWN MENU -->
+  <div id="mobile-nav-menu" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 flex flex-col justify-between font-mono text-xs">
+    <div class="space-y-3">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <span class="font-bold text-white tracking-wider uppercase text-sm">Orbital Eye Observatories</span>
+        <button onclick="toggleMobileNavMenu()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <nav class="space-y-2">
+        <a href="index.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>☀️</span> <span>Solar System (3D)</span>
         </a>
-        <a href="weather.html" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.4)] transition no-underline font-bold">
-          🌀 Atmosphere
+        <a href="earth.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🌍</span> <span>Earth & Satellites (ISS, LEO/GEO)</span>
         </a>
-        <a href="asteroids.html" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition no-underline">
-          ☄️ Asteroids
+        <a href="weather.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 no-underline">
+          <span>🌀</span> <span>Atmosphere & Kisan Weather</span>
         </a>
-        <a href="deepspace.html" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition no-underline">
-          🌌 Deep Space
+        <a href="asteroids.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>☄️</span> <span>Near-Earth Asteroids</span>
         </a>
-        <a href="orbitalert.html" class="px-2.5 py-1 rounded-lg text-amber-300/90 hover:text-amber-200 hover:bg-amber-950/30 transition no-underline">
-          🔔 OrbitAlert
+        <a href="deepspace.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🌌</span> <span>Deep Space & Telescopes</span>
+        </a>
+        <a href="orbitalert.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-amber-950/50 border border-amber-500/40 text-amber-300 no-underline">
+          <span>🔔</span> <span>OrbitAlert Passes</span>
+        </a>
+        <a href="sentinel-login.html" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 text-emerald-400 no-underline hover:bg-slate-800">
+          <span>🛡️</span> <span>Sentinel Operations Login</span>
         </a>
       </nav>
     </div>
-
-    <!-- Center: Layer Mode Selector (Includes Precipitation Analysis & All Fixed Toggles) -->
-    <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
-      <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-        <i class="fa-solid fa-radar mr-1"></i>Live Radar
-      </button>
-      <button id="mode-precipitation" onclick="setLayerMode('precipitation')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60 transition">
-        <i class="fa-solid fa-cloud-showers-heavy mr-1 text-cyan-400"></i>Precipitation Analysis
-      </button>
-      <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition">
-        <i class="fa-solid fa-earth-americas mr-1"></i>Natural 3D
-      </button>
-      <button id="mode-infrared" onclick="setLayerMode('infrared')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-        <i class="fa-solid fa-temperature-arrow-up mr-1"></i>Infrared
-      </button>
-      <button id="mode-wind" onclick="setLayerMode('wind')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
-        <i class="fa-solid fa-wind mr-1"></i>3D Wind
-      </button>
-      <button id="mode-cyclones" onclick="setLayerMode('cyclones')" class="px-2.5 py-1 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition">
-        <i class="fa-solid fa-hurricane mr-1"></i>Tropical Cones
-      </button>
+    <div class="text-[10px] text-slate-500 text-center pb-2">
+      Orbital Eye Space & Meteorological Observatory
     </div>
+  </div>
 
-    <!-- Right: Search, Projection Switcher & Drawers -->
-    <div class="flex items-center gap-2">
-      <!-- Location / Storm Search -->
-      <div class="relative hidden sm:block">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-        <input id="weather-search" type="text" placeholder="Search city, coordinate, or storm..."
-          class="w-44 md:w-56 pl-8 pr-3 py-1.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition" />
+  <!-- ADVANCED SCIENTIFIC TOOLS DRAWER / MODAL -->
+  <div id="advanced-tools-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 font-mono text-xs">
+    <div class="max-w-md w-full rounded-2xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl p-4 space-y-4 text-slate-200">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2 font-bold text-cyan-300 uppercase tracking-wider">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Advanced Weather Tools</span>
+        </div>
+        <button onclick="toggleAdvancedToolsMenu()" class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">✕</button>
       </div>
 
-      <!-- 3D Globe / 2D Tactical Projection Switcher -->
-      <button id="btn-toggle-projection" onclick="toggleViewportProjection()" class="px-3 py-1.5 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/70 border border-cyan-500/50 text-xs text-cyan-300 font-mono transition flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-        <i id="icon-projection" class="fa-solid fa-map text-xs"></i>
-        <span id="label-projection">2D Tactical Map</span>
-      </button>
+      <div class="space-y-3">
+        <!-- Numerical Model Selector -->
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Numerical Weather Prediction Model</label>
+          <div class="grid grid-cols-3 gap-1.5 text-xs">
+            <button id="model-ecmwf" onclick="setModelSource('ecmwf')" class="py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ECMWF</button>
+            <button id="model-gfs" onclick="setModelSource('gfs')" class="py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white border border-slate-800">GFS</button>
+            <button id="model-icon" onclick="setModelSource('icon')" class="py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white border border-slate-800">ICON</button>
+          </div>
+        </div>
 
-      <!-- Drawers Toggles -->
-      <button onclick="togglePrecipitationPanel()" class="p-2 rounded-xl bg-blue-950/70 hover:bg-blue-900 text-blue-300 border border-blue-500/40 text-xs transition" title="Toggle Precipitation Analysis Dock">
-        <i class="fa-solid fa-chart-simple"></i>
-      </button>
-      <button onclick="toggleLeftDrawer()" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition" title="Toggle Severe Weather Drawer">
-        <i class="fa-solid fa-bolt"></i>
-      </button>
-      <button onclick="toggleRightDrawer()" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition" title="Toggle Atmospheric Controls">
-        <i class="fa-solid fa-sliders"></i>
-      </button>
-      <a href="sentinel-login.html" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Mission Control & Telemetry Ingestion">
-        <i class="fa-solid fa-shield-halved"></i>
-      </a>
+        <!-- Severe Storms & Hotspots Drawer Launchers -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="toggleLeftDrawer(); toggleAdvancedToolsMenu();" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left space-y-1">
+            <div class="flex items-center gap-1.5 text-rose-300 font-bold text-[11px]">
+              <i class="fa-solid fa-bolt"></i> <span>Severe Storms</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-sans">Tropical cyclones & thermal hotspots</div>
+          </button>
+          <button onclick="togglePrecipitationPanel(); toggleAdvancedToolsMenu();" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left space-y-1">
+            <div class="flex items-center gap-1.5 text-blue-300 font-bold text-[11px]">
+              <i class="fa-solid fa-chart-simple"></i> <span>Rain Analysis</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-sans">Doppler reflectivity & rainfall gauge</div>
+          </button>
+        </div>
+      </div>
     </div>
-  </header>
+  </div>
+
+  <!-- SELECTED DISTRICT WEATHER PANEL (Desktop Right Floating Card / Mobile Bottom Sheet) -->
+  <aside id="selected-district-panel" class="fixed z-30 transition-all duration-300
+    sm:top-28 sm:right-4 sm:bottom-auto sm:w-96 sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl sm:border sm:border-emerald-500/50 sm:shadow-2xl sm:bg-slate-950/95 sm:backdrop-blur-xl sm:p-4 sm:overflow-y-auto
+    bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
+    <!-- Panel Header & Drag Handle -->
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/30">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🌾</span>
+        <div>
+          <div class="font-bold text-white text-xs tracking-wider uppercase font-mono">KISAN WEATHER DESK</div>
+          <div class="text-[10px] text-emerald-400 font-sans">Verified Administrative District Data</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="toggleFarmerPanel()" class="sm:hidden px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs font-mono" title="Collapse / Expand">
+          ↕ Sheet
+        </button>
+        <button onclick="closeFarmerPanel()" class="w-6 h-6 rounded-lg bg-slate-900 hover:bg-rose-950/80 border border-slate-700 text-slate-400 hover:text-rose-300 flex items-center justify-center transition">
+          ✕
+        </button>
+      </div>
+    </div>
+    <div id="selected-district-content" class="space-y-3">
+      <!-- Default Prompt if no district selected -->
+      <div class="text-center py-5 text-slate-400 space-y-2.5">
+        <div class="text-3xl">🗺️</div>
+        <p class="font-bold text-white text-xs">Select or Search an Indian District</p>
+        <p class="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
+          Tap any district boundary on the map, select your state above, or type any district name in English or Hindi to inspect live agricultural forecasts, rainfall estimates, and weather warnings.
+        </p>
+        <div class="pt-2">
+          <span class="text-[10px] text-emerald-400 uppercase tracking-wider font-mono block mb-1.5 font-bold">Quick Select Major Agricultural Districts:</span>
+          <div class="flex flex-wrap gap-1.5 justify-center">
+            <button onclick="quickSelectDistrict('MAHARASHTRA_PUNE')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Pune (पुणे)</button>
+            <button onclick="quickSelectDistrict('MAHARASHTRA_LATUR')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Latur (लातूर)</button>
+            <button onclick="quickSelectDistrict('MAHARASHTRA_NASHIK')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Nashik (नाशिक)</button>
+            <button onclick="quickSelectDistrict('PUNJAB_LUDHIANA')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Ludhiana</button>
+            <button onclick="quickSelectDistrict('BIHAR_PATNA')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Patna (पटना)</button>
+            <button onclick="quickSelectDistrict('RAJASTHAN_JAIPUR')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Jaipur (जयपुर)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
 
   <!-- ON-SCREEN TACTICAL NAVIGATION & ZOOM CONTROLS (Desktop Mouse & Mobile Touch Pad) -->
   <div id="tactical-nav-pad" class="absolute bottom-24 right-4 z-25 flex flex-col items-center gap-1.5 p-2 rounded-2xl hud-glass shadow-[0_0_25px_rgba(6,182,212,0.35)] select-none pointer-events-auto">
@@ -263,14 +511,17 @@
     </button>
   </div>
 
-  <!-- LEFT DRAWER: SEVERE WEATHER SYSTEMS & ALERT RADAR -->
-  <aside id="left-drawer" class="absolute top-20 left-2 bottom-20 z-20 w-80 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300">
+  <!-- LEFT DRAWER: SEVERE WEATHER SYSTEMS & ALERT RADAR (Starts Collapsed) -->
+  <aside id="left-drawer" class="absolute top-24 left-2 bottom-20 z-20 w-80 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300 -translate-x-[110%]">
     <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
         <h2 class="text-xs font-bold uppercase tracking-wider text-rose-300 font-mono">Severe Storms & Systems</h2>
       </div>
-      <span id="active-storm-count" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/40 font-mono">3 Active</span>
+      <div class="flex items-center gap-2">
+        <span id="active-storm-count" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/40 font-mono">Scanning...</span>
+        <button onclick="toggleLeftDrawer()" class="text-slate-400 hover:text-white text-xs px-1">✕</button>
+      </div>
     </div>
 
     <!-- Scrollable Cards Container -->
@@ -303,23 +554,23 @@
         <div id="station-telemetry-box" class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono space-y-1.5">
           <div class="flex justify-between items-center">
             <span class="text-slate-400">Temperature:</span>
-            <span id="station-temp" class="text-white font-bold font-mono-nums">30.9 °C</span>
+            <span id="station-temp" class="text-white font-bold font-mono-nums">-- °C</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-slate-400">Feels Like:</span>
-            <span id="station-feels" class="text-cyan-300 font-mono-nums">33.8 °C</span>
+            <span id="station-feels" class="text-cyan-300 font-mono-nums">-- °C</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-slate-400">Barometric Pressure:</span>
-            <span id="station-pressure" class="text-emerald-300 font-mono-nums">949.3 hPa</span>
+            <span id="station-pressure" class="text-emerald-300 font-mono-nums">-- hPa</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-slate-400">Surface Wind:</span>
-            <span id="station-wind" class="text-amber-300 font-mono-nums">3.6 km/h</span>
+            <span id="station-wind" class="text-amber-300 font-mono-nums">-- km/h</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-slate-400">Relative Humidity:</span>
-            <span id="station-humidity" class="text-blue-300 font-mono-nums">40 %</span>
+            <span id="station-humidity" class="text-blue-300 font-mono-nums">-- %</span>
           </div>
         </div>
       </div>
@@ -343,11 +594,11 @@
       <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-[11px]">
           <span class="text-slate-400">Inspector Location:</span>
-          <span id="precip-loc" class="text-white font-bold">Hurricane Helene Eyewall</span>
+          <span id="precip-loc" class="text-white font-bold">Select Point on Globe</span>
         </div>
         <div class="flex justify-between items-center text-[10px] text-slate-500">
           <span>Coordinates:</span>
-          <span id="precip-coords" class="text-cyan-300 font-mono-nums">23.40° N, 85.10° W</span>
+          <span id="precip-coords" class="text-cyan-300 font-mono-nums">--° N, --° E</span>
         </div>
       </div>
 
@@ -355,24 +606,24 @@
       <div class="p-3 rounded-xl bg-gradient-to-br from-slate-950/90 to-blue-950/30 border border-blue-500/40 space-y-2">
         <div class="text-[10px] text-slate-400 uppercase tracking-wider flex justify-between items-center">
           <span>Current Precipitation Rate</span>
-          <span id="precip-type-badge" class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[9px] font-bold">
-            SEVERE THUNDERSTORM / HAIL
+          <span id="precip-type-badge" class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px] font-bold">
+            RADAR NOWCAST
           </span>
         </div>
         <div class="flex items-baseline gap-2">
-          <span id="precip-rate-val" class="text-2xl font-bold text-cyan-300 font-mono-nums">48.0</span>
+          <span id="precip-rate-val" class="text-2xl font-bold text-cyan-300 font-mono-nums">--</span>
           <span class="text-xs text-slate-400">mm / hour</span>
-          <span id="precip-rate-in" class="text-[11px] text-slate-500 font-mono-nums ml-auto">(1.89 in/h)</span>
+          <span id="precip-rate-in" class="text-[11px] text-slate-500 font-mono-nums ml-auto">(-- in/h)</span>
         </div>
 
         <!-- dBZ Meter -->
         <div class="space-y-1 pt-1">
           <div class="flex justify-between text-[10px]">
             <span class="text-slate-400">Doppler Reflectivity:</span>
-            <span id="precip-dbz-val" class="text-rose-400 font-bold font-mono-nums">68 dBZ</span>
+            <span id="precip-dbz-val" class="text-cyan-400 font-bold font-mono-nums">-- dBZ</span>
           </div>
           <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
-            <div id="precip-dbz-bar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-300" style="width: 90%;"></div>
+            <div id="precip-dbz-bar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
           </div>
         </div>
       </div>
@@ -423,25 +674,25 @@
         </div>
       </div>
 
-      <!-- Quick-Jump Precipitation Hotspots -->
+      <!-- Regional Observational Monitoring Stations -->
       <div class="space-y-1.5 pt-1">
-        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Active Precipitation Hotspots</div>
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Regional Meteorological Stations</div>
         <div class="space-y-1 text-[11px]">
-          <button onclick="inspectLocation(23.4, -85.1, 'Hurricane Helene Eyewall', 68, 48.0, 185)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-rose-500/40 transition">
-            <span class="text-rose-300 font-bold truncate">🌀 Helene Eyewall (Gulf)</span>
-            <span class="text-rose-400 font-mono-nums">68 dBZ</span>
+          <button onclick="inspectLocation(18.52, 73.85, 'Western Ghats / Pune Meteorological Station', 38, 12.0, 45)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-emerald-500/40 transition">
+            <span class="text-emerald-300 font-bold truncate">📍 Pune / Western Ghats (IN)</span>
+            <span class="text-emerald-400 font-mono-nums">18.5°N</span>
           </button>
-          <button onclick="inspectLocation(16.4, 67.8, 'Cyclone Sagar-II Rainbands', 58, 34.0, 130)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-cyan-500/40 transition">
-            <span class="text-cyan-300 font-bold truncate">🌀 Sagar-II Bands (Arabian Sea)</span>
-            <span class="text-cyan-400 font-mono-nums">58 dBZ</span>
+          <button onclick="inspectLocation(25.59, 85.14, 'Patna Agro-Meteorological Station', 32, 8.0, 30)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-cyan-500/40 transition">
+            <span class="text-cyan-300 font-bold truncate">📍 Patna / Gangetic Plains (IN)</span>
+            <span class="text-cyan-400 font-mono-nums">25.6°N</span>
           </button>
-          <button onclick="inspectLocation(18.2, 132.5, 'Typhoon Mawar Deep Convection', 72, 62.0, 240)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-purple-500/40 transition">
-            <span class="text-fuchsia-300 font-bold truncate">🌀 Mawar Supercell (Pacific)</span>
-            <span class="text-fuchsia-400 font-mono-nums">72 dBZ</span>
+          <button onclick="inspectLocation(22.57, 88.36, 'Kolkata Regional Radar Station', 36, 14.0, 50)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-blue-500/40 transition">
+            <span class="text-blue-300 font-bold truncate">📍 Kolkata / Bay of Bengal (IN)</span>
+            <span class="text-blue-400 font-mono-nums">22.6°N</span>
           </button>
-          <button onclick="inspectLocation(18.52, 73.85, 'Western Ghats Orographic Rain', 42, 16.5, 65)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-emerald-500/40 transition">
-            <span class="text-emerald-300 font-bold truncate">🌧️ Western Ghats Monsoon (Pune)</span>
-            <span class="text-emerald-400 font-mono-nums">42 dBZ</span>
+          <button onclick="inspectLocation(30.73, 76.78, 'Chandigarh Agricultural Belt', 28, 5.0, 20)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-amber-500/40 transition">
+            <span class="text-amber-300 font-bold truncate">📍 Chandigarh / Punjab Agro (IN)</span>
+            <span class="text-amber-400 font-mono-nums">30.7°N</span>
           </button>
         </div>
       </div>
@@ -576,10 +827,10 @@
     </div>
   </div>
 
-  <!-- BOTTOM HUD: TEMPORAL SCRUBBER & PLAYBACK BAR -->
-  <footer class="absolute bottom-2 left-2 right-2 z-30 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto flex flex-col gap-2">
+  <!-- BOTTOM HUD: TEMPORAL SCRUBBER & PLAYBACK BAR (Natural 3D Mode) -->
+  <footer class="absolute bottom-2 left-2 right-2 z-30 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto flex flex-col gap-2 transition-all">
     <!-- Top Row: Timeline Slider & Controls -->
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
       <!-- Play/Pause Button -->
       <button id="btn-play-pause" onclick="togglePlayback()" class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition">
         <i id="icon-play-pause" class="fa-solid fa-play text-xs"></i>
@@ -591,40 +842,40 @@
       </button>
 
       <!-- Live Sync Button -->
-      <button id="btn-live-sync" onclick="syncToLiveNowcast()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-mono font-bold transition">
+      <button id="btn-live-sync" onclick="syncToLiveNowcast()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] sm:text-[11px] font-mono font-bold transition">
         <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-        <span>LIVE NOWCAST</span>
+        <span>Rain expected soon</span>
       </button>
 
       <!-- Temporal Scrubber Slider (-12h to +72h) -->
-      <div class="flex-1 relative flex items-center">
+      <div class="flex-1 min-w-[140px] relative flex items-center">
         <input type="range" id="timeline-scrubber" min="-12" max="72" value="0" step="0.25"
           class="w-full accent-cyan-400 bg-slate-800 h-2 rounded-lg appearance-none cursor-pointer" oninput="onTimelineScrub(this.value)" />
       </div>
 
       <!-- High-Contrast Timestamp Readout -->
-      <div class="text-right min-w-[180px]">
-        <div id="scrubber-timestamp" class="text-xs font-bold text-white font-mono-nums">2026-10-29 07:15 UTC</div>
+      <div class="text-right min-w-[140px] sm:min-w-[180px]">
+        <div id="scrubber-timestamp" class="text-[11px] sm:text-xs font-bold text-white font-mono-nums">2026-10-29 07:15 UTC</div>
         <div id="scrubber-status-tag" class="text-[9px] font-mono text-emerald-400 tracking-wider">● LIVE RADAR NOWCAST</div>
       </div>
     </div>
 
     <!-- Bottom Row: dBZ Reflectivity Color Ramp Legend -->
-    <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800">
-      <span class="flex items-center gap-1">
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800 gap-1.5">
+      <span class="flex items-center gap-1 whitespace-nowrap">
         <i class="fa-solid fa-droplet text-cyan-400"></i>
-        <span>Precipitation Reflectivity (dBZ):</span>
+        <span>Rain radar intensity:</span>
       </span>
-      <div class="flex items-center gap-1 flex-1 max-w-md mx-3">
+      <div class="flex items-center gap-1 flex-1 min-w-[120px] max-w-md mx-1 sm:mx-3">
         <span class="text-[9px] text-slate-500">5</span>
         <div class="flex-1 h-2 rounded overflow-hidden flex" style="background: linear-gradient(to right, #00ecec, #01a0f6, #0000f6, #00eb00, #009000, #ffff00, #e7c000, #ff9000, #ff0000, #d60000, #c00000, #ff00f0, #9600b4);"></div>
         <span class="text-[9px] text-slate-500">75+</span>
       </div>
-      <div class="flex items-center gap-3 text-[9px]">
-        <span class="text-cyan-300">Light Rain</span>
+      <div class="flex items-center gap-2 sm:gap-3 text-[9px] whitespace-nowrap">
+        <span class="text-cyan-300">Light</span>
         <span class="text-emerald-400">Moderate</span>
         <span class="text-amber-400">Heavy</span>
-        <span class="text-rose-400">Severe / Hail</span>
+        <span class="text-rose-400">Hail</span>
       </div>
     </div>
   </footer>
@@ -655,6 +906,7 @@
     let leafletMap = null;
     let leafletRadarLayer = null;
     let leafletBasemapLayer = null;
+    let leafletBoundariesLayer = null;
 
     // Data Feeds State
     let radarTimestamps = [];
@@ -843,6 +1095,103 @@
       return { lat, lon };
     }
 
+    // --- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP & NATURAL 3D GLOBE ---
+    let currentAtmosphereMode = 'farmer'; // 'farmer' (Kisan District Map) | 'natural3d' (Natural 3D Globe)
+
+    function setAtmosphereExperience(mode) {
+      currentAtmosphereMode = mode;
+      const btnFarmer = document.getElementById('btn-mode-farmer');
+      const btnNatural = document.getElementById('btn-mode-natural3d');
+      const farmerControls = document.getElementById('farmer-top-controls');
+      const naturalControls = document.getElementById('natural3d-top-controls');
+      const globeEl = document.getElementById('globe-container');
+      const globeLabels = document.getElementById('globe-labels-layer');
+      const mapEl = document.getElementById('map-container');
+      const navPad = document.getElementById('tactical-nav-pad');
+      const footerScrubber = document.querySelector('footer');
+      const badge = document.getElementById('header-mode-badge');
+      const panel = document.getElementById('selected-district-panel');
+
+      if (mode === 'farmer') {
+        currentProjection = '2d';
+        if (badge) {
+          badge.innerText = 'KISAN MAP';
+          badge.className = 'text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/40 font-mono font-bold tracking-wider';
+        }
+        if (btnFarmer) {
+          btnFarmer.className = 'px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold transition flex items-center gap-1 shadow-sm';
+        }
+        if (btnNatural) {
+          btnNatural.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1';
+        }
+
+        if (farmerControls) farmerControls.classList.remove('hidden');
+        if (naturalControls) naturalControls.classList.add('hidden');
+
+        if (globeEl) globeEl.classList.add('hidden');
+        if (globeLabels) globeLabels.classList.add('hidden');
+        if (mapEl) mapEl.classList.remove('hidden');
+        if (navPad) navPad.classList.add('hidden');
+        if (footerScrubber) footerScrubber.classList.add('hidden');
+        if (panel) panel.classList.remove('hidden');
+
+        init2DMap();
+        setTimeout(() => {
+          if (typeof window.initLeafletDistrictLayers === 'function') {
+            window.initLeafletDistrictLayers();
+          }
+          const urlP = new URLSearchParams(window.location.search);
+          const hasTarget = window.selectedDistrictId || urlP.get('district');
+          if (typeof window.zoomToAllIndia === 'function' && !hasTarget) {
+            window.zoomToAllIndia();
+          }
+        }, 150);
+
+      } else {
+        currentProjection = '3d';
+        if (badge) {
+          badge.innerText = 'NATURAL 3D';
+          badge.className = 'text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded border border-cyan-500/40 font-mono font-bold tracking-wider';
+        }
+        if (btnNatural) {
+          btnNatural.className = 'px-2.5 sm:px-3 py-1 rounded-lg bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1 shadow-sm';
+        }
+        if (btnFarmer) {
+          btnFarmer.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1';
+        }
+
+        if (naturalControls) naturalControls.classList.remove('hidden');
+        if (farmerControls) farmerControls.classList.add('hidden');
+
+        if (mapEl) mapEl.classList.add('hidden');
+        if (panel) panel.classList.add('hidden');
+        if (globeEl) globeEl.classList.remove('hidden');
+        if (globeLabels) globeLabels.classList.remove('hidden');
+        if (navPad) navPad.classList.remove('hidden');
+        if (footerScrubber) footerScrubber.classList.remove('hidden');
+
+        if (typeof flyToLatLon3D === 'function') {
+          flyToLatLon3D(20.59, 78.96, 4.8); // Focus India & Asia by default in 3D
+        }
+        if (typeof onWindowResize === 'function') {
+          onWindowResize();
+        }
+      }
+    }
+    window.setAtmosphereExperience = setAtmosphereExperience;
+
+    function toggleAdvancedToolsMenu() {
+      const m = document.getElementById('advanced-tools-modal');
+      if (m) m.classList.toggle('hidden');
+    }
+    window.toggleAdvancedToolsMenu = toggleAdvancedToolsMenu;
+
+    function toggleMobileNavMenu() {
+      const m = document.getElementById('mobile-nav-menu');
+      if (m) m.classList.toggle('hidden');
+    }
+    window.toggleMobileNavMenu = toggleMobileNavMenu;
+
     // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
       initClock();
@@ -854,22 +1203,80 @@
       setupGlobeClickListener();
       setLayerMode('natural');
 
-    function handleWeatherHash() {
-      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
-      if (!hash) return;
-      if (['radar', 'precipitation', 'natural', 'infrared', 'wind', 'cyclones'].includes(hash)) {
-        if (typeof setLayerMode === 'function') setLayerMode(hash);
-      } else if (typeof GEOGRAPHIC_LANDMARKS !== 'undefined') {
-        const matched = GEOGRAPHIC_LANDMARKS.find(l => l.name.toLowerCase() === hash || l.name.toLowerCase().includes(hash));
-        if (matched && typeof flyToLatLon3D === 'function') {
-          flyToLatLon3D(matched.lat, matched.lon, 2.5);
-          if (typeof analyzePrecipitationForPoint === 'function') analyzePrecipitationForPoint(matched.lat, matched.lon, matched.name);
+      // Initialize in Farmer Mode by default
+      const urlParams = new URLSearchParams(window.location.search);
+      const distQueryParam = urlParams.get('district');
+      const is3DHash = window.location.hash.toLowerCase().includes('3d') || urlParams.get('mode') === '3d';
+      setAtmosphereExperience(is3DHash ? 'natural3d' : 'farmer');
+
+      if (distQueryParam) {
+        setAtmosphereExperience('farmer');
+        const selectFromParam = () => {
+          if (window.districtIndexData && Array.isArray(window.districtIndexData.districts)) {
+            const matched = window.districtIndexData.districts.find(d => 
+              d.district.toLowerCase() === distQueryParam.toLowerCase() || 
+              d.id.toLowerCase() === distQueryParam.toLowerCase() || 
+              d.id.toLowerCase().includes(distQueryParam.toLowerCase())
+            );
+            if (matched) {
+              window.selectDistrictById(matched.id);
+              return true;
+            }
+          }
+          return false;
+        };
+        if (!selectFromParam()) {
+          setTimeout(selectFromParam, 400);
+          setTimeout(selectFromParam, 1000);
         }
       }
-    }
-    window.addEventListener('hashchange', handleWeatherHash);
-    setTimeout(handleWeatherHash, 300);
-  
+
+      function handleWeatherHash() {
+        const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+        if (!hash) return;
+        if (hash === 'farmer' || hash === 'kisan') {
+          setAtmosphereExperience('farmer');
+          return;
+        } else if (hash === '3d' || hash === 'natural' || hash === 'globe') {
+          setAtmosphereExperience('natural3d');
+          return;
+        } else if (['radar', 'precipitation', 'natural', 'infrared', 'wind', 'cyclones'].includes(hash)) {
+          setAtmosphereExperience('natural3d');
+          if (typeof setLayerMode === 'function') setLayerMode(hash);
+          return;
+        } else if (hash.startsWith('farmer/') || hash.startsWith('district/') || hash.startsWith('kisan/')) {
+          const distQuery = hash.split('/')[1];
+          setAtmosphereExperience('farmer');
+          const checkAndSelect = () => {
+            if (window.districtIndexData && Array.isArray(window.districtIndexData.districts)) {
+              const matched = window.districtIndexData.districts.find(d => 
+                d.district.toLowerCase() === distQuery || 
+                d.id.toLowerCase() === distQuery || 
+                d.id.toLowerCase().includes(distQuery)
+              );
+              if (matched) {
+                window.selectDistrictById(matched.id);
+                return true;
+              }
+            }
+            return false;
+          };
+          if (!checkAndSelect()) {
+            setTimeout(checkAndSelect, 400);
+            setTimeout(checkAndSelect, 1000);
+          }
+          return;
+        } else if (typeof GEOGRAPHIC_LANDMARKS !== 'undefined') {
+          const matched = GEOGRAPHIC_LANDMARKS.find(l => l.name.toLowerCase() === hash || l.name.toLowerCase().includes(hash));
+          if (matched && typeof flyToLatLon3D === 'function') {
+            setAtmosphereExperience('natural3d');
+            flyToLatLon3D(matched.lat, matched.lon, 2.5);
+            if (typeof analyzePrecipitationForPoint === 'function') analyzePrecipitationForPoint(matched.lat, matched.lon, matched.name);
+          }
+        }
+      }
+      window.addEventListener('hashchange', handleWeatherHash);
+      setTimeout(handleWeatherHash, 300);
     });
 
     // --- SIMULATION CLOCK ---
@@ -1058,21 +1465,17 @@
         }
       }
 
-      // 1. Hurricane Helene Convective Eyewall & Feeder Bands (Gulf / Florida)
-      drawRadarCell(23.4, -85.1, 48, 68, true);
-      drawRadarCell(25.8, -84.2, 34, 55, false);
-      drawRadarCell(28.2, -83.5, 28, 48, false);
+      // Draw live tropical cyclone cells if reported by NOAA NHC / JTWC
+      if (Array.isArray(activeCyclonesData) && activeCyclonesData.length > 0) {
+        activeCyclonesData.forEach(storm => {
+          if (typeof storm.lat === 'number' && typeof storm.lon === 'number') {
+            const dbz = Math.min(75, 45 + Math.round((storm.windSpeedKmh || 100) / 6));
+            drawRadarCell(storm.lat, storm.lon, 44, dbz, true);
+          }
+        });
+      }
 
-      // 2. Cyclone Sagar-II Core (Arabian Sea / Gujarat)
-      drawRadarCell(16.4, 67.8, 44, 58, true);
-      drawRadarCell(18.2, 69.1, 30, 46, false);
-      drawRadarCell(14.8, 71.2, 26, 40, false);
-
-      // 3. Super Typhoon Mawar Severe Convective Eye (Pacific)
-      drawRadarCell(18.2, 132.5, 54, 74, true);
-      drawRadarCell(20.4, 130.8, 36, 60, false);
-
-      // 4. Tropical ITCZ Monsoon Belts & Orographic Precipitation
+      // Tropical ITCZ Monsoon Belts & Regional Radar Echoes
       drawRadarCell(18.5, 73.8, 22, 42, false); // Western Ghats (Pune)
       drawRadarCell(12.9, 77.5, 18, 38, false); // South India
       drawRadarCell(22.5, 88.3, 24, 45, false); // Bay of Bengal / Bengal
@@ -2062,28 +2465,70 @@
 
     // --- 2D TACTICAL LEAFLET MAP INITIALIZATION ---
     function init2DMap() {
-      if (leafletMap) return;
+      if (leafletMap) {
+        window.leafletMap = leafletMap;
+        return;
+      }
 
       leafletMap = L.map('map-container', {
-        center: [18.5, 73.8],
-        zoom: 4,
+        center: [22.5, 82.0], // All India center by default
+        zoom: 5,
         zoomControl: false,
         attributionControl: false,
-        minZoom: 2,
-        maxZoom: 16
+        minZoom: 3,
+        maxZoom: 18
       });
+
+      window.leafletMap = leafletMap;
 
       L.control.zoom({ position: 'topright' }).addTo(leafletMap);
 
-      leafletBasemapLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 16,
-        attribution: 'Esri, HERE, Garmin'
+      leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18,
+        attribution: '&copy; Esri, Maxar'
       }).addTo(leafletMap);
 
       if (radarTimestamps.length) {
         renderLeafletRadar(radarTimestamps[currentRadarIndex]);
       }
     }
+    window.init2DMap = init2DMap;
+
+    let currentKisanBasemap = 'satellite';
+    function setBasemapStyle(type) {
+      if (!leafletMap) return;
+      if (type === 'satellite') {
+        if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
+        leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          attribution: '&copy; Esri, Maxar'
+        }).addTo(leafletMap);
+      } else {
+        if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
+        leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          attribution: '&copy; Esri'
+        }).addTo(leafletMap);
+      }
+    }
+    window.setBasemapStyle = setBasemapStyle;
+
+    function toggleKisanBasemap() {
+      const btnText = document.getElementById('basemap-text');
+      const btnIcon = document.getElementById('basemap-icon');
+      if (currentKisanBasemap === 'satellite') {
+        currentKisanBasemap = 'street';
+        setBasemapStyle('street');
+        if (btnText) btnText.innerText = 'Street';
+        if (btnIcon) btnIcon.innerText = '🗺️';
+      } else {
+        currentKisanBasemap = 'satellite';
+        setBasemapStyle('satellite');
+        if (btnText) btnText.innerText = 'Satellite';
+        if (btnIcon) btnIcon.innerText = '🛰️';
+      }
+    }
+    window.toggleKisanBasemap = toggleKisanBasemap;
 
     function renderLeafletRadar(frame) {
       if (!leafletMap || !frame) return;
@@ -2171,17 +2616,41 @@
   </script>
   <!-- Accessible Semantic Text for Search Crawlers -->
   <main class="sr-only">
-    <h1>Live 3D Earth Weather Radar, Atmosphere &amp; Meteorological Command Center</h1>
-    <p>God's Eye provides real-time global Doppler radar mosaics, precipitation rate calculations, and convective storm tracking on an interactive 3D WebGL globe. Ingesting open data from RainViewer API, Open-Meteo numerical weather prediction models (ECMWF, GFS, ICON), and NASA FIRMS active fire hotspots.</p>
-    <h2>Key Meteorological Features:</h2>
-    <ul>
-      <li>Multi-band Doppler radar precipitation analysis with millimeter-per-hour and dBZ reflectivity measurements.</li>
-      <li>Full-time bright daylight illumination across all longitudes without dark shadow obscuration.</li>
-      <li>Google Earth-style Level-of-Detail (LOD) place labeling featuring 132 major world cities and regional weather hubs.</li>
-      <li>Active tropical cyclone tracking, central pressure estimations, and forecast cones (IMD, NOAA NHC, JTWC).</li>
-      <li>NASA FIRMS VIIRS and MODIS thermal fire anomaly detection.</li>
-    </ul>
+    <h1>Atmospheric Command, Doppler Radar &amp; Indian District Kisan Weather</h1>
+    <p>Orbital Eye Weather Engine integrates real-time global Doppler radar precipitation mosaics, tropical cyclone storm cones, and high-resolution numerical weather prediction (NWP) models into an interactive 3D WebGL atmosphere.</p>
+
+    <section>
+      <h2>Available Meteorological Layers &amp; Satellite Feeds</h2>
+      <ul>
+        <li><strong>RainViewer Doppler Radar Mosaic:</strong> Multi-band radar reflectivity (dBZ) and precipitation rates updated every 10 minutes.</li>
+        <li><strong>Active Tropical Cyclones:</strong> Real-time storm tracks, central pressure estimates, wind speeds, and forecast cones from NOAA National Hurricane Center (NHC) and India Meteorological Department (IMD).</li>
+        <li><strong>NASA FIRMS Active Fires:</strong> Satellite-detected thermal hotspots from MODIS and VIIRS instruments.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Indian District Boundaries &amp; Farmer Weather System</h2>
+      <p>Features 594 verified multi-polygon district boundaries across all 28 States and 7 Union Territories of India, based on Survey of India and Census baselines. Farmers can search any district, view its exact boundary highlight, and access localized Open-Meteo NWP forecasts (temperature, precipitation mm, humidity %, wind, and crop advisories).</p>
+      <p><strong>Scientific Limitations:</strong> District forecasts are evaluated at representative district central coordinates. Local agricultural microclimates, taluk terrain variations, and localized showers may cause localized differences.</p>
+    </section>
+
+    <nav aria-label="Related Space Observatory Tools">
+      <h2>Related Observatory Views</h2>
+      <ul>
+        <li><a href="/" title="Orbital Eye Space Observatory Home">Orbital Eye Home — Full 3D Solar System simulation</a></li>
+        <li><a href="/earth" title="Live Earth Satellites">Live Earth Satellites — LEO/GEO orbits, ISS, and ISRO Cartosat tracking</a></li>
+        <li><a href="/asteroids" title="Near-Earth Asteroids">Near-Earth Asteroids — 2,200+ planetary defense asteroid orbits and close approaches</a></li>
+        <li><a href="/deepspace" title="Deep Space Missions">Deep Space Missions — JWST, Aditya-L1 halo orbit, and Voyager probes</a></li>
+        <li><a href="/orbitalert" title="Satellite Pass Predictions">OrbitAlert — Topocentric pass predictions and NOAA space weather alerts</a></li>
+      </ul>
+    </nav>
   </main>
+  <!-- Resilient Client, Status Alerts, User Preferences & PWA Engine -->
+  <script type="module" src="js/resilient-client.js"></script>
+  <script type="module" src="js/user-preferences.js"></script>
+  <script type="module" src="js/status-manager.js"></script>
+  <script type="module" src="js/pwa-manager.js"></script>
+  <script src="js/farmer-district-map.js"></script>
   <script src="js/universal_location_alerts.js"></script>
   <script src="js/jarvis.js"></script>
 </body>

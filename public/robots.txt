@@ -13,4 +13,4 @@ Disallow: /api/
 Disallow: /.env
 Disallow: /data/
 
-Sitemap: https://god-s-eye-ah3d.onrender.com/sitemap.xml
+Sitemap: https://orbitaleye.in/sitemap.xml

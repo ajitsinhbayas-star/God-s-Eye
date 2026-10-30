@@ -10,7 +10,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon --env-file=.env src/server.js",
-    "test:system": "node tests/verify-system.js"
+    "test": "node tests/verify-system.js",
+    "test:system": "node tests/verify-system.js",
+    "check": "node scripts/check-syntax.js",
+    "audit:secrets": "node scripts/check-secrets.js"
   },
   "dependencies": {
     "compression": "^1.8.2",

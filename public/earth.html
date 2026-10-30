@@ -162,48 +162,80 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- Primary Meta Tags -->
-  <title>God's Eye — 3D Earth Orbit & Satellite Tracking</title>
-  <meta name="title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta name="description" content="Track the ISS, ISRO satellites, and deep-space missions in real-time 3D WebGL. High-accuracy pass predictions, conjunction alerts, and space weather monitoring." />
-  <meta name="keywords" content="satellite tracker, ISS live tracker, ISRO Cartosat, 3D WebGL space, space situational awareness, orbit pass predictions, satellite pass Pune" />
-  <meta name="author" content="Ajitsinh" />
+  <!-- Primary Meta Tags -->
+  <title>Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye</title>
+  <meta name="title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
+  <meta name="description" content="Track real-time satellite positions, the International Space Station (ISS), ISRO Cartosat fleet, and Starlink constellations in 3D using validated SGP4 orbital propagation." />
+  <meta name="keywords" content="satellite tracking, live satellite positions, ISS tracker, ISRO satellites, Earth orbit visualization, SGP4 orbital propagation, Starlink orbits" />
+  <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/" />
+  <link rel="canonical" href="https://orbitaleye.in/earth" />
   <link rel="manifest" href="manifest.json" />
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/" />
-  <meta property="og:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta property="og:description" content="Real-time 3D orbital visualization, ISS live tracking, and ISRO satellite pass predictions." />
-  <meta property="og:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta property="og:site_name" content="Orbital Eye Space Observatory" />
+  <meta property="og:url" content="https://orbitaleye.in/earth" />
+  <meta property="og:title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
+  <meta property="og:description" content="Real-time 3D Earth orbit visualization and satellite tracking with SGP4 propagation." />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://god-s-eye-ah3d.onrender.com/" />
-  <meta name="twitter:title" content="God's Eye — 3D Orbital Command & Space Situational Awareness" />
-  <meta name="twitter:description" content="Live 3D WebGL orbital command platform and satellite tracking engine." />
+  <meta name="twitter:url" content="https://orbitaleye.in/earth" />
+  <meta name="twitter:title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
+  <meta name="twitter:description" content="Track real-time satellite positions, the ISS, and orbital trajectories in 3D WebGL." />
+  <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "God's Eye Orbital Command",
-    "url": "https://god-s-eye-ah3d.onrender.com/",
-    "description": "3D WebGL Space Situational Awareness platform featuring live orbital propagation, ISRO asset tracking, and observer pass predictions.",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "All modern browsers (WebGL 2.0)",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "creator": {
-      "@type": "Person",
-      "name": "Ajitsinh"
-    }
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://orbitaleye.in/earth#webapp",
+        "name": "Orbital Eye Satellite Tracker",
+        "url": "https://orbitaleye.in/earth",
+        "description": "Real-time 3D Earth satellite tracking engine utilizing SGP4 mathematical propagation for ISS, Tiangong, ISRO, and commercial fleets.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All modern browsers (WebGL 2.0)",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Dataset",
+        "@id": "https://orbitaleye.in/earth#dataset",
+        "name": "Orbital Eye Earth Satellite Ephemeris Catalog",
+        "description": "Authoritative two-line element sets (TLEs) and Cartesian state vectors for Earth-orbiting satellites.",
+        "creator": {
+          "@type": "Organization",
+          "name": "Orbital Eye Space Observatory"
+        },
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "distribution": {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://orbitaleye.in/api/space/bootstrap"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://orbitaleye.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Live Satellite Tracking",
+            "item": "https://orbitaleye.in/earth"
+          }
+        ]
+      }
+    ]
   }
   </script>
 
@@ -642,10 +674,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <div id="scale-transition-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-30 px-3.5 py-1.5 rounded-xl hud-glass border border-cyan-500/40 font-mono text-[11px] text-cyan-200 shadow-lg pointer-events-none transition-opacity duration-300">
     <span id="scale-transition-text">Coordinate Frame: Geocentric ECI (km)</span>
   </div>
-  <!-- Accessible Semantic Text for Search Crawlers -->
+  <!-- Accessible Semantic Content for Search Engines & Screen Readers -->
   <main class="sr-only">
-    <h1>Interactive 3D Solar System, Earth Satellites &amp; Observable Universe</h1>
-    <p>Real-time orbital propagation using Keplerian orbital mechanics, diurnal planet rotations, and NASA Eyes-grade atmospheric scattering. Powered by Three.js WebGL.</p>
+    <h1>Live Satellite Tracking, Orbital Trajectories &amp; Earth Observation</h1>
+    <p>Orbital Eye provides high-precision real-time satellite tracking and 3D Earth orbit visualization. Telemetry coordinates are derived from authoritative two-line element sets (TLEs) published by CelesTrak and the 18th Space Defense Squadron, propagated using standard Simplified General Perturbations-4 (SGP4) mathematical models.</p>
+
+    <section>
+      <h2>Supported Orbital Regimes &amp; Spacecraft</h2>
+      <p>Monitor Low Earth Orbit (LEO), Medium Earth Orbit (MEO), Geostationary Orbit (GEO), and Sun-Synchronous Orbits (SSO). Featured spacecraft include the International Space Station (ISS), Tiangong Space Station, ISRO Cartosat-3 and EOS-04, NavIC (IRNSS) constellation, Hubble Space Telescope, and Starlink megaconstellation batches.</p>
+    </section>
+
+    <section>
+      <h2>Telemetry Methodology: Live Observations vs. SGP4 Propagation</h2>
+      <p>Calculated satellite positions reflect high-precision SGP4 propagation from recent orbital epochs. Direct live telemetry feeds (e.g. WhereTheISS.at real-time ping and SatNOGS radio transmitter passes) are synchronized continuously to maintain sub-second visual accuracy.</p>
+    </section>
+
+    <nav aria-label="Related Space Observatory Tools">
+      <h2>Related Observatory Views</h2>
+      <ul>
+        <li><a href="/" title="Interactive 3D Solar System">Orbital Eye Home — Full-scale 3D Solar System exploration</a></li>
+        <li><a href="/orbitalert" title="Satellite Pass Predictions">OrbitAlert — Calculate visible overhead passes, AOS/TCA/LOS look angles, and twilight visibility</a></li>
+        <li><a href="/weather" title="Atmospheric Radar and Weather">Atmosphere &amp; Weather — Live Doppler radar mosaics and Indian district kisan forecasts</a></li>
+        <li><a href="/asteroids" title="Near-Earth Asteroid Tracker">Near-Earth Asteroids — 2,200+ planetary defense asteroid orbits and close approaches</a></li>
+        <li><a href="/deepspace" title="Deep Space Missions">Deep Space Missions — JWST, Aditya-L1 halo orbit, and Voyager interstellar probes</a></li>
+      </ul>
+    </nav>
   </main>
 
   <!-- Audio Elements -->
@@ -736,6 +789,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <button onclick="toggleHeaderMoreMenu(); window.toggleNasaMultiHub();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-emerald-300 flex items-center justify-between">
             <span>📡 Data & Missions Hub</span>
             <span class="text-[9px] text-slate-500">DSN/NEO</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.scientificWorkspace.openAnalysis(selectedSat ? selectedSat.id : 'iss');" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between">
+            <span>🔬 Scientific Workspace</span>
+            <span class="text-[9px] text-slate-500">Analysis</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.scientificWorkspace.openComparisonModal();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-emerald-300 flex items-center justify-between">
+            <span>⇄ Object Comparison</span>
+            <span class="text-[9px] text-slate-500">Compare</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.scientificWorkspace.openMissionExplorer();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-indigo-300 flex items-center justify-between">
+            <span>🚀 Mission Explorer</span>
+            <span class="text-[9px] text-slate-500">Missions</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.toggleConjunctionsModal();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-rose-300 flex items-center justify-between">
+            <span>⚠️ Conjunction Screening</span>
+            <span class="text-[9px] text-slate-500">Close Encs</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.toggleReentryModal();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-amber-300 flex items-center justify-between">
+            <span>🔥 Re-entry & Decay Tracker</span>
+            <span class="text-[9px] text-slate-500">TIP/SATCAT</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.toggleGroundStationsModal();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between">
+            <span>🌐 Ground Station Network</span>
+            <span class="text-[9px] text-slate-500">SatNOGS/DSN</span>
+          </button>
+          <button onclick="toggleHeaderMoreMenu(); window.toggleGlossaryModal();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-indigo-300 flex items-center justify-between">
+            <span>🔬 Scientific Explanations</span>
+            <span class="text-[9px] text-slate-500">Glossary</span>
           </button>
           <button onclick="toggleHeaderMoreMenu(); toggleVideoPanel();" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-rose-300 flex items-center justify-between">
             <span>📺 Live Video Stream</span>
@@ -984,6 +1065,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
             <span>Data Epoch: <b id="card-intel-epoch" class="text-slate-300">Live Simulation</b></span>
             <span>Ref: <b id="card-intel-ref-frame" class="text-slate-300">ECI (WGS84)</b></span>
+          </div>
+          <div class="pt-2">
+            <button onclick="window.scientificWorkspace.openAnalysis(window.currentInspectorTargetId || (selectedSat ? selectedSat.id : 'iss'))" class="w-full py-1.5 px-3 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer">
+              <span>🔬 Open Scientific Workspace</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </button>
           </div>
         </div>
 
@@ -1809,7 +1896,18 @@ window.camera = camera;
       logarithmicDepthBuffer: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const getTargetPixelDensity = () => {
+      if (window.userPreferences && typeof window.userPreferences.getEffectivePixelDensity === 'function') {
+        return window.userPreferences.getEffectivePixelDensity();
+      }
+      return Math.min(window.devicePixelRatio || 1, 1.5);
+    };
+    renderer.setPixelRatio(getTargetPixelDensity());
+    if (window.userPreferences) {
+      window.userPreferences.subscribe(() => {
+        if (renderer) renderer.setPixelRatio(getTargetPixelDensity());
+      });
+    }
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.25;
     renderer.outputEncoding = THREE.sRGBEncoding;
@@ -3476,6 +3574,145 @@ window.FocusTargetFromHub = function(category, targetName) {
   if (hub) hub.classList.add('hidden');
 };
 
+window.isDebrisLayerVisible = true;
+window.toggleDebrisLayer = function(visible) {
+  window.isDebrisLayerVisible = Boolean(visible);
+};
+
+window.toggleGroundStationsLayer = function(visible) {
+  if (typeof groundNodesGroup !== 'undefined' && groundNodesGroup) {
+    groundNodesGroup.visible = Boolean(visible);
+  }
+};
+
+window.toggleConjunctionsModal = function() {
+  const m = document.getElementById('conjunction-screening-modal');
+  if (!m) return;
+  m.classList.toggle('hidden');
+  if (!m.classList.contains('hidden')) {
+    window.loadConjunctionsData();
+  }
+};
+
+window.loadConjunctionsData = async function() {
+  const c = document.getElementById('conjunction-list-container');
+  if (!c) return;
+  c.innerHTML = '<div class="text-center py-6 text-slate-400 font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Screening unperturbed geometric orbits...</div>';
+  try {
+    const res = await fetch('/api/conjunctions');
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.encounters) || data.encounters.length === 0) {
+      c.innerHTML = '<div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-400 text-center">No geometric close encounters (&lt; 100 km) detected in current 24-hour screening window.</div>';
+      return;
+    }
+    c.innerHTML = data.encounters.map(enc => `
+      <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-rose-400/60 transition space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full ${enc.missDistanceKm < 25 ? 'bg-rose-500 animate-ping' : 'bg-amber-400'}"></span>
+            <span class="font-bold text-white">${enc.object1.name} &times; ${enc.object2.name}</span>
+          </div>
+          <span class="text-rose-300 font-bold px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/30 text-[10px]">&Delta; ${enc.missDistanceKm} km</span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800/80 pt-1">
+          <span>TCA (UTC): ${enc.tcaTimeUTC.replace('T', ' ').slice(0, 19)}</span>
+          <span class="text-slate-500">${enc.object1.type} / ${enc.object2.type}</span>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    c.innerHTML = `<div class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-300 text-center">Failed to load conjunction screening: ${err.message}</div>`;
+  }
+};
+
+window.toggleReentryModal = function() {
+  const m = document.getElementById('reentry-monitoring-modal');
+  if (!m) return;
+  m.classList.toggle('hidden');
+  if (!m.classList.contains('hidden')) {
+    window.loadReentryData();
+  }
+};
+
+window.loadReentryData = async function() {
+  const c = document.getElementById('reentry-list-container');
+  if (!c) return;
+  c.innerHTML = '<div class="text-center py-6 text-slate-400 font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Accessing CelesTrak / Space-Track re-entry records...</div>';
+  try {
+    const res = await fetch('/api/reentry');
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.events) || data.events.length === 0) {
+      c.innerHTML = '<div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-400 text-center">No objects currently designated in imminent atmospheric re-entry window.</div>';
+      return;
+    }
+    c.innerHTML = data.events.map(ev => `
+      <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-amber-400/60 transition space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full ${ev.currentAltitudeKm < 200 ? 'bg-amber-400 animate-ping' : 'bg-slate-400'}"></span>
+            <span class="font-bold text-white">${ev.name} (NORAD ${ev.norad})</span>
+          </div>
+          <span class="text-amber-300 font-bold px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-[10px]">${ev.decayClassification}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 border-t border-slate-800/80 pt-1">
+          <div>Alt: <b class="text-slate-200">${Math.round(ev.currentAltitudeKm)} km</b> (Perigee: ${ev.perigeeKm} km)</div>
+          <div>Inclination Band: <b class="text-slate-200">${ev.inclinationBand}</b></div>
+          <div class="col-span-2">Estimated Window: <b class="text-amber-300">${ev.predictedWindowUTC} (&plusmn;${ev.uncertaintyHours}h)</b></div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    c.innerHTML = `<div class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-300 text-center">Failed to load decay data: ${err.message}</div>`;
+  }
+};
+
+window.toggleGroundStationsModal = function() {
+  const m = document.getElementById('ground-stations-modal');
+  if (!m) return;
+  m.classList.toggle('hidden');
+  if (!m.classList.contains('hidden')) {
+    window.loadGroundStationsData();
+  }
+};
+
+window.loadGroundStationsData = async function() {
+  const c = document.getElementById('stations-list-container');
+  if (!c) return;
+  c.innerHTML = '<div class="text-center py-6 text-slate-400 font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Computing topocentric antenna coverage...</div>';
+  try {
+    const res = await fetch('/api/ground-stations');
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.stations)) {
+      c.innerHTML = '<div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-400 text-center">Unable to load ground station registry.</div>';
+      return;
+    }
+    c.innerHTML = data.stations.map(st => `
+      <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-cyan-400/60 transition space-y-1.5 font-mono">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full ${st.hasGeometricLineOfSight ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}"></span>
+            <span class="font-bold text-white">${st.name}</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded ${st.hasGeometricLineOfSight ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold' : 'bg-slate-800 text-slate-400'}">
+            ${st.hasGeometricLineOfSight ? 'IN LINE-OF-SIGHT' : 'BELOW HORIZON'}
+          </span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800/80 pt-1">
+          <span>Coords: ${st.lat.toFixed(2)}&deg;, ${st.lon.toFixed(2)}&deg; (${st.network})</span>
+          <span>Elevation: <b class="${st.lookAngles.elevationDeg >= 5 ? 'text-emerald-300' : 'text-slate-400'}">${st.lookAngles.elevationDeg.toFixed(1)}&deg;</b></span>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    c.innerHTML = `<div class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-300 text-center">Failed to load station data: ${err.message}</div>`;
+  }
+};
+
+window.toggleGlossaryModal = function() {
+  const m = document.getElementById('scientific-glossary-modal');
+  if (m) m.classList.toggle('hidden');
+};
+
     // Auto-close Header More dropdown when clicking anywhere else
     document.addEventListener('click', (e) => {
       const moreBtn = document.getElementById('btn-header-more');
@@ -3544,17 +3781,24 @@ window.FocusTargetFromHub = function(category, targetName) {
       if (e.key === 'f' || e.key === 'F') toggleFullscreen();
 
       if (e.key === 'Escape') {
-        // Dismiss in reverse z-index order
-        const embedModal = document.getElementById('nasa-embed-modal');
-        if (embedModal && !embedModal.classList.contains('hidden')) {
-          embedModal.classList.add('hidden');
-          return;
-        }
-
-        const dateModal = document.getElementById('nasa-date-modal');
-        if (dateModal && !dateModal.classList.contains('hidden')) {
-          dateModal.classList.add('hidden');
-          return;
+        // Dismiss modals & drawers in reverse z-index order
+        const modalsToDismiss = [
+          'scientific-analysis-modal',
+          'scientific-comparison-modal',
+          'scientific-mission-modal',
+          'conjunction-screening-modal',
+          'reentry-monitoring-modal',
+          'ground-stations-modal',
+          'scientific-glossary-modal',
+          'nasa-embed-modal',
+          'nasa-date-modal'
+        ];
+        for (const mid of modalsToDismiss) {
+          const el = document.getElementById(mid);
+          if (el && !el.classList.contains('hidden')) {
+            el.classList.add('hidden');
+            return;
+          }
         }
 
         const layersDrawer = document.getElementById('nasa-layers-drawer');
@@ -3983,14 +4227,37 @@ window.FocusTargetFromHub = function(category, targetName) {
           const vKmH = Math.round(Math.sqrt(398600.4418 / aKm) * 3600);
           const periodMin = Math.round((2 * Math.PI * Math.sqrt(Math.pow(aKm, 3) / 398600.4418)) / 60);
 
-          document.getElementById('card-grid-lbl-1').innerText = 'Mean Altitude';
-          document.getElementById('card-intel-alt').innerText = `${Math.round(sat.altKm || 500).toLocaleString()} km`;
-          document.getElementById('card-grid-lbl-2').innerText = 'Orbital Velocity';
-          document.getElementById('card-intel-vel').innerText = `${vKmH.toLocaleString()} km/h`;
+          const liveAlt = sat.live?.altKm ?? sat.altKm ?? 500;
+          const liveVel = sat.live?.velKmH ?? vKmH;
+          const isPlanned = sat.status === 'PLANNED_MISSION';
+
+          if (isPlanned) {
+            document.getElementById('card-intel-badge').innerText = 'PLANNED MISSION';
+            document.getElementById('card-intel-badge').className = 'text-[9px] px-1.5 py-0.5 rounded font-bold border border-amber-500/40 text-amber-300 bg-amber-500/10';
+            document.getElementById('card-grid-lbl-1').innerText = 'Target Orbit';
+            document.getElementById('card-intel-alt').innerText = '747 km (Sun-Synch)';
+            document.getElementById('card-grid-lbl-2').innerText = 'Launch Status';
+            document.getElementById('card-intel-vel').innerText = 'Pre-Launch Standby';
+          } else {
+            document.getElementById('card-grid-lbl-1').innerText = sat.live ? 'Live Altitude' : 'Mean Altitude';
+            document.getElementById('card-intel-alt').innerText = `${Math.round(liveAlt).toLocaleString()} km`;
+            document.getElementById('card-grid-lbl-2').innerText = 'Orbital Velocity';
+            document.getElementById('card-intel-vel').innerText = `${liveVel.toLocaleString()} km/h`;
+          }
+
           document.getElementById('card-grid-lbl-3').innerText = 'Inclination';
           document.getElementById('card-intel-dist').innerText = `${(sat.incDeg || 51.6).toFixed(2)}°`;
           document.getElementById('card-grid-lbl-4').innerText = 'Orbital Period';
           document.getElementById('card-intel-coords').innerText = sat.period || (periodMin > 300 ? `${(periodMin / 60).toFixed(1)} hrs` : `${periodMin} min`);
+
+          const inspQuality = document.getElementById('insp-source-quality');
+          const inspFetched = document.getElementById('insp-source-fetched');
+          if (inspQuality) {
+            inspQuality.innerText = isPlanned ? 'Pre-Launch Mission (No active orbit)' : (sat.live?.method === 'propagated-sgp4' ? 'Propagated SGP4 (CelesTrak GP)' : (sat.live?.method === 'direct-telemetry' ? 'Direct Stream (WhereTheISS)' : 'SGP4 State Vector'));
+          }
+          if (inspFetched) {
+            inspFetched.innerText = isPlanned ? 'Target Launch: 2026' : (sat.live?.epoch ? `${sat.live.epoch.slice(0, 19)} UTC (${sat.live.epochAgeHours || 0}h)` : 'Active Stream');
+          }
 
           document.getElementById('card-intel-vehicle').innerText = sat.launchVeh || (sat.agency === 'ISRO' ? 'PSLV / GSLV / LVM3' : 'Orbital Carrier');
           document.getElementById('card-intel-launch-date').innerText = sat.launchDate || 'Active Fleet Epoch';
@@ -5551,8 +5818,11 @@ function animate() {
 
             dummyVec3.set(x, y, z);
             const isTargetSat = (sat.id === activeTargetKey || key === activeTargetKey);
+            const isDebris = (sat.category === 'debris' || sat.objectType === 'rocket_body' || sat.objectType === 'debris_fragment' || (sat.id && sat.id.startsWith('debris')));
 
-            if (isTargetSat) {
+            if (isDebris && window.isDebrisLayerVisible === false) {
+              dummyScale.set(0, 0, 0);
+            } else if (isTargetSat) {
               // Highlight the selected tracked satellite prominently!
               dummyScale.set(2.8, 2.8, 2.8);
               activeSatLocalPos.set(x, y, z);
@@ -6865,6 +7135,8 @@ function animate() {
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.NASAEyesApp.toggleLayer('moons', this.checked)" class="accent-cyan-400"> Major Moons</label>
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.NASAEyesApp.toggleLayer('spacecraft', this.checked)" class="accent-cyan-400"> Probes</label>
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.NASAEyesApp.toggleLayer('constellations', this.checked)" class="accent-cyan-400"> Earth Sats</label>
+        <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.toggleDebrisLayer(this.checked)" class="accent-rose-400"> 🔴 Debris/Stages</label>
+        <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.toggleGroundStationsLayer(this.checked)" class="accent-amber-400"> 📡 Ground Nodes</label>
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.NASAEyesApp.toggleLayer('orbits', this.checked)" class="accent-cyan-400"> Orbit Lines</label>
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer"><input type="checkbox" checked onchange="window.NASAEyesApp.toggleLayer('labels', this.checked)" class="accent-cyan-400"> 3D Labels</label>
         <label class="flex items-center gap-1.5 p-1.5 rounded bg-slate-900/80 border border-slate-800 cursor-pointer col-span-2"><input type="checkbox" checked onchange="toggleXYZCoordinateGizmo()" class="accent-cyan-400"> 3D XYZ Coordinate Frame Axes</label>
@@ -6925,6 +7197,113 @@ function animate() {
       <!-- Clipboard Fallback & Status Feedback -->
       <div id="share-copy-feedback" class="hidden p-2 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-sans">
         Copied to clipboard.
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Geometric Conjunction Screening Modal -->
+  <div id="conjunction-screening-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 pointer-events-auto font-mono text-xs">
+    <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl hud-glass border border-rose-500/50 p-4 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+          <span class="font-bold text-rose-300 uppercase tracking-wider">GEOMETRIC CONJUNCTION & PROXIMITY SCREENER</span>
+        </div>
+        <button onclick="window.toggleConjunctionsModal()" class="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800">✕</button>
+      </div>
+      <div class="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-[11px] text-rose-200 font-sans leading-relaxed">
+        <strong>⚠️ Scientific Disclaimer:</strong> This screener evaluates unperturbed geometric SGP4 proximity (&lt; 100 km). It is an informational/educational tool and does <em>not</em> compute formal covariance-based collision probabilities (Pc) or substitute for official 18th Space Defense Squadron Conjunction Data Messages (CDMs).
+      </div>
+      <div id="conjunction-list-container" class="flex-1 overflow-y-auto scroll-container space-y-2 pr-1">
+        <div class="text-center py-6 text-slate-400">Loading orbital proximity screenings...</div>
+      </div>
+      <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+        <span>Model: SGP4 ECI Vector Clearance (24h Window)</span>
+        <button onclick="window.loadConjunctionsData()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold">↻ Refresh Screen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Re-entry & Orbital Decay Tracker Modal -->
+  <div id="reentry-monitoring-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 pointer-events-auto font-mono text-xs">
+    <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl hud-glass border border-amber-500/50 p-4 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span class="font-bold text-amber-300 uppercase tracking-wider">RESPONSIBLE RE-ENTRY & ORBITAL DECAY TRACKER</span>
+        </div>
+        <button onclick="window.toggleReentryModal()" class="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800">✕</button>
+      </div>
+      <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-200 font-sans leading-relaxed">
+        <strong>🌐 Attribution & Boundaries:</strong> Based on published CelesTrak SATCAT decay records and Space-Track TIP data. <em>No deterministic impact point coordinates are calculated</em> because upper-atmospheric density variations make exact ground impact points impossible to predict accurately in advance.
+      </div>
+      <div id="reentry-list-container" class="flex-1 overflow-y-auto scroll-container space-y-2 pr-1">
+        <div class="text-center py-6 text-slate-400">Loading decaying object catalogue...</div>
+      </div>
+      <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+        <span>Source: CelesTrak SATCAT / Space-Track TIP</span>
+        <button onclick="window.loadReentryData()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold">↻ Refresh Decay Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Ground Stations & Line-of-Sight Modal -->
+  <div id="ground-stations-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 pointer-events-auto font-mono text-xs">
+    <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl hud-glass border border-cyan-500/50 p-4 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <span class="font-bold text-cyan-300 uppercase tracking-wider">GROUND STATIONS & COMMUNICATIONS CONTEXT</span>
+        </div>
+        <button onclick="window.toggleGroundStationsModal()" class="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800">✕</button>
+      </div>
+      <div class="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-[11px] text-cyan-200 font-sans leading-relaxed">
+        <strong>📡 Geometric Line-of-Sight:</strong> Stations evaluate whether the selected satellite has an elevation angle &gt; 5° above the local antenna horizon. <em>Geometric visibility does not imply an active transmission, scheduled carrier lock, or downlinked telemetry stream.</em>
+      </div>
+      <div id="stations-list-container" class="flex-1 overflow-y-auto scroll-container space-y-2 pr-1">
+        <div class="text-center py-6 text-slate-400">Calculating topocentric line-of-sight passes...</div>
+      </div>
+      <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+        <span>Networks: ISRO ISTRAC • NASA DSN • ESA ESTRACK • SatNOGS</span>
+        <button onclick="window.loadGroundStationsData()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold">↻ Recompute Coverage</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Scientific Explainability & Astrodynamics Glossary Modal -->
+  <div id="scientific-glossary-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 pointer-events-auto font-mono text-xs">
+    <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl hud-glass border border-indigo-500/50 p-4 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🔬</span>
+          <span class="font-bold text-indigo-300 uppercase tracking-wider">SCIENTIFIC EXPLAINABILITY & ASTRODYNAMICS GUIDE</span>
+        </div>
+        <button onclick="window.toggleGlossaryModal()" class="text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800">✕</button>
+      </div>
+      <div class="flex-1 overflow-y-auto scroll-container space-y-3 pr-1 text-[11px] font-sans leading-relaxed text-slate-300">
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <h4 class="font-bold text-cyan-300 font-mono">1. Propagated SGP4 vs. Direct Measured Downlink</h4>
+          <p>Continuous real-time GPS telemetry from satellites is rarely publicly broadcasted (with the exception of ISS downlinks). Most orbital tracking computes positions by integrating mean Keplerian elements (Two-Line Element sets) using the <strong>SGP4 (Simplified General Perturbations)</strong> model, which models the Earth's oblateness (J2, J3, J4 gravitational harmonics) and atmospheric drag.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <h4 class="font-bold text-emerald-300 font-mono">2. Orbital Element Epoch & Freshness</h4>
+          <p>The <strong>Epoch</strong> is the exact UTC timestamp when radar tracking stations last solved the satellite's orbital elements. SGP4 propagation accuracy is highest within $\pm 3$ days of epoch. Beyond 30 days, unmodeled drag and station-keeping maneuvers cause error growth.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <h4 class="font-bold text-rose-300 font-mono">3. Geometric Conjunction vs. Collision Risk</h4>
+          <p>A <strong>geometric conjunction</strong> simply means that two calculated orbital paths pass within a small geometric distance at a given time. Official collision assessments require full error covariance matrices, hard-body radius estimates, and orbital tracking confidence to compute true collision probability ($P_c$).</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <h4 class="font-bold text-amber-300 font-mono">4. Optical Twilight & Naked-Eye Visibility</h4>
+          <p>A satellite is only visible to the naked eye from Earth when three conditions are met: (1) the satellite is above the observer's horizon, (2) the satellite is illuminated by sunlight (not inside Earth's umbral shadow), and (3) the observer on the ground is in darkness (civil, nautical, or astronomical twilight / night).</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+          <h4 class="font-bold text-purple-300 font-mono">5. Atmospheric Re-entry Uncertainties</h4>
+          <p>Space objects re-entering the atmosphere experience severe hypersonic aerothermal heating and break up at 80–50 km altitude. Because solar activity causes the upper thermosphere to expand or contract unpredictably, re-entry predictions always carry uncertainty windows of hours or days.</p>
+        </div>
+      </div>
+      <div class="pt-2 border-t border-slate-800 text-right">
+        <button onclick="window.toggleGlossaryModal()" class="px-4 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold font-mono">Close Guide</button>
       </div>
     </div>
   </div>
@@ -7369,6 +7748,12 @@ function animate() {
 
     function syncStateToURL() {}
   </script>
+  <!-- Resilient Client, Status Alerts, User Preferences & PWA Engine -->
+  <script type="module" src="js/resilient-client.js"></script>
+  <script type="module" src="js/user-preferences.js"></script>
+  <script type="module" src="js/status-manager.js"></script>
+  <script type="module" src="js/pwa-manager.js"></script>
+  <script type="module" src="js/scientific-workspace.js"></script>
   <!-- Universal Station Calibration & J.A.R.V.I.S. Tactical AI Assistant -->
   <script src="js/universal_location_alerts.js"></script>
   <script src="js/jarvis.js"></script>

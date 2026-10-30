@@ -1,17 +1,81 @@
-﻿{
-  "name": "God's Eye — Real-Time Orbital Command & Space Situational Awareness",
-  "short_name": "God's Eye SSA",
-  "description": "3D WebGL real-time satellite tracker, ISS pass predictor, and space situational awareness command system.",
+{
+  "name": "God's Eye — 3D Space Situational Awareness & Satellite Tracker",
+  "short_name": "God's Eye",
+  "description": "Interactive 3D real-time space situational awareness, SGP4 satellite tracking, ISS pass prediction, space weather, and orbital mechanics observatory.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#050811",
-  "theme_color": "#06b6d4",
+  "orientation": "any",
+  "background_color": "#020612",
+  "theme_color": "#050811",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
-  "categories": ["education", "science", "utilities"]
+  "categories": [
+    "education",
+    "science",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "Earth Orbit & Satellites",
+      "short_name": "Earth",
+      "url": "/earth",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Solar System 3D",
+      "short_name": "Solar",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Deep Space & Webb/Hubble",
+      "short_name": "DeepSpace",
+      "url": "/deepspace",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Weather & Atmosphere",
+      "short_name": "Weather",
+      "url": "/weather",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "OrbitAlert Overhead Passes",
+      "short_name": "OrbitAlert",
+      "url": "/orbitalert",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }

@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: orbital-command-hud
+    name: gods-eye-space-observatory
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm ci --omit=dev
     startCommand: npm start
     healthCheckPath: /api/health
     autoDeploy: true
@@ -14,3 +14,9 @@ services:
         value: 20.18.0
       - key: NASA_API_KEY
         value: DEMO_KEY
+      - key: SENTINEL_ADMIN_USERNAME
+        generateValue: true
+      - key: SENTINEL_ADMIN_PASSWORD
+        generateValue: true
+      - key: SENTINEL_SESSION_SECRET
+        generateValue: true

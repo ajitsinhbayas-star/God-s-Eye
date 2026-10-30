@@ -4,14 +4,24 @@ import express from 'express';
 import http from 'http';
 import { PORT, PUBLIC_DIR } from './config/constants.js';
 import { getDatabase } from './db/sqlite.js';
-import { getSpaceStore } from './db/space-store.js';
-import { initWebSocketServer } from './realtime/ws-server.js';
+import { getSpaceStore, flushSpaceStore } from './db/space-store.js';
+import { initWebSocketServer, closeWebSocketServer } from './realtime/ws-server.js';
 import * as sentinelAuth from './supervisor/admin-auth.js';
+import { sentinelDiagnostics } from './supervisor/diagnostics.js';
 
-import { spaceRouter, computePassesForSatellite } from './routes/space.js';
+import {
+  spaceRouter,
+  computePassesForSatellite,
+  handlePassesRequest,
+  handleConjunctions,
+  handleGroundStations,
+  handleReentry,
+  handleTimeTravel
+} from './routes/space.js';
 import { sentinelRouter } from './routes/sentinel.js';
 import { objectsRouter } from './routes/objects.js';
 import { weatherRouter } from './routes/weather.js';
+import { analysisRouter } from './routes/analysis.js';
 import { MASTER_TRACKABLE_CATALOG } from './config/catalog.js';
 
 import { startIssPoller } from './daemons/iss-poller.js';
@@ -29,6 +39,22 @@ const server = http.createServer(app);
 app.use(express.json({ limit: '64kb' }));
 app.use(express.urlencoded({ extended: true, limit: '64kb' }));
 app.use(compression());
+
+// CORS configuration (Enables local file:// testing & seamless localhost access)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 // Security Headers
 app.use((req, res, next) => {
@@ -60,51 +86,20 @@ app.get('/api/health', (req, res) => {
 });
 
 // Real Orbital Pass Predictions
-app.get('/api/passes', (req, res) => {
-  const store = getSpaceStore();
-  const obsLat = req.query.lat ? parseFloat(req.query.lat) : (store.preferences?.observerLat || 18.5204);
-  const obsLon = req.query.lon ? parseFloat(req.query.lon) : (store.preferences?.observerLon || 73.8567);
-  const hours = parseFloat(req.query.hours) || 48;
-  const minElevation = parseFloat(req.query.minElevation) || 10.0;
+app.get('/api/passes', handlePassesRequest);
 
-  let targetSat = null;
-  if (req.query.norad) {
-    const noradNum = parseInt(req.query.norad, 10);
-    targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.norad === noradNum);
-  } else if (req.query.satId) {
-    const sId = String(req.query.satId).toLowerCase();
-    targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id.toLowerCase() === sId);
-  }
-
-  if (!targetSat) {
-    targetSat = MASTER_TRACKABLE_CATALOG.find(s => s.id === 'iss') || {
-      id: 'iss',
-      name: 'ISS (Zarya)',
-      norad: 25544,
-      parent: 'earth',
-      altKm: 418
-    };
-  }
-
-  const passes = computePassesForSatellite(targetSat, obsLat, obsLon, hours, minElevation);
-
-  res.json({
-    ok: true,
-    meta: {
-      generatedAt: new Date().toISOString(),
-      observer: { lat: obsLat, lon: obsLon },
-      satellite: { id: targetSat.id, name: targetSat.name, norad: targetSat.norad },
-      predictionWindowHours: hours
-    },
-    count: passes.length,
-    data: passes
-  });
-});
+// Astrodynamics, Situational Awareness & Multi-Agency Core Endpoints
+app.get('/api/conjunctions', handleConjunctions);
+app.get('/api/ground-stations', handleGroundStations);
+app.get('/api/reentry', handleReentry);
+app.get('/api/propagate-time', handleTimeTravel);
+app.post('/api/propagate-time', handleTimeTravel);
 
 // Subsystem API routers
 app.use('/api/space', spaceRouter);
 app.use('/api/weather', weatherRouter);
 app.use('/api/sentinel', sentinelRouter);
+app.use('/api/analysis', analysisRouter);
 app.use('/api', objectsRouter);
 
 // SatNOGS Radio Telemetry Gateway
@@ -204,6 +199,21 @@ Query: "${q}"`;
         reply: `Solar activity report active, Sir. Space weather index reports ${weatherStr}. Geomagnetic conditions present no threat to LEO satellite constellations.`
       });
     }
+    if (lowerQ.includes('pass') || lowerQ.includes('overhead') || lowerQ.includes('flyover')) {
+      return res.json({
+        reply: `Orbital pass calculations are synchronized, Sir. Next major ISS overhead transit is computed via real SGP4 propagation and available in the OrbitAlert viewport.`
+      });
+    }
+    if (lowerQ.includes('jwst') || lowerQ.includes('webb') || lowerQ.includes('hubble')) {
+      return res.json({
+        reply: `Deep-space observatory telemetry locked, Sir. Hubble orbits at ~535 km inclination 28.5°, while JWST maintains its halo orbit around the Sun-Earth L2 Lagrange point ~1.5 million kilometers from Earth.`
+      });
+    }
+    if (lowerQ.includes('source') || lowerQ.includes('provider') || lowerQ.includes('fresh')) {
+      return res.json({
+        reply: `Orbital data pipelines are online, Sir. CelesTrak NORAD elements, NOAA SWPC geomagnetic indices, and RainViewer radar mosaics are streaming with verified data integrity.`
+      });
+    }
     if (lowerQ.includes('aditya') || lowerQ.includes('isro') || lowerQ.includes('chandrayaan')) {
       return res.json({
         reply: `ISRO deep space telemetry engaged, Sir. Aditya-L1 is maintaining Sun-Earth L1 halo orbit observations, and all Earth-observation constellations (EOS-04, EOS-06, Cartosat-3) are transmitting nominal ephemerides.`
@@ -211,7 +221,7 @@ Query: "${q}"`;
     }
 
     return res.json({
-      reply: `Sensory telemetry downlink nominal, Sir. SGP4 orbital propagation and NOAA real-time feeds are synchronizing continuously across all orbital viewports.`
+      reply: `Sensory telemetry downlink nominal, Sir. SGP4 orbital propagation, space weather indices (${weatherStr}), and NOAA real-time feeds are synchronizing continuously across all viewports.`
     });
   } catch (err) {
     return res.json({ reply: "Telemetry downlink nominal, Sir. Sensory feeds are active." });
@@ -249,6 +259,89 @@ app.get(['/orbitalert', '/orbitalert/', '/orbitalert.html'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'orbitalert.html'));
 });
 
+app.get(['/offline', '/offline/', '/offline.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'offline.html'));
+});
+
+// Explicit Service Worker & Manifest Route with strict PWA caching rules
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(PUBLIC_DIR, 'sw.js'));
+});
+
+app.get('/manifest.json', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Content-Type', 'application/manifest+json');
+  res.sendFile(path.join(PUBLIC_DIR, 'manifest.json'));
+});
+
+// Dynamic SEO Sitemap & Robots with environment-aware canonical host
+function getCanonicalBaseUrl(req) {
+  if (process.env.CANONICAL_HOST) {
+    return process.env.CANONICAL_HOST.replace(/\/+$/, '');
+  }
+  if (process.env.RENDER_EXTERNAL_URL) {
+    return process.env.RENDER_EXTERNAL_URL.replace(/\/+$/, '');
+  }
+  const host = req.get('host');
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    return `${req.protocol}://${host}`;
+  }
+  return 'https://orbitaleye.in';
+}
+
+app.get('/sitemap.xml', (req, res) => {
+  const baseUrl = getCanonicalBaseUrl(req);
+  const now = new Date().toISOString().split('T')[0];
+  const pages = [
+    { path: '', priority: '1.0', freq: 'hourly' },
+    { path: 'earth', priority: '0.95', freq: 'hourly' },
+    { path: 'weather', priority: '0.95', freq: 'hourly' },
+    { path: 'orbitalert', priority: '0.90', freq: 'hourly' },
+    { path: 'asteroids', priority: '0.90', freq: 'daily' },
+    { path: 'deepspace', priority: '0.85', freq: 'weekly' }
+  ];
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map(p => `  <url>
+    <loc>${baseUrl}/${p.path}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>${p.freq}</changefreq>
+    <priority>${p.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(sitemapXml.trim());
+});
+
+app.get('/robots.txt', (req, res) => {
+  const baseUrl = getCanonicalBaseUrl(req);
+  const robotsTxt = `User-agent: *
+Allow: /
+Allow: /earth
+Allow: /weather
+Allow: /orbitalert
+Allow: /asteroids
+Allow: /deepspace
+Disallow: /sentinel
+Disallow: /sentinel/
+Disallow: /sentinel.html
+Disallow: /sentinel-login
+Disallow: /api/
+Disallow: /.env
+Disallow: /data/
+
+Sitemap: ${baseUrl}/sitemap.xml
+`;
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(robotsTxt);
+});
+
 // ==================== SENTINEL ADMIN SECURITY GUARDS ====================
 
 app.get('/sentinel-login', (req, res) => {
@@ -267,10 +360,10 @@ app.get(['/sentinel', '/sentinel/', '/sentinel.html'], sentinelAuth.requireAdmin
 app.use(express.static(PUBLIC_DIR, {
   maxAge: '1d',
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache');
+    if (filePath.endsWith('.html') || filePath.endsWith('sw.js')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     } else {
-      res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
     }
   }
 }));
@@ -280,7 +373,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 
-// ==================== SYSTEM INITIALIZATION ====================
+// ==================== SYSTEM INITIALIZATION & LIFECYCLE ====================
 
 getDatabase();
 getSpaceStore();
@@ -294,6 +387,48 @@ startNewsDaemon();
 startKeepAliveDaemon();
 startWeatherDaemon();
 
+sentinelDiagnostics.logEvent('STARTUP', 'INFO', `God's Eye Orbital Engine initialized on port ${PORT}`, {
+  nodeVersion: process.version,
+  platform: process.platform,
+  pid: process.pid
+});
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[SYS] God's Eye Orbital Command Engine active on port ${PORT}`);
 });
+
+// Graceful Process Shutdown Handler
+let isShuttingDown = false;
+async function handleGracefulShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log(`\n[SYS] Received ${signal}. Initiating graceful shutdown...`);
+  sentinelDiagnostics.logEvent('SHUTDOWN', 'INFO', `Graceful shutdown initiated via ${signal}`);
+
+  try {
+    // 1. Flush any active space store writes
+    await flushSpaceStore();
+    console.log('[SYS] Space store cache flushed to disk.');
+
+    // 2. Close WebSocket connections
+    closeWebSocketServer();
+
+    // 3. Close HTTP server
+    server.close(() => {
+      console.log('[SYS] HTTP server closed cleanly.');
+      process.exit(0);
+    });
+
+    // Force exit if hanging after 4s
+    setTimeout(() => {
+      console.warn('[SYS] Forced shutdown after timeout.');
+      process.exit(0);
+    }, 4000);
+  } catch (err) {
+    console.error('[SYS] Shutdown error:', err.message);
+    process.exit(1);
+  }
+}
+
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));

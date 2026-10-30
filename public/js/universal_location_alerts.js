@@ -92,19 +92,32 @@
     if (document.getElementById('hud-pass-news-ticker')) return;
     const ticker = document.createElement('div');
     ticker.id = 'hud-pass-news-ticker';
-    ticker.className = 'fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-amber-500/40 font-mono text-[11px] text-slate-100 shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)]';
+    ticker.className = 'fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-amber-500/40 font-mono text-[11px] text-slate-100 shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)] hidden';
     ticker.innerHTML = `
       <span class="flex h-2 w-2 relative shrink-0">
         <span id="ticker-ping-dot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
         <span id="ticker-solid-dot" class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
       </span>
       <span id="ticker-tag" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold tracking-wider uppercase shrink-0">PASS ALERT</span>
-      <span id="hud-pass-ticker-text" onclick="window.openActivePassAction()" class="truncate font-sans text-xs text-slate-200 max-w-[210px] sm:max-w-md md:max-w-xl cursor-pointer hover:text-cyan-300 transition font-medium">Synchronizing satellite horizon look-angles...</span>
+      <span id="hud-pass-ticker-text" onclick="window.openActivePassAction()" class="truncate font-sans text-xs text-slate-200 max-w-[190px] sm:max-w-md md:max-w-lg cursor-pointer hover:text-cyan-300 transition font-medium">Synchronizing satellite horizon look-angles...</span>
       <button onclick="window.openActivePassAction()" id="ticker-action-btn" class="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold shrink-0">TRACK 3D ↗</button>
-      <button onclick="document.getElementById('hud-pass-news-ticker').style.display='none'" class="text-slate-400 hover:text-white px-1 text-xs">✕</button>
+      <button onclick="window.dismissPassNewsTicker()" class="text-slate-400 hover:text-white px-1 text-xs shrink-0" title="Dismiss Alert">✕</button>
     `;
     document.body.appendChild(ticker);
   }
+
+  window.dismissPassNewsTicker = function() {
+    const t = document.getElementById('hud-pass-news-ticker');
+    if (t) t.style.display = 'none';
+  };
+
+  window.showPassNewsTicker = function() {
+    const t = document.getElementById('hud-pass-news-ticker');
+    if (t) {
+      t.style.display = 'flex';
+      updateTickerHUD();
+    }
+  };
 
   window.openUniversalLocationModal = function() {
     ensureLocationModal();
@@ -203,62 +216,61 @@
 
   // --- PASS PREDICTION & ALERT TICKER SCHEDULER ---
   let generatedPasses = [];
-  let currentPassIdx = 0;
   let activePassObj = null;
 
-  function recalculateLocalPasses() {
+  async function recalculateLocalPasses() {
     const loc = getActiveLocation();
-    const seed = Math.abs(Math.sin(loc.lat * 1.5 + loc.lon * 2.3));
 
-    // Calculate real-feeling pass schedules for key satellites relative to active city
-    generatedPasses = [
-      {
-        targetKey: 'iss',
-        name: 'ISS (Zarya)',
-        minutesUntil: Math.max(3, Math.round( seed * 22 )),
-        durationMin: 9,
-        maxEl: Math.round(52 + seed * 34),
-        trajectory: 'SW ➔ SE ➔ NE',
-        mag: -3.2,
-        isOverhead: (seed < 0.15)
-      },
-      {
-        targetKey: 'cartosat3',
-        name: 'Cartosat-3 (ISRO)',
-        minutesUntil: Math.max(12, Math.round( (seed * 37) + 8 )),
-        durationMin: 7,
-        maxEl: Math.round(48 + seed * 38),
-        trajectory: 'SSW ➔ Overhead ➔ NNE',
-        mag: +1.4,
-        isOverhead: false
-      },
-      {
-        targetKey: 'tiangong',
-        name: 'Tiangong Space Station',
-        minutesUntil: Math.max(25, Math.round( (seed * 45) + 15 )),
-        durationMin: 8,
-        maxEl: Math.round(42 + seed * 28),
-        trajectory: 'WSW ➔ S ➔ ENE',
-        mag: -1.8,
-        isOverhead: false
-      },
-      {
-        targetKey: 'eos04',
-        name: 'EOS-04 (RISAT-1A)',
-        minutesUntil: Math.max(40, Math.round( (seed * 55) + 30 )),
-        durationMin: 8,
-        maxEl: Math.round(56 + seed * 30),
-        trajectory: 'S ➔ ESE ➔ NNE',
-        mag: +2.1,
-        isOverhead: false
-      }
-    ];
+    // Fetch genuine SGP4 orbital pass predictions from backend
+    if (window.location.protocol !== 'file:') {
+      try {
+        const res = await fetch(`/api/passes?lat=${loc.lat.toFixed(4)}&lon=${loc.lon.toFixed(4)}&hours=24`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.data) && json.data.length > 0) {
+            const nowMs = Date.now();
+            generatedPasses = json.data
+              .map(p => {
+                const aosMs = new Date(p.aos.time).getTime();
+                const losMs = new Date(p.los.time).getTime();
+                return {
+                  targetKey: p.satelliteId || 'iss',
+                  name: p.satelliteName,
+                  aosMs,
+                  losMs,
+                  aosTimeStr: p.aos.time ? p.aos.time.slice(11, 16) + ' UTC' : '',
+                  durationMin: Math.max(1, Math.round(p.durationSeconds / 60)),
+                  maxEl: Math.round(p.maxElevationDeg),
+                  trajectory: `${p.aos.compass} ➔ ${p.tca.compass} ➔ ${p.los.compass}`,
+                  mag: p.isNakedEyeVisible ? 'Visible' : 'Radio',
+                  visibility: p.visibility
+                };
+              })
+              .filter(p => p.losMs >= nowMs) // keep only current or future passes
+              .sort((a, b) => a.aosMs - b.aosMs); // soonest first
 
+            updateTickerHUD();
+            return;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // When backend unavailable or no upcoming passes, do not fabricate artificial passes
+    generatedPasses = [];
     updateTickerHUD();
   }
 
+  function formatPassCountdown(diffMs) {
+    const totalMin = Math.max(0, Math.round(diffMs / 60000));
+    if (totalMin <= 0) return 'Passing overhead now';
+    if (totalMin < 60) return `${totalMin} min`;
+    const hours = Math.floor(totalMin / 60);
+    const mins = totalMin % 60;
+    return mins > 0 ? `${hours} hr ${mins} min` : `${hours} hr`;
+  }
+
   function updateTickerHUD() {
-    if (!generatedPasses.length) return;
     const tickerEl = document.getElementById('hud-pass-news-ticker');
     const textEl = document.getElementById('hud-pass-ticker-text');
     const tagEl = document.getElementById('ticker-tag');
@@ -267,11 +279,24 @@
     const actionBtn = document.getElementById('ticker-action-btn');
     if (!tickerEl || !textEl) return;
 
-    activePassObj = generatedPasses[currentPassIdx % generatedPasses.length];
+    const nowMs = Date.now();
+    // Filter out expired passes
+    const activeUpcoming = generatedPasses.filter(p => p.losMs >= nowMs);
+
+    if (!activeUpcoming.length) {
+      tickerEl.classList.add('hidden');
+      return;
+    }
+
+    // Always focus on the soonest relevant pass (overhead or next in line)
+    activePassObj = activeUpcoming[0];
+    const isOverhead = nowMs >= activePassObj.aosMs && nowMs <= activePassObj.losMs;
     const loc = getActiveLocation();
 
-    if (activePassObj.isOverhead) {
-      tickerEl.className = 'fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3.5 py-1.5 rounded-xl hud-glass border border-rose-500/70 bg-rose-950/60 font-mono text-[11px] text-white shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)] animate-pulse';
+    tickerEl.classList.remove('hidden');
+
+    if (isOverhead) {
+      tickerEl.className = 'fixed top-[124px] sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-rose-500/70 bg-rose-950/80 font-mono text-[11px] text-white shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)] animate-pulse';
       if (tagEl) {
         tagEl.innerText = 'OVERHEAD NOW';
         tagEl.className = 'px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-200 border border-rose-400 font-bold text-[9px] tracking-wider uppercase shrink-0';
@@ -281,21 +306,21 @@
       textEl.innerHTML = `<strong class="text-rose-300">${activePassObj.name}</strong> is passing directly over <strong>${loc.name}</strong> right now! Peak ${activePassObj.maxEl}° (${activePassObj.trajectory})`;
       if (actionBtn) actionBtn.innerText = 'LOCK 3D 🎯';
     } else {
-      tickerEl.className = 'fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3.5 py-1.5 rounded-xl hud-glass border border-amber-500/40 font-mono text-[11px] text-slate-100 shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)]';
+      const countdownStr = formatPassCountdown(activePassObj.aosMs - nowMs);
+      tickerEl.className = 'fixed top-[124px] sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-amber-500/40 font-mono text-[11px] text-slate-100 shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)]';
       if (tagEl) {
-        tagEl.innerText = 'PASS ALERT';
+        tagEl.innerText = 'NEXT PASS';
         tagEl.className = 'px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold tracking-wider uppercase shrink-0';
       }
       if (pingDot) pingDot.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75';
       if (solidDot) solidDot.className = 'relative inline-flex rounded-full h-2 w-2 bg-amber-500';
-      textEl.innerHTML = `Upcoming pass over <strong>${loc.name}</strong> in <b class="text-amber-300">${activePassObj.minutesUntil}m</b>: <span class="text-cyan-300 font-bold">${activePassObj.name}</span> (Max El: +${activePassObj.maxEl}°, ${activePassObj.trajectory})`;
+      textEl.innerHTML = `Next pass over <strong>${loc.name}</strong> in <b class="text-amber-300">${countdownStr}</b> (${activePassObj.aosTimeStr}): <span class="text-cyan-300 font-bold">${activePassObj.name}</span> (Max El: +${activePassObj.maxEl}°)`;
       if (actionBtn) actionBtn.innerText = 'TRACK 3D ↗';
     }
   }
 
   window.openActivePassAction = function() {
     if (!activePassObj) return;
-    // If on 3D view (index/earth/deepspace) and setFocusTo is defined, focus that satellite directly!
     if (typeof window.setFocusTo === 'function') {
       if (window.OrbitalCommandState && window.OrbitalCommandState.viewMode !== 'earth') {
         if (typeof window.switchExplicitViewMode === 'function') {
@@ -308,23 +333,10 @@
     }
   };
 
-  // Rotate through passes every 7 seconds
+  // Live countdown update every 15 seconds
   setInterval(() => {
-    currentPassIdx++;
     updateTickerHUD();
-  }, 7000);
-
-  // Periodic minute countdown
-  setInterval(() => {
-    generatedPasses.forEach(p => {
-      if (p.minutesUntil > 1) p.minutesUntil--;
-      else if (p.minutesUntil === 1) {
-        p.minutesUntil = 0;
-        p.isOverhead = true;
-      }
-    });
-    updateTickerHUD();
-  }, 60000);
+  }, 15000);
 
   // Initialize UI once DOM is ready
   function init() {

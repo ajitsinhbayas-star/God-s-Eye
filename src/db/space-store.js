@@ -1,9 +1,10 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { SPACE_DB_FILE, DATA_DIR } from '../config/constants.js';
 
 let dbCache = null;
 let dbWriteQueue = Promise.resolve();
+const BACKUP_DB_FILE = `${SPACE_DB_FILE}.bak`;
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -46,16 +47,34 @@ export function getSpaceStore() {
   };
 
   if (!fs.existsSync(SPACE_DB_FILE)) {
-    fs.writeFileSync(SPACE_DB_FILE, JSON.stringify(defaultStore, null, 2), 'utf-8');
+    try {
+      fs.writeFileSync(SPACE_DB_FILE, JSON.stringify(defaultStore, null, 2), 'utf-8');
+      fs.writeFileSync(BACKUP_DB_FILE, JSON.stringify(defaultStore, null, 2), 'utf-8');
+    } catch (_) {}
     dbCache = defaultStore;
     return dbCache;
   }
 
+  // Attempt reading primary store
   try {
     const raw = JSON.parse(fs.readFileSync(SPACE_DB_FILE, 'utf-8'));
     dbCache = { ...defaultStore, ...raw };
     return dbCache;
-  } catch {
+  } catch (primaryErr) {
+    console.warn('[SpaceDB] Primary store read failed. Attempting recovery from backup...', primaryErr.message);
+    // Attempt fallback to .bak
+    if (fs.existsSync(BACKUP_DB_FILE)) {
+      try {
+        const backupRaw = JSON.parse(fs.readFileSync(BACKUP_DB_FILE, 'utf-8'));
+        console.log('[SpaceDB] Successfully recovered space-db from backup snapshot.');
+        dbCache = { ...defaultStore, ...backupRaw };
+        // Restore corrupted primary from backup
+        fs.writeFileSync(SPACE_DB_FILE, JSON.stringify(dbCache, null, 2), 'utf-8');
+        return dbCache;
+      } catch (_) {}
+    }
+
+    console.error('[SpaceDB] Both primary and backup corrupted. Re-initializing default store.');
     dbCache = defaultStore;
     return dbCache;
   }
@@ -64,12 +83,38 @@ export function getSpaceStore() {
 export function saveSpaceStore() {
   if (!dbCache) return Promise.resolve();
   ensureDataDir();
+
   dbWriteQueue = dbWriteQueue.then(async () => {
+    const tempFile = `${SPACE_DB_FILE}.tmp.${process.pid}.${Date.now()}`;
+    const serialized = JSON.stringify(dbCache, null, 2);
+
     try {
-      await fs.promises.writeFile(SPACE_DB_FILE, JSON.stringify(dbCache, null, 2), 'utf-8');
+      // 1. Write to isolated temporary file
+      await fs.promises.writeFile(tempFile, serialized, 'utf-8');
+
+      // 2. Atomic rename / replace primary file
+      try {
+        await fs.promises.rename(tempFile, SPACE_DB_FILE);
+      } catch (renameErr) {
+        // Fallback for Windows if destination file lock temporarily denies rename
+        await fs.promises.copyFile(tempFile, SPACE_DB_FILE);
+        await fs.promises.unlink(tempFile).catch(() => {});
+      }
+
+      // 3. Keep verified snapshot backup
+      await fs.promises.copyFile(SPACE_DB_FILE, BACKUP_DB_FILE).catch(() => {});
     } catch (e) {
-      console.error('[SpaceDB Write Error]', e.message);
+      console.error('[SpaceDB Atomic Write Error]', e.message);
+      // Clean up orphaned temp file if exists
+      if (fs.existsSync(tempFile)) {
+        await fs.promises.unlink(tempFile).catch(() => {});
+      }
     }
   });
+
   return dbWriteQueue;
+}
+
+export async function flushSpaceStore() {
+  await dbWriteQueue;
 }

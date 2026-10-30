@@ -4,6 +4,8 @@
  * real active tropical cyclones from NOAA NHC / JTWC, and NASA FIRMS active fire telemetry.
  */
 
+import { providerRegistry } from '../supervisor/registry.js';
+
 let cachedRadarData = null;
 let lastRadarFetch = 0;
 
@@ -55,8 +57,10 @@ export async function fetchRainViewerData() {
       updatedAt: new Date().toISOString()
     };
     lastRadarFetch = now;
+    providerRegistry.recordSuccess('rainviewer', Date.now() - now);
     return cachedRadarData;
   } catch (err) {
+    providerRegistry.recordFailure('rainviewer', err.message);
     if (cachedRadarData) {
       cachedRadarData.quality = 'stale';
       return cachedRadarData;
@@ -159,9 +163,12 @@ export async function fetchActiveCyclones() {
 
       cachedCyclones = parsed;
       lastCyclonesFetch = now;
+      providerRegistry.recordSuccess('noaa_nhc', Date.now() - now);
       return cachedCyclones;
     }
+    providerRegistry.recordFailure('noaa_nhc', `HTTP ${res.status}`);
   } catch (err) {
+    providerRegistry.recordFailure('noaa_nhc', err.message);
     console.warn('[WeatherWorker] NOAA NHC fetch error:', err.message);
   }
 

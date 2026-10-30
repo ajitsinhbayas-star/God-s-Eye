@@ -1,49 +1,68 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Primary SEO Meta Tags -->
-  <title>OrbitAlert // Topocentric Passes, Deep Space Network &amp; Sky Observer</title>
+  <title>Satellite Pass Predictions &amp; Orbital Event Alerts | Orbital Eye</title>
   <meta name="title" content="OrbitAlert // Topocentric Passes, Deep Space Network & Sky Observer" />
-  <meta name="description" content="Calculate high-accuracy satellite visible pass predictions, ISS overhead times, Deep Space Network (DSN) carrier lock status, and space weather alerts for Pune, India and any global location." />
+  <meta name="description" content="Calculate high-accuracy satellite visible pass predictions, ISS overhead transits with twilight illumination checks, and NOAA solar Kp geomagnetic storm warnings." />
   <meta name="keywords" content="satellite pass predictor, ISS pass times Pune India, satellite pass tracker, Deep Space Network live, DSN dish tracker, space weather Kp index, ISRO satellite pass predictions, visual satellite sighting" />
   <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <link rel="canonical" href="https://god-s-eye-ah3d.onrender.com/orbitalert" />
+  <link rel="canonical" href="https://orbitaleye.in/orbitalert" />
   <meta name="theme-color" content="#02070e" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="OrbitAlert Sky Observer" />
-  <meta property="og:url" content="https://god-s-eye-ah3d.onrender.com/orbitalert" />
+  <meta property="og:site_name" content="Orbital Eye Space Observatory" />
+  <meta property="og:url" content="https://orbitaleye.in/orbitalert" />
   <meta property="og:title" content="OrbitAlert // Topocentric Passes, Deep Space Network &amp; Sky Observer" />
   <meta property="og:description" content="Calculate visible satellite passes, ISS overhead flybys, and Deep Space Network live dish locks for any coordinates." />
-  <meta property="og:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://god-s-eye-ah3d.onrender.com/orbitalert" />
+  <meta name="twitter:url" content="https://orbitaleye.in/orbitalert" />
   <meta name="twitter:title" content="OrbitAlert // Topocentric Satellite Pass Predictor" />
   <meta name="twitter:description" content="High-accuracy satellite pass predictions, DSN communication dishes, and space weather telemetry." />
-  <meta name="twitter:image" content="https://god-s-eye-ah3d.onrender.com/favicon.ico" />
+  <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- JSON-LD Structured Data Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "OrbitAlert Satellite Pass Predictor",
-    "url": "https://god-s-eye-ah3d.onrender.com/orbitalert",
-    "description": "Topocentric satellite visible pass predictions, Deep Space Network communications status, and space weather alerts.",
-    "applicationCategory": "AstronomyApplication",
-    "operatingSystem": "All",
-    "author": {
-      "@type": "Person",
-      "name": "Ajitsinh Bayas"
-    }
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://orbitaleye.in/orbitalert#webapp",
+        "name": "Orbital Eye Pass Predictions & Space Weather",
+        "url": "https://orbitaleye.in/orbitalert",
+        "description": "Astronomical topocentric satellite pass prediction calculator, ISS twilight transit estimator, and NOAA SWPC geomagnetic space weather monitor.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All modern browsers (WebGL 2.0)",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://orbitaleye.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Orbital Alerts & Pass Predictions",
+            "item": "https://orbitaleye.in/orbitalert"
+          }
+        ]
+      }
+    ]
   }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -1068,15 +1087,35 @@
   </script>
   <!-- Accessible Semantic Text for Search Crawlers -->
   <main class="sr-only">
-    <h1>Satellite Pass Predictions, ISS Flybys &amp; Deep Space Network Telemetry</h1>
-    <p>OrbitAlert calculates upcoming visual passes of Earth-orbiting spacecraft (including the International Space Station, Tiangong, Cartosat-3, and Starlink constellations) over your exact geographic coordinates.</p>
-    <h2>Features:</h2>
-    <ul>
-      <li>Topocentric Azimuth, Elevation, and Range calculations using SGP4/SDP4 propagation.</li>
-      <li>NASA Deep Space Network (DSN) live carrier locks for Goldstone, Madrid, and Canberra ground stations.</li>
-      <li>Space Weather NOAA SWPC in-situ geomagnetic storm warnings and planetary K-index (Kp).</li>
-    </ul>
+    <h1>Satellite Pass Predictions, Space Weather Alerts &amp; Sky Observer Deck</h1>
+    <p>OrbitAlert calculates observer-specific topocentric satellite passes over 48-hour forward windows for any global latitude and longitude. Telemetry includes Acquisition of Signal (AOS), Time of Closest Approach (TCA), Loss of Signal (LOS), azimuth compass bearings, and maximum elevation angles.</p>
+
+    <section>
+      <h2>Optical Visibility &amp; Earth Shadow Science</h2>
+      <p>True optical visibility requires two independent astronomical conditions: the ground observer must be in darkness (sun elevation &lt; -6° civil twilight) AND the spacecraft must be directly illuminated by sunlight outside the cylindrical Earth shadow (umbra). Satellites in eclipse are flagged as invisible to the naked eye.</p>
+    </section>
+
+    <section>
+      <h2>Official NOAA Space Weather &amp; Re-entry Alerts</h2>
+      <p>Ingests real-time solar wind velocities, planetary Kp indices, and geomagnetic storm scales (G0 Nominal through G5 Extreme) from the NOAA Space Weather Prediction Center (SWPC). Conjunction proximity screening and decaying orbit re-entry notifications are provided for educational and situational awareness purposes.</p>
+    </section>
+
+    <nav aria-label="Related Space Observatory Tools">
+      <h2>Related Observatory Views</h2>
+      <ul>
+        <li><a href="/" title="Orbital Eye Space Observatory Home">Orbital Eye Home — Interactive 3D Solar System simulation</a></li>
+        <li><a href="/earth" title="Live Earth Satellites">Live Earth Satellites — Real-time 3D SGP4 tracking of ISS and Cartosat</a></li>
+        <li><a href="/weather" title="Atmosphere and Weather Radar">Atmosphere &amp; Weather — Live Doppler radar mosaics and Indian district kisan forecasts</a></li>
+        <li><a href="/asteroids" title="Near-Earth Asteroids">Near-Earth Asteroids — 2,200+ planetary defense asteroid orbits</a></li>
+        <li><a href="/deepspace" title="Deep Space Missions">Deep Space Missions — JWST, Aditya-L1 halo orbit, and Voyager probes</a></li>
+      </ul>
+    </nav>
   </main>
+  <!-- Resilient Client, Status Alerts, User Preferences & PWA Engine -->
+  <script type="module" src="js/resilient-client.js"></script>
+  <script type="module" src="js/user-preferences.js"></script>
+  <script type="module" src="js/status-manager.js"></script>
+  <script type="module" src="js/pwa-manager.js"></script>
   <script src="js/universal_location_alerts.js"></script>
   <script src="js/jarvis.js"></script>
 </body>
