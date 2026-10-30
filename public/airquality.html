@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Air Quality Observatory — India CPCB NAQI & CAAQMS Real-Time Stations | Orbital Eye</title>
+  <meta name="description" content="Orbital Eye Air Quality Observatory: Real-time India CPCB National Air Quality Index (NAQI), 594 district boundary maps, live CAAQMS continuous monitoring stations, 6-pollutant concentration grids (PM2.5, PM10, NO2, SO2, CO, O3), and official health advisories." />
+  <link rel="canonical" href="https://orbital-eye.onrender.com/airquality" />
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye" />
+  <meta property="og:description" content="Explore India's Air Quality across 594 administrative districts and continuous CAAQMS stations. Official CPCB NAQI calculation, 6-pollutant grid, and health recommendations." />
+  <meta property="og:url" content="https://orbital-eye.onrender.com/airquality" />
+  <meta property="og:image" content="https://orbital-eye.onrender.com/icons/icon-512.png" />
+
+  <!-- PWA & Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#030712" />
+
+  <!-- Core Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data/india-districts-index.js"></script>
+  <script src="data/india-states-data.js"></script>
+  <script src="data/india-districts-data.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030712;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #map-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(3, 7, 18, 0.96) !important;
+      backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(14, 165, 233, 0.6) !important;
+      border-radius: 1rem !important;
+      padding: 0 !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
+    }
+    .leaflet-popup-content {
+      margin: 0 !important;
+      line-height: normal !important;
+    }
+    .leaflet-popup-tip {
+      background: rgba(3, 7, 18, 0.96) !important;
+      border: 1px solid rgba(14, 165, 233, 0.6) !important;
+    }
+  </style>
+</head>
+<body class="relative w-full h-full select-none">
+
+  <!-- Interactive Leaflet Map Container -->
+  <div id="map-container"></div>
+
+  <!-- TOP APP BAR -->
+  <header class="absolute top-0 left-0 right-0 z-40 p-3 pointer-events-none flex flex-col gap-2">
+    <!-- Row 1: Brand & Observatories Navigation -->
+    <div class="pointer-events-auto flex items-center justify-between bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl px-4 py-2.5 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 group">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition">
+            <i class="fa-solid fa-wind text-sm"></i>
+          </div>
+          <div>
+            <div class="font-black text-sm tracking-wider text-white font-mono flex items-center gap-2">
+              <span>ORBITAL EYE</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono">CPCB NAQI</span>
+            </div>
+            <div class="text-[9px] text-slate-400 font-mono">Air Quality Observatory • India</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Pill Links -->
+      <nav class="hidden md:flex items-center gap-1 text-xs font-mono">
+        <a href="/" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Solar</a>
+        <a href="/earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Satellites</a>
+        <a href="/weather" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Weather</a>
+        <a href="/airquality" class="px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-bold transition">Air Quality</a>
+        <a href="/asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Asteroids</a>
+        <a href="/deepspace" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Deep Space</a>
+        <a href="/orbitalert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">OrbitAlert</a>
+        <a href="/sentinel" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition">Sentinel</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button onclick="document.getElementById('selected-aqi-panel').classList.toggle('hidden')" class="px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span class="hidden sm:inline">Desk Panel</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Kisan-Style Search & Filters Bar -->
+    <div class="pointer-events-auto flex flex-wrap items-center gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl">
+      <!-- Multilingual Search Input -->
+      <div class="relative flex-1 min-w-[200px]">
+        <div class="relative flex items-center">
+          <span class="absolute left-3 text-slate-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input
+            id="top-aqi-search-input"
+            type="text"
+            oninput="window.onAqiDistrictSearchInput()"
+            placeholder="Search district or city (e.g. Pune / पुणे, Delhi / दिल्ली)..."
+            class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50"
+          />
+        </div>
+        <!-- Autocomplete Dropdown -->
+        <div id="aqi-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-slate-950/98 border border-cyan-500/60 rounded-xl shadow-2xl z-50 divide-y divide-slate-800/80"></div>
+      </div>
+
+      <!-- State Selector -->
+      <div class="min-w-[130px]">
+        <select id="top-aqi-state-select" onchange="window.onAqiStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
+          <option value="">All States & UTs (35)</option>
+        </select>
+      </div>
+
+      <!-- District Selector -->
+      <div class="min-w-[130px]">
+        <select id="top-aqi-district-select" onchange="window.onAqiDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
+          <option value="">Select District...</option>
+        </select>
+      </div>
+
+      <!-- GPS Button -->
+      <button onclick="window.detectAqiLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Detect Location via Device GPS">
+        <span>📍</span>
+        <span class="hidden sm:inline">My Location</span>
+      </button>
+
+      <!-- Zoom All India -->
+      <button onclick="window.zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap" title="Reset Zoom to All India">
+        <span>🇮🇳</span>
+        <span class="hidden sm:inline">All India</span>
+      </button>
+
+      <!-- Station Toggle -->
+      <button id="btn-toggle-stations" onclick="window.toggleStations()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Toggle Continuous CAAQMS Stations">
+        <span>📡</span>
+        <span class="hidden sm:inline">Stations</span>
+      </button>
+
+      <!-- Basemap Toggle -->
+      <button id="btn-toggle-basemap" onclick="window.toggleAqiBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm" title="Toggle Basemap">
+        <span>🛰️</span>
+        <span class="hidden sm:inline">Satellite</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDE DESK PANEL (Collapsible on mobile and desktop) -->
+  <aside id="selected-aqi-panel" class="absolute top-28 left-4 bottom-8 z-30 w-80 md:w-96 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
+    <!-- Panel Header -->
+    <div class="px-4 py-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/40">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xs">
+          <i class="fa-solid fa-gauge-high"></i>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white font-mono">AIR QUALITY DESK</div>
+          <div class="text-[9px] text-slate-400 font-mono">Central Pollution Control Board (CPCB) Standard</div>
+        </div>
+      </div>
+      <button onclick="document.getElementById('selected-aqi-panel').classList.add('hidden')" class="text-slate-400 hover:text-white transition text-xs p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Panel Scrollable Body -->
+    <div id="selected-aqi-content" class="flex-1 p-4 overflow-y-auto space-y-4">
+      <div class="text-center py-10 space-y-3 text-slate-400 font-mono">
+        <div class="text-3xl text-cyan-400">🗺️</div>
+        <div class="text-xs font-bold text-white">Select an Indian District or Station</div>
+        <p class="text-[11px] text-slate-400 font-sans leading-relaxed">
+          Tap any district polygon on the map, click a CAAQMS station marker, or type any city name in the top search bar to inspect live CPCB NAQI telemetry, pollutant measurements, and health advisories.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- BOTTOM CPCB NAQI SCALE LEGEND -->
+  <footer class="absolute bottom-3 left-4 right-4 z-30 pointer-events-none flex justify-center">
+    <div class="pointer-events-auto bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl px-3 py-1.5 shadow-2xl flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[10px] font-mono">
+      <span class="text-slate-400 font-bold hidden sm:inline">CPCB SCALE:</span>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span class="text-slate-300">Good (0–50)</span></div>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-lime-500"></span><span class="text-slate-300">Satisfactory (51–100)</span></div>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span><span class="text-slate-300">Moderate (101–200)</span></div>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span><span class="text-slate-300">Poor (201–300)</span></div>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span><span class="text-slate-300">Very Poor (301–400)</span></div>
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-900"></span><span class="text-slate-300">Severe (401–500+)</span></div>
+    </div>
+  </footer>
+
+  <script src="js/airquality-map.js"></script>
+</body>
+</html>

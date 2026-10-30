@@ -27,7 +27,14 @@ export class ProviderRegistry {
       { id: 'rainviewer', name: 'RainViewer Doppler Radar', category: 'MEASURED_RADAR', status: PROVIDER_STATUS.ACTIVE, attribution: 'RainViewer API v2' },
       { id: 'noaa_nhc', name: 'NOAA National Hurricane Center', category: 'TROPICAL_CYCLONES', status: PROVIDER_STATUS.ACTIVE, attribution: 'NOAA NHC RSMC' },
       { id: 'nasa_firms', name: 'NASA FIRMS Active Fires', category: 'THERMAL_ANOMALIES', status: process.env.FIRMS_MAP_KEY ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'NASA FIRMS (MODIS/VIIRS)' },
-      { id: 'open_meteo', name: 'Open-Meteo Global Forecast Models', category: 'NWP_FORECAST', status: PROVIDER_STATUS.ACTIVE, attribution: 'Open-Meteo' }
+      { id: 'open_meteo', name: 'Open-Meteo Global Forecast Models', category: 'NWP_FORECAST', status: PROVIDER_STATUS.ACTIVE, attribution: 'Open-Meteo' },
+      // Air Quality Observatory Providers
+      { id: 'cpcb_naqi', name: 'CPCB National Air Quality Index (NAQI)', category: 'AIR_QUALITY_OBSERVATORY', status: PROVIDER_STATUS.ACTIVE, attribution: 'Central Pollution Control Board (CPCB) India / MoEFCC & Open-Meteo Atmospheric Chemistry' },
+      { id: 'google_air_quality', name: 'Google Maps Platform Air Quality API', category: 'AIR_QUALITY_OBSERVATORY', status: (process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_AIR_QUALITY_API_KEY) ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'Google Maps Platform Air Quality API (ind_cpcb)' },
+      { id: 'iqair', name: 'IQAir AirVisual Community API', category: 'AIR_QUALITY_OBSERVATORY', status: process.env.IQAIR_API_KEY ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'IQAir AirVisual Community Network' },
+      { id: 'waqi', name: 'World Air Quality Index Project (WAQI)', category: 'AIR_QUALITY_OBSERVATORY', status: process.env.WAQI_API_TOKEN ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'World Air Quality Index Project (waqi.info)' },
+      { id: 'airnow', name: 'U.S. EPA AirNow API', category: 'AIR_QUALITY_OBSERVATORY', status: process.env.AIRNOW_API_KEY ? PROVIDER_STATUS.ACTIVE : PROVIDER_STATUS.NEEDS_CREDENTIALS, attribution: 'U.S. EPA AirNow (North America)' },
+      { id: 'aqi_in', name: 'AQI.in National Monitoring', category: 'AIR_QUALITY_OBSERVATORY', status: PROVIDER_STATUS.NEEDS_AUTHORIZATION, attribution: 'AQI.in India (Partner Authorization Required)' }
     ];
 
     list.forEach(p => {

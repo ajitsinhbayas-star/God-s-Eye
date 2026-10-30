@@ -9,6 +9,8 @@ import { mapKpToNoaaGScale } from '../src/daemons/noaa-weather-worker.js';
 import { computeSolarAndVisibilityState } from '../src/math/solar-visibility.js';
 import { propagateSatelliteSGP4, getSatrec } from '../src/daemons/celestrak-worker.js';
 import { computeTopocentricLookAngles } from '../src/math/topocentric.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 const BASE_URL = process.env.TEST_HOST || 'http://localhost:3000';
 
@@ -490,6 +492,49 @@ async function runLiveServerDiagnostics() {
   assert(sitemapRes.status === 200, 'sitemap.xml returns HTTP 200 OK');
   const sitemapXml = typeof sitemapRes.body === 'string' ? sitemapRes.body : JSON.stringify(sitemapRes.body);
   assert(sitemapXml.includes('<urlset') && sitemapXml.includes('/earth') && sitemapXml.includes('/weather') && sitemapXml.includes('/deepspace'), 'sitemap.xml contains valid XML URLset with all public pages');
+
+  // PHASE 7: AIR QUALITY OBSERVATORY & CPCB NAQI VERIFICATION
+  console.log('\n--- Phase 7: Air Quality Observatory & CPCB NAQI Verification ---');
+  const { calculateSubIndex, computeCpcbAqi, getCpcbCategory } = require('../src/adapters/cpcb-naqi-adapter');
+
+  // Unit tests for CPCB Sub-Index formulas
+  const subPm25Good = calculateSubIndex(25, 'pm25');
+  assert(subPm25Good >= 0 && subPm25Good <= 50, 'CPCB PM2.5 (25 µg/m³) calculates to Good tier (0-50)');
+
+  const subPm25Mod = calculateSubIndex(75, 'pm25');
+  assert(subPm25Mod >= 101 && subPm25Mod <= 200, 'CPCB PM2.5 (75 µg/m³) calculates to Moderate tier (101-200)');
+
+  const subPm25VPoor = calculateSubIndex(150, 'pm25');
+  assert(subPm25VPoor >= 301 && subPm25VPoor <= 400, 'CPCB PM2.5 (150 µg/m³) calculates to Very Poor tier (301-400)');
+
+  const overallAqi = computeCpcbAqi({
+    pm25: 150,
+    pm10: 80,
+    no2: 30,
+    so2: 15,
+    co: 0.8,
+    o3: 40
+  });
+  assert(overallAqi.aqi === subPm25VPoor, 'Overall CPCB NAQI matches maximum sub-index (PM2.5)');
+  assert((overallAqi.categoryInfo?.category || overallAqi.tier?.category) === 'Very Poor', 'Overall CPCB NAQI maps to "Very Poor" tier');
+
+  // Live endpoints
+  const aqiProvidersRes = await testEndpoint('Air Quality Providers Status', '/api/airquality/providers');
+  assert(aqiProvidersRes.status === 200 && aqiProvidersRes.body.ok, 'Air quality providers endpoint returns 200 OK');
+
+  const aqiStationsRes = await testEndpoint('CAAQMS Stations List', '/api/airquality/stations');
+  assert(aqiStationsRes.status === 200 && aqiStationsRes.body.count >= 20, 'CAAQMS stations endpoint returns 20+ continuous stations');
+
+  const aqiRankingsRes = await testEndpoint('Indian City AQI Rankings', '/api/airquality/rankings');
+  assert(aqiRankingsRes.status === 200 && (aqiRankingsRes.body.rankings || aqiRankingsRes.body.mostPolluted), 'City AQI rankings returns validated leaderboard');
+
+  const aqiDelhiRes = await testEndpoint('Delhi Station AQI Telemetry', '/api/airquality/station?lat=28.6508&lon=77.3152');
+  assert(aqiDelhiRes.status === 200 && aqiDelhiRes.body.ok && typeof aqiDelhiRes.body.aqi === 'number', 'Delhi CAAQMS returns valid CPCB NAQI score');
+
+  const aqiPageRes = await testEndpoint('Air Quality HTML Viewport', '/airquality');
+  assert(aqiPageRes.status === 200, '/airquality viewport returns HTTP 200 OK');
+  const aqiPageHtml = typeof aqiPageRes.body === 'string' ? aqiPageRes.body : JSON.stringify(aqiPageRes.body);
+  assert(aqiPageHtml.includes('AIR QUALITY DESK') && aqiPageHtml.includes('CPCB NAQI'), 'Air Quality HTML includes CPCB NAQI and Desk panel');
 }
 
 async function main() {

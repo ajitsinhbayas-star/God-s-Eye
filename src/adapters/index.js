@@ -7,6 +7,11 @@ import { NoaaSwpcAdapter } from './noaa-swpc-adapter.js';
 import { NoaaNhcAdapter } from './noaa-nhc-adapter.js';
 import { RainViewerAdapter } from './rainviewer-adapter.js';
 import { EsaDiscosAdapter, EuSstAdapter, LeoLabsAdapter, SlingshotAdapter, ComspocAdapter } from './restricted-adapters.js';
+import { GoogleAirQualityAdapter } from './google-air-quality-adapter.js';
+import { IQAirAdapter } from './iqair-adapter.js';
+import { WaqiAdapter } from './waqi-adapter.js';
+import { AirNowAdapter } from './airnow-adapter.js';
+import { AqiInAdapter } from './aqi-in-adapter.js';
 
 export class AdapterRegistry {
   constructor() {
@@ -44,6 +49,11 @@ export class AdapterRegistry {
     this.register(new LeoLabsAdapter());
     this.register(new SlingshotAdapter());
     this.register(new ComspocAdapter());
+    this.register(new GoogleAirQualityAdapter());
+    this.register(new IQAirAdapter());
+    this.register(new WaqiAdapter());
+    this.register(new AirNowAdapter());
+    this.register(new AqiInAdapter());
   }
 }
 

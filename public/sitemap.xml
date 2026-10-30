@@ -36,4 +36,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>https://orbitaleye.in/airquality</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
 </urlset>

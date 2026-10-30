@@ -2484,7 +2484,8 @@
       L.control.zoom({ position: 'topright' }).addTo(leafletMap);
 
       leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18,
+        maxNativeZoom: 16,
+        maxZoom: 19,
         attribution: '&copy; Esri, Maxar'
       }).addTo(leafletMap);
 
@@ -2500,14 +2501,17 @@
       if (type === 'satellite') {
         if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
         leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          maxZoom: 18,
-          attribution: '&copy; Esri, Maxar'
-        }).addTo(leafletMap);
+        maxNativeZoom: 16,
+        maxZoom: 19,
+        attribution: '&copy; Esri, Maxar'
+      }).addTo(leafletMap);
       } else {
         if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
-        leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-          maxZoom: 18,
-          attribution: '&copy; Esri'
+        leafletBasemapLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          subdomains: 'abcd',
+          maxNativeZoom: 19,
+          maxZoom: 19,
+          attribution: '&copy; CartoDB &copy; OpenStreetMap'
         }).addTo(leafletMap);
       }
     }
@@ -2538,7 +2542,9 @@
       if (leafletRadarLayer) leafletMap.removeLayer(leafletRadarLayer);
       leafletRadarLayer = L.tileLayer(tileUrl, {
         opacity: 0.85,
-        zIndex: 100
+        zIndex: 100,
+        maxNativeZoom: 12,
+        maxZoom: 19
       }).addTo(leafletMap);
     }
 

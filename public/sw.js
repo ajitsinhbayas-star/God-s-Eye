@@ -19,6 +19,8 @@ const PRECACHE_ASSETS = [
   '/earth.html',
   '/weather',
   '/weather.html',
+  '/airquality',
+  '/airquality.html',
   '/deepspace',
   '/deepspace.html',
   '/asteroids',

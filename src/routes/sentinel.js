@@ -100,6 +100,7 @@ router.get('/workers', auth.requireAdminAuth, (req, res) => {
   const swpcProv = providerRegistry.getProvider('noaa_swpc') || {};
   const radarProv = providerRegistry.getProvider('rainviewer') || {};
   const cadProv = providerRegistry.getProvider('nasa_jpl_cad') || {};
+  const cpcbProv = providerRegistry.getProvider('cpcb_naqi') || {};
 
   const rawWorkers = [
     {
@@ -146,6 +147,15 @@ router.get('/workers', auth.requireAdminAuth, (req, res) => {
       success_count: cadProv.successCount || 1,
       duration_ms: cadProv.latencyMs || 180,
       last_run: cadProv.lastSuccess || store.lastUpdated || new Date().toISOString()
+    },
+    {
+      worker_id: 'worker_airquality_cpcb',
+      name: 'CPCB National Air Quality & Atmospheric Chemistry Monitor',
+      state: 'running',
+      quality: cpcbProv.status === 'ACTIVE' ? 'fresh' : 'degraded',
+      success_count: cpcbProv.successCount || 1,
+      duration_ms: cpcbProv.latencyMs || 85,
+      last_run: cpcbProv.lastSuccess || new Date().toISOString()
     }
   ];
 

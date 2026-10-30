@@ -21,6 +21,7 @@ import {
 import { sentinelRouter } from './routes/sentinel.js';
 import { objectsRouter } from './routes/objects.js';
 import { weatherRouter } from './routes/weather.js';
+import { airQualityRouter } from './routes/airquality.js';
 import { analysisRouter } from './routes/analysis.js';
 import { MASTER_TRACKABLE_CATALOG } from './config/catalog.js';
 
@@ -31,6 +32,7 @@ import { startJplCadDaemon } from './daemons/jpl-cad-worker.js';
 import { startNewsDaemon } from './daemons/news-harvester.js';
 import { startKeepAliveDaemon } from './daemons/keep-alive.js';
 import { startWeatherDaemon } from './daemons/weather-worker.js';
+import { startAirQualityDaemon } from './daemons/airquality-worker.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -98,6 +100,7 @@ app.post('/api/propagate-time', handleTimeTravel);
 // Subsystem API routers
 app.use('/api/space', spaceRouter);
 app.use('/api/weather', weatherRouter);
+app.use('/api/airquality', airQualityRouter);
 app.use('/api/sentinel', sentinelRouter);
 app.use('/api/analysis', analysisRouter);
 app.use('/api', objectsRouter);
@@ -237,6 +240,10 @@ app.all('/api/*', (req, res) => {
 
 app.get(['/', '/index', '/index.html'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
+app.get(['/airquality', '/airquality/', '/airquality.html', '/aqi', '/aqi.html'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'airquality.html'));
 });
 
 app.get(['/weather', '/weather/', '/weather.html'], (req, res) => {
@@ -386,6 +393,7 @@ startJplCadDaemon();
 startNewsDaemon();
 startKeepAliveDaemon();
 startWeatherDaemon();
+startAirQualityDaemon();
 
 sentinelDiagnostics.logEvent('STARTUP', 'INFO', `God's Eye Orbital Engine initialized on port ${PORT}`, {
   nodeVersion: process.version,
