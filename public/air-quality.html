@@ -95,6 +95,9 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#030712" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Core Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -169,7 +172,7 @@
       </div>
 
       <!-- Navigation Pill Links -->
-      <div class="flex-1 flex items-center justify-center min-w-0 mx-2 overflow-hidden">
+      <div class="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-2 overflow-hidden">
         <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
@@ -248,18 +251,24 @@
   </script>
 
 
-      <div class="flex items-center gap-2 shrink-0">
-        <button onclick="document.getElementById('selected-aqi-panel').classList.toggle('hidden')" class="px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition flex items-center gap-1.5 shadow-sm">
+      <div class="flex items-center gap-1.5 shrink-0 font-mono">
+        <button id="btn-toggle-desk-panel" onclick="window.toggleDeskPanel()" aria-expanded="false" aria-controls="selected-aqi-panel" class="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-cyan-300 transition flex items-center gap-1.5 shadow-sm" title="Toggle Air Quality Desk Panel">
           <i class="fa-solid fa-chart-simple"></i>
-          <span class="hidden sm:inline">Desk Panel</span>
+          <span class="text-xs">Desk</span>
+        </button>
+        <a href="/sentinel-login" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Operations Console">
+          <i class="fa-solid fa-shield-halved"></i>
+        </a>
+        <button onclick="window.toggleMobileNavMenu()" id="btn-toggle-mobile-nav" aria-expanded="false" aria-controls="mobile-nav-drawer" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
         </button>
       </div>
     </div>
 
     <!-- Row 2: Kisan-Style Search & Filters Bar -->
-    <div class="pointer-events-auto flex flex-wrap items-center gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl">
+    <div class="pointer-events-auto flex items-center gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl overflow-x-auto no-scrollbar">
       <!-- Multilingual Search Input -->
-      <div class="relative flex-1 min-w-[200px]">
+      <div class="relative flex-1 min-w-[170px] sm:min-w-[200px] shrink-0">
         <div class="relative flex items-center">
           <span class="absolute left-3 text-slate-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input
@@ -275,14 +284,14 @@
       </div>
 
       <!-- State Selector -->
-      <div class="min-w-[130px]">
+      <div class="min-w-[130px] shrink-0">
         <select id="top-aqi-state-select" onchange="window.onAqiStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
           <option value="">All States & UTs (35)</option>
         </select>
       </div>
 
       <!-- District Selector -->
-      <div class="min-w-[130px]">
+      <div class="min-w-[130px] shrink-0">
         <select id="top-aqi-district-select" onchange="window.onAqiDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
           <option value="">Select District...</option>
         </select>
@@ -313,11 +322,26 @@
       </button>
     </div>
   </header>
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav-drawer" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/30 backdrop-blur-2xl shadow-2xl lg:hidden font-mono">
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Home</a>
+      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Solar System</a>
+      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Earth Satellites</a>
+      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Deep Space</a>
+      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Asteroids</a>
+      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Atmosphere</a>
+      <a href="/air-quality" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center">Air Quality</a>
+      <a href="/alert" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Alert</a>
+    </div>
+  </div>
 
   <!-- SIDE DESK PANEL (Collapsible on mobile and desktop) -->
-  <aside id="selected-aqi-panel" class="absolute top-28 sm:top-32 left-4 bottom-8 z-30 w-80 md:w-96 bg-slate-950/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
-    <!-- Panel Header -->
-    <div class="px-4 py-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/40">
+  <aside id="selected-aqi-panel" class="hidden md:flex fixed z-40 transition-all duration-300
+    md:top-32 md:left-4 md:bottom-8 md:right-auto md:w-96 md:max-h-[calc(100vh-9rem)] md:rounded-2xl md:border md:border-cyan-500/50 md:shadow-2xl md:bg-slate-950/95 md:backdrop-blur-xl md:flex-col md:overflow-hidden
+    bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-cyan-500/60 bg-slate-950/98 backdrop-blur-2xl shadow-2xl flex-col overflow-hidden pointer-events-auto">
+    <!-- Panel Header with Controls -->
+    <div class="px-4 py-2.5 border-b border-cyan-500/30 flex items-center justify-between bg-slate-900/60 shrink-0">
       <div class="flex items-center gap-2">
         <div class="w-6 h-6 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xs">
           <i class="fa-solid fa-gauge-high"></i>
@@ -327,18 +351,23 @@
           <div class="text-[9px] text-slate-400 font-mono">Central Pollution Control Board (CPCB) Standard</div>
         </div>
       </div>
-      <button onclick="document.getElementById('selected-aqi-panel').classList.add('hidden')" class="text-slate-400 hover:text-white transition text-xs p-1">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button onclick="window.toggleAqiSheetCollapse()" class="md:hidden px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono" title="Collapse / Expand Sheet">
+          ↕ Sheet
+        </button>
+        <button onclick="window.closeDeskPanel()" class="w-6 h-6 rounded-lg bg-slate-900 hover:bg-rose-950/80 border border-slate-700 text-slate-400 hover:text-rose-300 flex items-center justify-center transition" title="Close Panel">
+          ✕
+        </button>
+      </div>
     </div>
 
     <!-- Panel Scrollable Body -->
     <div id="selected-aqi-content" class="flex-1 p-4 overflow-y-auto space-y-4">
-      <div class="text-center py-10 space-y-3 text-slate-400 font-mono">
+      <div class="text-center py-8 space-y-3 text-slate-400 font-mono">
         <div class="text-3xl text-cyan-400">🗺️</div>
         <div class="text-xs font-bold text-white">Select an Indian District or Station</div>
         <p class="text-[11px] text-slate-400 font-sans leading-relaxed">
-          Tap any district polygon on the map, click a CAAQMS station marker, or type any city name in the top search bar to inspect live CPCB NAQI telemetry, pollutant measurements, and health advisories.
+          Tap any district boundary on the map, click a CAAQMS station marker, or type any city name in the top search bar to inspect live CPCB NAQI telemetry, pollutant measurements, and health advisories.
         </p>
       </div>
     </div>
@@ -405,5 +434,96 @@
     };
   </script>
 
+<script>
+    window.openDeskPanel = function() {
+      const p = document.getElementById('selected-aqi-panel');
+      const btn = document.getElementById('btn-toggle-desk-panel');
+      if (p) {
+        p.classList.remove('hidden');
+        p.classList.remove('max-h-12');
+        p.classList.add('flex');
+        p.classList.add('max-h-[58vh]');
+      }
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+    };
+
+    window.closeDeskPanel = function() {
+      const p = document.getElementById('selected-aqi-panel');
+      const btn = document.getElementById('btn-toggle-desk-panel');
+      if (p) {
+        p.classList.add('hidden');
+        p.classList.remove('flex');
+      }
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    };
+
+    window.toggleDeskPanel = function() {
+      const p = document.getElementById('selected-aqi-panel');
+      if (!p) return;
+      if (p.classList.contains('hidden') || window.getComputedStyle(p).display === 'none') {
+        window.openDeskPanel();
+      } else {
+        window.closeDeskPanel();
+      }
+    };
+
+    window.toggleAqiSheetCollapse = function() {
+      const p = document.getElementById('selected-aqi-panel');
+      if (!p) return;
+      if (p.classList.contains('max-h-12')) {
+        p.classList.remove('max-h-12');
+        p.classList.add('max-h-[58vh]');
+      } else {
+        p.classList.remove('max-h-[58vh]');
+        p.classList.add('max-h-12');
+      }
+    };
+
+    window.toggleMobileNavMenu = function() {
+      const drawer = document.getElementById('mobile-nav-drawer');
+      const btn = document.getElementById('btn-toggle-mobile-nav');
+      if (!drawer) return;
+      const willOpen = drawer.classList.contains('hidden');
+      if (willOpen) {
+        drawer.classList.remove('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'true');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-xmark';
+        }
+      } else {
+        drawer.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars';
+        }
+      }
+    };
+
+    // Close mobile nav drawer when resizing to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        const drawer = document.getElementById('mobile-nav-drawer');
+        const btn = document.getElementById('btn-toggle-mobile-nav');
+        if (drawer) drawer.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars';
+        }
+      }
+    });
+
+    // Sync initial ARIA state on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const p = document.getElementById('selected-aqi-panel');
+      const btn = document.getElementById('btn-toggle-desk-panel');
+      if (p && btn) {
+        const isClosed = p.classList.contains('hidden') || window.getComputedStyle(p).display === 'none';
+        btn.setAttribute('aria-expanded', isClosed ? 'false' : 'true');
+      }
+    });
+  </script>
 </body>
 </html>

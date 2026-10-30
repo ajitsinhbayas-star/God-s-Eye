@@ -107,7 +107,10 @@ router.get('/health', auth.requireAdminAuth, (req, res) => {
 });
 
 // Provider Sources Registry (21 Providers with accurate statuses)
-router.get('/sources', auth.requireAdminAuth, (req, res) => {
+router.get('/sources', auth.requireAdminAuth, async (req, res) => {
+  if (req.query.refresh === 'true') {
+    await providerRegistry.pingAllOpenProviders().catch(() => {});
+  }
   const sources = providerRegistry.getAllProviders();
   res.json({
     success: true,

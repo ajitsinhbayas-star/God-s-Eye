@@ -480,15 +480,21 @@
 
     lastPopupLatLng = latlng;
 
-    leafletDistrictPopup = L.popup({
-      className: 'kisan-popup',
-      offset: [0, -10],
-      autoPan: true,
-      autoPanPadding: [40, 40]
-    })
-    .setLatLng(latlng)
-    .setContent(loadingHtml)
-    .openOn(window.leafletMap);
+    if (window.innerWidth >= 768) {
+      leafletDistrictPopup = L.popup({
+        className: 'kisan-popup',
+        offset: [0, -10],
+        autoPan: true,
+        autoPanPadding: [40, 40]
+      })
+      .setLatLng(latlng)
+      .setContent(loadingHtml)
+      .openOn(window.leafletMap);
+    } else {
+      if (leafletDistrictPopup && window.leafletMap) {
+        window.leafletMap.closePopup(leafletDistrictPopup);
+      }
+    }
 
     // Fetch and render weather for this coordinate
     fetchAndRenderDistrictWeather(distId, distName, stateName, lat, lon, latlng);
@@ -922,7 +928,25 @@
   async function fetchAndRenderDistrictWeather(distId, districtName, stateName, lat, lon, targetLatLng) {
     const container = document.getElementById('selected-district-content');
     const panel = document.getElementById('selected-district-panel');
-    if (panel) panel.classList.remove('hidden');
+    if (panel) {
+      panel.classList.remove('hidden');
+      isPanelCollapsed = false;
+      panel.classList.remove('max-h-12', 'overflow-hidden');
+      panel.classList.add('max-h-[58vh]');
+      const dBtn = document.getElementById('btn-toggle-district-panel');
+      if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
+      // On mobile, close any open drawers to avoid screen clutter
+      if (window.innerWidth < 768) {
+        const left = document.getElementById('left-drawer');
+        const lBtn = document.getElementById('btn-toggle-left-drawer');
+        if (left) left.classList.add('-translate-x-[110%]');
+        if (lBtn) lBtn.setAttribute('aria-expanded', 'false');
+        const right = document.getElementById('right-drawer');
+        const rBtn = document.getElementById('btn-toggle-right-drawer');
+        if (right) right.classList.add('translate-x-[110%]');
+        if (rBtn) rBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
     if (!container) return;
 
     container.innerHTML = `
@@ -948,6 +972,12 @@
   // Update Leaflet Popup Card on Map
   function updateDistrictPopupCard(data, targetLatLng) {
     if (!window.leafletMap || !targetLatLng) return;
+    if (window.innerWidth < 768) {
+      if (leafletDistrictPopup && window.leafletMap) {
+        window.leafletMap.closePopup(leafletDistrictPopup);
+      }
+      return;
+    }
 
     const c = data.current || {};
     const hourly = data.forecast24h || data.hourly || [];
@@ -1313,11 +1343,17 @@
   window.closeFarmerPanel = function () {
     const p = document.getElementById('selected-district-panel');
     if (p) p.classList.add('hidden');
+    const dBtn = document.getElementById('btn-toggle-district-panel');
+    if (dBtn) dBtn.setAttribute('aria-expanded', 'false');
     if (leafletSelectedDistrictLayer && window.leafletMap) {
       window.leafletMap.removeLayer(leafletSelectedDistrictLayer);
       leafletSelectedDistrictLayer = null;
     }
+    if (leafletDistrictPopup && window.leafletMap) {
+      window.leafletMap.closePopup(leafletDistrictPopup);
+    }
     selectedDistrictId = null;
+    window.selectedDistrictId = null;
   };
 
   window.quickSelectDistrict = function (distId) {

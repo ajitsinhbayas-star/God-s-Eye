@@ -33,6 +33,9 @@
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#030712">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Styles & Core CDNs -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -192,7 +195,7 @@
         </a>
 
         <!-- Mobile Menu Toggle Button -->
-        <button onclick="document.getElementById('mobile-nav-drawer').classList.toggle('hidden')" class="p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 sm:hidden min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Toggle Navigation">
+        <button id="btn-toggle-mobile-nav" onclick="toggleMobileNavMenu(this)" class="p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 sm:hidden min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="mobile-nav-drawer">
           <i class="fa-solid fa-bars text-sm"></i>
         </button>
       </div>
@@ -531,6 +534,47 @@
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
     };
+
+    function toggleMobileNavMenu(btn) {
+      const drawer = document.getElementById('mobile-nav-drawer');
+      const toggleBtn = btn || document.getElementById('btn-toggle-mobile-nav');
+      if (!drawer) return;
+      const willOpen = drawer.classList.contains('hidden');
+      if (willOpen) {
+        drawer.classList.remove('hidden');
+        if (toggleBtn) {
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          const icon = toggleBtn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-xmark text-sm';
+        }
+      } else {
+        drawer.classList.add('hidden');
+        if (toggleBtn) {
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          const icon = toggleBtn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars text-sm';
+        }
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 640) {
+        const drawer = document.getElementById('mobile-nav-drawer');
+        const btn = document.getElementById('btn-toggle-mobile-nav');
+        if (drawer) drawer.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars text-sm';
+        }
+      }
+    });
+
+    document.querySelectorAll('#mobile-nav-drawer a').forEach(a => {
+      a.addEventListener('click', () => {
+        toggleMobileNavMenu();
+      });
+    });
   </script>
 
   <!-- Resilient Client & J.A.R.V.I.S. Assistant -->

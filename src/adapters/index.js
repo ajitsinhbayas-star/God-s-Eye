@@ -12,6 +12,7 @@ import { IQAirAdapter } from './iqair-adapter.js';
 import { WaqiAdapter } from './waqi-adapter.js';
 import { AirNowAdapter } from './airnow-adapter.js';
 import { AqiInAdapter } from './aqi-in-adapter.js';
+import { OpenAQAdapter } from './openaq-adapter.js';
 
 export class AdapterRegistry {
   constructor() {
@@ -54,6 +55,7 @@ export class AdapterRegistry {
     this.register(new WaqiAdapter());
     this.register(new AirNowAdapter());
     this.register(new AqiInAdapter());
+    this.register(new OpenAQAdapter());
   }
 }
 

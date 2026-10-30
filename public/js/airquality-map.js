@@ -706,22 +706,32 @@
 
     if (leafletAqiPopup) leafletMap.closePopup(leafletAqiPopup);
 
-    leafletAqiPopup = L.popup({
-      className: 'aqi-popup',
-      offset: [0, -10],
-      autoPan: true
-    })
-    .setLatLng(latlng)
-    .setContent(html)
-    .openOn(leafletMap);
+    // On mobile (< 768px), suppress duplicate popup card since bottom sheet is open
+    if (window.innerWidth >= 768) {
+      leafletAqiPopup = L.popup({
+        className: 'aqi-popup',
+        offset: [0, -10],
+        autoPan: true
+      })
+      .setLatLng(latlng)
+      .setContent(html)
+      .openOn(leafletMap);
+    }
   }
 
   // Render Desk Panel
   function renderAqiDeskPanel(data) {
     const container = document.getElementById('selected-aqi-content');
-    const panel = document.getElementById('selected-aqi-panel');
     if (!container) return;
-    if (panel) panel.classList.remove('hidden');
+    if (typeof window.openDeskPanel === 'function') {
+      window.openDeskPanel();
+    } else {
+      const panel = document.getElementById('selected-aqi-panel');
+      if (panel) {
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+      }
+    }
 
     const tier = getCpcbTier(data.aqi);
     const p = data.pollutants || {};

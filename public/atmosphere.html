@@ -12,6 +12,7 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <link rel="canonical" href="https://orbitaleye.in/atmosphere" />
   <meta name="theme-color" content="#010409" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -416,6 +417,24 @@
       </button>
 
       <!-- Basemap Toggle: Satellite vs Street -->
+      <!-- District Weather Desk Toggle Button -->
+      <button id="btn-toggle-district-panel" onclick="toggleFarmerPanel()" aria-expanded="false" aria-controls="selected-district-panel" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle District Weather Panel">
+        <span>🌾</span>
+        <span>Weather Desk</span>
+      </button>
+
+      <!-- Severe Storms Drawer Toggle Button -->
+      <button id="btn-toggle-left-drawer" onclick="toggleLeftDrawer()" aria-expanded="false" aria-controls="left-drawer" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-rose-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Severe Weather Drawer">
+        <i class="fa-solid fa-bolt text-rose-400"></i>
+        <span>Severe Weather</span>
+      </button>
+
+      <!-- Layer Controls Drawer Toggle Button -->
+      <button id="btn-toggle-right-drawer" onclick="toggleRightDrawer()" aria-expanded="false" aria-controls="right-drawer" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Layer Controls Drawer">
+        <i class="fa-solid fa-sliders text-cyan-400"></i>
+        <span>Layers &amp; Controls</span>
+      </button>
+
       <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Satellite Imagery / Street Map">
         <span id="basemap-icon">🛰️</span>
         <span id="basemap-text">Satellite</span>
@@ -536,9 +555,7 @@
   </div>
 
   <!-- SELECTED DISTRICT WEATHER PANEL (Desktop Right Floating Card / Mobile Bottom Sheet) -->
-  <aside id="selected-district-panel" class="fixed z-30 transition-all duration-300
-    sm:top-[7.75rem] sm:left-auto sm:right-4 sm:bottom-auto sm:w-96 sm:max-h-[calc(100vh-9rem)] sm:rounded-2xl sm:border sm:border-emerald-500/50 sm:shadow-2xl sm:bg-slate-950/95 sm:backdrop-blur-xl sm:p-4 sm:overflow-y-auto
-    bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
+  <aside id="selected-district-panel" class="hidden md:block fixed z-30 transition-all duration-300 md:top-[7.75rem] md:left-auto md:right-4 md:bottom-auto md:w-96 md:max-h-[calc(100vh-9rem)] md:rounded-2xl md:border md:border-emerald-500/50 md:shadow-2xl md:bg-slate-950/95 md:backdrop-blur-xl md:p-4 md:overflow-y-auto bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
     <!-- Panel Header & Drag Handle -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/30">
       <div class="flex items-center gap-2">
@@ -1244,19 +1261,33 @@
         if (mapEl) mapEl.classList.remove('hidden');
         if (navPad) navPad.classList.add('hidden');
         if (footerScrubber) footerScrubber.classList.add('hidden');
-        if (panel) panel.classList.remove('hidden');
+        if (panel) {
+          if (window.innerWidth >= 768) {
+            panel.classList.remove('hidden');
+            const dBtn = document.getElementById('btn-toggle-district-panel');
+            if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
+          } else {
+            panel.classList.add('hidden');
+            const dBtn = document.getElementById('btn-toggle-district-panel');
+            if (dBtn) dBtn.setAttribute('aria-expanded', 'false');
+          }
+        }
 
         init2DMap();
-        setTimeout(() => {
-          if (typeof window.initLeafletDistrictLayers === 'function') {
-            window.initLeafletDistrictLayers();
-          }
-          const urlP = new URLSearchParams(window.location.search);
-          const hasTarget = window.selectedDistrictId || urlP.get('district');
-          if (typeof window.zoomToAllIndia === 'function' && !hasTarget) {
-            window.zoomToAllIndia();
-          }
-        }, 150);
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (typeof window.initLeafletDistrictLayers === 'function') {
+              window.initLeafletDistrictLayers();
+            }
+            requestAnimationFrame(() => {
+              const urlP = new URLSearchParams(window.location.search);
+              const hasTarget = window.selectedDistrictId || urlP.get('district');
+              if (typeof window.zoomToAllIndia === 'function' && !hasTarget) {
+                window.zoomToAllIndia();
+              }
+            });
+          }, 60);
+        });
 
       } else {
         currentProjection = '3d';

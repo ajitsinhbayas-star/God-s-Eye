@@ -34,6 +34,8 @@ import { startNewsDaemon } from './daemons/news-harvester.js';
 import { startKeepAliveDaemon } from './daemons/keep-alive.js';
 import { startWeatherDaemon } from './daemons/weather-worker.js';
 import { startAirQualityDaemon } from './daemons/airquality-worker.js';
+import { initWorkerRegistry } from './supervisor/worker-registry-init.js';
+import { providerRegistry } from './supervisor/registry.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -482,6 +484,8 @@ startNewsDaemon();
 startKeepAliveDaemon();
 startWeatherDaemon();
 startAirQualityDaemon();
+initWorkerRegistry();
+providerRegistry.pingAllOpenProviders().catch(() => {});
 
 workerManager.startAll();
 

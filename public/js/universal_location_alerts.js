@@ -89,6 +89,7 @@
 
   // 2. INJECT TOP PASS NEWS TICKER IF NOT PRESENT
   function ensurePassNewsTicker() {
+    if (window.location.pathname.includes('atmosphere') || window.location.pathname.includes('alert') || window.location.pathname.includes('orbitalert') || document.getElementById('farmer-controls')) return;
     if (document.getElementById('hud-pass-news-ticker')) return;
     const ticker = document.createElement('div');
     ticker.id = 'hud-pass-news-ticker';
@@ -107,13 +108,16 @@
   }
 
   window.dismissPassNewsTicker = function() {
+    try { sessionStorage.setItem('orbital_dismiss_pass_ticker', '1'); } catch (_) {}
     const t = document.getElementById('hud-pass-news-ticker');
-    if (t) t.style.display = 'none';
+    if (t) { t.classList.add('hidden'); t.style.display = 'none'; }
   };
 
   window.showPassNewsTicker = function() {
+    try { sessionStorage.removeItem('orbital_dismiss_pass_ticker'); } catch (_) {}
     const t = document.getElementById('hud-pass-news-ticker');
     if (t) {
+      t.classList.remove('hidden');
       t.style.display = 'flex';
       updateTickerHUD();
     }
@@ -272,6 +276,14 @@
 
   function updateTickerHUD() {
     const tickerEl = document.getElementById('hud-pass-news-ticker');
+    if (window.location.pathname.includes('atmosphere') || document.getElementById('farmer-controls')) {
+      if (tickerEl) tickerEl.classList.add('hidden');
+      return;
+    }
+    if (sessionStorage.getItem('orbital_dismiss_pass_ticker') === '1') {
+      if (tickerEl) tickerEl.classList.add('hidden');
+      return;
+    }
     const textEl = document.getElementById('hud-pass-ticker-text');
     const tagEl = document.getElementById('ticker-tag');
     const pingDot = document.getElementById('ticker-ping-dot');

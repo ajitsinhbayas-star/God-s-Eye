@@ -2,12 +2,12 @@
   "lastUpdated": "2026-10-24T16:55:36.984Z",
   "syncCycles": 0,
   "liveISS": {
-    "latitude": -11.6847,
-    "longitude": 111.8099,
-    "altitude": 417.74,
-    "velocity": 27589,
+    "latitude": 42.2396,
+    "longitude": 91.1683,
+    "altitude": 423.23,
+    "velocity": 27586,
     "visibility": "eclipsed",
-    "timestamp": 1793364076903
+    "timestamp": 1793381934791
   },
   "externalIntel": {
     "spaceWeather": {
@@ -15,8 +15,8 @@
       "stormLevel": "G0 (Quiet / Nominal)",
       "gScaleCode": "G0",
       "severity": "nominal",
-      "observationTimeUTC": "2026-10-30T12:38:30.548Z",
-      "updatedAt": "2026-10-30T12:38:30.548Z",
+      "observationTimeUTC": "2026-10-30T17:34:59.051Z",
+      "updatedAt": "2026-10-30T17:34:59.051Z",
       "quality": "fresh",
       "provider": "NOAA Space Weather Prediction Center (SWPC)"
     },
@@ -36,19 +36,19 @@
     ],
     "missionNews": [
       {
-        "id": 40656,
-        "title": "Ground Qualification Testing Begins for Callisto Reusable Rocket Demonstrator",
-        "newsSite": "European Spaceflight"
+        "id": 40662,
+        "title": "Analysts find looming launch crisis is \"more severe\" than anticipated",
+        "newsSite": "Arstechnica"
       },
       {
-        "id": 40655,
-        "title": "November’s Night Sky Notes: Light-Day Away",
+        "id": 40660,
+        "title": "NASA’s James Webb Space Telescope Captures Eerie Cat’s Head",
         "newsSite": "NASA"
       },
       {
-        "id": 40654,
-        "title": "Earth from Space: Champi’s eerie eye",
-        "newsSite": "ESA"
+        "id": 40661,
+        "title": "Turkey aims for first Moon-orbiting mission in 2027",
+        "newsSite": "Spaceflight Now"
       }
     ]
   },
@@ -67,10 +67,10 @@
       "name": "CelesTrak / NORAD GP Elements",
       "detail": "Active satellite TLE vectors",
       "status": "ok",
-      "label": "Active SGP4 Pipeline (15 Live TLEs, 17 Cached)",
-      "lastFetch": "2026-10-30T12:38:34.897Z",
+      "label": "Active SGP4 Pipeline (0 Live TLEs, 17 Cached)",
+      "lastFetch": "2026-10-30T17:35:01.487Z",
       "latencyMs": 210,
-      "quality": "fresh"
+      "quality": "baseline"
     },
     {
       "id": "SRC-NOAA-SWPC",

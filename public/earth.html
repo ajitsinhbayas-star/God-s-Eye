@@ -898,7 +898,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </header>
 
   <!-- Universe Exploration Bar -->
-  <div id="universe-nav-bar" style="display: none;" class="absolute top-[3.75rem] sm:top-[4.25rem] left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl nasa-target-glow pointer-events-auto max-w-[calc(100vw-1.5rem)] font-mono text-xs overflow-x-auto scroll-container">
+  <div id="universe-nav-bar" style="display: none;" class="absolute top-[6.25rem] sm:top-[6.5rem] left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl nasa-target-glow pointer-events-auto max-w-[calc(100vw-1.5rem)] font-mono text-xs overflow-x-auto scroll-container">
     <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-700 shrink-0">
       <button onclick="switchViewDomain('solar')" id="btn-mode-solar" class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition">
         ☀️ Solar
@@ -962,13 +962,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
 
   <!-- Left Minimized Edge Tab: Explore (Section 3C) -->
-  <button id="btn-expand-catalog" onclick="expandCatalog()" class="edge-pill-left hidden absolute top-20 sm:top-24 left-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
+  <button id="btn-expand-catalog" onclick="expandCatalog(this)" aria-expanded="false" aria-controls="catalog-panel" class="edge-pill-left hidden absolute top-20 sm:top-24 left-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
     <span>🛰️ Explore Objects</span>
     <span class="text-xs group-hover:translate-x-0.5 transition-transform">❯</span>
   </button>
 
   <!-- Left Drawer: Object Explorer (Section 3C) -->
-  <aside id="catalog-panel" aria-label="Object Explorer" class="panel-slide-left absolute top-[3.75rem] sm:top-[4.25rem] left-3 bottom-16 sm:bottom-20 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 max-h-[calc(100dvh-10rem)] z-30 flex flex-col rounded-2xl hud-glass pointer-events-auto">
+  <aside id="catalog-panel" aria-label="Object Explorer" class="panel-slide-left absolute top-[6.25rem] sm:top-[6.5rem] left-3 bottom-16 sm:bottom-20 w-[calc(100vw-1.5rem)] sm:w-80 lg:w-96 max-h-[calc(100dvh-10rem)] z-30 flex flex-col rounded-2xl hud-glass pointer-events-auto">
     <div class="flex items-center justify-between p-3 border-b border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
@@ -1063,13 +1063,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
 
   <!-- Right Minimized Edge Tab: Inspector Re-expand Pill -->
-  <button id="btn-expand-intel" onclick="expandIntelCard()" class="edge-pill-right hidden fixed top-1/2 -translate-y-1/2 right-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
+  <button id="btn-expand-intel" onclick="expandIntelCard(this)" aria-expanded="false" aria-controls="intel-card" class="edge-pill-right hidden fixed top-1/2 -translate-y-1/2 right-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
     <span class="text-xs group-hover:-translate-x-0.5 transition-transform">❮</span>
     <span id="btn-expand-intel-label">🎯 Target Inspector</span>
   </button>
 
   <!-- Right Drawer: Unified Selected-Object Inspector (Section 3D) -->
-  <aside id="intel-card" aria-label="Selected-Object Inspector" class="intel-card-slide is-hidden fixed top-[3.75rem] sm:top-[4.25rem] right-3 bottom-16 sm:bottom-20 z-40 w-[calc(100vw-1.5rem)] sm:w-88 md:w-96 rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden font-mono text-xs">
+  <aside id="intel-card" aria-label="Selected-Object Inspector" class="intel-card-slide is-hidden fixed top-[6.25rem] sm:top-[6.5rem] right-3 bottom-16 sm:bottom-20 z-40 w-[calc(100vw-1.5rem)] sm:w-88 md:w-96 rounded-2xl hud-glass flex flex-col pointer-events-auto border border-cyan-500/40 shadow-2xl overflow-hidden font-mono text-xs">
     <!-- Inspector Header -->
     <div class="p-3 bg-slate-950/95 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
       <div class="flex items-center gap-2 min-w-0">
@@ -1662,6 +1662,21 @@ let activeIntroBlobUrl = null;
 
     // --- 3. ASTRONOMICAL TIME ENGINE ---
     let timeScale = 1.0;
+    let isInitialSceneBoot = true;
+    function initMobilePanelStates() {
+      if (window.innerWidth < 768) {
+        minimizeCatalog();
+        closeIntelCard();
+        document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+        document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
+        document.getElementById('nasa-date-modal')?.classList.add('hidden');
+      } else {
+        const cat = document.getElementById('catalog-panel');
+        const btn = document.getElementById('btn-expand-catalog');
+        if (cat) cat.classList.remove('is-minimized');
+        if (btn) btn.classList.add('hidden');
+      }
+    }
     let virtualEpochTime = Date.now();
     let lastRealTime = performance.now();
 
@@ -3566,28 +3581,45 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     // --- 13. ADAPTIVE PANEL CONTROLLER ---
     function closeIntelCard() {
       const card = document.getElementById('intel-card');
-      if (card) card.classList.add('is-hidden');
+      if (card) {
+        card.classList.add('is-hidden');
+        card.setAttribute('aria-hidden', 'true');
+      }
       const expandBtn = document.getElementById('btn-expand-intel');
       const name = document.getElementById('card-intel-name')?.textContent || 'Target';
       if (expandBtn) {
-        expandBtn.classList.remove('hidden');
-        const lbl = document.getElementById('btn-expand-intel-label');
-        if (lbl) lbl.textContent = `🎯 ${name}`;
+        if (activeTargetKey && name && name !== 'TARGET') {
+          expandBtn.classList.remove('hidden');
+          expandBtn.setAttribute('aria-expanded', 'false');
+          const lbl = document.getElementById('btn-expand-intel-label');
+          if (lbl) lbl.textContent = '🎯 ' + name;
+        } else {
+          expandBtn.classList.add('hidden');
+          expandBtn.setAttribute('aria-expanded', 'false');
+        }
       }
     }
 
-    function expandIntelCard() {
+    function expandIntelCard(triggerEl) {
       const card = document.getElementById('intel-card');
-      if (card) card.classList.remove('is-hidden');
+      if (card) {
+        card.classList.remove('is-hidden');
+        card.setAttribute('aria-hidden', 'false');
+      }
       const expandBtn = document.getElementById('btn-expand-intel');
-      if (expandBtn) expandBtn.classList.add('hidden');
+      if (expandBtn) {
+        expandBtn.classList.add('hidden');
+        expandBtn.setAttribute('aria-expanded', 'true');
+      }
 
-      // Close the More dropdown and conflicting drawers when info card expands
       document.getElementById('header-more-dropdown')?.classList.add('hidden');
       document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+      document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
+      document.getElementById('nasa-date-modal')?.classList.add('hidden');
 
       if (window.innerWidth <= 1024) {
         minimizeCatalog();
+        minimizeTelemetry();
       }
     }
 
@@ -3779,20 +3811,39 @@ window.toggleGlossaryModal = function() {
       }
     });
     function minimizeCatalog() {
-      document.getElementById('catalog-panel').classList.add('is-minimized');
-      document.getElementById('btn-expand-catalog').classList.remove('hidden');
+      const cat = document.getElementById('catalog-panel');
+      const btn = document.getElementById('btn-expand-catalog');
+      if (cat) {
+        cat.classList.add('is-minimized');
+        cat.setAttribute('aria-hidden', 'true');
+      }
+      if (btn) {
+        btn.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+      }
     }
     let lastActiveTriggerElement = null;
 
     function expandCatalog(triggerEl) {
       if (triggerEl) lastActiveTriggerElement = triggerEl;
       if (window.innerWidth <= 1024) {
-        // Enforce single-drawer constraint for tablet & mobile (Section 8)
         closeIntelCard();
         minimizeTelemetry();
+        document.getElementById('nasa-layers-drawer')?.classList.add('hidden');
+        document.getElementById('nasa-stories-drawer')?.classList.add('hidden');
+        document.getElementById('nasa-date-modal')?.classList.add('hidden');
+        document.getElementById('header-more-dropdown')?.classList.add('hidden');
       }
-      document.getElementById('catalog-panel').classList.remove('is-minimized');
-      document.getElementById('btn-expand-catalog').classList.add('hidden');
+      const cat = document.getElementById('catalog-panel');
+      const btn = document.getElementById('btn-expand-catalog');
+      if (cat) {
+        cat.classList.remove('is-minimized');
+        cat.setAttribute('aria-hidden', 'false');
+      }
+      if (btn) {
+        btn.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+      }
     }
     function minimizeTelemetry() {
       document.getElementById('telemetry-panel').classList.add('is-minimized');
@@ -4463,6 +4514,12 @@ window.toggleGlossaryModal = function() {
 
       if (window.WikiIntelBot && typeof WikiIntelBot.fetchSummary === 'function') {
         WikiIntelBot.fetchSummary(wikiQuery);
+      }
+      if (!isInitialSceneBoot) {
+        expandIntelCard();
+        if (window.innerWidth < 768) {
+          minimizeCatalog();
+        }
       }
     }
 
@@ -5973,21 +6030,18 @@ function animate() {
     buildNaturalMoonsHierarchy();
     buildDeepSkyUniverseObjects();
     buildUnifiedNestedUniverse();
-    if (typeof universeRootGroup !== "undefined") universeRootGroup.visible = false;
-    if (typeof sunMesh !== "undefined") sunMesh.visible = false;
-    if (typeof coronaMesh !== "undefined") coronaMesh.visible = false;
-    if (typeof solarWindParticles !== "undefined") solarWindParticles.visible = false;
-    if (typeof nasaSolarSystemGroup !== "undefined") nasaSolarSystemGroup.visible = false;
-    if (typeof smallBodyMeshes !== "undefined") {
-      Object.values(smallBodyMeshes).forEach(b => { if (b && b.marker) b.marker.visible = false; });
-    }
-    const sbLabelsLayer = document.getElementById("nasa-small-bodies-labels-layer");
-    if (sbLabelsLayer) sbLabelsLayer.style.display = "none";
-    setCosmicTier(1);
-    if (typeof switchExplicitViewMode === 'function') switchExplicitViewMode('earth', { skipCameraTransition: true });
-    setFocusTo('earth');
-    if (typeof BotSwarm !== 'undefined' && BotSwarm.init) BotSwarm.init();
-    if (typeof handleHashRoute === 'function') handleHashRoute();
+      if (typeof handleHashRoute === 'function') handleHashRoute();
+      initMobilePanelStates();
+      setTimeout(() => { isInitialSceneBoot = false; }, 600);
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 768) {
+          const cat = document.getElementById('catalog-panel');
+          const intel = document.getElementById('intel-card');
+          if (cat && !cat.classList.contains('is-minimized') && intel && !intel.classList.contains('is-hidden')) {
+            minimizeCatalog();
+          }
+        }
+      });
   } catch(e) {
     console.error("[Init Warning]:", e);
   }

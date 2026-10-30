@@ -12,6 +12,7 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <link rel="canonical" href="https://orbitaleye.in/alert" />
   <meta name="theme-color" content="#02070e" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -99,6 +100,7 @@
   ]
 }
   </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -400,7 +402,7 @@
         </div>
       </a>
 
-      <div class="overflow-x-auto">
+      <div class="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-2">
         <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
@@ -482,7 +484,7 @@
     <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
       <span id="hud-defcon-badge" class="defcon-ribbon-badge defcon-5">● DEFCON 5 // NOMINAL</span>
       
-      <button onclick="openCityModal()" id="hud-location-selector-btn" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">
+      <button onclick="openCityModal()" id="hud-location-selector-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="city-modal-overlay" class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-mono transition shadow-sm whitespace-nowrap shrink-0" title="Click to Change Observation Station / City">
         <span>📍</span>
         <span id="hud-location-name" class="font-bold">Pune</span>
         <span class="text-[9px] text-slate-400">▾</span>
@@ -491,23 +493,36 @@
       <div style="width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></div>
     </div>
   </header>
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav-drawer" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/30 backdrop-blur-2xl shadow-2xl lg:hidden font-mono">
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Home</a>
+      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Solar System</a>
+      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Earth Satellites</a>
+      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Deep Space</a>
+      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Asteroids</a>
+      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Atmosphere</a>
+      <a href="/air-quality" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center">Air Quality</a>
+      <a href="/alert" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center">Alert</a>
+    </div>
+  </div>
 
   <main>
     <!-- Main Navigation Tab Strip (Exclusively User-Facing Astronomical Observation Modules) -->
-    <div class="main-tab-nav">
-      <button id="tab-btn-passes" class="active" onclick="switchMainTab('passes', this)">
+    <div class="main-tab-nav" role="tablist">
+      <button id="tab-btn-passes" class="active" onclick="switchMainTab('passes', this)" role="tab" aria-selected="true">
         <i class="fa-solid fa-satellite"></i> 1. SATELLITE PASSES &amp; RADAR
       </button>
-      <button id="tab-btn-planets" onclick="switchMainTab('planets', this)">
+      <button id="tab-btn-planets" onclick="switchMainTab('planets', this)" role="tab" aria-selected="false">
         <i class="fa-solid fa-star-and-crescent"></i> 2. PLANETS VISIBLE TONIGHT (SKYLIVE)
       </button>
-      <button id="tab-btn-dsn" onclick="switchMainTab('dsn', this)">
+      <button id="tab-btn-dsn" onclick="switchMainTab('dsn', this)" role="tab" aria-selected="false">
         <i class="fa-solid fa-tower-broadcast"></i> 3. NASA DSN NOW // DEEP SPACE ANTENNAS
       </button>
-      <button id="tab-btn-nea" onclick="switchMainTab('nea', this)">
+      <button id="tab-btn-nea" onclick="switchMainTab('nea', this)" role="tab" aria-selected="false">
         <i class="fa-solid fa-meteor"></i> 4. ASTEROIDS &amp; PLANETARY DEFENSE (CNEOS)
       </button>
-      <button id="tab-btn-weather" onclick="switchMainTab('weather', this)">
+      <button id="tab-btn-weather" onclick="switchMainTab('weather', this)" role="tab" aria-selected="false">
         <i class="fa-solid fa-bolt"></i> 5. SPACE WEATHER &amp; DONKI
       </button>
     </div>
@@ -868,22 +883,57 @@
   </main>
 
   <!-- ==================== SEARCHABLE CITY SELECTION MODAL ==================== -->
-  <div id="city-modal-overlay">
-    <div id="city-modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:rgba(15, 23, 42, 0.95); border-bottom:1px solid rgba(0, 240, 255, 0.3);">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <i class="fa-solid fa-earth-americas" style="color:#00f0ff; font-size:16px;"></i>
-          <span style="font-size:13px; font-weight:800; color:#fff; letter-spacing:0.1em;">SELECT GROUND STATION // CAPITALS &amp; METROS</span>
+  <div id="city-modal-overlay" class="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 pointer-events-auto font-mono text-xs" style="display: none;">
+    <div id="city-modal-content" class="w-full max-w-2xl max-h-[88vh] rounded-2xl bg-slate-950/98 border border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.35)] flex flex-col overflow-hidden text-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="px-4 sm:px-5 py-3 bg-slate-900/90 border-b border-cyan-500/30 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <i class="fa-solid fa-earth-americas text-sm"></i>
+          </div>
+          <div>
+            <div class="font-black text-white text-xs sm:text-sm tracking-wider uppercase flex items-center gap-2">
+              <span>Select Ground Station</span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">24 Observatories</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-sans">Spaceports, National Capitals &amp; Astronomical Hubs</div>
+          </div>
         </div>
-        <button onclick="closeCityModal()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+        <button onclick="closeCityModal()" class="w-7 h-7 rounded-lg bg-slate-900 hover:bg-rose-950/80 border border-slate-700 text-slate-400 hover:text-rose-300 flex items-center justify-center transition" title="Close Dialog (Esc)">
+          ✕
+        </button>
       </div>
 
-      <div style="padding:12px 18px; background:rgba(0,0,0,0.4); border-bottom:1px solid rgba(255,255,255,0.06); display:flex; gap:10px;">
-        <div style="display:flex; align-items:center; gap:8px; flex:1; background:rgba(15, 23, 42, 0.8); border:1px solid rgba(0,240,255,0.4); border-radius:6px; padding:8px 12px;">
-          <i class="fa-solid fa-magnifying-glass" style="color:#00f0ff; font-size:12px;"></i>
-          <input id="city-search-box" type="text" placeholder="Search Indian capital, district, or world city (e.g. Pune, Delhi, Tokyo, London, Paris)..." oninput="filterCities(this.value)" style="flex:1; background:none; border:none; color:#fff; font-family:monospace; font-size:12px; outline:none;" />
+      <!-- Search & GPS Controls Bar -->
+      <div class="p-3 sm:p-4 bg-slate-900/40 border-b border-slate-800/80 flex items-center gap-2 shrink-0">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+          <input
+            id="city-search-box"
+            type="search"
+            placeholder="Search station, city, spaceport, or country (e.g. Paris, Pune, Tokyo, Delhi)..."
+            oninput="filterCities(this.value)"
+            class="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition font-mono"
+          />
         </div>
+        <button onclick="detectGPSLocation(this)" id="btn-modal-gps" class="px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-bold text-xs transition flex items-center gap-1.5 whitespace-nowrap shadow-sm shrink-0" title="Detect Location via Device GPS">
+          <span>📍</span>
+          <span>My GPS</span>
+        </button>
       </div>
+
+      <!-- City Cards Grid (Scrollable) -->
+      <div id="city-cards-grid" class="flex-1 overflow-y-auto p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+
+      <!-- Modal Footer -->
+      <div class="px-4 py-2.5 bg-slate-900/80 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+        <span class="truncate">Active passes, sky dome radar, and visible planets recalculate automatically.</span>
+        <span id="active-station-status-pill" class="text-cyan-400 font-bold ml-2 shrink-0"></span>
+      </div>
+
+    </div>
+  </div>
 
       <div id="city-cards-grid" style="flex:1; overflow-y:auto; padding:16px 18px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;"></div>
     </div>
@@ -901,17 +951,42 @@
     }
 
     const CITIES_DATABASE = [
-      { name: "Pune", region: "Maharashtra / IUCAA Observatory", country: "India", lat: 18.5204, lon: 73.8567, alt: 560, cat: "india-major" },
-      { name: "New Delhi", region: "National Capital Territory", country: "India", lat: 28.6139, lon: 77.2090, alt: 216, cat: "india-capitals" },
-      { name: "Bengaluru", region: "Karnataka / ISTRAC ISRO", country: "India", lat: 12.9716, lon: 77.5946, alt: 920, cat: "india-capitals" },
-      { name: "Mumbai", region: "Maharashtra Capital", country: "India", lat: 19.0760, lon: 72.8777, alt: 14, cat: "india-capitals" },
-      { name: "Sriharikota (SDSC-SHAR)", region: "Andhra Pradesh / ISRO Spaceport", country: "India", lat: 13.7199, lon: 80.2305, alt: 5, cat: "india-major" },
-      { name: "London", region: "United Kingdom Capital", country: "UK", lat: 51.5074, lon: -0.1278, alt: 15, cat: "world-capitals" },
-      { name: "Tokyo", region: "Japan Capital", country: "Japan", lat: 35.6762, lon: 139.6503, alt: 40, cat: "world-capitals" },
-      { name: "Washington D.C.", region: "United States Capital", country: "USA", lat: 38.9072, lon: -77.0369, alt: 20, cat: "world-capitals" }
+      { name: "Pune", region: "Maharashtra / IUCAA & GMRT", country: "India", lat: 18.5204, lon: 73.8567, alt: 560, cat: "Space Research" },
+      { name: "Sriharikota (SDSC)", region: "ISRO Space Launch Port (SHAR)", country: "India", lat: 13.7199, lon: 80.2305, alt: 5, cat: "ISRO Spaceport" },
+      { name: "Bengaluru", region: "ISTRAC / ISRO Headquarters", country: "India", lat: 12.9716, lon: 77.5946, alt: 920, cat: "ISRO Command" },
+      { name: "New Delhi", region: "National Capital Territory", country: "India", lat: 28.6139, lon: 77.2090, alt: 216, cat: "National Capital" },
+      { name: "Mumbai", region: "Maharashtra Capital", country: "India", lat: 19.0760, lon: 72.8777, alt: 14, cat: "Metropolis" },
+      { name: "Hyderabad", region: "NRSC Remote Sensing Center", country: "India", lat: 17.3850, lon: 78.4867, alt: 542, cat: "ISRO Remote Sensing" },
+      { name: "Ahmedabad", region: "Space Applications Centre (SAC)", country: "India", lat: 23.0225, lon: 72.5714, alt: 53, cat: "ISRO Space App" },
+      { name: "Thiruvananthapuram", region: "VSSC Rocket & Launch Center", country: "India", lat: 8.5241, lon: 76.9366, alt: 10, cat: "ISRO Rocketry" },
+      { name: "Chennai", region: "Tamil Nadu", country: "India", lat: 13.0827, lon: 80.2707, alt: 6, cat: "Metropolis" },
+      { name: "Kolkata", region: "West Bengal", country: "India", lat: 22.5726, lon: 88.3639, alt: 9, cat: "Metropolis" },
+      { name: "Nagpur", region: "Zero Mile Central India", country: "India", lat: 21.1458, lon: 79.0882, alt: 310, cat: "Central India" },
+      { name: "Dehradun", region: "IIRS Satellite Sensing", country: "India", lat: 30.3165, lon: 78.0322, alt: 640, cat: "Earth Observation" },
+      { name: "Shillong", region: "NESAC North-East Space", country: "India", lat: 25.5788, lon: 91.8933, alt: 1525, cat: "ISRO North-East" },
+      { name: "Bhopal", region: "MCF Satellite Master Control", country: "India", lat: 23.2599, lon: 77.4126, alt: 527, cat: "ISRO Master Control" },
+      { name: "Jaipur", region: "Rajasthan", country: "India", lat: 26.9124, lon: 75.7873, alt: 431, cat: "North India" },
+      { name: "Lucknow", region: "Uttar Pradesh", country: "India", lat: 26.8467, lon: 80.9462, alt: 123, cat: "North India" },
+      { name: "Patna", region: "Bihar", country: "India", lat: 25.5941, lon: 85.1376, alt: 53, cat: "East India" },
+      { name: "Chandigarh", region: "Punjab & Haryana", country: "India", lat: 30.7333, lon: 76.7794, alt: 321, cat: "North India" },
+      { name: "Srinagar", region: "Jammu & Kashmir", country: "India", lat: 34.0837, lon: 74.7973, alt: 1585, cat: "Himalayan Region" },
+      { name: "Paris", region: "ESA HQ / European Space Agency", country: "France", lat: 48.8566, lon: 2.3522, alt: 35, cat: "Global Space HQ" },
+      { name: "London", region: "United Kingdom", country: "UK", lat: 51.5074, lon: -0.1278, alt: 15, cat: "World Capital" },
+      { name: "Washington D.C.", region: "NASA Headquarters", country: "USA", lat: 38.9072, lon: -77.0369, alt: 20, cat: "Global Space HQ" },
+      { name: "Cape Canaveral", region: "Kennedy Space Center (KSC)", country: "USA", lat: 28.3922, lon: -80.6077, alt: 3, cat: "NASA Launch Site" },
+      { name: "Tokyo", region: "JAXA Aerospace Hub", country: "Japan", lat: 35.6762, lon: 139.6503, alt: 40, cat: "Global Space HQ" }
     ];
 
     let currentObserver = CITIES_DATABASE[0];
+    (function loadSavedObserver() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('orbital_observer_location_v2'));
+        if (saved && typeof saved.lat === 'number') {
+          const match = CITIES_DATABASE.find(c => c.name.toLowerCase() === (saved.name || '').toLowerCase());
+          currentObserver = match || saved;
+        }
+      } catch (_) {}
+    })();
 
     const CELESTIAL_BODIES = [
       { name: "The Moon", type: "Natural Satellite", icon: "🌕", mag: -11.5, vis: "Easy Naked-Eye", constel: "Gemini", rise: "19:42", transit: "02:15", set: "08:50", alt: "+38°", az: "085° E" },
@@ -1109,7 +1184,10 @@
         const content = document.getElementById('tab-content-' + t);
         const b = document.getElementById('tab-btn-' + t);
         if (content) content.style.display = (t === tabId) ? 'flex' : 'none';
-        if (b) b.classList.toggle('active', t === tabId);
+        if (b) {
+          b.classList.toggle('active', t === tabId);
+          b.setAttribute('aria-selected', t === tabId ? 'true' : 'false');
+        }
       });
 
       if (btn && btn.parentElement) {
@@ -1122,40 +1200,136 @@
     }
 
     function openCityModal() {
-      document.getElementById('city-modal-overlay').style.display = 'flex';
+      const overlay = document.getElementById('city-modal-overlay');
+      if (overlay) {
+        overlay.style.display = 'flex';
+      }
+      const btn = document.getElementById('hud-location-selector-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+      const searchBox = document.getElementById('city-search-box');
+      if (searchBox) {
+        searchBox.value = '';
+        setTimeout(() => searchBox.focus(), 50);
+      }
       renderCitiesGrid(CITIES_DATABASE);
     }
     function closeCityModal() {
-      document.getElementById('city-modal-overlay').style.display = 'none';
+      const overlay = document.getElementById('city-modal-overlay');
+      if (overlay) overlay.style.display = 'none';
+      const btn = document.getElementById('hud-location-selector-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
     }
     function renderCitiesGrid(list) {
       const grid = document.getElementById('city-cards-grid');
+      const activePill = document.getElementById('active-station-status-pill');
+      if (activePill && currentObserver) {
+        activePill.innerText = 'Active: ' + currentObserver.name + ' (' + currentObserver.country + ')';
+      }
+      if (!grid) return;
       grid.innerHTML = '';
+      if (!list || list.length === 0) {
+        grid.innerHTML = '<div class="col-span-2 text-center py-8 text-slate-500 font-mono">No matching ground stations found.</div>';
+        return;
+      }
       list.forEach(city => {
+        const isCurrent = currentObserver && (currentObserver.name === city.name);
         const item = document.createElement('div');
-        item.className = 'city-card-item';
-        item.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center;"><strong>📍 ' + city.name + '</strong><span class="tag">[' + city.country + ']</span></div>' +
-          '<span>' + city.region + '</span>' +
-          '<div style="font-size:9px; color:#00f0ff; margin-top:2px;">' + city.lat.toFixed(2) + '°N, ' + city.lon.toFixed(2) + '°E • ' + city.alt + 'm alt</div>';
+        item.className = 'city-card-item p-3 rounded-xl transition cursor-pointer flex flex-col gap-1.5 ' + 
+          (isCurrent ? 'bg-cyan-950/60 border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 hover:border-cyan-500/50');
+        
+        item.innerHTML = 
+          '<div class="flex items-center justify-between">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="text-sm">' + (isCurrent ? '🎯' : '📍') + '</span>' +
+              '<strong class="text-white text-xs font-bold">' + city.name + '</strong>' +
+            '</div>' +
+            '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold ' + (isCurrent ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-cyan-300 border border-slate-700') + '">' + city.country + '</span>' +
+          '</div>' +
+          '<div class="text-[10px] text-slate-400 font-sans leading-tight">' + city.region + '</div>' +
+          '<div class="flex items-center justify-between text-[9px] font-mono pt-1 border-t border-slate-800/60">' +
+            '<span class="text-slate-500">' + Math.abs(city.lat).toFixed(2) + '°' + (city.lat >= 0 ? 'N' : 'S') + ', ' + Math.abs(city.lon).toFixed(2) + '°' + (city.lon >= 0 ? 'E' : 'W') + ' • ' + (city.alt || 0) + 'm</span>' +
+            '<span class="' + (isCurrent ? 'text-cyan-300 font-bold' : 'text-slate-400') + '">' + (isCurrent ? 'ACTIVE ●' : (city.cat || 'SELECT →')) + '</span>' +
+          '</div>';
+
         item.onclick = function() { selectCity(city); };
         grid.appendChild(item);
       });
     }
+
     function selectCity(city) {
       currentObserver = city;
-      document.getElementById('hud-location-name').innerText = city.name;
-      document.getElementById('station-name-display').innerText = city.name.toUpperCase() + ' (' + city.country.toUpperCase() + ')';
-      document.getElementById('station-coords-display').innerText = 'LAT: ' + city.lat.toFixed(4) + '° | LON: ' + city.lon.toFixed(4) + '° | ALT: ' + city.alt + ' m';
+      try {
+        localStorage.setItem('orbital_observer_location_v2', JSON.stringify(city));
+      } catch (_) {}
+      
+      const hudName = document.getElementById('hud-location-name');
+      if (hudName) hudName.innerText = city.name;
+      
+      const stName = document.getElementById('station-name-display');
+      if (stName) stName.innerText = city.name.toUpperCase() + ' (' + city.country.toUpperCase() + ')';
+      
+      const stCoords = document.getElementById('station-coords-display');
+      if (stCoords) stCoords.innerText = 'LAT: ' + city.lat.toFixed(4) + '° | LON: ' + city.lon.toFixed(4) + '° | ALT: ' + (city.alt || 0) + ' m | ' + city.region.toUpperCase();
+      
       const plLabel = document.getElementById('planet-station-label');
       if (plLabel) plLabel.innerText = city.name + ' (' + city.lat.toFixed(2) + '° N, ' + city.lon.toFixed(2) + '° E)';
+      
       closeCityModal();
       generatePassPredictions();
       renderPlanetsVisibleTable();
+
+      if (typeof window.saveActiveLocation === 'function') {
+        window.saveActiveLocation(city);
+      }
     }
+
     function filterCities(val) {
       const q = (val || '').toLowerCase().trim();
-      renderCitiesGrid(CITIES_DATABASE.filter(c => c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q)));
+      if (!q) {
+        renderCitiesGrid(CITIES_DATABASE);
+        return;
+      }
+      renderCitiesGrid(CITIES_DATABASE.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        c.country.toLowerCase().includes(q) || 
+        c.region.toLowerCase().includes(q) ||
+        (c.cat && c.cat.toLowerCase().includes(q))
+      ));
     }
+    
+    window.toggleMobileNavMenu = function() {
+      const drawer = document.getElementById('mobile-nav-drawer');
+      const btn = document.getElementById('btn-toggle-mobile-nav');
+      if (!drawer) return;
+      const willOpen = drawer.classList.contains('hidden');
+      if (willOpen) {
+        drawer.classList.remove('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'true');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-xmark';
+        }
+      } else {
+        drawer.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars';
+        }
+      }
+    };
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        const drawer = document.getElementById('mobile-nav-drawer');
+        const btn = document.getElementById('btn-toggle-mobile-nav');
+        if (drawer) drawer.classList.add('hidden');
+        if (btn) {
+          btn.setAttribute('aria-expanded', 'false');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fa-solid fa-bars';
+        }
+      }
+    });
     function detectGPSLocation(btn) {
       if (!navigator.geolocation) return;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> LOCATING...';
@@ -1181,6 +1355,16 @@
     }, 1000);
 
     window.addEventListener('load', () => {
+      if (currentObserver) {
+        const hudName = document.getElementById('hud-location-name');
+        if (hudName) hudName.innerText = currentObserver.name;
+        const stName = document.getElementById('station-name-display');
+        if (stName) stName.innerText = currentObserver.name.toUpperCase() + ' (' + (currentObserver.country || '').toUpperCase() + ')';
+        const stCoords = document.getElementById('station-coords-display');
+        if (stCoords) stCoords.innerText = 'LAT: ' + currentObserver.lat.toFixed(4) + '° | LON: ' + currentObserver.lon.toFixed(4) + '° | ALT: ' + (currentObserver.alt || 0) + ' m | ' + (currentObserver.region || '').toUpperCase();
+        const plLabel = document.getElementById('planet-station-label');
+        if (plLabel) plLabel.innerText = currentObserver.name + ' (' + currentObserver.lat.toFixed(2) + '° N, ' + currentObserver.lon.toFixed(2) + '° E)';
+      }
       drawPolarRadar();
       generatePassPredictions();
       renderPlanetsVisibleTable();
@@ -1266,5 +1450,18 @@
     };
   </script>
 
+<script id="city-modal-overlay-listeners">
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('city-modal-overlay');
+      if (overlay) {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) closeCityModal();
+        });
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeCityModal();
+      });
+    });
+  </script>
 </body>
 </html>

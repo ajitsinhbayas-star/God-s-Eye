@@ -687,7 +687,7 @@
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading live providers...</td></tr>';
 
       try {
-        const res = await fetch(getApiBase() + '/api/sentinel/sources', { credentials: 'include' });
+        const res = await fetch(getApiBase() + '/api/sentinel/sources?refresh=true', { credentials: 'include' });
         const json = await res.json();
         const sources = json.sources || [];
 
@@ -699,15 +699,21 @@
         }
 
         tbody.innerHTML = sources.map(s => {
-          let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">UNKNOWN</span>';
+          let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 font-bold">UNKNOWN</span>';
           if (s.status === 'ACTIVE') {
-            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40">ACTIVE</span>';
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-bold">ACTIVE</span>';
           } else if (s.status === 'DEGRADED') {
-            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-500/40">DEGRADED</span>';
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-500/40 font-bold">DEGRADED</span>';
           } else if (s.status === 'STALE') {
-            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-orange-950 text-orange-300 border border-orange-500/40">STALE</span>';
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-orange-950 text-orange-300 border border-orange-500/40 font-bold">STALE</span>';
           } else if (s.status === 'NEEDS_CREDENTIALS') {
-            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-sky-950 text-sky-300 border border-sky-500/40">NEEDS KEY</span>';
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-sky-950 text-sky-300 border border-sky-500/40 font-bold">NEEDS KEY</span>';
+          } else if (s.status === 'NEEDS_AUTHORIZATION') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-950 text-purple-300 border border-purple-500/40 font-bold">PARTNER AUTH</span>';
+          } else if (s.status === 'NOT_CONFIGURED' || s.status === 'STANDBY') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-950 text-blue-300 border border-blue-500/40 font-bold">STANDBY</span>';
+          } else if (s.status === 'UNAVAILABLE' || s.status === 'DISABLED') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-rose-950 text-rose-300 border border-rose-500/40 font-bold">OFFLINE</span>';
           }
 
           return `
@@ -717,7 +723,7 @@
                 <div class="text-[10px] text-slate-400">${s.id}</div>
               </td>
               <td class="p-3">${statusBadge}</td>
-              <td class="p-3 text-slate-300 uppercase text-[10px]">${s.subsystem || 'GENERAL'}</td>
+              <td class="p-3 text-slate-200 uppercase text-[10px] font-bold">${s.subsystem || 'GENERAL'}</td>
               <td class="p-3 text-cyan-300 font-mono">${s.latencyMs ? s.latencyMs + ' ms' : '--'}</td>
               <td class="p-3 text-slate-400">${s.freshness || '< 1h'}</td>
               <td class="p-3 text-[11px] text-slate-400">${s.licensing || 'Public / Scientific Domain'}</td>

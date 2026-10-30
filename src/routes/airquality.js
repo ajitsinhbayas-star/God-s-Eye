@@ -133,7 +133,7 @@ airQualityRouter.get('/district', async (req, res) => {
   }
 });
 
-// GET /api/airquality/providers — Status of all 6 integrated providers
+// GET /api/airquality/providers — Status of all 8 integrated providers
 airQualityRouter.get('/providers', (req, res) => {
   const providers = [
     providerRegistry.getProvider('cpcb_naqi'),
@@ -141,7 +141,9 @@ airQualityRouter.get('/providers', (req, res) => {
     providerRegistry.getProvider('iqair'),
     providerRegistry.getProvider('waqi'),
     providerRegistry.getProvider('airnow'),
-    providerRegistry.getProvider('aqi_in')
+    providerRegistry.getProvider('aqi_in'),
+    providerRegistry.getProvider('openaq'),
+    providerRegistry.getProvider('purpleair')
   ].filter(Boolean);
 
   res.json({
