@@ -148,16 +148,10 @@
     if (window.INDIA_DISTRICTS_GEOJSON && !districtGeoJsonData) {
       districtGeoJsonData = window.INDIA_DISTRICTS_GEOJSON;
     }
-
-    if (districtIndexData) {
-      populateAqiStateDropdown();
-      populateAqiDistrictDropdown('');
-    }
   }
 
   // Populate States
   function populateAqiStateDropdown() {
-    initAqiSync();
     if (!districtIndexData || !Array.isArray(districtIndexData.districts)) return;
     const states = Array.from(new Set(districtIndexData.districts.map(d => d.state))).sort();
     const sel = document.getElementById('top-aqi-state-select');
@@ -172,7 +166,6 @@
 
   // Populate Districts
   function populateAqiDistrictDropdown(stateFilter) {
-    initAqiSync();
     const sel = document.getElementById('top-aqi-district-select');
     if (!sel || !districtIndexData || !Array.isArray(districtIndexData.districts)) return;
 
@@ -961,14 +954,20 @@
   };
 
   // Boot on DOM ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      initAqiSync();
-      initAqiMap();
-    });
-  } else {
+  function bootAqiApp() {
     initAqiSync();
+    populateAqiStateDropdown();
+    populateAqiDistrictDropdown('');
     initAqiMap();
+    setTimeout(() => {
+      if (leafletMap && typeof leafletMap.invalidateSize === 'function') leafletMap.invalidateSize();
+    }, 250);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootAqiApp);
+  } else {
+    bootAqiApp();
   }
 
 })();

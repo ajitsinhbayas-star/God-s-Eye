@@ -144,15 +144,12 @@
     if (window.INDIA_DISTRICTS_GEOJSON && !districtGeoJsonData) {
       districtGeoJsonData = window.INDIA_DISTRICTS_GEOJSON;
     }
-
-    if (districtIndexData) {
-      populateStateDropdowns();
-      populateDistrictSelector('');
-    }
   }
 
   // Run synchronous boot immediately
   initSyncData();
+  populateStateDropdowns();
+  populateDistrictSelector('');
 
   // Also hook into DOMContentLoaded
   if (document.readyState === 'loading') {
@@ -222,7 +219,6 @@
 
   // Populate State Selectors
   function populateStateDropdowns() {
-    initSyncData();
     if (!districtIndexData || !Array.isArray(districtIndexData.districts)) return;
     const states = Array.from(new Set(districtIndexData.districts.map(d => d.state))).sort();
 
@@ -245,7 +241,6 @@
 
   // Populate District Select Dropdown based on State
   function populateDistrictSelector(stateFilter) {
-    initSyncData();
     const sel = document.getElementById('top-farmer-district-select');
     if (!sel || !districtIndexData || !Array.isArray(districtIndexData.districts)) return;
 
