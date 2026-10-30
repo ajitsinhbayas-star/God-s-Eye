@@ -54,11 +54,21 @@
   window.getActiveLocation = getActiveLocation;
   window.saveActiveLocation = saveActiveLocation;
 
+  function isSuppressedPage() {
+    const loc = ((window.location.pathname || '') + ' ' + (window.location.href || '')).toLowerCase();
+    return /atmosphere|weather|alert|orbitalert|sentinel|air-quality|airquality/.test(loc) ||
+      !!document.getElementById('farmer-controls') ||
+      !!document.getElementById('city-modal-overlay') ||
+      !!document.getElementById('top-aqi-state-select') || !!document.getElementById('polarRadarCanvas');
+  }
+
   // 1. INJECT MODAL HTML IF NOT PRESENT
   function ensureLocationModal() {
+    if (isSuppressedPage()) return;
     if (document.getElementById('universal-location-modal')) return;
     const modal = document.createElement('div');
     modal.id = 'universal-location-modal';
+    modal.style.display = 'none';
     modal.className = 'hidden fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 pointer-events-auto font-mono text-xs';
     modal.innerHTML = `
       <div class="max-w-md w-full rounded-2xl bg-[#030917]/95 border border-cyan-500/50 shadow-2xl p-4 space-y-3 text-slate-200">
@@ -89,10 +99,12 @@
 
   // 2. INJECT TOP PASS NEWS TICKER IF NOT PRESENT
   function ensurePassNewsTicker() {
+    if (isSuppressedPage()) return;
     if (window.location.pathname.includes('atmosphere') || window.location.pathname.includes('alert') || window.location.pathname.includes('orbitalert') || document.getElementById('farmer-controls')) return;
     if (document.getElementById('hud-pass-news-ticker')) return;
     const ticker = document.createElement('div');
     ticker.id = 'hud-pass-news-ticker';
+    ticker.style.display = 'none';
     ticker.className = 'fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl hud-glass border border-amber-500/40 font-mono text-[11px] text-slate-100 shadow-2xl pointer-events-auto transition-all max-w-[calc(100vw-1.5rem)] hidden';
     ticker.innerHTML = `
       <span class="flex h-2 w-2 relative shrink-0">
@@ -124,6 +136,10 @@
   };
 
   window.openUniversalLocationModal = function() {
+    if (typeof window.openCityModal === 'function') {
+      window.openCityModal();
+      return;
+    }
     ensureLocationModal();
     const modal = document.getElementById('universal-location-modal');
     modal.classList.remove('hidden');
@@ -275,6 +291,11 @@
   }
 
   function updateTickerHUD() {
+    if (isSuppressedPage()) {
+      const t = document.getElementById("hud-pass-news-ticker");
+      if (t) t.classList.add("hidden");
+      return;
+    }
     const tickerEl = document.getElementById('hud-pass-news-ticker');
     if (window.location.pathname.includes('atmosphere') || document.getElementById('farmer-controls')) {
       if (tickerEl) tickerEl.classList.add('hidden');
@@ -352,6 +373,7 @@
 
   // Initialize UI once DOM is ready
   function init() {
+    if (isSuppressedPage()) return;
     ensureLocationModal();
     ensurePassNewsTicker();
     updateHeaderLocationBadge();

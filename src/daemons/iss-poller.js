@@ -55,19 +55,28 @@ export async function pollIssOnce({ signal } = {}) {
     if (issItem) issItem.altKm = Math.round(satData.coordinates.altKm);
 
     try {
-      db.run(
-        `INSERT OR REPLACE INTO normalized_objects
-        (id, name, norad_id, intl_desig, data_class, source_provider, source_record_id, agency, lat, lng, alt_km, velocity_kms, reference_frame, quality_status, epoch, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          satData.id, satData.name, satData.noradId, '1998-067A', satData.dataClassification,
-          satData.originalProvider, satData.originalRecordId, 'NASA/Roscosmos',
-          satData.coordinates.lat, satData.coordinates.lon, satData.coordinates.altKm, satData.velocityKmS,
-          'Geocentric ECI (WGS84)', satData.qualityStatus,
-          satData.observationTimestamp, satData.retrievalTimestamp
-        ]
-      );
-    } catch (_) {}
+      if (db) {
+        db.run(
+          `INSERT OR REPLACE INTO normalized_objects
+          (id, name, norad_id, intl_desig, data_class, source_provider, source_record_id, agency, lat, lng, alt_km, velocity_kms, reference_frame, quality_status, epoch, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            satData.id, satData.name, satData.noradId, '1998-067A', satData.dataClassification,
+            satData.originalProvider, satData.originalRecordId, 'NASA/Roscosmos',
+            satData.coordinates.lat, satData.coordinates.lon, satData.coordinates.altKm, satData.velocityKmS,
+            'Geocentric ECI (WGS84)', satData.qualityStatus,
+            satData.observationTimestamp, satData.retrievalTimestamp
+          ],
+          (err) => {
+            if (err) {
+              console.error('[ISSPoller] Failed to persist ISS normalized object in SQLite:', err.message);
+            }
+          }
+        );
+      }
+    } catch (err) {
+      console.error('[ISSPoller] Synchronous error persisting ISS in SQLite:', err.message);
+    }
 
     // Selective data distribution
     dataDistributionService.broadcast(

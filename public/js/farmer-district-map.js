@@ -1088,6 +1088,14 @@
       </div>
     `;
 
+    // On mobile (< 768px), suppress on-map popup so only the clean Kisan Weather Desk bottom sheet is used
+    if (window.innerWidth < 768) {
+      if (leafletDistrictPopup && window.leafletMap) {
+        window.leafletMap.closePopup(leafletDistrictPopup);
+      }
+      return;
+    }
+
     if (!leafletDistrictPopup || !window.leafletMap.hasLayer(leafletDistrictPopup)) {
       leafletDistrictPopup = L.popup({
         className: 'kisan-popup',

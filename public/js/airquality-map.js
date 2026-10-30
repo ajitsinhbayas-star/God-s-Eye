@@ -26,7 +26,7 @@
     return { ...CPCB_TIERS[CPCB_TIERS.length - 1], aqi: val };
   }
 
-  // Linear sub-index calculator for CPCB
+  // Linear sub-index calculator for CPCB (8 Official Pollutants)
   const CPCB_BREAKPOINTS = {
     pm25: [
       { cLow: 0, cHigh: 30, iLow: 0, iHigh: 50 },
@@ -42,7 +42,7 @@
       { cLow: 101, cHigh: 250, iLow: 101, iHigh: 200 },
       { cLow: 251, cHigh: 350, iLow: 201, iHigh: 300 },
       { cLow: 351, cHigh: 430, iLow: 301, iHigh: 400 },
-      { cLow: 431, cHigh: 600, iLow: 401, iHigh: 500 }
+      { cLow: 431, cHigh: 800, iLow: 401, iHigh: 500 }
     ],
     no2: [
       { cLow: 0, cHigh: 40, iLow: 0, iHigh: 50 },
@@ -58,7 +58,7 @@
       { cLow: 81, cHigh: 380, iLow: 101, iHigh: 200 },
       { cLow: 381, cHigh: 800, iLow: 201, iHigh: 300 },
       { cLow: 801, cHigh: 1600, iLow: 301, iHigh: 400 },
-      { cLow: 1601, cHigh: 2400, iLow: 401, iHigh: 500 }
+      { cLow: 1601, cHigh: 3000, iLow: 401, iHigh: 500 }
     ],
     co: [
       { cLow: 0.0, cHigh: 1.0, iLow: 0, iHigh: 50 },
@@ -66,7 +66,7 @@
       { cLow: 2.1, cHigh: 10.0, iLow: 101, iHigh: 200 },
       { cLow: 10.1, cHigh: 17.0, iLow: 201, iHigh: 300 },
       { cLow: 17.1, cHigh: 34.0, iLow: 301, iHigh: 400 },
-      { cLow: 34.1, cHigh: 50.0, iLow: 401, iHigh: 500 }
+      { cLow: 34.1, cHigh: 60.0, iLow: 401, iHigh: 500 }
     ],
     o3: [
       { cLow: 0, cHigh: 50, iLow: 0, iHigh: 50 },
@@ -74,24 +74,290 @@
       { cLow: 101, cHigh: 168, iLow: 101, iHigh: 200 },
       { cLow: 169, cHigh: 208, iLow: 201, iHigh: 300 },
       { cLow: 209, cHigh: 748, iLow: 301, iHigh: 400 },
-      { cLow: 749, cHigh: 1000, iLow: 401, iHigh: 500 }
+      { cLow: 749, cHigh: 1200, iLow: 401, iHigh: 500 }
+    ],
+    nh3: [
+      { cLow: 0, cHigh: 200, iLow: 0, iHigh: 50 },
+      { cLow: 201, cHigh: 400, iLow: 51, iHigh: 100 },
+      { cLow: 401, cHigh: 800, iLow: 101, iHigh: 200 },
+      { cLow: 801, cHigh: 1200, iLow: 201, iHigh: 300 },
+      { cLow: 1201, cHigh: 1800, iLow: 301, iHigh: 400 },
+      { cLow: 1801, cHigh: 2500, iLow: 401, iHigh: 500 }
+    ],
+    pb: [
+      { cLow: 0.0, cHigh: 0.5, iLow: 0, iHigh: 50 },
+      { cLow: 0.6, cHigh: 1.0, iLow: 51, iHigh: 100 },
+      { cLow: 1.1, cHigh: 2.0, iLow: 101, iHigh: 200 },
+      { cLow: 2.1, cHigh: 3.0, iLow: 201, iHigh: 300 },
+      { cLow: 3.1, cHigh: 3.5, iLow: 301, iHigh: 400 },
+      { cLow: 3.51, cHigh: 5.0, iLow: 401, iHigh: 500 }
     ]
   };
 
+  // Add aliases
+  CPCB_BREAKPOINTS.pm2_5 = CPCB_BREAKPOINTS.pm25;
+  CPCB_BREAKPOINTS.nitrogen_dioxide = CPCB_BREAKPOINTS.no2;
+  CPCB_BREAKPOINTS.sulphur_dioxide = CPCB_BREAKPOINTS.so2;
+  CPCB_BREAKPOINTS.carbon_monoxide = CPCB_BREAKPOINTS.co;
+  CPCB_BREAKPOINTS.ozone = CPCB_BREAKPOINTS.o3;
+  CPCB_BREAKPOINTS.ammonia = CPCB_BREAKPOINTS.nh3;
+  CPCB_BREAKPOINTS.lead = CPCB_BREAKPOINTS.pb;
+
   function calcSubIndex(val, pollutantKey) {
-    if (typeof val !== 'number' || isNaN(val) || val < 0) return null;
-    const ranges = CPCB_BREAKPOINTS[pollutantKey];
+    if (val === undefined || val === null || val === '' || isNaN(val) || !isFinite(val) || Number(val) < 0) return null;
+    let key = String(pollutantKey || '').toLowerCase();
+    if (key === 'pm2_5') key = 'pm25';
+    if (key === 'nitrogen_dioxide') key = 'no2';
+    if (key === 'sulphur_dioxide') key = 'so2';
+    if (key === 'carbon_monoxide') key = 'co';
+    if (key === 'ozone') key = 'o3';
+    if (key === 'ammonia') key = 'nh3';
+    if (key === 'lead') key = 'pb';
+
+    const num = Number(val);
+    const ranges = CPCB_BREAKPOINTS[key];
     if (!ranges) return null;
 
     for (const r of ranges) {
-      if (val >= r.cLow && val <= r.cHigh) {
-        return Math.round(((r.iHigh - r.iLow) / (r.cHigh - r.cLow)) * (val - r.cLow) + r.iLow);
+      if (num >= r.cLow && num <= r.cHigh) {
+        return Math.round(((r.iHigh - r.iLow) / (r.cHigh - r.cLow)) * (num - r.cLow) + r.iLow);
       }
     }
-    if (val > ranges[ranges.length - 1].cHigh) {
+    if (num > ranges[ranges.length - 1].cHigh) {
       return 500;
     }
-    return null;
+    return 0;
+  }
+
+  // Universal Pollutant & AQI Data Normalizer for Frontend
+  function normalizeAirQualityData(data) {
+    if (!data) return null;
+    const rawP = data.pollutants || {};
+    const subIndices = data.subIndices || {};
+
+    function getVal(keys) {
+      for (const k of keys) {
+        if (rawP[k] !== undefined && rawP[k] !== null) {
+          const v = (typeof rawP[k] === 'object' && rawP[k] !== null && 'value' in rawP[k]) ? rawP[k].value : rawP[k];
+          if (v !== undefined && v !== null && v !== '' && !isNaN(v) && isFinite(v) && Number(v) >= 0) {
+            return Number(v);
+          }
+        }
+      }
+      return null;
+    }
+
+    function getSub(keys, val, pKey) {
+      for (const k of keys) {
+        if (subIndices[k] !== undefined && subIndices[k] !== null && typeof subIndices[k] === 'number') {
+          return subIndices[k];
+        }
+        if (rawP[k] && typeof rawP[k] === 'object' && rawP[k].subIndex !== undefined && rawP[k].subIndex !== null) {
+          const s = rawP[k].subIndex;
+          if (typeof s === 'number' && !isNaN(s)) return s;
+        }
+      }
+      return val !== null ? calcSubIndex(val, pKey) : null;
+    }
+
+    // 1. PM2.5 (Std: 60 µg/m³)
+    const pm25Val = getVal(['pm2_5', 'pm25']);
+    const pm25Sub = getSub(['pm2_5', 'pm25'], pm25Val, 'pm25');
+    const pm25 = {
+      value: pm25Val,
+      unit: 'µg/m³',
+      label: 'PM2.5 (Fine Particulates)',
+      shortLabel: 'PM2.5',
+      standard: 60,
+      subIndex: pm25Sub,
+      available: pm25Val !== null
+    };
+
+    // 2. PM10 (Std: 100 µg/m³)
+    const pm10Val = getVal(['pm10']);
+    const pm10Sub = getSub(['pm10'], pm10Val, 'pm10');
+    const pm10 = {
+      value: pm10Val,
+      unit: 'µg/m³',
+      label: 'PM10 (Coarse Inhalable Dust)',
+      shortLabel: 'PM10',
+      standard: 100,
+      subIndex: pm10Sub,
+      available: pm10Val !== null
+    };
+
+    // 3. NO2 (Std: 80 µg/m³)
+    const no2Val = getVal(['nitrogen_dioxide', 'no2']);
+    const no2Sub = getSub(['nitrogen_dioxide', 'no2'], no2Val, 'no2');
+    const no2 = {
+      value: no2Val,
+      unit: 'µg/m³',
+      label: 'NO₂ (Nitrogen Dioxide)',
+      shortLabel: 'NO₂',
+      standard: 80,
+      subIndex: no2Sub,
+      available: no2Val !== null
+    };
+
+    // 4. SO2 (Std: 80 µg/m³)
+    const so2Val = getVal(['sulphur_dioxide', 'so2']);
+    const so2Sub = getSub(['sulphur_dioxide', 'so2'], so2Val, 'so2');
+    const so2 = {
+      value: so2Val,
+      unit: 'µg/m³',
+      label: 'SO₂ (Sulphur Dioxide)',
+      shortLabel: 'SO₂',
+      standard: 80,
+      subIndex: so2Sub,
+      available: so2Val !== null
+    };
+
+    // 5. CO (Std: 2.0 mg/m³)
+    let coValRaw = getVal(['carbon_monoxide', 'co']);
+    let coVal = coValRaw;
+    if (coVal !== null && coVal > 50) {
+      coVal = Math.round((coVal / 1000) * 100) / 100;
+    } else if (coVal !== null) {
+      coVal = Math.round(coVal * 100) / 100;
+    }
+    const coSub = getSub(['carbon_monoxide', 'co'], coVal, 'co');
+    const co = {
+      value: coVal,
+      unit: 'mg/m³',
+      label: 'CO (Carbon Monoxide)',
+      shortLabel: 'CO',
+      standard: 2.0,
+      subIndex: coSub,
+      available: coVal !== null
+    };
+
+    // 6. O3 (Std: 100 µg/m³)
+    const o3Val = getVal(['ozone', 'o3']);
+    const o3Sub = getSub(['ozone', 'o3'], o3Val, 'o3');
+    const o3 = {
+      value: o3Val,
+      unit: 'µg/m³',
+      label: 'O₃ (Surface Ozone)',
+      shortLabel: 'O₃',
+      standard: 100,
+      subIndex: o3Sub,
+      available: o3Val !== null
+    };
+
+    // 7. NH3 (Ammonia, Std: 400 µg/m³)
+    const nh3Val = getVal(['ammonia', 'nh3']);
+    const nh3Sub = getSub(['ammonia', 'nh3'], nh3Val, 'nh3');
+    const nh3 = {
+      value: nh3Val,
+      unit: 'µg/m³',
+      label: 'NH₃ (Ammonia)',
+      shortLabel: 'NH₃',
+      standard: 400,
+      subIndex: nh3Sub,
+      available: nh3Val !== null
+    };
+
+    // 8. Pb (Lead, Std: 1.0 µg/m³)
+    const pbVal = getVal(['lead', 'pb']);
+    const pbSub = getSub(['lead', 'pb'], pbVal, 'pb');
+    const pb = {
+      value: pbVal,
+      unit: 'µg/m³',
+      label: 'Pb (Lead Particulate)',
+      shortLabel: 'Pb',
+      standard: 1.0,
+      subIndex: pbSub,
+      available: pbVal !== null
+    };
+
+    // 9. VOC (Volatile Organic Compounds) — Supplementary Non-NAQI
+    const vocVal = getVal(['voc', 'volatile_organic_compounds', 'nmvoc']);
+    const voc = {
+      value: vocVal,
+      unit: 'µg/m³',
+      label: 'VOC (Volatile Organic Compounds)',
+      shortLabel: 'VOC',
+      standard: null,
+      subIndex: null, // VOC never has a CPCB sub-index
+      isSupplementary: true,
+      cpcbIncluded: false,
+      available: vocVal !== null
+    };
+
+    const normPollutants = {
+      pm2_5: pm25, pm25: pm25,
+      pm10: pm10,
+      nitrogen_dioxide: no2, no2: no2,
+      sulphur_dioxide: so2, so2: so2,
+      carbon_monoxide: co, co: co,
+      ozone: o3, o3: o3,
+      ammonia: nh3, nh3: nh3,
+      lead: pb, pb: pb,
+      voc: voc
+    };
+
+    // Determine primary/dominant pollutant solely from valid numeric sub-indices
+    let dominantKey = data.dominantPollutantKey || null;
+    let dominantLabel = data.dominantPollutant || null;
+    let primaryCode = data.primaryPollutant || null;
+
+    const subEntries = [
+      ['PM2.5', pm25Sub, 'pm2_5', 'PM2.5 (Fine Particulates)'],
+      ['PM10', pm10Sub, 'pm10', 'PM10 (Coarse Dust)'],
+      ['NO₂', no2Sub, 'nitrogen_dioxide', 'NO₂ (Nitrogen Dioxide)'],
+      ['SO₂', so2Sub, 'sulphur_dioxide', 'SO₂ (Sulphur Dioxide)'],
+      ['CO', coSub, 'carbon_monoxide', 'CO (Carbon Monoxide)'],
+      ['O₃', o3Sub, 'ozone', 'O₃ (Surface Ozone)'],
+      ['NH₃', nh3Sub, 'ammonia', 'NH₃ (Ammonia)'],
+      ['Pb', pbSub, 'lead', 'Pb (Lead)']
+    ].filter(([_, s]) => typeof s === 'number' && !isNaN(s));
+
+    if (subEntries.length > 0) {
+      subEntries.sort((a, b) => b[1] - a[1]);
+      if (!primaryCode || primaryCode === 'PM2.5' && !dominantKey) {
+        primaryCode = subEntries[0][0];
+        dominantKey = subEntries[0][2];
+        dominantLabel = subEntries[0][3];
+      }
+    } else {
+      primaryCode = 'Not determined';
+      dominantLabel = 'Not determined';
+    }
+
+    let overallAqi = typeof data.aqi === 'number' ? data.aqi : null;
+    if (overallAqi === null && subEntries.length > 0) {
+      overallAqi = subEntries[0][1];
+    }
+
+    const tier = overallAqi !== null ? getCpcbTier(overallAqi) : {
+      category: 'Data Unavailable',
+      hi: 'डेटा अनुपलब्ध',
+      color: '#64748b',
+      border: 'border-slate-800',
+      bg: 'bg-slate-900/40'
+    };
+
+    return {
+      ...data,
+      aqi: overallAqi,
+      tier,
+      category: data.category || tier.category,
+      categoryHindi: data.categoryHi || data.categoryHindi || tier.hi,
+      color: data.color || tier.color,
+      dominantPollutant: dominantLabel || primaryCode,
+      dominantPollutantKey: dominantKey,
+      primaryPollutant: primaryCode,
+      pollutants: normPollutants,
+      healthRecommendations: data.healthRecommendations || {
+        general: data.advisory?.general || data.healthStatement || 'Real-time observation pending.',
+        sensitive: data.advisory?.sensitive || 'No specific hazard reported.',
+        action: data.advisory?.action || data.advisory?.ventilation || 'Refer to local advisories.'
+      },
+      provenance: data.provenance || {
+        source: 'Open-Meteo CAMS Atmospheric Model (CPCB Calibrated)',
+        scale: 'CPCB 6-Category National Air Quality Index (India)'
+      }
+    };
   }
 
   // Major CAAQMS Stations across India
@@ -275,6 +541,11 @@
         maxZoom: 19,
         attribution: '&copy; Esri, Maxar'
       }).addTo(leafletMap);
+      leafletBasemap.on('tileerror', function() {
+        if (currentBasemapType === 'satellite') {
+          setBasemap('dark');
+        }
+      });
     } else if (type === 'dark') {
       leafletBasemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
@@ -474,14 +745,16 @@
         clearTimeout(tid);
         if (res.ok) {
           const json = await res.json();
-          if (json && json.ok && json.aqi) return json;
+          if (json && json.ok && typeof json.aqi === 'number') {
+            return normalizeAirQualityData(json);
+          }
         }
       } catch (_) {}
     }
 
     // 2. Direct client fallback from Open-Meteo Air Quality (Worldwide, free, CORS-friendly)
     try {
-      const omUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${Number(lat).toFixed(4)}&longitude=${Number(lon).toFixed(4)}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone&timezone=Asia%2FKolkata&forecast_days=4`;
+      const omUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${Number(lat).toFixed(4)}&longitude=${Number(lon).toFixed(4)}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia&timezone=Asia%2FKolkata&forecast_days=4`;
       const res = await fetch(omUrl);
       if (res.ok) {
         const om = await res.json();
@@ -493,65 +766,83 @@
           pm10: calcSubIndex(curr.pm10, 'pm10'),
           no2: calcSubIndex(curr.nitrogen_dioxide, 'no2'),
           so2: calcSubIndex(curr.sulphur_dioxide, 'so2'),
-          co: calcSubIndex(curr.carbon_monoxide != null ? curr.carbon_monoxide / 1000 : null, 'co'),
-          o3: calcSubIndex(curr.ozone, 'o3')
+          co: calcSubIndex(curr.carbon_monoxide != null ? (curr.carbon_monoxide > 50 ? curr.carbon_monoxide / 1000 : curr.carbon_monoxide) : null, 'co'),
+          o3: calcSubIndex(curr.ozone, 'o3'),
+          nh3: calcSubIndex(curr.ammonia, 'nh3'),
+          pb: null
         };
 
         let maxVal = -1;
-        let primary = 'PM2.5';
+        let primary = 'Not determined';
         for (const [key, val] of Object.entries(subIndices)) {
           if (val != null && val > maxVal) {
             maxVal = val;
-            primary = key.toUpperCase();
+            const keyMap = { pm25: 'PM2.5', pm10: 'PM10', no2: 'NO₂', so2: 'SO₂', co: 'CO', o3: 'O₃', nh3: 'NH₃', pb: 'Pb' };
+            primary = keyMap[key] || key.toUpperCase();
           }
         }
 
-        const overallAqi = maxVal > 0 ? maxVal : 85;
-        const tier = getCpcbTier(overallAqi);
+        const overallAqi = maxVal >= 0 ? maxVal : null;
+        const tier = overallAqi !== null ? getCpcbTier(overallAqi) : {
+          category: 'Data Unavailable',
+          hi: 'डेटा अनुपलब्ध',
+          color: '#64748b',
+          border: 'border-slate-800',
+          bg: 'bg-slate-900/40'
+        };
 
         // Hourly trend
         const hourlyTrend = [];
         if (om.hourly && Array.isArray(om.hourly.time)) {
           for (let i = 0; i < Math.min(om.hourly.time.length, 48); i += 2) {
-            const hPm25 = om.hourly.pm2_5?.[i] || 35;
-            const hAqi = calcSubIndex(hPm25, 'pm25') || 80;
-            hourlyTrend.push({
-              time: om.hourly.time[i],
-              aqi: hAqi,
-              pm25: hPm25
-            });
+            const hPm25 = om.hourly.pm2_5?.[i] ?? null;
+            const hAqi = hPm25 !== null ? calcSubIndex(hPm25, 'pm25') : null;
+            if (hAqi !== null) {
+              hourlyTrend.push({
+                time: om.hourly.time[i],
+                aqi: hAqi,
+                pm25: hPm25
+              });
+            }
           }
         }
 
-        return {
+        const rawData = {
           ok: true,
           location: name,
           state: state,
           coordinates: { lat: Number(lat), lon: Number(lon) },
+          observationTime: curr.time || new Date().toISOString(),
           aqi: overallAqi,
           category: tier.category,
           categoryHindi: tier.hi,
           primaryPollutant: primary,
           color: tier.color,
           pollutants: {
-            pm25: { value: curr.pm2_5, unit: 'µg/m³', subIndex: subIndices.pm25 },
-            pm10: { value: curr.pm10, unit: 'µg/m³', subIndex: subIndices.pm10 },
-            no2: { value: curr.nitrogen_dioxide, unit: 'µg/m³', subIndex: subIndices.no2 },
-            so2: { value: curr.sulphur_dioxide, unit: 'µg/m³', subIndex: subIndices.so2 },
-            co: { value: curr.carbon_monoxide != null ? (curr.carbon_monoxide / 1000).toFixed(2) : null, unit: 'mg/m³', subIndex: subIndices.co },
-            o3: { value: curr.ozone, unit: 'µg/m³', subIndex: subIndices.o3 }
+            pm2_5: curr.pm2_5 ?? null,
+            pm10: curr.pm10 ?? null,
+            nitrogen_dioxide: curr.nitrogen_dioxide ?? null,
+            sulphur_dioxide: curr.sulphur_dioxide ?? null,
+            carbon_monoxide: curr.carbon_monoxide != null ? (curr.carbon_monoxide > 50 ? curr.carbon_monoxide / 1000 : curr.carbon_monoxide) : null,
+            ozone: curr.ozone ?? null,
+            ammonia: curr.ammonia ?? null,
+            lead: null,
+            voc: null
           },
+          subIndices,
           hourlyTrend,
           healthRecommendations: getHealthPrecautions(tier.category),
           provenance: {
-            source: 'Open-Meteo CAMS Atmospheric Model (CPCB NAQI Calibrated)',
+            source: 'Open-Meteo ECMWF / CAMS Atmospheric Chemistry Model (CPCB Calibrated)',
             scale: 'CPCB 6-Category National Air Quality Index (India)'
           }
         };
+
+        return normalizeAirQualityData(rawData);
       }
     } catch (_) {}
 
-    // 3. Fallback baseline
+    // 3. Fallback baseline (honest, no fabricated live measurements)
     return getAqiFallbackBaseline(name, state, lat, lon);
   }
 
@@ -559,8 +850,8 @@
     switch (cat) {
       case 'Good':
         return {
-          general: 'Minimal health impact. Air quality is ideal for outdoor activities, sports, and ventilation.',
-          sensitive: 'No special precautions required. Safe for all age groups.',
+          general: 'Minimal health impact. Clean fresh air ideal for all outdoor activities.',
+          sensitive: 'No special precautions required. Healthy air quality.',
           action: 'Keep windows open to allow clean fresh air circulation.'
         };
       case 'Satisfactory':
@@ -571,7 +862,7 @@
         };
       case 'Moderate':
         return {
-          general: 'Breathing discomfort to people with lungs, asthma, and heart diseases.',
+          general: 'Breathing discomfort to people with lung, asthma, and heart diseases.',
           sensitive: 'People with respiratory or cardiovascular diseases, children, and elderly should limit prolonged outdoor exertion.',
           action: 'Close windows during rush hour and peak traffic periods.'
         };
@@ -588,46 +879,52 @@
           action: 'Avoid all outdoor physical activity; seal windows; operate air purifiers on high.'
         };
       case 'Severe':
+        return {
+          general: 'Affects healthy people and seriously impacts those with existing diseases. Emergency air pollution levels.',
+          sensitive: 'Strict indoor confinement. Children, seniors, and heart patients must avoid all outdoor physical exposure.',
+          action: 'Mandatory N95/FFP2 respirator masks outdoors; maintain sealed indoor air filtration.'
+        };
       default:
         return {
-          general: 'Affects healthy people and seriously impacts those with existing diseases. Emergency air conditions.',
-          sensitive: 'Strictly avoid any outdoor exposure. Children and elderly must stay in clean filtered indoor rooms.',
-          action: 'Mandatory N95/FFP2 respirator masks outdoors; maintain sealed indoor air filtration.'
+          general: 'Connecting to monitoring stations and atmospheric chemistry models...',
+          sensitive: 'Live readings currently unavailable for this specific district coordinate.',
+          action: 'Select a nearby CAAQMS station from the station radar.'
         };
     }
   }
 
   function getAqiFallbackBaseline(name, state, lat, lon) {
-    const latNum = Number(lat) || 20.0;
-    const isNorth = latNum > 26.0;
-    const estAqi = isNorth ? 185 : 82;
-    const tier = getCpcbTier(estAqi);
-
-    return {
+    return normalizeAirQualityData({
       ok: true,
+      isFallback: true,
       location: name,
       state: state,
       coordinates: { lat: Number(lat), lon: Number(lon) },
-      aqi: estAqi,
-      category: tier.category,
-      categoryHindi: tier.hi,
-      primaryPollutant: 'PM2.5',
-      color: tier.color,
+      observationTime: new Date().toISOString(),
+      aqi: null,
+      category: 'Data Unavailable',
+      categoryHindi: 'डेटा प्रतीक्षारत',
+      primaryPollutant: 'Not determined',
+      color: '#64748b',
       pollutants: {
-        pm25: { value: isNorth ? 78.5 : 28.0, unit: 'µg/m³', subIndex: estAqi },
-        pm10: { value: isNorth ? 145.0 : 54.0, unit: 'µg/m³', subIndex: isNorth ? 130 : 54 },
-        no2: { value: 34.0, unit: 'µg/m³', subIndex: 42 },
-        so2: { value: 12.0, unit: 'µg/m³', subIndex: 15 },
-        co: { value: '0.85', unit: 'mg/m³', subIndex: 42 },
-        o3: { value: 45.0, unit: 'µg/m³', subIndex: 45 }
+        pm2_5: null,
+        pm10: null,
+        nitrogen_dioxide: null,
+        sulphur_dioxide: null,
+        carbon_monoxide: null,
+        ozone: null,
+        ammonia: null,
+        lead: null,
+        voc: null
       },
+      subIndices: {},
       hourlyTrend: [],
-      healthRecommendations: getHealthPrecautions(tier.category),
+      healthRecommendations: getHealthPrecautions('default'),
       provenance: {
-        source: 'Orbital Eye Seasonal Climatological Model',
+        source: 'Live Station Sensor Telemetry Offline',
         scale: 'CPCB 6-Category National Air Quality Index (India)'
       }
-    };
+    });
   }
 
   // Fetch & Display
@@ -658,10 +955,13 @@
   // Update Popup
   function updateAqiPopup(data, latlng) {
     if (!leafletMap || !latlng) return;
-    const tier = getCpcbTier(data.aqi);
-    const p = data.pollutants || {};
-    const pm25 = p.pm25?.value != null ? Number(p.pm25.value).toFixed(1) : '--';
-    const pm10 = p.pm10?.value != null ? Number(p.pm10.value).toFixed(1) : '--';
+    const norm = normalizeAirQualityData(data);
+    const tier = norm.tier;
+    const p = norm.pollutants;
+    const pm25 = p.pm25.available ? Number(p.pm25.value).toFixed(1) : '--';
+    const pm10 = p.pm10.available ? Number(p.pm10.value).toFixed(1) : '--';
+    const aqiDisplay = norm.aqi !== null ? norm.aqi : '--';
+    const primaryDisplay = norm.primaryPollutant || 'Not determined';
 
     const coordStr = `${Math.abs(latlng.lat).toFixed(4)}°${latlng.lat >= 0 ? 'N' : 'S'}, ${Math.abs(latlng.lng).toFixed(4)}°${latlng.lng >= 0 ? 'E' : 'W'}`;
 
@@ -671,12 +971,12 @@
         <div class="flex items-start justify-between gap-1.5 pb-2 border-b border-cyan-500/30">
           <div>
             <div class="font-bold text-white text-xs font-mono flex items-center gap-1.5 leading-snug">
-              <span>📍 ${data.location}</span>
+              <span>📍 ${norm.stationName || norm.location}</span>
             </div>
-            <div class="text-[10px] text-slate-400 font-mono">${coordStr} • ${data.state}</div>
+            <div class="text-[10px] text-slate-400 font-mono">${coordStr} • ${norm.state}</div>
           </div>
           <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono text-white" style="background-color: ${tier.color};">
-            ${tier.category} (${tier.hi})
+            ${tier.category} (${tier.hi || norm.categoryHindi || ''})
           </span>
         </div>
 
@@ -684,8 +984,8 @@
         <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
           <div>
             <div class="text-[10px] text-slate-400 font-mono uppercase tracking-wider">CPCB National AQI</div>
-            <div class="text-2xl font-black font-mono" style="color: ${tier.color};">${data.aqi}</div>
-            <div class="text-[9px] text-slate-400 font-mono">Primary: <span class="text-cyan-300 font-bold">${data.primaryPollutant || 'PM2.5'}</span></div>
+            <div class="text-2xl font-black font-mono" style="color: ${tier.color};">${aqiDisplay}</div>
+            <div class="text-[9px] text-slate-400 font-mono">Primary: <span class="text-cyan-300 font-bold">${primaryDisplay}</span></div>
           </div>
           <div class="text-right space-y-1">
             <div class="text-[10px] font-mono"><span class="text-slate-400">PM2.5:</span> <span class="font-bold text-slate-200">${pm25}</span> µg/m³</div>
@@ -695,11 +995,11 @@
 
         <!-- Health Note -->
         <div class="p-2 rounded-lg bg-slate-900/70 border border-slate-800/80 text-[10px] leading-relaxed text-slate-300">
-          <span class="font-bold text-cyan-300">Advisory:</span> ${data.healthRecommendations?.general || 'Standard precautions apply.'}
+          <span class="font-bold text-cyan-300">Advisory:</span> ${norm.healthRecommendations?.general || 'Standard precautions apply.'}
         </div>
 
         <button onclick="document.getElementById('selected-aqi-panel').classList.remove('hidden')" class="w-full py-1 text-center text-[10px] font-mono text-cyan-400 hover:text-cyan-300 transition">
-          View 6-Pollutant Breakdown & Trend &rarr;
+          View 8-Pollutant Breakdown & Trend &rarr;
         </button>
       </div>
     `;
@@ -719,8 +1019,8 @@
     }
   }
 
-  // Render Desk Panel
-  function renderAqiDeskPanel(data) {
+  // Render Desk Panel (Full 8 CPCB Pollutants + Supplementary VOC)
+  function renderAqiDeskPanel(rawData) {
     const container = document.getElementById('selected-aqi-content');
     if (!container) return;
     if (typeof window.openDeskPanel === 'function') {
@@ -733,12 +1033,15 @@
       }
     }
 
-    const tier = getCpcbTier(data.aqi);
-    const p = data.pollutants || {};
+    const norm = normalizeAirQualityData(rawData);
+    const tier = norm.tier;
+    const p = norm.pollutants;
+    const aqiDisplay = norm.aqi !== null ? norm.aqi : '--';
+    const primaryDisplay = norm.primaryPollutant || 'Not determined';
 
     let trendBars = '';
-    if (Array.isArray(data.hourlyTrend) && data.hourlyTrend.length > 0) {
-      trendBars = data.hourlyTrend.slice(0, 12).map(h => {
+    if (Array.isArray(norm.hourlyTrend) && norm.hourlyTrend.length > 0) {
+      trendBars = norm.hourlyTrend.slice(0, 12).map(h => {
         const hTier = getCpcbTier(h.aqi);
         const timeStr = h.time ? h.time.slice(11, 16) : '';
         const pct = Math.min(100, Math.round((h.aqi / 400) * 100));
@@ -754,6 +1057,29 @@
       }).join('');
     }
 
+    function renderCard(item, name, std, unit) {
+      const hasVal = item && item.value !== null && item.value !== undefined && !isNaN(item.value);
+      const valStr = hasVal ? (unit === 'mg/m³' ? Number(item.value).toFixed(2) : Number(item.value).toFixed(1)) : null;
+      const subStr = (item && typeof item.subIndex === 'number' && !isNaN(item.subIndex)) ? item.subIndex : '--';
+      const statusBadge = hasVal ? '<span class="text-[8px] px-1 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">MEASURED</span>' : '<span class="text-[8px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">UNAVAIL</span>';
+
+      return `
+        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <div class="text-[10px] text-slate-400 flex justify-between items-center">
+            <span class="font-bold text-slate-200">${name}</span>
+            <span class="text-[9px] text-slate-500">Std: ${std}</span>
+          </div>
+          <div class="font-bold text-slate-100 text-sm">
+            ${hasVal ? `${valStr} <span class="text-[10px] text-slate-400 font-normal">${unit}</span>` : '<span class="text-[10px] text-slate-400 font-sans italic font-normal">Not provided by source</span>'}
+          </div>
+          <div class="text-[9px] text-slate-400 flex justify-between items-center">
+            <span>Sub-Index: <span class="text-cyan-300 font-bold">${subStr}</span></span>
+            ${statusBadge}
+          </div>
+        </div>
+      `;
+    }
+
     container.innerHTML = `
       <div class="space-y-4">
         <!-- Header Banner -->
@@ -761,13 +1087,13 @@
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">CPCB NAQI Index</span>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono text-white" style="background-color: ${tier.color};">
-              ${tier.category} (${tier.hi})
+              ${tier.category} (${tier.hi || norm.categoryHindi || ''})
             </span>
           </div>
           <div class="flex items-baseline gap-3">
-            <div class="text-4xl font-black font-mono" style="color: ${tier.color};">${data.aqi}</div>
+            <div class="text-4xl font-black font-mono" style="color: ${tier.color};">${aqiDisplay}</div>
             <div class="text-xs text-slate-300 font-mono">
-              Primary Pollutant: <span class="font-bold text-white uppercase">${data.primaryPollutant || 'PM2.5'}</span>
+              Primary Pollutant: <span class="font-bold text-white uppercase">${primaryDisplay}</span>
             </div>
           </div>
           <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden flex">
@@ -780,44 +1106,41 @@
           </div>
         </div>
 
-        <!-- 6-Pollutant Grid -->
+        <!-- 8-Pollutant CPCB Grid -->
         <div>
-          <div class="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider mb-2">Concentration Grid (CPCB Standard)</div>
+          <div class="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>Concentration Grid (CPCB Standard)</span>
+            <span class="text-[9px] text-cyan-400 font-normal">8-Pollutant NAAQS</span>
+          </div>
           <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>PM2.5</span><span class="text-[9px]">Std: 60</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.pm25?.value != null ? Number(p.pm25.value).toFixed(1) : '--'} <span class="text-[10px] text-slate-400">µg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.pm25?.subIndex || '--'}</span></div>
-            </div>
+            ${renderCard(p.pm25, 'PM2.5', '60', 'µg/m³')}
+            ${renderCard(p.pm10, 'PM10', '100', 'µg/m³')}
+            ${renderCard(p.no2, 'NO₂', '80', 'µg/m³')}
+            ${renderCard(p.so2, 'SO₂', '80', 'µg/m³')}
+            ${renderCard(p.co, 'CO', '2.0', 'mg/m³')}
+            ${renderCard(p.o3, 'O₃', '100', 'µg/m³')}
+            ${renderCard(p.nh3, 'NH₃', '400', 'µg/m³')}
+            ${renderCard(p.pb, 'Pb', '1.0', 'µg/m³')}
+          </div>
+        </div>
 
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>PM10</span><span class="text-[9px]">Std: 100</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.pm10?.value != null ? Number(p.pm10.value).toFixed(1) : '--'} <span class="text-[10px] text-slate-400">µg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.pm10?.subIndex || '--'}</span></div>
+        <!-- Supplementary Non-NAQI Pollutants -->
+        <div class="pt-1">
+          <div class="text-[11px] font-bold text-slate-400 font-mono uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <span>Supplementary Measurement (Non-CPCB)</span>
+            <span class="text-[9px] text-amber-400/90 font-normal">Exempt from AQI</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1 text-xs font-mono">
+            <div class="text-[10px] text-slate-400 flex justify-between items-center">
+              <span class="font-bold text-slate-300">VOC (Volatile Organic Compounds)</span>
+              <span class="text-[9px] text-slate-500">WHO Guideline Only</span>
             </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>NO₂</span><span class="text-[9px]">Std: 80</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.no2?.value != null ? Number(p.no2.value).toFixed(1) : '--'} <span class="text-[10px] text-slate-400">µg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.no2?.subIndex || '--'}</span></div>
+            <div class="font-bold text-slate-100 text-sm">
+              ${p.voc?.available ? `${Number(p.voc.value).toFixed(1)} <span class="text-[10px] text-slate-400 font-normal">µg/m³</span>` : '<span class="text-[10px] text-slate-400 font-sans italic font-normal">Not provided by source</span>'}
             </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>SO₂</span><span class="text-[9px]">Std: 80</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.so2?.value != null ? Number(p.so2.value).toFixed(1) : '--'} <span class="text-[10px] text-slate-400">µg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.so2?.subIndex || '--'}</span></div>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>CO</span><span class="text-[9px]">Std: 2.0</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.co?.value || '--'} <span class="text-[10px] text-slate-400">mg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.co?.subIndex || '--'}</span></div>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-              <div class="text-[10px] text-slate-400 flex justify-between"><span>O₃</span><span class="text-[9px]">Std: 100</span></div>
-              <div class="font-bold text-slate-100 text-sm">${p.o3?.value != null ? Number(p.o3.value).toFixed(1) : '--'} <span class="text-[10px] text-slate-400">µg/m³</span></div>
-              <div class="text-[9px] text-slate-400">Sub-Index: <span class="text-cyan-300 font-bold">${p.o3?.subIndex || '--'}</span></div>
+            <div class="text-[9px] text-slate-400 flex justify-between items-center">
+              <span class="text-slate-500">Sub-Index: <span class="text-slate-400 font-mono">N/A (Non-NAQI)</span></span>
+              ${p.voc?.available ? '<span class="text-[8px] px-1 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">MEASURED</span>' : '<span class="text-[8px] px-1 py-0.2 rounded bg-slate-800 text-slate-400">UNAVAIL</span>'}
             </div>
           </div>
         </div>
@@ -827,12 +1150,12 @@
           <div class="font-bold text-cyan-300 font-mono uppercase tracking-wider flex items-center gap-1.5">
             <span>🛡️</span> <span>Official CPCB Health Advisory</span>
           </div>
-          <div class="text-slate-300 leading-relaxed text-[11px]">${data.healthRecommendations?.general || ''}</div>
+          <div class="text-slate-300 leading-relaxed text-[11px]">${norm.healthRecommendations?.general || ''}</div>
           <div class="text-slate-400 text-[10px] border-t border-slate-800 pt-2">
-            <span class="font-bold text-slate-300">Sensitive Groups:</span> ${data.healthRecommendations?.sensitive || ''}
+            <span class="font-bold text-slate-300">Sensitive Groups:</span> ${norm.healthRecommendations?.sensitive || ''}
           </div>
           <div class="text-slate-400 text-[10px]">
-            <span class="font-bold text-slate-300">Action:</span> ${data.healthRecommendations?.action || ''}
+            <span class="font-bold text-slate-300">Action:</span> ${norm.healthRecommendations?.action || ''}
           </div>
         </div>
 
@@ -848,8 +1171,8 @@
 
         <!-- Provenance -->
         <div class="text-[9px] text-slate-500 font-mono">
-          <div>Data Source: ${data.provenance?.source || 'CPCB / Open-Meteo'}</div>
-          <div>Scale: ${data.provenance?.scale || 'National Air Quality Index'}</div>
+          <div>Data Source: ${norm.provenance?.source || data.provenance?.source || 'CPCB / Open-Meteo'}</div>
+          <div>Scale: ${norm.provenance?.scale || data.provenance?.scale || 'National Air Quality Index'}</div>
         </div>
       </div>
     `;

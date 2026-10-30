@@ -248,6 +248,7 @@ export class WorkerManager {
   persistWorkerState(worker) {
     try {
       const db = getDatabase();
+      if (!db) return;
       db.run(
         `INSERT OR REPLACE INTO worker_states
         (worker_id, name, state, last_run, next_run, duration_ms, success_count, failure_count)
@@ -261,9 +262,16 @@ export class WorkerManager {
           worker.durationMs,
           worker.successCount,
           worker.failureCount
-        ]
+        ],
+        (err) => {
+          if (err) {
+            console.error(`[WorkerManager] Failed to persist worker state for '${worker.id}' in SQLite:`, err.message);
+          }
+        }
       );
-    } catch (_) {}
+    } catch (err) {
+      console.error(`[WorkerManager] Synchronous error persisting worker state for '${worker.id}':`, err.message);
+    }
   }
 }
 

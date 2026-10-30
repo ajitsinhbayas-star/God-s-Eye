@@ -6,7 +6,7 @@
  */
 import { providerRegistry } from '../supervisor/registry.js';
 import { sentinelDiagnostics } from '../supervisor/diagnostics.js';
-import { computeCpcbAqi, getCpcbCategory } from '../adapters/cpcb-naqi-adapter.js';
+import { computeCpcbAqi, getCpcbCategory, normalizePollutants } from '../adapters/cpcb-naqi-adapter.js';
 
 // Verified CPCB Continuous Ambient Air Quality Monitoring Stations (CAAQMS)
 export const CAAQMS_STATIONS = [
@@ -49,7 +49,7 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
 
   const t0 = Date.now();
   try {
-    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${Number(lat).toFixed(4)}&longitude=${Number(lon).toFixed(4)}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,dust,uv_index,european_aqi,us_aqi&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,uv_index,european_aqi,us_aqi&timezone=Asia%2FKolkata&forecast_days=5`;
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${Number(lat).toFixed(4)}&longitude=${Number(lon).toFixed(4)}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia,dust,uv_index,european_aqi,us_aqi&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,ammonia,uv_index,european_aqi,us_aqi&timezone=Asia%2FKolkata&forecast_days=5`;
 
     const res = await fetch(url, { headers: { 'User-Agent': 'GodsEye-AirQualitySentinel/2.0' } });
     if (!res.ok) throw new Error(`Air Quality API HTTP ${res.status}`);
@@ -62,7 +62,8 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
       nitrogen_dioxide: curr.nitrogen_dioxide,
       sulphur_dioxide: curr.sulphur_dioxide,
       carbon_monoxide: curr.carbon_monoxide,
-      ozone: curr.ozone
+      ozone: curr.ozone,
+      ammonia: curr.ammonia
     });
 
     // 24-hour hourly outlook
@@ -78,7 +79,8 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
           nitrogen_dioxide: raw.hourly.nitrogen_dioxide?.[i],
           sulphur_dioxide: raw.hourly.sulphur_dioxide?.[i],
           carbon_monoxide: raw.hourly.carbon_monoxide?.[i],
-          ozone: raw.hourly.ozone?.[i]
+          ozone: raw.hourly.ozone?.[i],
+          ammonia: raw.hourly.ammonia?.[i]
         });
         hourly24h.push({
           time: raw.hourly.time[i],
@@ -124,6 +126,29 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
     const durationMs = Date.now() - t0;
     providerRegistry.recordSuccess('cpcb_naqi', durationMs);
 
+    // Normalize all 8 CPCB pollutants + VOC using canonical normalizer
+    const normalizedPollutants = normalizePollutants(curr, computed.subIndices, { sourceType: 'model' });
+
+    // Attach supplementary dust & UV if present
+    if (curr.dust !== undefined && curr.dust !== null) {
+      normalizedPollutants.dust = {
+        value: curr.dust,
+        unit: 'µg/m³',
+        label: 'Atmospheric Mineral Dust',
+        subIndex: null,
+        available: true
+      };
+    }
+    if (curr.uv_index !== undefined && curr.uv_index !== null) {
+      normalizedPollutants.uv_index = {
+        value: curr.uv_index,
+        unit: 'index',
+        label: 'Solar UV Radiation Index',
+        subIndex: null,
+        available: true
+      };
+    }
+
     const payload = {
       ok: true,
       stationName,
@@ -138,67 +163,15 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
       severity: computed.categoryInfo.severity,
       dominantPollutant: computed.dominantPollutant,
       dominantPollutantKey: computed.dominantPollutantKey,
+      primaryPollutant: computed.primaryPollutant,
       healthStatement: computed.categoryInfo.healthStatement,
       advisory: computed.categoryInfo.advisory,
-      pollutants: {
-        pm2_5: {
-          value: curr.pm2_5 ?? null,
-          unit: 'µg/m³',
-          label: 'PM2.5 (Fine Respirable Particulates)',
-          nationalStandard: 60,
-          whoStandard: 15,
-          subIndex: computed.subIndices.pm2_5
-        },
-        pm10: {
-          value: curr.pm10 ?? null,
-          unit: 'µg/m³',
-          label: 'PM10 (Coarse Inhalable Dust)',
-          nationalStandard: 100,
-          whoStandard: 45,
-          subIndex: computed.subIndices.pm10
-        },
-        nitrogen_dioxide: {
-          value: curr.nitrogen_dioxide ?? null,
-          unit: 'µg/m³',
-          label: 'NO₂ (Nitrogen Dioxide)',
-          nationalStandard: 80,
-          whoStandard: 25,
-          subIndex: computed.subIndices.nitrogen_dioxide
-        },
-        sulphur_dioxide: {
-          value: curr.sulphur_dioxide ?? null,
-          unit: 'µg/m³',
-          label: 'SO₂ (Sulphur Dioxide)',
-          nationalStandard: 80,
-          whoStandard: 40,
-          subIndex: computed.subIndices.sulphur_dioxide
-        },
-        carbon_monoxide: {
-          value: curr.carbon_monoxide ? Math.round((curr.carbon_monoxide / 1000) * 100) / 100 : null,
-          unit: 'mg/m³',
-          label: 'CO (Carbon Monoxide)',
-          nationalStandard: 2.0,
-          whoStandard: 4.0,
-          subIndex: computed.subIndices.carbon_monoxide
-        },
-        ozone: {
-          value: curr.ozone ?? null,
-          unit: 'µg/m³',
-          label: 'O₃ (Surface Ozone)',
-          nationalStandard: 100,
-          whoStandard: 100,
-          subIndex: computed.subIndices.ozone
-        },
-        dust: {
-          value: curr.dust ?? null,
-          unit: 'µg/m³',
-          label: 'Atmospheric Mineral Dust'
-        },
-        uv_index: {
-          value: curr.uv_index ?? null,
-          label: 'Solar UV Radiation Index'
-        }
+      healthRecommendations: {
+        general: computed.categoryInfo.advisory?.general || computed.categoryInfo.healthStatement || '',
+        sensitive: computed.categoryInfo.advisory?.sensitive || 'Precautions recommended for sensitive groups.',
+        action: computed.categoryInfo.advisory?.action || computed.categoryInfo.advisory?.ventilation || 'Refer to local advisories.'
       },
+      pollutants: normalizedPollutants,
       comparisons: {
         cpcbAqi: computed.aqi,
         usAqi: curr.us_aqi ?? null,
@@ -210,7 +183,10 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
         primaryEngine: 'CPCB National Air Quality Index (NAQI) Standard',
         methodology: 'Linear Sub-Index Breakpoint Interpolation per CPCB Guidelines',
         atmosphericModel: 'Open-Meteo High-Resolution Atmospheric Chemistry (ECMWF / CAMS)',
-        supervisedBy: 'God\'s Eye Sentinel Ingestion Engine'
+        source: 'Open-Meteo / ECMWF CAMS Atmospheric Chemistry Model (CPCB Calibrated)',
+        scale: 'CPCB 6-Category National Air Quality Index (India)',
+        supervisedBy: 'God\'s Eye Sentinel Ingestion Engine',
+        observationTime: curr.time || new Date().toISOString()
       }
     };
 

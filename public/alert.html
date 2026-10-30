@@ -104,10 +104,50 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    a { text-decoration: none !important; color: inherit; }
+    .hidden { display: none !important; }
+    .sr-only,
+    main.sr-only,
+    footer.sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      clip-path: inset(50%) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      display: none !important;
+    }
+
+    .sr-only, main.sr-only { display: none !important; position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; opacity: 0 !important; visibility: hidden !important; }
+    #orbital-nav-ribbon a {
+      color: #94a3b8 !important;
+      text-decoration: none !important;
+      padding: 4px 10px !important;
+      border-radius: 8px !important;
+      font-size: 12px !important;
+      display: inline-block !important;
+    }
+    #orbital-nav-ribbon a:hover {
+      color: #ffffff !important;
+      background: rgba(30, 41, 59, 0.7) !important;
+    }
+    #orbital-nav-ribbon a[aria-current="page"] {
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.15) !important;
+      border: 1px solid rgba(0, 240, 255, 0.4) !important;
+      font-weight: bold !important;
+    }
     body {
       background: #02070e;
       color: #e2e8f0;
-      font-family: 'Courier New', monospace;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -382,6 +422,99 @@
       50% { opacity: 1.0; }
       100% { opacity: 0.3; }
     }
+
+    /* Robust Nav Ribbon styling */
+    #orbital-nav-ribbon {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      background: rgba(2, 6, 23, 0.85) !important;
+      border: 1px solid rgba(30, 41, 59, 0.9) !important;
+      border-radius: 12px !important;
+      padding: 4px 6px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      font-size: 11px !important;
+      max-width: 100% !important;
+      backdrop-filter: blur(12px) !important;
+    }
+    #orbital-nav-ribbon a, #orbital-nav-ribbon a:link, #orbital-nav-ribbon a:visited {
+      color: #94a3b8 !important;
+      text-decoration: none !important;
+      padding: 5px 10px !important;
+      border-radius: 8px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
+      transition: all 0.2s ease !important;
+      display: inline-block !important;
+    }
+    #orbital-nav-ribbon a:hover {
+      color: #ffffff !important;
+      background: rgba(30, 41, 59, 0.8) !important;
+    }
+    #orbital-nav-ribbon a[aria-current="page"] {
+      color: #00f0ff !important;
+      background: rgba(0, 240, 255, 0.15) !important;
+      border: 1px solid rgba(0, 240, 255, 0.4) !important;
+      font-weight: 700 !important;
+    }
+
+    /* Resilient Footer styling */
+    #orbital-footer {
+      width: 100% !important;
+      background: rgba(2, 6, 23, 0.95) !important;
+      border-top: 1px solid rgba(30, 41, 59, 0.8) !important;
+      padding: 24px 16px !important;
+      text-align: center !important;
+      font-size: 11px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      color: #94a3b8 !important;
+      margin-top: auto !important;
+    }
+    #orbital-footer a, #orbital-footer a:visited, #orbital-footer a:link {
+      color: #94a3b8 !important;
+      text-decoration: none !important;
+      transition: color 0.2s ease !important;
+    }
+    #orbital-footer a:hover {
+      color: #00f0ff !important;
+    }
+    #btn-back-to-top {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      padding: 8px 20px !important;
+      border-radius: 12px !important;
+      background: rgba(15, 23, 42, 0.9) !important;
+      color: #00f0ff !important;
+      border: 1px solid rgba(0, 240, 255, 0.4) !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      cursor: pointer !important;
+      min-height: 44px !important;
+      min-width: 140px !important;
+      transition: all 0.2s ease !important;
+    }
+    #btn-back-to-top:hover {
+      background: #1e293b !important;
+      border-color: #00f0ff !important;
+    }
+
+    /* Mobile modal responsiveness & smooth styling */
+    @media (max-width: 640px) {
+      #city-modal-overlay {
+        padding: 8px !important;
+      }
+      #city-modal-content {
+        max-height: 92vh !important;
+        border-radius: 16px !important;
+      }
+      #city-cards-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -567,7 +700,7 @@
 
         <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:center;">
           <div style="position:relative; width:340px; height:340px; display:flex; align-items:center; justify-content:center;">
-            <canvas id="polarRadarCanvas" width="340" height="340" style="width:340px; height:340px; border-radius:50%; background:rgba(1, 10, 19, 0.98); box-shadow:inset 0 0 30px rgba(0,240,255,0.25), 0 0 20px rgba(0,0,0,0.9);"></canvas>
+            <canvas id="polarRadarCanvas" width="340" height="340" style="max-width:100%; width:340px; height:auto; aspect-ratio:1; border-radius:50%; background:rgba(1, 10, 19, 0.98); box-shadow:inset 0 0 30px rgba(0,240,255,0.25), 0 0 20px rgba(0,0,0,0.9);"></canvas>
           </div>
 
           <div style="flex:1; min-width:300px; display:flex; flex-direction:column; gap:12px;">
@@ -884,7 +1017,7 @@
 
   <!-- ==================== SEARCHABLE CITY SELECTION MODAL ==================== -->
   <div id="city-modal-overlay" class="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 pointer-events-auto font-mono text-xs" style="display: none;">
-    <div id="city-modal-content" class="w-full max-w-2xl max-h-[88vh] rounded-2xl bg-slate-950/98 border border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.35)] flex flex-col overflow-hidden text-slate-200">
+    <div id="city-modal-content" class="w-full max-w-2xl max-h-[85vh] sm:max-h-[88vh] rounded-2xl bg-slate-950/98 border border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.35)] flex flex-col overflow-hidden text-slate-200 mx-2 sm:mx-auto">
       
       <!-- Modal Header -->
       <div class="px-4 sm:px-5 py-3 bg-slate-900/90 border-b border-cyan-500/30 flex items-center justify-between shrink-0">
@@ -935,9 +1068,7 @@
     </div>
   </div>
 
-      <div id="city-cards-grid" style="flex:1; overflow-y:auto; padding:16px 18px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;"></div>
-    </div>
-  </div>
+      
 
   
 
@@ -1014,7 +1145,7 @@
           '<td><strong style="color:#fff;">' + b.transit + '</strong></td>' +
           '<td>' + b.set + '</td>' +
           '<td><strong style="color:#ffd166;">' + (b.mag > 0 ? '+' : '') + b.mag.toFixed(1) + '</strong></td>' +
-          '<td><a href="' + (window.location.protocol === \'file:\' ? \'solar-system.html#/\' : \'/solar-system#/\') + b.name.toLowerCase().replace(\'the \', \'\') + '" class="plot-btn">3D ORBIT ↗</a></td>';
+          '<td><a href="' + (window.location.protocol === 'file:' ? 'solar-system.html#/' : '/solar-system#/') + b.name.toLowerCase().replace('the ', '') + '" class="plot-btn">3D ORBIT ↗</a></td>';
         tbody.appendChild(row);
       });
     }
@@ -1035,7 +1166,30 @@
     }
 
     function drawPolarRadar() {
+      if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Radial dome background
+      ctx.save();
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
+      grad.addColorStop(0, 'rgba(0, 240, 255, 0.07)');
+      grad.addColorStop(0.7, 'rgba(2, 24, 43, 0.4)');
+      grad.addColorStop(1, 'rgba(1, 10, 19, 0.95)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Cardinal direction letters
+      ctx.font = 'bold 12px monospace';
+      ctx.fillStyle = '#00f0ff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('N', cx, cy - radius + 13);
+      ctx.fillText('S', cx, cy + radius - 13);
+      ctx.fillText('E', cx + radius - 13, cy);
+      ctx.fillText('W', cx - radius + 13, cy);
 
       for (let a = 0; a < 360; a += 15) {
         const rad = (a - 90) * (Math.PI / 180);
@@ -1251,7 +1405,8 @@
             '<span class="' + (isCurrent ? 'text-cyan-300 font-bold' : 'text-slate-400') + '">' + (isCurrent ? 'ACTIVE ●' : (city.cat || 'SELECT →')) + '</span>' +
           '</div>';
 
-        item.onclick = function() { selectCity(city); };
+        item.onclick = function(e) { e.preventDefault(); selectCity(city); };
+        item.ontouchend = function(e) { e.preventDefault(); selectCity(city); };
         grid.appendChild(item);
       });
     }
@@ -1276,6 +1431,7 @@
       
       closeCityModal();
       generatePassPredictions();
+    try { drawPolarRadar(); } catch(_) {}
       renderPlanetsVisibleTable();
 
       if (typeof window.saveActiveLocation === 'function') {
@@ -1463,5 +1619,6 @@
       });
     });
   </script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

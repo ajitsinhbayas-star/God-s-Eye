@@ -13,7 +13,7 @@
  */
 
 // CPCB Sub-Index Concentration Breakpoints
-const CPCB_BREAKPOINTS = {
+export const CPCB_BREAKPOINTS = {
   pm2_5: [
     { cLow: 0, cHigh: 30, iLow: 0, iHigh: 50 },
     { cLow: 31, cHigh: 60, iLow: 51, iHigh: 100 },
@@ -61,7 +61,35 @@ const CPCB_BREAKPOINTS = {
     { cLow: 169, cHigh: 208, iLow: 201, iHigh: 300 },
     { cLow: 209, cHigh: 748, iLow: 301, iHigh: 400 },
     { cLow: 748.1, cHigh: 1200, iLow: 401, iHigh: 500 }
+  ],
+  ammonia: [
+    { cLow: 0, cHigh: 200, iLow: 0, iHigh: 50 },
+    { cLow: 201, cHigh: 400, iLow: 51, iHigh: 100 },
+    { cLow: 401, cHigh: 800, iLow: 101, iHigh: 200 },
+    { cLow: 801, cHigh: 1200, iLow: 201, iHigh: 300 },
+    { cLow: 1201, cHigh: 1800, iLow: 301, iHigh: 400 },
+    { cLow: 1800.1, cHigh: 2500, iLow: 401, iHigh: 500 }
+  ],
+  lead: [
+    { cLow: 0, cHigh: 0.5, iLow: 0, iHigh: 50 },
+    { cLow: 0.6, cHigh: 1.0, iLow: 51, iHigh: 100 },
+    { cLow: 1.1, cHigh: 2.0, iLow: 101, iHigh: 200 },
+    { cLow: 2.1, cHigh: 3.0, iLow: 201, iHigh: 300 },
+    { cLow: 3.1, cHigh: 3.5, iLow: 301, iHigh: 400 },
+    { cLow: 3.51, cHigh: 5.0, iLow: 401, iHigh: 500 }
   ]
+};
+
+// Official CPCB 24-hr/8-hr Standards (NAAQS India)
+export const CPCB_STANDARDS = {
+  pm2_5: { standard: 60, unit: 'µg/m³', label: 'PM2.5 (Fine Respirable Particulates)', shortLabel: 'PM2.5' },
+  pm10: { standard: 100, unit: 'µg/m³', label: 'PM10 (Coarse Inhalable Dust)', shortLabel: 'PM10' },
+  nitrogen_dioxide: { standard: 80, unit: 'µg/m³', label: 'NO₂ (Nitrogen Dioxide)', shortLabel: 'NO₂' },
+  sulphur_dioxide: { standard: 80, unit: 'µg/m³', label: 'SO₂ (Sulphur Dioxide)', shortLabel: 'SO₂' },
+  carbon_monoxide: { standard: 2.0, unit: 'mg/m³', label: 'CO (Carbon Monoxide)', shortLabel: 'CO' },
+  ozone: { standard: 100, unit: 'µg/m³', label: 'O₃ (Surface Ozone)', shortLabel: 'O₃' },
+  ammonia: { standard: 400, unit: 'µg/m³', label: 'NH₃ (Ammonia)', shortLabel: 'NH₃' },
+  lead: { standard: 1.0, unit: 'µg/m³', label: 'Pb (Lead Particulate)', shortLabel: 'Pb' }
 };
 
 /**
@@ -78,7 +106,10 @@ export function calculateSubIndex(arg1, arg2) {
   if (pollutantKey === 'so2') pollutantKey = 'sulphur_dioxide';
   if (pollutantKey === 'co') pollutantKey = 'carbon_monoxide';
   if (pollutantKey === 'o3') pollutantKey = 'ozone';
-  if (concentration === undefined || concentration === null || isNaN(concentration) || concentration < 0) {
+  if (pollutantKey === 'nh3') pollutantKey = 'ammonia';
+  if (pollutantKey === 'pb') pollutantKey = 'lead';
+
+  if (concentration === undefined || concentration === null || concentration === '' || isNaN(concentration) || !isFinite(concentration) || Number(concentration) < 0) {
     return null;
   }
   const c = Number(concentration);
@@ -222,6 +253,10 @@ export function getCpcbCategory(aqiValue) {
   }
 }
 
+function isValidReading(v) {
+  return v !== undefined && v !== null && v !== '' && !isNaN(v) && isFinite(v) && Number(v) >= 0;
+}
+
 /**
  * Computes official CPCB overall AQI and identifies dominant pollutant from measured concentrations.
  */
@@ -232,31 +267,38 @@ export function computeCpcbAqi(measurements) {
     pm10: raw.pm10,
     nitrogen_dioxide: raw.nitrogen_dioxide !== undefined ? raw.nitrogen_dioxide : raw.no2,
     sulphur_dioxide: raw.sulphur_dioxide !== undefined ? raw.sulphur_dioxide : raw.so2,
+    carbon_monoxide: raw.carbon_monoxide !== undefined ? raw.carbon_monoxide : raw.co,
     ozone: raw.ozone !== undefined ? raw.ozone : raw.o3,
-    carbon_monoxide: raw.carbon_monoxide !== undefined ? raw.carbon_monoxide : raw.co
+    ammonia: raw.ammonia !== undefined ? raw.ammonia : raw.nh3,
+    lead: raw.lead !== undefined ? raw.lead : raw.pb
   };
   const subIndices = {};
 
-  // Standardize keys and compute sub-indices
-  if (m.pm2_5 !== undefined) subIndices.pm2_5 = calculateSubIndex('pm2_5', m.pm2_5);
-  if (m.pm10 !== undefined) subIndices.pm10 = calculateSubIndex('pm10', m.pm10);
-  if (m.nitrogen_dioxide !== undefined) subIndices.nitrogen_dioxide = calculateSubIndex('nitrogen_dioxide', m.nitrogen_dioxide);
-  if (m.sulphur_dioxide !== undefined) subIndices.sulphur_dioxide = calculateSubIndex('sulphur_dioxide', m.sulphur_dioxide);
-  if (m.ozone !== undefined) subIndices.ozone = calculateSubIndex('ozone', m.ozone);
+  // Standardize keys and compute sub-indices for valid numeric readings
+  if (isValidReading(m.pm2_5)) subIndices.pm2_5 = calculateSubIndex('pm2_5', Number(m.pm2_5));
+  if (isValidReading(m.pm10)) subIndices.pm10 = calculateSubIndex('pm10', Number(m.pm10));
+  if (isValidReading(m.nitrogen_dioxide)) subIndices.nitrogen_dioxide = calculateSubIndex('nitrogen_dioxide', Number(m.nitrogen_dioxide));
+  if (isValidReading(m.sulphur_dioxide)) subIndices.sulphur_dioxide = calculateSubIndex('sulphur_dioxide', Number(m.sulphur_dioxide));
+  if (isValidReading(m.ozone)) subIndices.ozone = calculateSubIndex('ozone', Number(m.ozone));
+  if (isValidReading(m.ammonia)) subIndices.ammonia = calculateSubIndex('ammonia', Number(m.ammonia));
+  if (isValidReading(m.lead)) subIndices.lead = calculateSubIndex('lead', Number(m.lead));
 
   // For CO: if provided in µg/m³, convert to mg/m³ (divide by 1000)
-  if (m.carbon_monoxide !== undefined) {
-    const coVal = m.carbon_monoxide > 50 ? m.carbon_monoxide / 1000 : m.carbon_monoxide;
+  if (isValidReading(m.carbon_monoxide)) {
+    const rawCo = Number(m.carbon_monoxide);
+    const coVal = rawCo > 50 ? rawCo / 1000 : rawCo;
     subIndices.carbon_monoxide = calculateSubIndex('carbon_monoxide', coVal);
   }
 
   // Filter valid numeric sub-indices
-  const validEntries = Object.entries(subIndices).filter(([_, val]) => typeof val === 'number');
+  const validEntries = Object.entries(subIndices).filter(([_, val]) => typeof val === 'number' && !isNaN(val));
 
   if (validEntries.length === 0) {
     return {
       aqi: null,
       dominantPollutant: null,
+      dominantPollutantKey: null,
+      primaryPollutant: 'Not determined',
       categoryInfo: getCpcbCategory(0),
       subIndices: {}
     };
@@ -272,14 +314,231 @@ export function computeCpcbAqi(measurements) {
     nitrogen_dioxide: 'NO₂ (Nitrogen Dioxide)',
     sulphur_dioxide: 'SO₂ (Sulphur Dioxide)',
     carbon_monoxide: 'CO (Carbon Monoxide)',
-    ozone: 'O₃ (Surface Ozone)'
+    ozone: 'O₃ (Surface Ozone)',
+    ammonia: 'NH₃ (Ammonia)',
+    lead: 'Pb (Lead)'
+  };
+
+  const primaryCodes = {
+    pm2_5: 'PM2.5',
+    pm10: 'PM10',
+    nitrogen_dioxide: 'NO₂',
+    sulphur_dioxide: 'SO₂',
+    carbon_monoxide: 'CO',
+    ozone: 'O₃',
+    ammonia: 'NH₃',
+    lead: 'Pb'
   };
 
   return {
     aqi: maxIndex,
     dominantPollutantKey: dominantKey,
     dominantPollutant: pollutantLabels[dominantKey] || dominantKey,
+    primaryPollutant: primaryCodes[dominantKey] || dominantKey.toUpperCase(),
     categoryInfo: getCpcbCategory(maxIndex),
     subIndices
+  };
+}
+
+/**
+ * Universal Pollutant Normalizer
+ * Accepts flat or nested pollutant objects in either naming convention
+ * Returns complete, standardized 8 CPCB pollutants + supplementary VOC with aliases.
+ */
+export function normalizePollutants(rawInput = {}, subIndices = {}, options = {}) {
+  const raw = rawInput || {};
+  const subs = subIndices || {};
+  const defaultSourceType = options.sourceType || 'live';
+
+  function extractValue(keys) {
+    for (const k of keys) {
+      if (raw[k] !== undefined && raw[k] !== null) {
+        if (typeof raw[k] === 'object' && raw[k] !== null && 'value' in raw[k]) {
+          const v = raw[k].value;
+          if (v !== undefined && v !== null && v !== '' && !isNaN(v) && isFinite(v) && Number(v) >= 0) {
+            return Number(v);
+          }
+        } else {
+          const v = raw[k];
+          if (v !== undefined && v !== null && v !== '' && !isNaN(v) && isFinite(v) && Number(v) >= 0) {
+            return Number(v);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  function extractSubIndex(keys) {
+    for (const k of keys) {
+      if (subs[k] !== undefined && subs[k] !== null && typeof subs[k] === 'number' && !isNaN(subs[k])) {
+        return subs[k];
+      }
+      if (raw[k] && typeof raw[k] === 'object' && raw[k].subIndex !== undefined && raw[k].subIndex !== null) {
+        const s = raw[k].subIndex;
+        if (typeof s === 'number' && !isNaN(s)) return s;
+      }
+    }
+    return null;
+  }
+
+  // 1. PM2.5
+  const pm25Val = extractValue(['pm2_5', 'pm25']);
+  const pm25Sub = extractSubIndex(['pm2_5', 'pm25']) ?? (pm25Val !== null ? calculateSubIndex('pm2_5', pm25Val) : null);
+  const pm25Obj = {
+    value: pm25Val,
+    unit: 'µg/m³',
+    label: 'PM2.5 (Fine Respirable Particulates)',
+    shortLabel: 'PM2.5',
+    nationalStandard: 60,
+    whoStandard: 15,
+    subIndex: pm25Sub,
+    available: pm25Val !== null,
+    status: pm25Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 2. PM10
+  const pm10Val = extractValue(['pm10']);
+  const pm10Sub = extractSubIndex(['pm10']) ?? (pm10Val !== null ? calculateSubIndex('pm10', pm10Val) : null);
+  const pm10Obj = {
+    value: pm10Val,
+    unit: 'µg/m³',
+    label: 'PM10 (Coarse Inhalable Dust)',
+    shortLabel: 'PM10',
+    nationalStandard: 100,
+    whoStandard: 45,
+    subIndex: pm10Sub,
+    available: pm10Val !== null,
+    status: pm10Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 3. NO2
+  const no2Val = extractValue(['nitrogen_dioxide', 'no2']);
+  const no2Sub = extractSubIndex(['nitrogen_dioxide', 'no2']) ?? (no2Val !== null ? calculateSubIndex('nitrogen_dioxide', no2Val) : null);
+  const no2Obj = {
+    value: no2Val,
+    unit: 'µg/m³',
+    label: 'NO₂ (Nitrogen Dioxide)',
+    shortLabel: 'NO₂',
+    nationalStandard: 80,
+    whoStandard: 25,
+    subIndex: no2Sub,
+    available: no2Val !== null,
+    status: no2Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 4. SO2
+  const so2Val = extractValue(['sulphur_dioxide', 'so2']);
+  const so2Sub = extractSubIndex(['sulphur_dioxide', 'so2']) ?? (so2Val !== null ? calculateSubIndex('sulphur_dioxide', so2Val) : null);
+  const so2Obj = {
+    value: so2Val,
+    unit: 'µg/m³',
+    label: 'SO₂ (Sulphur Dioxide)',
+    shortLabel: 'SO₂',
+    nationalStandard: 80,
+    whoStandard: 40,
+    subIndex: so2Sub,
+    available: so2Val !== null,
+    status: so2Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 5. CO
+  let coValRaw = extractValue(['carbon_monoxide', 'co']);
+  let coVal = coValRaw;
+  if (coVal !== null && coVal > 50) {
+    coVal = Math.round((coVal / 1000) * 100) / 100;
+  } else if (coVal !== null) {
+    coVal = Math.round(coVal * 100) / 100;
+  }
+  const coSub = extractSubIndex(['carbon_monoxide', 'co']) ?? (coVal !== null ? calculateSubIndex('carbon_monoxide', coVal) : null);
+  const coObj = {
+    value: coVal,
+    unit: 'mg/m³',
+    label: 'CO (Carbon Monoxide)',
+    shortLabel: 'CO',
+    nationalStandard: 2.0,
+    whoStandard: 4.0,
+    subIndex: coSub,
+    available: coVal !== null,
+    status: coVal !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 6. O3
+  const o3Val = extractValue(['ozone', 'o3']);
+  const o3Sub = extractSubIndex(['ozone', 'o3']) ?? (o3Val !== null ? calculateSubIndex('ozone', o3Val) : null);
+  const o3Obj = {
+    value: o3Val,
+    unit: 'µg/m³',
+    label: 'O₃ (Surface Ozone)',
+    shortLabel: 'O₃',
+    nationalStandard: 100,
+    whoStandard: 100,
+    subIndex: o3Sub,
+    available: o3Val !== null,
+    status: o3Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 7. NH3 (Ammonia)
+  const nh3Val = extractValue(['ammonia', 'nh3']);
+  const nh3Sub = extractSubIndex(['ammonia', 'nh3']) ?? (nh3Val !== null ? calculateSubIndex('ammonia', nh3Val) : null);
+  const nh3Obj = {
+    value: nh3Val,
+    unit: 'µg/m³',
+    label: 'NH₃ (Ammonia)',
+    shortLabel: 'NH₃',
+    nationalStandard: 400,
+    subIndex: nh3Sub,
+    available: nh3Val !== null,
+    status: nh3Val !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 8. Pb (Lead)
+  const pbVal = extractValue(['lead', 'pb']);
+  const pbSub = extractSubIndex(['lead', 'pb']) ?? (pbVal !== null ? calculateSubIndex('lead', pbVal) : null);
+  const pbObj = {
+    value: pbVal,
+    unit: 'µg/m³',
+    label: 'Pb (Lead Particulate)',
+    shortLabel: 'Pb',
+    nationalStandard: 1.0,
+    subIndex: pbSub,
+    available: pbVal !== null,
+    status: pbVal !== null ? defaultSourceType : 'not_provided'
+  };
+
+  // 9. Supplementary VOC (Volatile Organic Compounds) — Non-NAQI
+  const vocVal = extractValue(['voc', 'volatile_organic_compounds', 'nmvoc']);
+  const vocObj = {
+    value: vocVal,
+    unit: 'µg/m³',
+    label: 'VOC (Volatile Organic Compounds)',
+    shortLabel: 'VOC',
+    isSupplementary: true,
+    cpcbIncluded: false,
+    subIndex: null, // VOC has no CPCB sub-index
+    available: vocVal !== null,
+    status: vocVal !== null ? defaultSourceType : 'not_provided'
+  };
+
+  return {
+    // Canonical full names
+    pm2_5: pm25Obj,
+    pm10: pm10Obj,
+    nitrogen_dioxide: no2Obj,
+    sulphur_dioxide: so2Obj,
+    carbon_monoxide: coObj,
+    ozone: o3Obj,
+    ammonia: nh3Obj,
+    lead: pbObj,
+    voc: vocObj,
+
+    // Frontend shortcut aliases
+    pm25: pm25Obj,
+    no2: no2Obj,
+    so2: so2Obj,
+    co: coObj,
+    o3: o3Obj,
+    nh3: nh3Obj,
+    pb: pbObj
   };
 }

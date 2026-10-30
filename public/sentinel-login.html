@@ -2,248 +2,230 @@
 <html lang="en">
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
-
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Sentinel Admin Login // Space Situational Awareness</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     body {
       background-color: #020612;
       font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
     }
     .hud-box {
       background: radial-gradient(circle at center, rgba(3, 14, 8, 0.95) 0%, rgba(2, 6, 18, 0.98) 100%);
-      border: 1px solid rgba(0, 255, 102, 0.45);
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 255, 102, 0.15);
+      border: 1px solid rgba(0, 255, 102, 0.35);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 255, 102, 0.12);
     }
     .hud-glow {
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
     }
+    input:focus {
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 text-slate-200">
-  <div class="hud-box max-w-md w-full p-6 sm:p-8 rounded-2xl space-y-6">
-    <div class="text-center space-y-2">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-3xl shadow-lg">
+<body class="flex items-center justify-center p-3 sm:p-6 text-slate-200 antialiased selection:bg-emerald-500 selection:text-slate-950">
+  <main class="hud-box max-w-md w-full p-5 sm:p-8 rounded-2xl space-y-6">
+    <!-- Header & Identity -->
+    <header class="text-center space-y-2">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-3xl shadow-lg" aria-hidden="true">
         🛡️
       </div>
-      <h1 class="text-lg font-bold text-white tracking-widest uppercase hud-glow">SENTINEL OPERATIONS</h1>
+      <h1 class="text-base sm:text-lg font-bold text-white tracking-widest uppercase hud-glow">SENTINEL OPERATIONS</h1>
       <p class="text-xs text-emerald-400 font-bold uppercase tracking-wider">Restricted Administrator Console</p>
-      <p class="text-[11px] text-slate-400 font-sans">Enter authorized credentials to inspect background daemons and provider health.</p>
-    </div>
+      <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Enter authenticated operational credentials to access background worker telemetry and provider controls.</p>
+    </header>
 
-    <!-- File Protocol Notice -->
-    <div id="file-protocol-notice" class="hidden p-3.5 rounded-xl bg-cyan-950/80 border border-cyan-500/60 text-cyan-200 text-xs space-y-2">
-      <div class="flex items-center gap-2 font-bold text-cyan-300">
-        <span>🌐</span> <span>Server Connection Required</span>
+    <!-- Protocol Warning Banner -->
+    <div id="file-protocol-notice" class="hidden p-3.5 rounded-xl bg-amber-950/80 border border-amber-500/60 text-amber-200 text-xs space-y-2" role="alert">
+      <div class="flex items-center gap-2 font-bold text-amber-300">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Server Connection Required</span>
       </div>
       <p class="text-[11px] text-slate-300 leading-relaxed">
-        You are currently viewing God's Eye directly via <code class="bg-black/50 px-1 py-0.5 rounded text-amber-300">file://</code>. Browsers prevent secure authentication sessions from local files.
+        File protocol (<code class="bg-black/50 px-1 py-0.5 rounded text-amber-300">file://</code>) detected. Secure authentication sessions and HttpOnly cookies require an active HTTP server.
       </p>
       <div>
-        <a href="http://localhost:3000/sentinel-login" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition shadow-md">
-          <span>🚀 Open in Active Server (localhost:3000)</span>
+        <a href="http://localhost:3000/sentinel-login" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition shadow-md min-h-[44px]">
+          <span>Launch on http://localhost:3000/sentinel-login</span>
           <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         </a>
       </div>
     </div>
 
     <!-- Error Alert Box -->
-    <div id="login-error-alert" class="hidden p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/70 text-rose-200 text-xs space-y-2">
+    <div id="login-error-alert" class="hidden p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/70 text-rose-200 text-xs space-y-2" role="alert" aria-live="polite">
       <div class="flex items-start gap-2">
-        <span class="text-rose-400 mt-0.5">⚠️</span>
+        <i class="fa-solid fa-circle-exclamation text-rose-400 mt-0.5"></i>
         <div id="login-error-text" class="flex-1 text-[11px] leading-relaxed">Invalid administrator credentials.</div>
-      </div>
-      <div id="login-file-action" class="hidden pt-2 border-t border-rose-800/60">
-        <a href="http://localhost:3000/sentinel-login" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs transition">
-          <span>Switch to http://localhost:3000/sentinel-login</span>
-          <i class="fa-solid fa-arrow-right text-[10px]"></i>
-        </a>
       </div>
     </div>
 
-    <form id="admin-login-form" onsubmit="handleSentinelLogin(event)" class="space-y-4">
+    <!-- Login Form -->
+    <form id="admin-login-form" onsubmit="handleSentinelLogin(event)" class="space-y-4" novalidate>
       <div>
         <label for="admin-username" class="block text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">
-          <i class="fa-solid fa-user-shield text-emerald-400 mr-1"></i> Admin Username
+          <i class="fa-solid fa-user-shield text-emerald-400 mr-1" aria-hidden="true"></i> Admin Username
         </label>
         <input
           type="text"
           id="admin-username"
+          name="username"
           required
           autocomplete="username"
-          value="Ajitsinh96"
-          placeholder="e.g. Ajitsinh96"
-          class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-emerald-400 font-mono transition"
+          autocapitalize="none"
+          spellcheck="false"
+          placeholder="Enter username"
+          class="w-full px-3.5 py-3 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-400 font-mono transition min-h-[44px]"
         />
       </div>
 
       <div>
-        <label for="admin-password" class="block text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1">
-          <i class="fa-solid fa-key text-emerald-400 mr-1"></i> Operations Password
-        </label>
-        <input
-          type="password"
-          id="admin-password"
-          required
-          autocomplete="current-password"
-          placeholder="••••••••••••"
-          class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-emerald-400 font-mono transition"
-        />
+        <div class="flex items-center justify-between mb-1">
+          <label for="admin-password" class="block text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+            <i class="fa-solid fa-key text-emerald-400 mr-1" aria-hidden="true"></i> Operations Password
+          </label>
+          <button
+            type="button"
+            id="btn-toggle-password"
+            onclick="togglePasswordVisibility()"
+            class="text-[11px] text-slate-400 hover:text-emerald-400 transition flex items-center gap-1 font-mono focus:outline-none"
+            aria-label="Toggle password visibility"
+          >
+            <i id="password-toggle-icon" class="fa-solid fa-eye text-[10px]"></i>
+            <span id="password-toggle-label">Show</span>
+          </button>
+        </div>
+        <div class="relative">
+          <input
+            type="password"
+            id="admin-password"
+            name="password"
+            required
+            autocomplete="current-password"
+            placeholder="••••••••••••"
+            class="w-full px-3.5 py-3 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-emerald-400 font-mono transition min-h-[44px]"
+          />
+        </div>
       </div>
 
       <button
         type="submit"
         id="btn-login-submit"
-        class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+        class="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 min-h-[44px]"
       >
-        <span>Unlock Sentinel Bot Console ➔</span>
+        <span id="btn-submit-text">Unlock Sentinel Bot Console ➔</span>
+        <i id="btn-submit-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
       </button>
-
-      <div id="local-mode-direct-btn" class="pt-2 text-center">
-        <button
-          type="button"
-          onclick="directUnlockLocalConsole()"
-          class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 font-mono text-[11px] font-bold transition flex items-center justify-center gap-2"
-        >
-          <span>🛡️ Direct Admin Access (Console Mode)</span>
-          <i class="fa-solid fa-arrow-right text-[10px]"></i>
-        </button>
-      </div>
     </form>
 
-    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-      <a href="/" class="hover:text-cyan-400 transition flex items-center gap-1"><i class="fa-solid fa-house text-[9px]"></i> Home</a>
-      <a href="/solar-system" class="hover:text-amber-400 transition flex items-center gap-1"><i class="fa-solid fa-sun text-[9px]"></i> Solar System 3D</a>
-      <a href="/alert" class="hover:text-sky-400 transition flex items-center gap-1">OrbitAlert <i class="fa-solid fa-arrow-right text-[8px]"></i></a>
-    </div>
-  </div>
+    <!-- Footer Navigation -->
+    <nav class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 font-mono">
+      <a href="/" class="hover:text-cyan-400 transition flex items-center gap-1.5 py-1">
+        <i class="fa-solid fa-house text-[10px]" aria-hidden="true"></i>
+        <span>Home</span>
+      </a>
+      <a href="/solar-system" class="hover:text-amber-400 transition flex items-center gap-1.5 py-1">
+        <i class="fa-solid fa-sun text-[10px]" aria-hidden="true"></i>
+        <span>Solar System</span>
+      </a>
+      <a href="/alert" class="hover:text-sky-400 transition flex items-center gap-1.5 py-1">
+        <span>OrbitAlert</span>
+        <i class="fa-solid fa-arrow-right text-[9px]" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </main>
 
   <script>
-    // Show banner if accessed via file://
+    // Protocol banner
     if (window.location.protocol === 'file:') {
       const notice = document.getElementById('file-protocol-notice');
       if (notice) notice.classList.remove('hidden');
     }
 
-    async function directUnlockLocalConsole() {
-      localStorage.setItem('sentinel_admin_logged_in', 'true');
-      sessionStorage.setItem('sentinel_admin_user', 'Ajitsinh96');
-      if (window.location.protocol === 'file:') {
-        window.location.href = 'sentinel.html';
-        return;
+    function togglePasswordVisibility() {
+      const input = document.getElementById('admin-password');
+      const icon = document.getElementById('password-toggle-icon');
+      const label = document.getElementById('password-toggle-label');
+      if (!input || !icon || !label) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+        label.innerText = 'Hide';
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+        label.innerText = 'Show';
       }
-      try {
-        const candidates = ['/api/sentinel/login', 'http://localhost:3000/api/sentinel/login'];
-        for (const ep of candidates) {
-          try {
-            const resp = await fetch(ep, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username: 'Ajitsinh96', password: 'Ajitsinh@#9699' }),
-              credentials: 'include'
-            });
-            if (resp.ok) break;
-          } catch (_) {}
-        }
-      } catch (_) {}
-      window.location.href = '/sentinel';
     }
 
     async function handleSentinelLogin(e) {
       e.preventDefault();
       const errBox = document.getElementById('login-error-alert');
       const errText = document.getElementById('login-error-text');
-      const fileAction = document.getElementById('login-file-action');
       const submitBtn = document.getElementById('btn-login-submit');
+      const submitText = document.getElementById('btn-submit-text');
+      const submitSpinner = document.getElementById('btn-submit-spinner');
       const usernameInput = document.getElementById('admin-username');
       const passwordInput = document.getElementById('admin-password');
 
       const u = (usernameInput.value || '').trim();
       const p = (passwordInput.value || '').trim();
 
-      errBox.classList.add('hidden');
-      if (fileAction) fileAction.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Verifying Security Clearance...';
-
-      // 1. If running under file:// protocol, allow authorized administrator immediately
-      const isAuthorizedUser = (u.toLowerCase() === 'ajitsinh96' || u.toLowerCase() === 'admin');
-      const isAuthorizedPass = (
-        p === 'Ajitsinh9699' ||
-        p === 'Ajitsinh@#9699' ||
-        p === 'Ajitsinh.Bayas9' ||
-        p.length >= 6
-      );
-
-      if (window.location.protocol === 'file:' && isAuthorizedUser && isAuthorizedPass) {
-        submitBtn.innerText = 'Access Granted (Local Mode) ✓ Redirecting...';
-        localStorage.setItem('sentinel_admin_logged_in', 'true');
-        sessionStorage.setItem('sentinel_admin_user', u || 'Ajitsinh96');
-        setTimeout(() => { window.location.href = 'sentinel.html'; }, 350);
+      if (!u || !p) {
+        showError('Please enter both administrator username and operations password.');
         return;
       }
 
-      // 2. Candidate API endpoints for active Express server
-      const candidates = window.location.protocol === 'file:'
-        ? ['http://localhost:3000/api/sentinel/login', 'http://127.0.0.1:3000/api/sentinel/login']
-        : ['/api/sentinel/login', 'http://localhost:3000/api/sentinel/login'];
+      errBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitText.innerText = 'Verifying Security Clearance...';
+      submitSpinner.classList.remove('hidden');
 
-      let connected = false;
-
-      for (const endpoint of candidates) {
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: u, password: p }),
-            credentials: 'include'
-          });
-
-          connected = true;
-          const data = await res.json();
-          if (res.ok && data.success) {
-            submitBtn.innerText = 'Access Granted ✓ Redirecting...';
-            localStorage.setItem('sentinel_admin_logged_in', 'true');
-            sessionStorage.setItem('sentinel_admin_user', u);
-            const targetUrl = window.location.protocol === 'file:'
-              ? 'sentinel.html'
-              : (data.redirect || '/sentinel');
-            setTimeout(() => { window.location.href = targetUrl; }, 350);
-            return;
-          } else if (res.status === 401 || res.status === 429) {
-            showError(data.error || 'Access Denied: Invalid administrator credentials.');
-            return;
-          }
-        } catch (_) {}
+      if (window.location.protocol === 'file:') {
+        showError('Direct file:// access cannot set secure session cookies. Please run the server and open http://localhost:3000/sentinel-login');
+        return;
       }
 
-      if (!connected) {
-        // Fallback for file:// or offline environments - accept administrator credentials seamlessly
-        if (isAuthorizedUser) {
-          submitBtn.innerText = 'Access Granted (Offline Mode) ✓ Redirecting...';
-          localStorage.setItem('sentinel_admin_logged_in', 'true');
-          sessionStorage.setItem('sentinel_admin_user', u || 'Ajitsinh96');
-          const target = window.location.protocol === 'file:' ? 'sentinel.html' : '/sentinel';
-          setTimeout(() => { window.location.href = target; }, 300);
+      try {
+        const res = await fetch('/api/sentinel/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p }),
+          credentials: 'include'
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success) {
+          submitText.innerText = 'Clearance Confirmed ✓ Redirecting...';
+          submitSpinner.classList.add('hidden');
+          const destination = data.redirect || '/sentinel';
+          window.location.replace(destination);
           return;
         }
 
-        if (window.location.protocol === 'file:') {
-          if (fileAction) fileAction.classList.remove('hidden');
-          showError('Running from a local file (file://). Click "Direct Admin Access" below or open http://localhost:3000/sentinel-login to connect to the live server.');
-        } else {
-          showError('Server connection unavailable. Click "Direct Admin Access" below or ensure the Node.js server is running on port 3000.');
+        if (res.status === 429) {
+          showError(data.error || 'Too many failed attempts. Console locked for security.');
+          return;
         }
-      } else {
-        showError('Access Denied: Invalid administrator credentials.');
+
+        showError(data.error || 'Access Denied: Invalid administrator credentials.');
+      } catch (err) {
+        showError('Unable to connect to Sentinel authentication service. Please ensure the server is active on port 3000.');
       }
 
       function showError(msg) {
         submitBtn.disabled = false;
-        submitBtn.innerText = 'Unlock Sentinel Bot Console ➔';
+        submitText.innerText = 'Unlock Sentinel Bot Console ➔';
+        submitSpinner.classList.add('hidden');
         errText.innerText = msg;
         errBox.classList.remove('hidden');
         passwordInput.value = '';
@@ -251,6 +233,5 @@
       }
     }
   </script>
-  <script src="js/jarvis.js"></script>
 </body>
 </html>

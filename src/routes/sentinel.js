@@ -31,18 +31,12 @@ router.post('/login', express.json(), (req, res) => {
   const cleanPass = String(password || '').trim();
   const creds = auth.getCredentials();
 
-  const isUserValid = auth.timingSafeEqual(cleanUser, (creds.username || '').toLowerCase())
-    || cleanUser === 'ajitsinh96'
-    || cleanUser === 'admin';
-
-  const isPassValid = auth.timingSafeEqual(cleanPass, creds.password)
-    || auth.timingSafeEqual(cleanPass, 'Ajitsinh9699')
-    || auth.timingSafeEqual(cleanPass, 'Ajitsinh@#9699')
-    || auth.timingSafeEqual(cleanPass, 'Ajitsinh.Bayas9');
+  const isUserValid = auth.timingSafeEqual(cleanUser, (creds.username || '').toLowerCase());
+  const isPassValid = auth.timingSafeEqual(cleanPass, creds.password);
 
   if (isUserValid && isPassValid) {
     auth.clearRateLimit(ip);
-    const session = auth.createSession(creds.username || 'Ajitsinh96');
+    const session = auth.createSession(creds.username);
     const isSecureRequest = Boolean(req.secure || req.headers['x-forwarded-proto'] === 'https');
 
     res.cookie('sentinel_session', session.sessionId, {
@@ -53,7 +47,7 @@ router.post('/login', express.json(), (req, res) => {
       path: '/'
     });
 
-    console.log('[Sentinel Auth] Admin logged in: ' + (creds.username || 'Ajitsinh96'));
+    console.log('[Sentinel Auth] Admin logged in: ' + creds.username);
     return res.json({ success: true, redirect: '/sentinel' });
   }
 

@@ -45,14 +45,19 @@ export class IncidentManager {
       existing.lastSeen = now;
       existing.details = sanitizedDetails;
 
-      try {
+      if (db) {
         db.run(
           `UPDATE system_incidents 
            SET last_seen = ?, occurrence_count = ?, details = ?
            WHERE id = ?`,
-          [now, existing.occurrenceCount, sanitizedDetails, existing.id]
+          [now, existing.occurrenceCount, sanitizedDetails, existing.id],
+          (err) => {
+            if (err) {
+              console.error(`[IncidentManager] Failed to update incident '${existing.id}' in SQLite:`, err.message);
+            }
+          }
         );
-      } catch (_) {}
+      }
 
       return existing;
     }
@@ -73,7 +78,7 @@ export class IncidentManager {
 
     this.memoryIncidents.set(dedupeKey, newIncident);
 
-    try {
+    if (db) {
       db.run(
         `INSERT INTO system_incidents 
         (id, provider_id, worker_id, severity, first_seen, last_seen, occurrence_count, description, details, status)
@@ -89,9 +94,14 @@ export class IncidentManager {
           newIncident.description,
           newIncident.details,
           newIncident.status
-        ]
+        ],
+        (err) => {
+          if (err) {
+            console.error(`[IncidentManager] Failed to insert incident '${newIncident.id}' in SQLite:`, err.message);
+          }
+        }
       );
-    } catch (_) {}
+    }
 
     return newIncident;
   }
@@ -107,12 +117,17 @@ export class IncidentManager {
       }
     }
 
-    try {
+    if (db) {
       db.run(
         `UPDATE system_incidents SET status = 'resolved' WHERE id = ? OR provider_id = ? OR worker_id = ?`,
-        [incidentId, incidentId, incidentId]
+        [incidentId, incidentId, incidentId],
+        (err) => {
+          if (err) {
+            console.error(`[IncidentManager] Failed to resolve incident '${incidentId}' in SQLite:`, err.message);
+          }
+        }
       );
-    } catch (_) {}
+    }
   }
 
   getActiveIncidents() {

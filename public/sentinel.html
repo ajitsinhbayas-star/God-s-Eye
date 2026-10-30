@@ -667,6 +667,10 @@
     async function loadSystemHealth() {
       try {
         const res = await fetch(getApiBase() + '/api/sentinel/health', { credentials: 'include' });
+        if (res.status === 401) {
+          window.location.replace('/sentinel-login');
+          return;
+        }
         if (!res.ok) throw new Error('Health check rejected');
         const data = await res.json();
 
@@ -1160,10 +1164,6 @@
 
     // Logout
     async function handleAdminLogout() {
-      try {
-        localStorage.removeItem('sentinel_admin_logged_in');
-        sessionStorage.removeItem('sentinel_admin_user');
-      } catch (_) {}
       try {
         await fetch(getApiBase() + '/api/sentinel/logout', { method: 'POST', credentials: 'include' });
       } catch (_) {}

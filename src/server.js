@@ -1,9 +1,21 @@
 import path from 'path';
+import fs from 'fs';
+
+// Automatically load local .env credentials if present
+try {
+  if (typeof process.loadEnvFile === 'function') {
+    const envCandidate = path.resolve(process.cwd(), '.env');
+    if (fs.existsSync(envCandidate)) {
+      process.loadEnvFile(envCandidate);
+    }
+  }
+} catch (_) {}
+
 import compression from 'compression';
 import express from 'express';
 import http from 'http';
 import { PORT, PUBLIC_DIR } from './config/constants.js';
-import { getDatabase } from './db/sqlite.js';
+import { getDatabase, initDatabase } from './db/sqlite.js';
 import { getSpaceStore, flushSpaceStore } from './db/space-store.js';
 import { initWebSocketServer, closeWebSocketServer } from './realtime/ws-server.js';
 import * as sentinelAuth from './supervisor/admin-auth.js';
@@ -470,34 +482,60 @@ app.use((req, res) => {
   }
 });
 
-// ==================== SYSTEM INITIALIZATION & LIFECYCLE ====================
+// ==================== ASYNCHRONOUS SYSTEM INITIALIZATION & LIFECYCLE ====================
 
-getDatabase();
-getSpaceStore();
-initWebSocketServer(server);
+export async function startServer() {
+  try {
+    // 1 & 2. Open SQLite & Complete all schema creation and migrations
+    console.log('[SYS] Step 1-2: Initializing SQLite database schema and migrations...');
+    await initDatabase();
 
-startIssPoller();
-startCelesTrakDaemon();
-startNoaaDaemon();
-startJplCadDaemon();
-startNewsDaemon();
-startKeepAliveDaemon();
-startWeatherDaemon();
-startAirQualityDaemon();
-initWorkerRegistry();
-providerRegistry.pingAllOpenProviders().catch(() => {});
+    // 3. Confirm the database is ready
+    console.log('[SYS] Step 3: SQLite schema verified — database confirmed ready.');
 
-workerManager.startAll();
+    // 4. Initialize space store and WebSocket services
+    getSpaceStore();
+    initWebSocketServer(server);
 
-sentinelDiagnostics.logEvent('STARTUP', 'INFO', `God's Eye Orbital Engine initialized on port ${PORT}`, {
-  nodeVersion: process.version,
-  platform: process.platform,
-  pid: process.pid
-});
+    // 5. Start background daemons
+    startIssPoller();
+    startCelesTrakDaemon();
+    startNoaaDaemon();
+    startJplCadDaemon();
+    startNewsDaemon();
+    startKeepAliveDaemon();
+    startWeatherDaemon();
+    startAirQualityDaemon();
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[SYS] God's Eye Orbital Command Engine active on port ${PORT}`);
-});
+    // 6. Register automated workers & provider telemetry
+    initWorkerRegistry();
+    providerRegistry.pingAllOpenProviders().catch(() => {});
+
+    // 7. Start workers and their scheduled jobs
+    workerManager.startAll();
+
+    // 8. Initialize startup diagnostics
+    sentinelDiagnostics.logEvent('STARTUP', 'INFO', `God's Eye Orbital Engine initialized on port ${PORT}`, {
+      nodeVersion: process.version,
+      platform: process.platform,
+      pid: process.pid
+    });
+
+    // 9. Start HTTP server with server.listen() only after DB readiness
+    return new Promise((resolve) => {
+      server.listen(PORT, '0.0.0.0', () => {
+        console.log(`[SYS] God's Eye Orbital Command Engine active on port ${PORT}`);
+        resolve(server);
+      });
+    });
+  } catch (err) {
+    console.error('[SYS] Critical failure during server startup:', err.message);
+    process.exit(1);
+  }
+}
+
+// Auto-start server when run directly
+startServer();
 
 // Graceful Process Shutdown Handler
 let isShuttingDown = false;

@@ -50,6 +50,26 @@
       color: #ffb703 !important;
       font-family: monospace !important;
     }
+
+    main.sr-only, footer.sr-only { display: none !important; opacity: 0 !important; visibility: hidden !important; }
+    #orbital-footer.sr-only,
+    footer#orbital-footer {
+      display: none !important;
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      clip-path: inset(50%) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  
   </style>
   <!-- ==================== CINEMATIC & HUD VISIBILITY ENFORCER ==================== -->
   <style id="hud-anti-blackout-style">
@@ -81,6 +101,7 @@
     /* Ensure active earth orbit stays well illuminated */
     #canvas3d, canvas {
       display: block !important;
+      touch-action: none !important;
     }
   </style>
   <!-- ==================== GOD'S EYE WEBGL COMMAND BRIDGE (ANTI-DRIFT) ==================== -->
@@ -630,7 +651,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 </head>
   <body class="bg-[#000208] text-slate-100 font-sans h-screen h-[100dvh] w-screen overflow-hidden select-none">
   <!-- NASA Eyes on the Earth: Vital Signs Floating Dock -->
-  <div id="nasa-vital-signs-dock" class="fixed top-16 sm:top-20 right-3 z-30 flex items-center gap-1 p-1 bg-slate-950/85 backdrop-blur-xl border border-cyan-500/40 rounded-xl font-mono text-[10px] pointer-events-auto shadow-2xl">
+  <div id="nasa-vital-signs-dock" class="fixed top-16 sm:top-20 right-3 z-30 flex items-center gap-1 p-1 bg-slate-950/85 backdrop-blur-xl border border-cyan-500/40 rounded-xl font-mono text-[10px] pointer-events-auto shadow-2xl max-w-[calc(100vw-1.5rem)] overflow-x-auto no-scrollbar">
     <span class="text-cyan-400 font-bold px-1.5 uppercase hidden sm:inline">Vital Signs:</span>
     <button onclick="window.setEarthVitalSign(0)" id="vital-btn-0" class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition">Natural</button>
     <button onclick="window.setEarthVitalSign(1)" id="vital-btn-1" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition">Air Temp</button>
@@ -962,7 +983,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
 
   <!-- Left Minimized Edge Tab: Explore (Section 3C) -->
-  <button id="btn-expand-catalog" onclick="expandCatalog(this)" aria-expanded="false" aria-controls="catalog-panel" class="edge-pill-left hidden absolute top-20 sm:top-24 left-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group">
+  <button id="btn-expand-catalog" onclick="expandCatalog(this)" aria-expanded="false" aria-controls="catalog-panel" class="edge-pill-left hidden absolute top-[7.5rem] sm:top-24 left-3 z-30 px-3.5 py-2 rounded-xl hud-glass border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono font-bold text-xs shadow-2xl transition-all flex items-center gap-2 group touch-manipulation">
     <span>🛰️ Explore Objects</span>
     <span class="text-xs group-hover:translate-x-0.5 transition-transform">❯</span>
   </button>
@@ -1146,7 +1167,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <div class="flex items-center justify-between text-[10px] text-cyan-300 font-bold">
             <span>🌍 EARTH OBSERVATION & CAMERA PRESETS</span>
           </div>
-          <div class="grid grid-cols-3 gap-1 text-[10px]">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px]">
             <button onclick="window.focusIndiaView()" class="py-1.5 px-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">🇮🇳 India</button><button onclick="setFocusTo('earth')" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold">Global</button>
             <button onclick="setEarthLEOView()" class="py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-700 font-bold">LEO Horizon</button>
             <button onclick="toggleChaseCameraMode()" id="btn-chase-cam" class="py-1.5 px-2 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-200 border border-cyan-500/40 font-bold">Fly-Along</button>
@@ -1254,19 +1275,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </aside>
 
   <!-- Unified NASA Eyes Curved Bottom HUD Bar (Exact Match to NASA Eyes on Solar System) -->
-  <div id="dock-bar" class="dock-safe absolute left-1/2 -translate-x-1/2 z-30 flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2 rounded-full hud-glass pointer-events-auto border border-slate-800/90 shadow-2xl backdrop-blur-xl font-mono text-xs max-w-[calc(100vw-1.5rem)]">
+  <div id="dock-bar" class="dock-safe fixed sm:absolute left-1/2 -translate-x-1/2 z-30 flex items-center justify-between gap-2 sm:gap-6 px-3 sm:px-6 py-1.5 sm:py-2 rounded-full hud-glass pointer-events-auto border border-slate-800/90 shadow-2xl backdrop-blur-xl font-mono text-xs max-w-[calc(100vw-1rem)] overflow-x-auto no-scrollbar touch-manipulation">
     <!-- Left: LIVE Indicator -->
     <div class="flex items-center gap-2 shrink-0">
-      <button onclick="resetToLiveTime()" id="btn-sim-live" class="flex items-center gap-2 text-emerald-400 font-bold hover:text-emerald-300 transition" title="Snap to Live Real-Time UTC">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-xs sm:text-sm tracking-wide font-sans">● LIVE</span>
+      <button onclick="resetToLiveTime()" id="btn-sim-live" class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-bold hover:text-emerald-200 transition text-xs sm:text-sm tracking-wide font-sans touch-manipulation active:scale-95 shadow-sm whitespace-nowrap min-h-[36px]" title="Snap to Live Real-Time UTC">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>LIVE</span>
       </button>
     </div>
 
     <!-- Center: Date, Real Rate Multiplier & Live Time with Curved Timeline Arc -->
-    <div class="flex flex-col items-center justify-center shrink-0 min-w-[200px] sm:min-w-[280px]">
+    <div class="flex flex-col items-center justify-center shrink-0 min-w-[130px] max-w-[180px] sm:min-w-[280px]">
       <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
-        <span id="nasa-hud-date" class="font-bold text-white tracking-wider">OCT 28, 2026</span>
+        <span id="nasa-hud-date" class="font-bold text-white tracking-wider hidden sm:inline">OCT 28, 2026</span>
         <span id="nasa-hud-rate" class="text-emerald-400 font-bold uppercase tracking-wider">REAL RATE</span>
         <span id="nasa-hud-time" class="text-slate-300 font-mono">05:56:38 PM</span>
       </div>
@@ -1281,8 +1302,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <button onclick="toggleSimulationPlayPause()" id="btn-sim-play" class="p-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-400 text-cyan-300 transition" title="Play / Pause Orbital Clock">
         ⏸
       </button>
-      <button onclick="if (typeof setFocusTo === 'function') setFocusTo('earth'); targetCameraDistance = 6.2; targetCameraPhi = 1.55; targetCameraTheta = 0.0;" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 transition font-bold" title="Top-Down Earth Polar View">
-        🔭 Top-Down
+      <button onclick="if (typeof setFocusTo === 'function') setFocusTo('earth'); targetCameraDistance = 6.2; targetCameraPhi = 1.55; targetCameraTheta = 0.0;" class="px-2 sm:px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 hover:border-cyan-500/50 transition font-bold flex items-center gap-1 whitespace-nowrap min-h-[36px] touch-manipulation active:scale-95" title="Top-Down Earth Polar View">
+        <span>🔭</span>
+        <span class="hidden sm:inline">Top-Down</span>
+        <span class="sm:hidden text-[10px]">Top</span>
       </button>
       <button onclick="window.NASAEyesApp.toggleLayersDrawer()" class="p-1 px-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 transition" title="Layers & Visual Settings">
         ⚙️
@@ -5549,10 +5572,13 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
       }
     });
 
+    let touchStartTime = 0;
+
     window.addEventListener('touchstart', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #btn-expand-catalog, #btn-expand-intel, #mobile-bottom-nav, #mobile-more-sheet, button, input, select, a, [role="button"]')) return;
       if (e.touches.length === 1) {
         isDragging = true;
+        touchStartTime = Date.now();
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         startClick = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       } else if (e.touches.length === 2) {
@@ -5562,22 +5588,41 @@ function updateOrbitAndGizmoVisibility(selectedKey) {
     }, { passive: true });
 
     window.addEventListener('touchmove', e => {
-      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, button, input, select, a')) return;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #btn-expand-catalog, #btn-expand-intel, #mobile-bottom-nav, #mobile-more-sheet, button, input, select, a, [role="button"]')) return;
       if (e.touches.length === 1 && isDragging) {
+        if (e.cancelable) e.preventDefault();
         const dx = e.touches[0].clientX - prevMouse.x;
         const dy = e.touches[0].clientY - prevMouse.y;
         cameraTheta -= dx * 0.007;
         cameraPhi = Math.max(-1.52, Math.min(1.52, cameraPhi + dy * 0.006));
+        targetCameraTheta = cameraTheta;
+        targetCameraPhi = cameraPhi;
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       } else if (e.touches.length === 2 && initialPinchDistance) {
+        if (e.cancelable) e.preventDefault();
         const currentDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
         targetCameraDistance = Math.max(1.8, Math.min(260.0, targetCameraDistance + (initialPinchDistance - currentDistance) * 0.15));
         initialPinchDistance = currentDistance;
       }
-    }, { passive: true });
+    }, { passive: false });
 
     window.addEventListener('touchend', e => {
-      if (e.touches.length === 0) isDragging = false;
+      if (e.target.closest('aside, header, #video-panel, #intel-card, #dock-bar, #intro-launch-modal, #btn-expand-catalog, #btn-expand-intel, #mobile-bottom-nav, #mobile-more-sheet, button, input, select, a, [role="button"]')) {
+        isDragging = false;
+        return;
+      }
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const ct = e.changedTouches[0];
+        const dist = Math.hypot(ct.clientX - startClick.x, ct.clientY - startClick.y);
+        const elapsed = Date.now() - touchStartTime;
+        if (dist < 12 && elapsed < 450) {
+          checkRaycastHit(ct.clientX, ct.clientY);
+        }
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+        initialPinchDistance = null;
+      }
     }, { passive: true });
 
     function checkRaycastHit(screenX, screenY) {
@@ -7868,7 +7913,7 @@ function animate() {
   <script src="js/jarvis.js"></script>
 
   <!-- ==================== BACK TO TOP & MR. SINGH FOOTER ==================== -->
-  <footer id="orbital-footer" class="w-full bg-slate-950/95 border-t border-slate-800/80 px-4 py-6 text-center text-xs font-mono text-slate-400 space-y-3 z-30">
+  <footer id="orbital-footer" class="sr-only">
     <div class="max-w-5xl mx-auto flex flex-col items-center justify-center gap-3">
       <!-- Back to Top Button -->
       <div>
@@ -7913,6 +7958,7 @@ function animate() {
     };
   </script>
 
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>
 

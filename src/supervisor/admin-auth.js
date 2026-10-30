@@ -82,16 +82,22 @@ loadPersistedSessions();
 
 let ephemeralCredentials = null;
 
+let bootRandomSecret = null;
+
 export function getCredentials() {
   const envUser = process.env.SENTINEL_ADMIN_USERNAME;
   const envPass = process.env.SENTINEL_ADMIN_PASSWORD;
   const envSecret = process.env.SENTINEL_SESSION_SECRET;
 
+  if (!bootRandomSecret) {
+    bootRandomSecret = crypto.randomBytes(32).toString('hex');
+  }
+
   if (envUser && envPass) {
     return {
       username: envUser,
       password: envPass,
-      secret: envSecret || 'sentinel_master_crypto_secret_32bytes',
+      secret: envSecret || bootRandomSecret,
       isEphemeral: false
     };
   }

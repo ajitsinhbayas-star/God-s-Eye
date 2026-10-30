@@ -18,7 +18,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://orbitaleye.in/air-quality" />
   <meta name="twitter:title" content="Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye" />
-  <meta name="twitter:description" content="Explore India Air Quality across 594 districts and CAAQMS stations. CPCB NAQI formula calculation, 6-pollutant concentration grid, and health recommendations." />
+  <meta name="twitter:description" content="Explore India Air Quality across 594 districts and CAAQMS stations. CPCB NAQI formula calculation, 8-pollutant concentration grid, and health recommendations." />
   <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD -->
@@ -145,6 +145,14 @@
       background: rgba(3, 7, 18, 0.96) !important;
       border: 1px solid rgba(14, 165, 233, 0.6) !important;
     }
+
+    .hidden { display: none !important; }
+    #orbital-footer.sr-only, footer#orbital-footer { display: none !important; position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; }
+    @media (max-width: 1023px) {
+      .lg\:flex, #desktop-nav-container { display: none !important; }
+      .lg\:hidden { display: flex !important; }
+    }
+
   </style>
 </head>
 <body class="relative w-full h-full select-none">
@@ -172,7 +180,7 @@
       </div>
 
       <!-- Navigation Pill Links -->
-      <div class="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-2 overflow-hidden">
+      <div id="desktop-nav-container" class="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-2 overflow-hidden">
         <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
@@ -266,9 +274,9 @@
     </div>
 
     <!-- Row 2: Kisan-Style Search & Filters Bar -->
-    <div class="pointer-events-auto flex items-center gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl overflow-x-auto no-scrollbar">
+    <div class="pointer-events-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl">
       <!-- Multilingual Search Input -->
-      <div class="relative flex-1 min-w-[170px] sm:min-w-[200px] shrink-0">
+      <div class="relative flex-1 min-w-0">
         <div class="relative flex items-center">
           <span class="absolute left-3 text-slate-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input
@@ -276,50 +284,56 @@
             type="text"
             oninput="window.onAqiDistrictSearchInput()"
             placeholder="Search district or city (e.g. Pune / पुणे, Delhi / दिल्ली)..."
-            class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50"
+            class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 min-h-[36px]"
           />
         </div>
         <!-- Autocomplete Dropdown -->
         <div id="aqi-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-slate-950/98 border border-cyan-500/60 rounded-xl shadow-2xl z-50 divide-y divide-slate-800/80"></div>
       </div>
 
-      <!-- State Selector -->
-      <div class="min-w-[130px] shrink-0">
-        <select id="top-aqi-state-select" onchange="window.onAqiStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
-          <option value="">All States & UTs (35)</option>
-        </select>
+      <!-- State & District Selectors Row on mobile, inline on desktop -->
+      <div class="flex items-center gap-1.5 flex-1 min-w-0">
+        <!-- State Selector -->
+        <div class="flex-1 sm:min-w-[130px]">
+          <select id="top-aqi-state-select" onchange="window.onAqiStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400 min-h-[36px]">
+            <option value="">All States & UTs (35)</option>
+          </select>
+        </div>
+
+        <!-- District Selector -->
+        <div class="flex-1 sm:min-w-[130px]">
+          <select id="top-aqi-district-select" onchange="window.onAqiDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400 min-h-[36px]">
+            <option value="">Select District...</option>
+          </select>
+        </div>
       </div>
 
-      <!-- District Selector -->
-      <div class="min-w-[130px] shrink-0">
-        <select id="top-aqi-district-select" onchange="window.onAqiDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-cyan-400">
-          <option value="">Select District...</option>
-        </select>
+      <!-- Quick Action Buttons: 4-button row on mobile, inline on desktop -->
+      <div class="grid grid-cols-4 sm:flex items-center gap-1.5 shrink-0">
+        <!-- GPS Button -->
+        <button onclick="window.detectAqiLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 font-bold text-xs transition flex items-center justify-center gap-1 shadow-sm whitespace-nowrap min-h-[36px]" title="Detect Location via Device GPS">
+          <span>📍</span>
+          <span class="hidden md:inline">GPS</span>
+        </button>
+
+        <!-- Zoom All India -->
+        <button onclick="window.zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap min-h-[36px]" title="Reset Zoom to All India">
+          <span>🇮🇳</span>
+          <span class="hidden md:inline">India</span>
+        </button>
+
+        <!-- Station Toggle -->
+        <button id="btn-toggle-stations" onclick="window.toggleStations()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 text-xs transition flex items-center justify-center gap-1 shadow-sm whitespace-nowrap min-h-[36px]" title="Toggle Continuous CAAQMS Stations">
+          <span>📡</span>
+          <span class="hidden md:inline">Stations</span>
+        </button>
+
+        <!-- Basemap Toggle -->
+        <button id="btn-toggle-basemap" onclick="window.toggleAqiBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Basemap">
+          <span>🛰️</span>
+          <span class="hidden md:inline">Sat</span>
+        </button>
       </div>
-
-      <!-- GPS Button -->
-      <button onclick="window.detectAqiLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Detect Location via Device GPS">
-        <span>📍</span>
-        <span class="hidden sm:inline">My Location</span>
-      </button>
-
-      <!-- Zoom All India -->
-      <button onclick="window.zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap" title="Reset Zoom to All India">
-        <span>🇮🇳</span>
-        <span class="hidden sm:inline">All India</span>
-      </button>
-
-      <!-- Station Toggle -->
-      <button id="btn-toggle-stations" onclick="window.toggleStations()" class="px-2.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Toggle Continuous CAAQMS Stations">
-        <span>📡</span>
-        <span class="hidden sm:inline">Stations</span>
-      </button>
-
-      <!-- Basemap Toggle -->
-      <button id="btn-toggle-basemap" onclick="window.toggleAqiBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm" title="Toggle Basemap">
-        <span>🛰️</span>
-        <span class="hidden sm:inline">Satellite</span>
-      </button>
     </div>
   </header>
   <!-- Mobile Navigation Drawer -->
@@ -374,7 +388,7 @@
   </aside>
 
   <!-- BOTTOM CPCB NAQI SCALE LEGEND -->
-  <footer class="absolute bottom-3 left-4 right-4 z-30 pointer-events-none flex justify-center">
+  <footer class="absolute bottom-16 sm:bottom-3 left-4 right-4 z-30 pointer-events-none flex justify-center">
     <div class="pointer-events-auto bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl px-3 py-1.5 shadow-2xl flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[10px] font-mono">
       <span class="text-slate-400 font-bold hidden sm:inline">CPCB SCALE:</span>
       <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span class="text-slate-300">Good (0–50)</span></div>
@@ -389,7 +403,7 @@
   <script src="js/airquality-map.js"></script>
 
   <!-- ==================== BACK TO TOP & MR. SINGH FOOTER ==================== -->
-  <footer id="orbital-footer" class="w-full bg-slate-950/95 border-t border-slate-800/80 px-4 py-6 text-center text-xs font-mono text-slate-400 space-y-3 z-30">
+  <footer id="orbital-footer" class="sr-only">
     <div class="max-w-5xl mx-auto flex flex-col items-center justify-center gap-3">
       <!-- Back to Top Button -->
       <div>
@@ -525,5 +539,6 @@
       }
     });
   </script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

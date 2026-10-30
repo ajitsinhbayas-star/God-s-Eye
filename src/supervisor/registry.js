@@ -299,6 +299,7 @@ export class ProviderRegistry {
       if (p.requiresCredentials) {
         if (p.id === 'space_track' && !process.env.SPACE_TRACK_USER) hasCredentials = false;
         if (p.id === 'satnogs_db' && !(process.env.SATNOGS_API_KEY || process.env.SATNOGS_API_TOKEN)) hasCredentials = false;
+        if (p.id === 'esa_discos' && !(process.env.ESA_DISCOS_TOKEN || process.env.DISCOSWEB_API_TOKEN || process.env.DISCOS_API_TOKEN)) hasCredentials = false;
         if (p.id === 'nasa_firms' && !process.env.FIRMS_MAP_KEY) hasCredentials = false;
         if (p.id === 'google_air_quality' && !(process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_AIR_QUALITY_API_KEY)) hasCredentials = false;
         if (p.id === 'iqair' && !process.env.IQAIR_API_KEY) hasCredentials = false;
@@ -308,7 +309,9 @@ export class ProviderRegistry {
         if (p.id === 'waqi' && !process.env.WAQI_API_TOKEN) hasCredentials = false;
       }
 
-      if (p.requiresAuthorization) {
+      if (p.id === 'esa_discos' && hasCredentials) {
+        initialStatus = PROVIDER_STATUS.NOT_CONFIGURED;
+      } else if (p.requiresAuthorization) {
         initialStatus = PROVIDER_STATUS.NEEDS_AUTHORIZATION;
       } else if (p.requiresCredentials && !hasCredentials) {
         initialStatus = PROVIDER_STATUS.NEEDS_CREDENTIALS;
@@ -597,6 +600,34 @@ export class ProviderRegistry {
       })());
     }
 
+    // 13. ESA DISCOS Database (when ESA_DISCOS_TOKEN or DISCOSWEB_API_TOKEN is configured)
+    const discosToken = process.env.ESA_DISCOS_TOKEN || process.env.DISCOSWEB_API_TOKEN || process.env.DISCOS_API_TOKEN;
+    if (discosToken) {
+      pings.push((async () => {
+        try {
+          const t0 = Date.now();
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch('https://discosweb.esoc.esa.int/api/objects?page[size]=1', {
+            signal: ctrl.signal,
+            headers: {
+              'Authorization': `Bearer ${discosToken}`,
+              'Accept': 'application/vnd.api+json',
+              'User-Agent': 'OrbitalEye-Observatory/2.0'
+            }
+          });
+          clearTimeout(timer);
+          if (res.ok) {
+            this.recordSuccess('esa_discos', Date.now() - t0);
+          } else {
+            this.recordFailure('esa_discos', `HTTP ${res.status}`);
+          }
+        } catch (err) {
+          this.recordFailure('esa_discos', err.message);
+        }
+      })());
+    }
+
     await Promise.allSettled(pings);
   }
 
@@ -641,6 +672,7 @@ export class ProviderRegistry {
   persistProviderHealth(prov) {
     try {
       const db = getDatabase();
+      if (!db) return;
       db.run(
         `INSERT OR REPLACE INTO source_health
         (source_id, name, status, data_class, last_success, last_error, error_count, latency_ms, attribution)
@@ -655,9 +687,16 @@ export class ProviderRegistry {
           prov.failureCount,
           prov.latencyMs,
           prov.attribution
-        ]
+        ],
+        (err) => {
+          if (err) {
+            console.error(`[ProviderRegistry] Failed to persist health for '${prov.id}' in SQLite:`, err.message);
+          }
+        }
       );
-    } catch (_) {}
+    } catch (err) {
+      console.error(`[ProviderRegistry] Synchronous error persisting health for '${prov.id}':`, err.message);
+    }
   }
 }
 
