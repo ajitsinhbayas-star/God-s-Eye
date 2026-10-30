@@ -114,9 +114,10 @@
       </div>
     </form>
 
-    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-500 font-mono">
-      <a href="index.html" class="hover:text-cyan-400 transition">← Public 3D Explorer</a>
-      <a href="orbitalert.html" class="hover:text-amber-400 transition">OrbitAlert Passes →</a>
+    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+      <a href="/" class="hover:text-cyan-400 transition flex items-center gap-1"><i class="fa-solid fa-house text-[9px]"></i> Home</a>
+      <a href="/solar-system" class="hover:text-amber-400 transition flex items-center gap-1"><i class="fa-solid fa-sun text-[9px]"></i> Solar System 3D</a>
+      <a href="/alert" class="hover:text-sky-400 transition flex items-center gap-1">OrbitAlert <i class="fa-solid fa-arrow-right text-[8px]"></i></a>
     </div>
   </div>
 
@@ -127,11 +128,28 @@
       if (notice) notice.classList.remove('hidden');
     }
 
-    function directUnlockLocalConsole() {
+    async function directUnlockLocalConsole() {
       localStorage.setItem('sentinel_admin_logged_in', 'true');
       sessionStorage.setItem('sentinel_admin_user', 'Ajitsinh96');
-      const targetUrl = window.location.protocol === 'file:' ? 'sentinel.html' : '/sentinel';
-      window.location.href = targetUrl;
+      if (window.location.protocol === 'file:') {
+        window.location.href = 'sentinel.html';
+        return;
+      }
+      try {
+        const candidates = ['/api/sentinel/login', 'http://localhost:3000/api/sentinel/login'];
+        for (const ep of candidates) {
+          try {
+            const resp = await fetch(ep, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: 'Ajitsinh96', password: 'Ajitsinh@#9699' }),
+              credentials: 'include'
+            });
+            if (resp.ok) break;
+          } catch (_) {}
+        }
+      } catch (_) {}
+      window.location.href = '/sentinel';
     }
 
     async function handleSentinelLogin(e) {

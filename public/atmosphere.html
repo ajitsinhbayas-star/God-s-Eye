@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Primary SEO Meta Tags -->
+  <title>Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye</title>
+  <meta name="title" content="Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye" />
+  <meta name="description" content="Live global Doppler radar mosaics, precipitation rates, active tropical cyclone cones, and 594 verified Indian district boundaries with localized kisan weather forecasts." />
+  <meta name="keywords" content="live weather radar, Zoom Earth 3D, Doppler radar live, real-time precipitation analysis, 3D Earth atmosphere, live tropical cyclones tracker, NASA FIRMS fire hotspots, global weather simulator, Open-Meteo ECMWF GFS radar, interactive weather globe, Pune weather radar, India live Doppler weather, free live weather globe" />
+  <meta name="author" content="Ajitsinh Bayas" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://orbitaleye.in/weather" />
+  <meta name="theme-color" content="#010409" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Orbital Eye Weather &amp; Atmosphere" />
+  <meta property="og:url" content="https://orbitaleye.in/weather" />
+  <meta property="og:title" content="Weather Radar, Atmosphere &amp; Indian District Farmer Weather | Orbital Eye" />
+  <meta property="og:description" content="Real-time multi-band Doppler radar mosaics, active cyclones, and 594 verified Indian district boundaries with localized kisan agricultural forecasts." />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://orbitaleye.in/weather" />
+  <meta name="twitter:title" content="God's Eye — 3D Atmospheric & Meteorological Command | Live Weather Radar" />
+  <meta name="twitter:description" content="Global Doppler radar nowcasts and 594 verified Indian district boundaries with kisan agricultural weather." />
+  <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://orbitaleye.in/weather#webapp",
+        "name": "Orbital Eye Meteorological & Farmer Weather Engine",
+        "url": "https://orbitaleye.in/weather",
+        "description": "Interactive 3D WebGL atmosphere and Doppler radar viewer featuring 594 verified Indian district administrative boundaries, agricultural forecasts, and storm tracking.",
+        "applicationCategory": "WeatherApplication",
+        "operatingSystem": "All modern browsers (WebGL 2.0)",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Dataset",
+        "@id": "https://orbitaleye.in/weather#dataset",
+        "name": "Indian Administrative District Boundary & NWP Weather Data",
+        "description": "594 verified multi-polygon district boundaries for India with Open-Meteo high-resolution NWP forecasts and meteorological alerts.",
+        "creator": {
+          "@type": "Organization",
+          "name": "Orbital Eye Space Observatory"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://orbitaleye.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Atmosphere & Kisan District Weather",
+            "item": "https://orbitaleye.in/weather"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- Core Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data/india-districts-index.js"></script>
+  <script src="data/india-states-data.js"></script>
+  <script src="data/india-districts-data.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #010409;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    .hud-glass {
+      background: rgba(3, 8, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    }
+    .hud-glass-dark {
+      background: rgba(2, 5, 14, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+    .font-mono-nums {
+      font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(2, 6, 16, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.4); border-radius: 4px; }
+
+    /* Pulse animation */
+    @keyframes cyclone-wave {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+    .pulse-ring {
+      animation: cyclone-wave 2s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+    }
+
+    /* Google Earth-style dynamic label badge */
+    .geo-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.25s ease, transform 0.2s ease;
+      will-change: transform, opacity;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.8);
+    }
+    .geo-label:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+      z-index: 30;
+    }
+
+    .dark-tiles {
+      filter: invert(100%) hue-rotate(180deg) brightness(75%) contrast(125%) saturate(70%);
+    }
+
+    /* Kisan District Popup */
+    .kisan-popup .leaflet-popup-content-wrapper {
+      background: rgba(3, 12, 8, 0.96) !important;
+      border: 1px solid rgba(16, 185, 129, 0.8) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.95), 0 0 20px rgba(16, 185, 129, 0.3) !important;
+      color: #f1f5f9 !important;
+      padding: 0 !important;
+    }
+    .kisan-popup .leaflet-popup-content {
+      margin: 0 !important;
+      line-height: 1.4 !important;
+    }
+    .kisan-popup .leaflet-popup-tip {
+      background: rgba(3, 12, 8, 0.96) !important;
+      border: 1px solid rgba(16, 185, 129, 0.8) !important;
+    }
+    .kisan-popup .leaflet-popup-close-button {
+      color: #6ee7b7 !important;
+      padding: 6px 8px !important;
+      font-size: 16px !important;
+    }
+    .kisan-popup .leaflet-popup-close-button:hover {
+      color: #ffffff !important;
+    }
+
+    /* Dynamic Kisan Map District Labels */
+    .farmer-district-map-label {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+    .farmer-district-badge {
+      background: rgba(2, 6, 23, 0.92);
+      border: 1px solid rgba(16, 185, 129, 0.65);
+      color: #a7f3d0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+      white-space: nowrap;
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+      transition: all 0.15s ease-in-out;
+      letter-spacing: 0.2px;
+    }
+    .farmer-district-badge:hover {
+      background: #10b981;
+      color: #020617;
+      border-color: #34d399;
+      transform: scale(1.12);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.85);
+      z-index: 9999 !important;
+    }
+  </style>
+</head>
+<body class="relative w-full h-full bg-[#010409]">
+
+  <!-- PRIMARY VIEWPORT: 3D THREE.JS WEBGL GLOBE (Active by default) -->
+  <div id="globe-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
+
+  <!-- GOOGLE EARTH-STYLE DYNAMIC GEOGRAPHIC LABELS OVERLAY -->
+  <div id="globe-labels-layer" class="absolute inset-0 z-15 pointer-events-none overflow-hidden"></div>
+
+  <!-- SECONDARY VIEWPORT: 2D TACTICAL LEAFLET MAP (Toggled via Top Bar) -->
+  <div id="map-container" class="absolute inset-0 z-0 hidden"></div>
+
+  <!-- TOP COMMAND BAR -->
+  <header class="absolute top-2 left-2 right-2 z-30 flex flex-col gap-2 p-2 sm:px-3 rounded-2xl hud-glass pointer-events-auto transition-all">
+    <!-- Row 1: Brand, Mode Switcher Pills & Action Controls -->
+    <div class="flex items-center justify-between gap-2 w-full">
+      <!-- Brand & Mode Indicator -->
+      <div class="flex items-center gap-2">
+        <a href="/" class="flex items-center gap-2 text-white no-underline">
+          <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.4)]">
+            <i class="fa-solid fa-cloud-bolt text-cyan-400 text-sm"></i>
+          </span>
+          <div class="hidden sm:block">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold tracking-wider uppercase text-white font-mono">Orbital Eye</span>
+              <span id="header-mode-badge" class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/40 font-mono font-bold tracking-wider">KISAN MAP</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP <-> NATURAL 3D GLOBE -->
+        <div class="inline-flex items-center p-0.5 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono">
+          <button id="btn-mode-farmer" onclick="setAtmosphereExperience('farmer')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold transition flex items-center gap-1 shadow-sm">
+            <span>🌾</span>
+            <span class="whitespace-nowrap">Kisan District Map</span>
+          </button>
+          <button id="btn-mode-natural3d" onclick="setAtmosphereExperience('natural3d')" class="px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1">
+            <span>🌍</span>
+            <span class="whitespace-nowrap">Natural 3D Globe</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CENTER: UNIFIED NAVIGATION RIBBON -->
+      <div class="hidden md:flex items-center overflow-x-auto">
+        <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
+      <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
+      <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
+      <a href="/earth" data-nav="earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Earth</a>
+      <a href="/deepspace" data-nav="deepspace" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Deep Space</a>
+      <a href="/asteroids" data-nav="asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Asteroids</a>
+      <a href="/atmosphere" data-nav="atmosphere" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap text-xs" aria-current="page">Atmosphere</a>
+      <a href="/air-quality" data-nav="air-quality" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Air Quality</a>
+      <a href="/alert" data-nav="alert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Alert</a>
+    </nav>
+    
+  <script>
+    (function(){
+      function normalizeLinks() {
+        const isFile = window.location.protocol === 'file:';
+        const fileMap = {
+          '/': 'index.html',
+          '/solar-system': 'solar-system.html',
+          '/earth': 'earth.html',
+          '/deepspace': 'deep-space.html',
+          '/asteroids': 'asteroids.html',
+          '/atmosphere': 'atmosphere.html',
+          '/air-quality': 'air-quality.html',
+          '/alert': 'alert.html',
+          '/sentinel': 'sentinel.html',
+          '/sentinel-login': 'sentinel-login.html'
+        };
+        const webMap = {
+          'index.html': '/',
+          'solar-system.html': '/solar-system',
+          'earth.html': '/earth',
+          'deep-space.html': '/deepspace',
+          'deepspace.html': '/deepspace',
+          'asteroids.html': '/asteroids',
+          'atmosphere.html': '/atmosphere',
+          'weather.html': '/atmosphere',
+          '/weather': '/atmosphere',
+          'air-quality.html': '/air-quality',
+          'airquality.html': '/air-quality',
+          '/airquality': '/air-quality',
+          'alert.html': '/alert',
+          'orbitalert.html': '/alert',
+          '/orbitalert': '/alert',
+          'sentinel.html': '/sentinel',
+          'sentinel-login.html': '/sentinel-login'
+        };
+
+        document.querySelectorAll('a[href]').forEach(function(a) {
+          let h = a.getAttribute('href');
+          if (!h || h.startsWith('http') || h.startsWith('javascript:') || h.startsWith('mailto:')) return;
+
+          let [pathPart, hashPart] = h.split('#');
+          let [cleanPath, queryPart] = pathPart.split('?');
+          const hashSuffix = hashPart !== undefined ? '#' + hashPart : '';
+          const querySuffix = queryPart !== undefined ? '?' + queryPart : '';
+
+          if (isFile) {
+            if (fileMap[cleanPath]) {
+              a.setAttribute('href', fileMap[cleanPath] + querySuffix + hashSuffix);
+            }
+          } else {
+            if (webMap[cleanPath]) {
+              a.setAttribute('href', webMap[cleanPath] + querySuffix + hashSuffix);
+            }
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', normalizeLinks);
+      } else {
+        normalizeLinks();
+      }
+    })();
+  </script>
+
+      </div>
+
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-1.5 font-mono">
+        <!-- Advanced Tools Dropdown Toggle -->
+        <button onclick="toggleAdvancedToolsMenu()" id="btn-adv-tools" class="px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition flex items-center gap-1" title="Advanced Weather & Radar Tools">
+          <i class="fa-solid fa-sliders text-cyan-400"></i>
+          <span class="hidden md:inline text-[11px]">Advanced Tools</span>
+        </button>
+
+        <!-- Sentinel Admin Link -->
+        <a href="/sentinel-login" class="p-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Operations Console">
+          <i class="fa-solid fa-shield-halved"></i>
+        </a>
+
+        <!-- Mobile Navigation Hamburger -->
+        <button onclick="toggleMobileNavMenu()" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Dynamic Mode Controls -->
+    <!-- Mode B: Kisan District Map Controls (Active by Default) -->
+    <div id="farmer-top-controls" class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+      <!-- Search District with Autocomplete -->
+      <div id="farmer-search-wrapper" class="relative flex-1 min-w-[200px]">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
+        <input id="top-farmer-search-input" type="text" autocomplete="off"
+          placeholder="Search your district or city (e.g. Pune / पुणे, Patna / पटना)..."
+          oninput="onFarmerDistrictSearchInput()"
+          class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950/90 border border-emerald-500/50 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition" />
+        <div id="farmer-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-slate-950/98 border border-emerald-500/60 rounded-xl shadow-2xl z-50 divide-y divide-slate-800/80"></div>
+      </div>
+
+      <!-- State Filter Selector -->
+      <div class="min-w-[140px]">
+        <select id="top-farmer-state-select" onchange="onFarmerStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
+          <option value="">All States & UTs (35)</option>
+        </select>
+      </div>
+
+      <!-- District Selector -->
+      <div class="min-w-[140px]">
+        <select id="top-farmer-district-select" onchange="onFarmerDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
+          <option value="">Select District...</option>
+        </select>
+      </div>
+
+      <!-- GPS Button -->
+      <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap" title="Detect Location via Device GPS">
+        <span>📍</span>
+        <span>My Location</span>
+      </button>
+
+      <!-- Zoom All India Button -->
+      <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap" title="Zoom to All India">
+        <span>🇮🇳</span>
+        <span>All India</span>
+      </button>
+
+      <!-- Basemap Toggle: Satellite vs Street -->
+      <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm" title="Toggle Satellite Imagery / Street Map">
+        <span id="basemap-icon">🛰️</span>
+        <span id="basemap-text">Satellite</span>
+      </button>
+    </div>
+
+    <!-- Mode A: Natural 3D Globe Controls (Visible in 3D Mode) -->
+    <div id="natural3d-top-controls" class="hidden flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+      <!-- Layer Selector -->
+      <div class="flex items-center gap-1 overflow-x-auto pb-0.5">
+        <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-radar mr-1"></i>Live Radar
+        </button>
+        <button id="mode-precipitation" onclick="setLayerMode('precipitation')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-cloud-showers-heavy mr-1 text-cyan-400"></i>Precipitation Analysis
+        </button>
+        <button id="mode-natural" onclick="setLayerMode('natural')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition whitespace-nowrap">
+          <i class="fa-solid fa-earth-americas mr-1"></i>Natural 3D
+        </button>
+        <button id="mode-infrared" onclick="setLayerMode('infrared')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-temperature-arrow-up mr-1"></i>Infrared
+        </button>
+        <button id="mode-wind" onclick="setLayerMode('wind')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
+          <i class="fa-solid fa-wind mr-1"></i>3D Wind
+        </button>
+        <button id="mode-cyclones" onclick="setLayerMode('cyclones')" class="px-2.5 py-1 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition whitespace-nowrap">
+          <i class="fa-solid fa-hurricane mr-1"></i>Tropical Cones
+        </button>
+      </div>
+
+      <!-- 3D Storm / Landmark Search -->
+      <div class="relative min-w-[180px]">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
+        <input id="weather-search" type="text" placeholder="Search city or storm..."
+          class="w-full pl-8 pr-3 py-1 rounded-xl bg-slate-950/90 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition" />
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DROPDOWN MENU -->
+  <div id="mobile-nav-menu" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 flex flex-col justify-between font-mono text-xs">
+    <div class="space-y-3">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <span class="font-bold text-white tracking-wider uppercase text-sm">Orbital Eye Observatories</span>
+        <button onclick="toggleMobileNavMenu()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+      <nav class="space-y-1.5 font-mono text-xs">
+        <a href="/" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🏠</span> <span>Home</span>
+        </a>
+        <a href="/solar-system" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>☀️</span> <span>Solar System</span>
+        </a>
+        <a href="/earth" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🌍</span> <span>Earth</span>
+        </a>
+        <a href="/deepspace" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🌌</span> <span>Deep Space</span>
+        </a>
+        <a href="/asteroids" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>☄️</span> <span>Asteroids</span>
+        </a>
+        <a href="/atmosphere" class="flex items-center gap-2 p-2 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 no-underline font-bold">
+          <span>🌀</span> <span>Atmosphere</span>
+        </a>
+        <a href="/air-quality" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>💨</span> <span>Air Quality</span>
+        </a>
+        <a href="/alert" class="flex items-center gap-2 p-2 rounded-xl bg-slate-900 text-slate-200 no-underline hover:bg-slate-800">
+          <span>🔔</span> <span>Alert</span>
+        </a>
+      </nav>
+    </div>
+    <div class="text-[10px] text-slate-500 text-center pb-2">
+      Orbital Eye Space & Meteorological Observatory
+    </div>
+  </div>
+
+  <!-- ADVANCED SCIENTIFIC TOOLS DRAWER / MODAL -->
+  <div id="advanced-tools-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 font-mono text-xs">
+    <div class="max-w-md w-full rounded-2xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl p-4 space-y-4 text-slate-200">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2 font-bold text-cyan-300 uppercase tracking-wider">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Advanced Weather Tools</span>
+        </div>
+        <button onclick="toggleAdvancedToolsMenu()" class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Numerical Model Selector -->
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Numerical Weather Prediction Model</label>
+          <div class="grid grid-cols-3 gap-1.5 text-xs">
+            <button id="model-ecmwf" onclick="setModelSource('ecmwf')" class="py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ECMWF</button>
+            <button id="model-gfs" onclick="setModelSource('gfs')" class="py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white border border-slate-800">GFS</button>
+            <button id="model-icon" onclick="setModelSource('icon')" class="py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white border border-slate-800">ICON</button>
+          </div>
+        </div>
+
+        <!-- Severe Storms & Hotspots Drawer Launchers -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="toggleLeftDrawer(); toggleAdvancedToolsMenu();" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left space-y-1">
+            <div class="flex items-center gap-1.5 text-rose-300 font-bold text-[11px]">
+              <i class="fa-solid fa-bolt"></i> <span>Severe Storms</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-sans">Tropical cyclones & thermal hotspots</div>
+          </button>
+          <button onclick="togglePrecipitationPanel(); toggleAdvancedToolsMenu();" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left space-y-1">
+            <div class="flex items-center gap-1.5 text-blue-300 font-bold text-[11px]">
+              <i class="fa-solid fa-chart-simple"></i> <span>Rain Analysis</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-sans">Doppler reflectivity & rainfall gauge</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECTED DISTRICT WEATHER PANEL (Desktop Right Floating Card / Mobile Bottom Sheet) -->
+  <aside id="selected-district-panel" class="fixed z-30 transition-all duration-300
+    sm:top-28 sm:right-4 sm:bottom-auto sm:w-96 sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl sm:border sm:border-emerald-500/50 sm:shadow-2xl sm:bg-slate-950/95 sm:backdrop-blur-xl sm:p-4 sm:overflow-y-auto
+    bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
+    <!-- Panel Header & Drag Handle -->
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/30">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🌾</span>
+        <div>
+          <div class="font-bold text-white text-xs tracking-wider uppercase font-mono">KISAN WEATHER DESK</div>
+          <div class="text-[10px] text-emerald-400 font-sans">Verified Administrative District Data</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="toggleFarmerPanel()" class="sm:hidden px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs font-mono" title="Collapse / Expand">
+          ↕ Sheet
+        </button>
+        <button onclick="closeFarmerPanel()" class="w-6 h-6 rounded-lg bg-slate-900 hover:bg-rose-950/80 border border-slate-700 text-slate-400 hover:text-rose-300 flex items-center justify-center transition">
+          ✕
+        </button>
+      </div>
+    </div>
+    <div id="selected-district-content" class="space-y-3">
+      <!-- Default Prompt if no district selected -->
+      <div class="text-center py-5 text-slate-400 space-y-2.5">
+        <div class="text-3xl">🗺️</div>
+        <p class="font-bold text-white text-xs">Select or Search an Indian District</p>
+        <p class="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
+          Tap any district boundary on the map, select your state above, or type any district name in English or Hindi to inspect live agricultural forecasts, rainfall estimates, and weather warnings.
+        </p>
+        <div class="pt-2">
+          <span class="text-[10px] text-emerald-400 uppercase tracking-wider font-mono block mb-1.5 font-bold">Quick Select Major Agricultural Districts:</span>
+          <div class="flex flex-wrap gap-1.5 justify-center">
+            <button onclick="quickSelectDistrict('MAHARASHTRA_PUNE')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Pune (पुणे)</button>
+            <button onclick="quickSelectDistrict('MAHARASHTRA_LATUR')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Latur (लातूर)</button>
+            <button onclick="quickSelectDistrict('MAHARASHTRA_NASHIK')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Nashik (नाशिक)</button>
+            <button onclick="quickSelectDistrict('PUNJAB_LUDHIANA')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Ludhiana</button>
+            <button onclick="quickSelectDistrict('BIHAR_PATNA')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Patna (पटना)</button>
+            <button onclick="quickSelectDistrict('RAJASTHAN_JAIPUR')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 text-[10px]">Jaipur (जयपुर)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ON-SCREEN TACTICAL NAVIGATION & ZOOM CONTROLS (Desktop Mouse & Mobile Touch Pad) -->
+  <div id="tactical-nav-pad" class="absolute bottom-24 right-4 z-25 flex flex-col items-center gap-1.5 p-2 rounded-2xl hud-glass shadow-[0_0_25px_rgba(6,182,212,0.35)] select-none pointer-events-auto">
+    <!-- Zoom In Button (+) with Click & Hold support -->
+    <button id="btn-zoom-in" onclick="zoomIn()" onpointerdown="startZoom('in')" onpointerup="stopZoom()" onpointerleave="stopZoom()" class="w-9 h-9 rounded-xl bg-slate-900/95 hover:bg-cyan-500/30 active:bg-cyan-500/60 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-base font-extrabold font-mono transition shadow cursor-pointer select-none" title="Zoom In (+)">
+      +
+    </button>
+
+    <!-- D-Pad Directional Orbit / Pan Arrows with Click & Continuous Hold -->
+    <div class="grid grid-cols-3 gap-1 my-0.5">
+      <div></div>
+      <button id="btn-nav-up" onclick="performNav('up')" onpointerdown="startNav('up')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Up">
+        ▲
+      </button>
+      <div></div>
+
+      <button id="btn-nav-left" onclick="performNav('left')" onpointerdown="startNav('left')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Left">
+        ◀
+      </button>
+      <button onclick="resetCameraHome()" class="w-8 h-8 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 active:bg-cyan-500/50 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer select-none" title="Reset View / Home (India/Asia)">
+        ⌖
+      </button>
+      <button id="btn-nav-right" onclick="performNav('right')" onpointerdown="startNav('right')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Right">
+        ▶
+      </button>
+
+      <div></div>
+      <button id="btn-nav-down" onclick="performNav('down')" onpointerdown="startNav('down')" onpointerup="stopNav()" onpointerleave="stopNav()" class="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 active:bg-cyan-500/50 text-slate-200 border border-slate-700/80 flex items-center justify-center text-xs transition cursor-pointer select-none" title="Orbit Down">
+        ▼
+      </button>
+      <div></div>
+    </div>
+
+    <!-- Zoom Out Button (-) with Click & Hold support -->
+    <button id="btn-zoom-out" onclick="zoomOut()" onpointerdown="startZoom('out')" onpointerup="stopZoom()" onpointerleave="stopZoom()" class="w-9 h-9 rounded-xl bg-slate-900/95 hover:bg-cyan-500/30 active:bg-cyan-500/60 text-cyan-300 border border-cyan-500/50 flex items-center justify-center text-base font-extrabold font-mono transition shadow cursor-pointer select-none" title="Zoom Out (-)">
+      −
+    </button>
+  </div>
+
+  <!-- LEFT DRAWER: SEVERE WEATHER SYSTEMS & ALERT RADAR (Starts Collapsed) -->
+  <aside id="left-drawer" class="absolute top-24 left-2 bottom-20 z-20 w-80 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300 -translate-x-[110%]">
+    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-rose-300 font-mono">Severe Storms & Systems</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="active-storm-count" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/40 font-mono">Scanning...</span>
+        <button onclick="toggleLeftDrawer()" class="text-slate-400 hover:text-white text-xs px-1">✕</button>
+      </div>
+    </div>
+
+    <!-- Scrollable Cards Container -->
+    <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+      <!-- Section: Active Tropical Cyclones -->
+      <div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 font-mono">Tracked Tropical Systems (3D)</div>
+        <div id="cyclone-cards-list" class="space-y-2">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- Section: Extreme Thermal Hotspots (NASA FIRMS) -->
+      <div>
+        <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-1.5 font-mono flex items-center justify-between">
+          <span>Active Fire Hotspots (FIRMS)</span>
+          <span class="text-[9px] text-slate-400">VIIRS / MODIS</span>
+        </div>
+        <div id="fire-hotspots-list" class="space-y-1.5">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Section: Regional Station Telemetry (Open-Meteo) -->
+      <div>
+        <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1.5 font-mono flex items-center justify-between">
+          <span>Target Station Telemetry</span>
+          <span id="station-loc-label" class="text-[9px] text-slate-400">Pune, IN</span>
+        </div>
+        <div id="station-telemetry-box" class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Temperature:</span>
+            <span id="station-temp" class="text-white font-bold font-mono-nums">-- °C</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Feels Like:</span>
+            <span id="station-feels" class="text-cyan-300 font-mono-nums">-- °C</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Barometric Pressure:</span>
+            <span id="station-pressure" class="text-emerald-300 font-mono-nums">-- hPa</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Surface Wind:</span>
+            <span id="station-wind" class="text-amber-300 font-mono-nums">-- km/h</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Relative Humidity:</span>
+            <span id="station-humidity" class="text-blue-300 font-mono-nums">-- %</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400">Precipitation / Rain:</span>
+            <span id="station-rain" class="text-cyan-400 font-mono-nums">0.0 mm (0% chance)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- PRECIPITATION & METEOROLOGICAL ANALYSIS DOCK (Zoom Earth style) -->
+  <aside id="precipitation-panel" class="absolute top-20 right-2 bottom-20 z-20 w-84 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300 translate-x-[110%]">
+    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-cloud-showers-water text-cyan-400"></i>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono">Precipitation Analysis</h2>
+      </div>
+      <button onclick="togglePrecipitationPanel()" class="text-slate-400 hover:text-white text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs font-mono">
+      <!-- Target Location Summary -->
+      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+        <div class="flex justify-between items-center text-[11px]">
+          <span class="text-slate-400">Inspector Location:</span>
+          <span id="precip-loc" class="text-white font-bold">Select Point on Globe</span>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-slate-500">
+          <span>Coordinates:</span>
+          <span id="precip-coords" class="text-cyan-300 font-mono-nums">--° N, --° E</span>
+        </div>
+      </div>
+
+      <!-- Precipitation Rate Gauge -->
+      <div class="p-3 rounded-xl bg-gradient-to-br from-slate-950/90 to-blue-950/30 border border-blue-500/40 space-y-2">
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider flex justify-between items-center">
+          <span>Current Precipitation Rate</span>
+          <span id="precip-type-badge" class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px] font-bold">
+            RADAR NOWCAST
+          </span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span id="precip-rate-val" class="text-2xl font-bold text-cyan-300 font-mono-nums">--</span>
+          <span class="text-xs text-slate-400">mm / hour</span>
+          <span id="precip-rate-in" class="text-[11px] text-slate-500 font-mono-nums ml-auto">(-- in/h)</span>
+        </div>
+
+        <!-- dBZ Meter -->
+        <div class="space-y-1 pt-1">
+          <div class="flex justify-between text-[10px]">
+            <span class="text-slate-400">Doppler Reflectivity:</span>
+            <span id="precip-dbz-val" class="text-cyan-400 font-bold font-mono-nums">-- dBZ</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
+            <div id="precip-dbz-bar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-300" style="width: 10%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 24-Hour Cumulative Rain Accumulation -->
+      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+        <div class="flex justify-between items-center text-[10px] uppercase text-slate-400">
+          <span>24-Hour Projected Accumulation</span>
+          <span id="precip-accum-val" class="text-amber-400 font-bold font-mono-nums">185.0 mm</span>
+        </div>
+        <div class="grid grid-cols-4 gap-1 text-center text-[9px] text-slate-400 pt-1">
+          <div class="p-1 rounded bg-slate-900 border border-slate-800">
+            <div class="text-slate-500">3h</div>
+            <div id="accum-3h" class="text-white font-bold font-mono-nums">37mm</div>
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800">
+            <div class="text-slate-500">6h</div>
+            <div id="accum-6h" class="text-white font-bold font-mono-nums">70mm</div>
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800">
+            <div class="text-slate-500">12h</div>
+            <div id="accum-12h" class="text-white font-bold font-mono-nums">126mm</div>
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800">
+            <div class="text-slate-500">24h</div>
+            <div id="accum-24h" class="text-amber-400 font-bold font-mono-nums">185mm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Severe Thunderstorm & Lightning Strike Analysis -->
+      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider flex justify-between items-center">
+          <span>Convective & Lightning Strike Tracker</span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        </div>
+        <div class="flex justify-between items-center text-[11px]">
+          <span class="text-slate-400">Lightning Strikes (Last 15m):</span>
+          <span id="precip-lightning-count" class="text-cyan-300 font-bold font-mono-nums">145 strikes</span>
+        </div>
+        <div class="flex justify-between items-center text-[11px]">
+          <span class="text-slate-400">Severe Thunderstorm Risk:</span>
+          <span id="precip-risk-level" class="text-rose-400 font-bold">EXTREME (High Convective CAPE)</span>
+        </div>
+        <div class="flex justify-between items-center text-[11px]">
+          <span class="text-slate-400">Freezing Level:</span>
+          <span id="precip-freezing-level" class="text-slate-300 font-mono-nums">4,800 m MSL</span>
+        </div>
+      </div>
+
+      <!-- Regional Observational Monitoring Stations -->
+      <div class="space-y-1.5 pt-1">
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Regional Meteorological Stations</div>
+        <div class="space-y-1 text-[11px]">
+          <button onclick="inspectLocation(18.52, 73.85, 'Western Ghats / Pune Meteorological Station', 38, 12.0, 45)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-emerald-500/40 transition">
+            <span class="text-emerald-300 font-bold truncate">📍 Pune / Western Ghats (IN)</span>
+            <span class="text-emerald-400 font-mono-nums">18.5°N</span>
+          </button>
+          <button onclick="inspectLocation(25.59, 85.14, 'Patna Agro-Meteorological Station', 32, 8.0, 30)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-cyan-500/40 transition">
+            <span class="text-cyan-300 font-bold truncate">📍 Patna / Gangetic Plains (IN)</span>
+            <span class="text-cyan-400 font-mono-nums">25.6°N</span>
+          </button>
+          <button onclick="inspectLocation(22.57, 88.36, 'Kolkata Regional Radar Station', 36, 14.0, 50)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-blue-500/40 transition">
+            <span class="text-blue-300 font-bold truncate">📍 Kolkata / Bay of Bengal (IN)</span>
+            <span class="text-blue-400 font-mono-nums">22.6°N</span>
+          </button>
+          <button onclick="inspectLocation(30.73, 76.78, 'Chandigarh Agricultural Belt', 28, 5.0, 20)" class="w-full text-left p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 flex justify-between items-center border border-slate-800 hover:border-amber-500/40 transition">
+            <span class="text-amber-300 font-bold truncate">📍 Chandigarh / Punjab Agro (IN)</span>
+            <span class="text-amber-400 font-mono-nums">30.7°N</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT DRAWER: LAYER SETTINGS & CONTROLS -->
+  <aside id="right-drawer" class="absolute top-20 right-2 bottom-20 z-20 w-72 max-w-[calc(100vw-1rem)] rounded-2xl hud-glass p-3 flex flex-col gap-3 transition-transform duration-300 translate-x-[110%]">
+    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono flex items-center gap-1.5">
+        <i class="fa-solid fa-layer-group text-xs"></i>
+        <span>Atmospheric Controls</span>
+      </h2>
+      <button onclick="toggleRightDrawer()" class="text-slate-400 hover:text-white text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+      <!-- Layer Opacities -->
+      <div class="space-y-2">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Layer Opacity</div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">Doppler Radar</span>
+            <span id="val-radar-opacity" class="text-cyan-400 font-mono-nums">90%</span>
+          </div>
+          <input type="range" id="slider-radar-opacity" min="0" max="100" value="90"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">Clouds & Atmosphere</span>
+            <span id="val-clouds-opacity" class="text-cyan-400 font-mono-nums">65%</span>
+          </div>
+          <input type="range" id="slider-clouds-opacity" min="0" max="100" value="65"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+        <div>
+          <div class="flex justify-between text-[11px] mb-1">
+            <span class="text-slate-300">3D Wind Particles</span>
+            <span id="val-wind-opacity" class="text-cyan-400 font-mono-nums">80%</span>
+          </div>
+          <input type="range" id="slider-wind-opacity" min="0" max="100" value="80"
+            class="w-full accent-cyan-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer" oninput="updateLayerOpacities()" />
+        </div>
+      </div>
+
+      <!-- Feature Toggles -->
+      <div class="space-y-1.5 pt-2 border-t border-slate-800">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">3D Visual Overlays</div>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Google Earth Place Labels</span>
+          <input type="checkbox" id="toggle-geo-labels" checked class="accent-cyan-400 rounded" onchange="toggleGeographicLabels()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Multi-Color Doppler Radar</span>
+          <input type="checkbox" id="toggle-radar-layer" checked class="accent-cyan-400 rounded" onchange="toggleRadarMesh()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Real-time Lightning Flashes</span>
+          <input type="checkbox" id="toggle-lightning" checked class="accent-cyan-400 rounded" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">Storm Forecast 3D Cones</span>
+          <input type="checkbox" id="toggle-forecast-cones" checked class="accent-cyan-400 rounded" onchange="toggleForecastCones()" />
+        </label>
+        <label class="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-900/60 cursor-pointer">
+          <span class="text-slate-300">NASA FIRMS Fire Hotspots</span>
+          <input type="checkbox" id="toggle-fires" checked class="accent-cyan-400 rounded" onchange="toggleFireHotspots()" />
+        </label>
+      </div>
+
+      <!-- Model Source Switcher -->
+      <div class="space-y-1.5 pt-2 border-t border-slate-800">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Numerical Weather Model</div>
+        <div class="grid grid-cols-3 gap-1 text-[11px] font-mono">
+          <button id="model-ecmwf" onclick="setModelSource('ecmwf')" class="py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ECMWF</button>
+          <button id="model-gfs" onclick="setModelSource('gfs')" class="py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800">GFS</button>
+          <button id="model-icon" onclick="setModelSource('icon')" class="py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800">ICON</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- FLOATING STORM DOSSIER INTEL CARD -->
+  <div id="storm-dossier" class="absolute top-20 left-84 z-25 w-84 hidden rounded-2xl hud-glass-dark border border-rose-500/50 p-4 space-y-3 font-mono shadow-[0_0_30px_rgba(244,63,94,0.35)]">
+    <div class="flex items-start justify-between">
+      <div>
+        <span id="dossier-cat-badge" class="px-2 py-0.5 text-[10px] rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold uppercase tracking-wider">
+          Category 3
+        </span>
+        <h3 id="dossier-name" class="text-base font-bold text-white mt-1">Cyclone Sagar-II</h3>
+        <p id="dossier-basin" class="text-[11px] text-slate-400 font-sans">North Indian Ocean / Arabian Sea</p>
+      </div>
+      <button onclick="closeStormDossier()" class="text-slate-400 hover:text-white text-sm">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Max Sustained Wind</div>
+        <div id="dossier-wind" class="text-sm font-bold text-rose-400 font-mono-nums">155 km/h (85 kts)</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Central Pressure</div>
+        <div id="dossier-pressure" class="text-sm font-bold text-cyan-400 font-mono-nums">968 hPa</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Movement Vector</div>
+        <div id="dossier-movement" class="text-xs font-bold text-slate-200 font-mono-nums">325° at 16 km/h</div>
+      </div>
+      <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+        <div class="text-[10px] text-slate-400 uppercase">Advisory Agency</div>
+        <div id="dossier-agency" class="text-xs font-bold text-amber-300">IMD RSMC</div>
+      </div>
+    </div>
+
+    <div class="p-2 rounded-xl bg-rose-950/30 border border-rose-500/30 text-[11px] text-rose-200">
+      <i class="fa-solid fa-triangle-exclamation mr-1 text-rose-400"></i>
+      <span id="dossier-warning">Projected landfall Gujarat / Saurashtra coast in +42h</span>
+    </div>
+
+    <div class="flex gap-2">
+      <button onclick="centerOnActiveStorm3D()" class="flex-1 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">
+        Center 3D Eye
+      </button>
+      <button onclick="toggleForecastCones()" class="flex-1 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition">
+        Toggle Cone
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM HUD: TEMPORAL SCRUBBER & PLAYBACK BAR (Natural 3D Mode) -->
+  <footer class="absolute bottom-2 left-2 right-2 z-30 p-2 sm:px-4 rounded-2xl hud-glass pointer-events-auto flex flex-col gap-2 transition-all">
+    <!-- Top Row: Timeline Slider & Controls -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+      <!-- Play/Pause Button -->
+      <button id="btn-play-pause" onclick="togglePlayback()" class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition">
+        <i id="icon-play-pause" class="fa-solid fa-play text-xs"></i>
+      </button>
+
+      <!-- Speed Multiplier Button -->
+      <button id="btn-speed" onclick="cyclePlaybackSpeed()" class="px-2 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition">
+        1x
+      </button>
+
+      <!-- Live Sync Button -->
+      <button id="btn-live-sync" onclick="syncToLiveNowcast()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] sm:text-[11px] font-mono font-bold transition">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+        <span>Rain expected soon</span>
+      </button>
+
+      <!-- Temporal Scrubber Slider (-12h to +72h) -->
+      <div class="flex-1 min-w-[140px] relative flex items-center">
+        <input type="range" id="timeline-scrubber" min="-12" max="72" value="0" step="0.25"
+          class="w-full accent-cyan-400 bg-slate-800 h-2 rounded-lg appearance-none cursor-pointer" oninput="onTimelineScrub(this.value)" />
+      </div>
+
+      <!-- High-Contrast Timestamp Readout -->
+      <div class="text-right min-w-[140px] sm:min-w-[180px]">
+        <div id="scrubber-timestamp" class="text-[11px] sm:text-xs font-bold text-white font-mono-nums">2026-10-29 07:15 UTC</div>
+        <div id="scrubber-status-tag" class="text-[9px] font-mono text-emerald-400 tracking-wider">● LIVE RADAR NOWCAST</div>
+      </div>
+    </div>
+
+    <!-- Bottom Row: dBZ Reflectivity Color Ramp Legend -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800 gap-1.5">
+      <span class="flex items-center gap-1 whitespace-nowrap">
+        <i class="fa-solid fa-droplet text-cyan-400"></i>
+        <span>Rain radar intensity:</span>
+      </span>
+      <div class="flex items-center gap-1 flex-1 min-w-[120px] max-w-md mx-1 sm:mx-3">
+        <span class="text-[9px] text-slate-500">5</span>
+        <div class="flex-1 h-2 rounded overflow-hidden flex" style="background: linear-gradient(to right, #00ecec, #01a0f6, #0000f6, #00eb00, #009000, #ffff00, #e7c000, #ff9000, #ff0000, #d60000, #c00000, #ff00f0, #9600b4);"></div>
+        <span class="text-[9px] text-slate-500">75+</span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 text-[9px] whitespace-nowrap">
+        <span class="text-cyan-300">Light</span>
+        <span class="text-emerald-400">Moderate</span>
+        <span class="text-amber-400">Heavy</span>
+        <span class="text-rose-400">Hail</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC: 3D THREE.JS WEBGL METEOROLOGICAL ENGINE -->
+  <script>
+    // --- GLOBAL VARIABLES ---
+    let currentProjection = '3d'; // '3d' (default) | '2d'
+    let currentLayerMode = 'natural'; // 'radar' | 'precipitation' | 'natural' | 'infrared' | 'wind' | 'cyclones'
+    let isGeoLabelsEnabled = true;
+
+    // 3D Three.js Engine Variables
+    let scene, camera, renderer, controls, raycaster, mouse;
+    let earthMesh, cloudsMesh, atmosphereMesh, radarShellMesh;
+    let cyclonesGroup3D, forecastConesGroup3D, fireHotspotsGroup3D, clickTargetPinGroup3D;
+    let windParticlesMesh, windPositions, windVelocities, windLifetimes;
+    const NUM_WIND_PARTICLES = 2500;
+    const EARTH_RADIUS = 2.0;
+
+    // Multi-Band Doppler Radar Texture Canvas
+    let radarCanvas, radarCtx, radarTexture;
+    let radarAnimPhase = 0;
+
+    // Tactical D-Pad State
+    let navInterval = null;
+
+    // 2D Leaflet Fallback Engine Variables
+    let leafletMap = null;
+    let leafletRadarLayer = null;
+    let leafletBasemapLayer = null;
+    let leafletBoundariesLayer = null;
+
+    // Data Feeds State
+    let radarTimestamps = [];
+    let currentRadarIndex = 0;
+    let isPlaying = false;
+    let playbackInterval = null;
+    let playbackSpeed = 1;
+
+    let activeCyclonesData = [];
+    let activeFiresData = [];
+    let activeSelectedStorm = null;
+
+       // --- GOOGLE EARTH-STYLE COMPREHENSIVE GEOGRAPHIC DATABASE (132 Cities & Landmarks across Continents, Capitals & Megacities) ---
+    const GEOGRAPHIC_LANDMARKS = [
+      // Continents & Oceans (LOD 1 - visible always / zoomed out)
+      { name: "ASIA", lat: 34.04, lon: 100.61, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "EUROPE", lat: 54.52, lon: 15.25, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "AFRICA", lat: 1.65, lon: 17.32, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "NORTH AMERICA", lat: 40.0, lon: -100.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "SOUTH AMERICA", lat: -15.0, lon: -60.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "AUSTRALIA", lat: -25.0, lon: 134.0, type: "continent", minZoom: 5.2, maxZoom: 18.0 },
+      { name: "PACIFIC OCEAN", lat: 0.0, lon: -160.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
+      { name: "ATLANTIC OCEAN", lat: 15.0, lon: -35.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
+      { name: "INDIAN OCEAN", lat: -10.0, lon: 80.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
+      { name: "ARCTIC OCEAN", lat: 78.0, lon: 0.0, type: "ocean", minZoom: 5.0, maxZoom: 18.0 },
+
+      // India & South Asia (Capitals & Regional Metropolises)
+      { name: "New Delhi", lat: 28.61, lon: 77.20, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Mumbai", lat: 19.07, lon: 72.87, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Pune", lat: 18.52, lon: 73.85, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Bengaluru", lat: 12.97, lon: 77.59, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Hyderabad", lat: 17.38, lon: 78.48, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Chennai", lat: 13.08, lon: 80.27, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Kolkata", lat: 22.57, lon: 88.36, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Ahmedabad", lat: 23.02, lon: 72.57, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Surat", lat: 21.17, lon: 72.83, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Jaipur", lat: 26.91, lon: 75.78, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Lucknow", lat: 26.84, lon: 80.94, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Kochi", lat: 9.93, lon: 76.26, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Goa (Panaji)", lat: 15.49, lon: 73.82, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Nagpur", lat: 21.14, lon: 79.08, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Indore", lat: 22.71, lon: 75.85, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Bhopal", lat: 23.25, lon: 77.41, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Patna", lat: 25.59, lon: 85.13, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Chandigarh", lat: 30.73, lon: 76.77, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Guwahati", lat: 26.14, lon: 91.73, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Bhubaneswar", lat: 20.29, lon: 85.82, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Visakhapatnam", lat: 17.68, lon: 83.21, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Colombo", lat: 6.92, lon: 79.86, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Dhaka", lat: 23.81, lon: 90.41, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kathmandu", lat: 27.71, lon: 85.32, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Islamabad", lat: 33.68, lon: 73.04, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Karachi", lat: 24.86, lon: 67.00, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+
+      // East & Southeast Asia
+      { name: "Tokyo", lat: 35.67, lon: 139.65, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Osaka", lat: 34.69, lon: 135.50, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Seoul", lat: 37.56, lon: 126.97, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Beijing", lat: 39.90, lon: 116.40, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Shanghai", lat: 31.23, lon: 121.47, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Guangzhou", lat: 23.12, lon: 113.26, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Shenzhen", lat: 22.54, lon: 114.05, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Chengdu", lat: 30.57, lon: 104.06, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Hong Kong", lat: 22.31, lon: 114.16, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Taipei", lat: 25.03, lon: 121.56, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Singapore", lat: 1.35, lon: 103.81, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Bangkok", lat: 13.75, lon: 100.50, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Jakarta", lat: -6.20, lon: 106.81, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Kuala Lumpur", lat: 3.13, lon: 101.68, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Manila", lat: 14.59, lon: 120.98, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Hanoi", lat: 21.02, lon: 105.83, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Ho Chi Minh City", lat: 10.82, lon: 106.62, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+
+      // Middle East & Central Asia
+      { name: "Dubai", lat: 25.20, lon: 55.27, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Abu Dhabi", lat: 24.45, lon: 54.37, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Riyadh", lat: 24.71, lon: 46.67, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Jeddah", lat: 21.54, lon: 39.17, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Doha", lat: 25.28, lon: 51.53, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Muscat", lat: 23.58, lon: 58.40, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kuwait City", lat: 29.37, lon: 47.97, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Tehran", lat: 35.68, lon: 51.38, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Tel Aviv", lat: 32.08, lon: 34.78, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Jerusalem", lat: 31.76, lon: 35.21, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Istanbul", lat: 41.00, lon: 28.97, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Ankara", lat: 39.93, lon: 32.85, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Europe
+      { name: "London", lat: 51.50, lon: -0.12, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Manchester", lat: 53.48, lon: -2.24, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Paris", lat: 48.85, lon: 2.35, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Marseille", lat: 43.29, lon: 5.36, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Berlin", lat: 52.52, lon: 13.40, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Munich", lat: 48.13, lon: 11.58, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Frankfurt", lat: 50.11, lon: 8.68, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Rome", lat: 41.90, lon: 12.49, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Milan", lat: 45.46, lon: 9.19, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Madrid", lat: 40.41, lon: -3.70, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Barcelona", lat: 41.38, lon: 2.17, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Amsterdam", lat: 52.36, lon: 4.90, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Brussels", lat: 50.85, lon: 4.35, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Zurich", lat: 47.37, lon: 8.54, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Vienna", lat: 48.20, lon: 16.37, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Warsaw", lat: 52.22, lon: 21.01, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Prague", lat: 50.07, lon: 14.43, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Athens", lat: 37.98, lon: 23.72, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Stockholm", lat: 59.32, lon: 18.06, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Oslo", lat: 59.91, lon: 10.75, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Copenhagen", lat: 55.67, lon: 12.56, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Helsinki", lat: 60.16, lon: 24.93, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Dublin", lat: 53.34, lon: -6.26, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Lisbon", lat: 38.72, lon: -9.13, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Kyiv", lat: 50.45, lon: 30.52, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Moscow", lat: 55.75, lon: 37.61, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+
+      // North America
+      { name: "Washington, D.C.", lat: 38.90, lon: -77.03, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "New York", lat: 40.71, lon: -74.00, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Los Angeles", lat: 34.05, lon: -118.24, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Chicago", lat: 41.87, lon: -87.62, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Houston", lat: 29.76, lon: -95.36, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Dallas", lat: 32.77, lon: -96.79, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Miami", lat: 25.76, lon: -80.19, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "San Francisco", lat: 37.77, lon: -122.41, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Seattle", lat: 47.60, lon: -122.33, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Boston", lat: 42.36, lon: -71.05, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Atlanta", lat: 33.74, lon: -84.38, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Denver", lat: 39.73, lon: -104.99, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Toronto", lat: 43.65, lon: -79.38, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Montreal", lat: 45.50, lon: -73.56, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Vancouver", lat: 49.28, lon: -123.12, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Ottawa", lat: 45.42, lon: -75.69, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Mexico City", lat: 19.43, lon: -99.13, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Guadalajara", lat: 20.65, lon: -103.34, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+      { name: "Monterrey", lat: 25.68, lon: -100.31, type: "city", minZoom: 2.2, maxZoom: 4.8 },
+
+      // South America
+      { name: "São Paulo", lat: -23.55, lon: -46.63, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Rio de Janeiro", lat: -22.90, lon: -43.17, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Brasília", lat: -15.79, lon: -47.88, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Buenos Aires", lat: -34.60, lon: -58.38, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Santiago", lat: -33.44, lon: -70.66, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Lima", lat: -12.04, lon: -77.04, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Bogotá", lat: 4.71, lon: -74.07, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Quito", lat: -0.18, lon: -78.46, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Africa
+      { name: "Cairo", lat: 30.04, lon: 31.23, type: "capital", minZoom: 2.2, maxZoom: 6.8 },
+      { name: "Johannesburg", lat: -26.20, lon: 28.04, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Cape Town", lat: -33.92, lon: 18.42, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Nairobi", lat: -1.29, lon: 36.82, type: "capital", minZoom: 2.2, maxZoom: 6.5 },
+      { name: "Lagos", lat: 6.52, lon: 3.37, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Casablanca", lat: 33.57, lon: -7.58, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Addis Ababa", lat: 9.03, lon: 38.74, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+
+      // Oceania
+      { name: "Sydney", lat: -33.86, lon: 151.20, type: "city", minZoom: 2.2, maxZoom: 5.5 },
+      { name: "Melbourne", lat: -37.81, lon: 144.96, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Brisbane", lat: -27.46, lon: 153.02, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Perth", lat: -31.95, lon: 115.86, type: "city", minZoom: 2.2, maxZoom: 5.0 },
+      { name: "Auckland", lat: -36.84, lon: 174.76, type: "city", minZoom: 2.2, maxZoom: 5.2 },
+      { name: "Canberra", lat: -35.28, lon: 149.13, type: "capital", minZoom: 2.2, maxZoom: 6.0 },
+      { name: "Honolulu", lat: 21.30, lon: -157.85, type: "city", minZoom: 2.2, maxZoom: 5.2 }
+    ];
+
+    let cachedLabelNodes = [];
+
+    // --- HELPER: Lat/Lon to 3D Cartesian coordinates on sphere ---
+    function latLonToVector3(lat, lon, radius) {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const x = -(radius * Math.sin(phi) * Math.cos(theta));
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const y = radius * Math.cos(phi);
+      return new THREE.Vector3(x, y, z);
+    }
+
+    function vector3ToLatLon(v) {
+      const len = Math.hypot(v.x, v.y, v.z);
+      const phi = Math.acos(Math.max(-1, Math.min(1, v.y / len)));
+      const theta = Math.atan2(v.z, -v.x);
+      const lat = 90 - (phi * 180 / Math.PI);
+      let lon = (theta * 180 / Math.PI) - 180;
+      while (lon < -180) lon += 360;
+      while (lon > 180) lon -= 360;
+      return { lat, lon };
+    }
+
+    // --- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP & NATURAL 3D GLOBE ---
+    let currentAtmosphereMode = 'farmer'; // 'farmer' (Kisan District Map) | 'natural3d' (Natural 3D Globe)
+
+    function setAtmosphereExperience(mode) {
+      currentAtmosphereMode = mode;
+      const btnFarmer = document.getElementById('btn-mode-farmer');
+      const btnNatural = document.getElementById('btn-mode-natural3d');
+      const farmerControls = document.getElementById('farmer-top-controls');
+      const naturalControls = document.getElementById('natural3d-top-controls');
+      const globeEl = document.getElementById('globe-container');
+      const globeLabels = document.getElementById('globe-labels-layer');
+      const mapEl = document.getElementById('map-container');
+      const navPad = document.getElementById('tactical-nav-pad');
+      const footerScrubber = document.querySelector('footer');
+      const badge = document.getElementById('header-mode-badge');
+      const panel = document.getElementById('selected-district-panel');
+
+      if (mode === 'farmer') {
+        currentProjection = '2d';
+        if (badge) {
+          badge.innerText = 'KISAN MAP';
+          badge.className = 'text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/40 font-mono font-bold tracking-wider';
+        }
+        if (btnFarmer) {
+          btnFarmer.className = 'px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold transition flex items-center gap-1 shadow-sm';
+        }
+        if (btnNatural) {
+          btnNatural.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1';
+        }
+
+        if (farmerControls) farmerControls.classList.remove('hidden');
+        if (naturalControls) naturalControls.classList.add('hidden');
+
+        if (globeEl) globeEl.classList.add('hidden');
+        if (globeLabels) globeLabels.classList.add('hidden');
+        if (mapEl) mapEl.classList.remove('hidden');
+        if (navPad) navPad.classList.add('hidden');
+        if (footerScrubber) footerScrubber.classList.add('hidden');
+        if (panel) panel.classList.remove('hidden');
+
+        init2DMap();
+        setTimeout(() => {
+          if (typeof window.initLeafletDistrictLayers === 'function') {
+            window.initLeafletDistrictLayers();
+          }
+          const urlP = new URLSearchParams(window.location.search);
+          const hasTarget = window.selectedDistrictId || urlP.get('district');
+          if (typeof window.zoomToAllIndia === 'function' && !hasTarget) {
+            window.zoomToAllIndia();
+          }
+        }, 150);
+
+      } else {
+        currentProjection = '3d';
+        if (badge) {
+          badge.innerText = 'NATURAL 3D';
+          badge.className = 'text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded border border-cyan-500/40 font-mono font-bold tracking-wider';
+        }
+        if (btnNatural) {
+          btnNatural.className = 'px-2.5 sm:px-3 py-1 rounded-lg bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1 shadow-sm';
+        }
+        if (btnFarmer) {
+          btnFarmer.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1';
+        }
+
+        if (naturalControls) naturalControls.classList.remove('hidden');
+        if (farmerControls) farmerControls.classList.add('hidden');
+
+        if (mapEl) mapEl.classList.add('hidden');
+        if (panel) panel.classList.add('hidden');
+        if (globeEl) globeEl.classList.remove('hidden');
+        if (globeLabels) globeLabels.classList.remove('hidden');
+        if (navPad) navPad.classList.remove('hidden');
+        if (footerScrubber) footerScrubber.classList.remove('hidden');
+
+        if (typeof flyToLatLon3D === 'function') {
+          flyToLatLon3D(20.59, 78.96, 4.8); // Focus India & Asia by default in 3D
+        }
+        if (typeof onWindowResize === 'function') {
+          onWindowResize();
+        }
+      }
+    }
+    window.setAtmosphereExperience = setAtmosphereExperience;
+
+    function toggleAdvancedToolsMenu() {
+      const m = document.getElementById('advanced-tools-modal');
+      if (m) m.classList.toggle('hidden');
+    }
+    window.toggleAdvancedToolsMenu = toggleAdvancedToolsMenu;
+
+    function toggleMobileNavMenu() {
+      const m = document.getElementById('mobile-nav-menu');
+      if (m) m.classList.toggle('hidden');
+    }
+    window.toggleMobileNavMenu = toggleMobileNavMenu;
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      init3DGlobe();
+      initGeographicLabelsDOM();
+      loadWeatherFeeds();
+      fetchStationTelemetry(18.5204, 73.8567, "Pune, IN");
+      setupSearchHandler();
+      setupGlobeClickListener();
+      setLayerMode('natural');
+
+      // Initialize in Farmer Mode by default
+      const urlParams = new URLSearchParams(window.location.search);
+      const distQueryParam = urlParams.get('district');
+      const is3DHash = window.location.hash.toLowerCase().includes('3d') || urlParams.get('mode') === '3d';
+      setAtmosphereExperience(is3DHash ? 'natural3d' : 'farmer');
+
+      if (distQueryParam) {
+        setAtmosphereExperience('farmer');
+        const selectFromParam = () => {
+          if (window.districtIndexData && Array.isArray(window.districtIndexData.districts)) {
+            const matched = window.districtIndexData.districts.find(d => 
+              d.district.toLowerCase() === distQueryParam.toLowerCase() || 
+              d.id.toLowerCase() === distQueryParam.toLowerCase() || 
+              d.id.toLowerCase().includes(distQueryParam.toLowerCase())
+            );
+            if (matched) {
+              window.selectDistrictById(matched.id);
+              return true;
+            }
+          }
+          return false;
+        };
+        if (!selectFromParam()) {
+          setTimeout(selectFromParam, 400);
+          setTimeout(selectFromParam, 1000);
+        }
+      }
+
+      function handleWeatherHash() {
+        const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+        if (!hash) return;
+        if (hash === 'farmer' || hash === 'kisan') {
+          setAtmosphereExperience('farmer');
+          return;
+        } else if (hash === '3d' || hash === 'natural' || hash === 'globe') {
+          setAtmosphereExperience('natural3d');
+          return;
+        } else if (['radar', 'precipitation', 'natural', 'infrared', 'wind', 'cyclones'].includes(hash)) {
+          setAtmosphereExperience('natural3d');
+          if (typeof setLayerMode === 'function') setLayerMode(hash);
+          return;
+        } else if (hash.startsWith('farmer/') || hash.startsWith('district/') || hash.startsWith('kisan/')) {
+          const distQuery = hash.split('/')[1];
+          setAtmosphereExperience('farmer');
+          const checkAndSelect = () => {
+            if (window.districtIndexData && Array.isArray(window.districtIndexData.districts)) {
+              const matched = window.districtIndexData.districts.find(d => 
+                d.district.toLowerCase() === distQuery || 
+                d.id.toLowerCase() === distQuery || 
+                d.id.toLowerCase().includes(distQuery)
+              );
+              if (matched) {
+                window.selectDistrictById(matched.id);
+                return true;
+              }
+            }
+            return false;
+          };
+          if (!checkAndSelect()) {
+            setTimeout(checkAndSelect, 400);
+            setTimeout(checkAndSelect, 1000);
+          }
+          return;
+        } else if (typeof GEOGRAPHIC_LANDMARKS !== 'undefined') {
+          const matched = GEOGRAPHIC_LANDMARKS.find(l => l.name.toLowerCase() === hash || l.name.toLowerCase().includes(hash));
+          if (matched && typeof flyToLatLon3D === 'function') {
+            setAtmosphereExperience('natural3d');
+            flyToLatLon3D(matched.lat, matched.lon, 2.5);
+            if (typeof analyzePrecipitationForPoint === 'function') analyzePrecipitationForPoint(matched.lat, matched.lon, matched.name);
+          }
+        }
+      }
+      window.addEventListener('hashchange', handleWeatherHash);
+      setTimeout(handleWeatherHash, 300);
+    });
+
+    // --- SIMULATION CLOCK ---
+    function initClock() {
+      const clockEl = document.getElementById('live-utc-clock');
+      function tick() {
+        const now = new Date();
+        if (clockEl) {
+          clockEl.innerText = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        }
+      }
+      setInterval(tick, 1000);
+      tick();
+    }
+
+    // --- GOOGLE EARTH-STYLE GEOGRAPHIC LABELS INITIALIZATION ---
+    function initGeographicLabelsDOM() {
+      const layer = document.getElementById('globe-labels-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+      cachedLabelNodes = [];
+
+      GEOGRAPHIC_LANDMARKS.forEach((item, index) => {
+        const el = document.createElement('div');
+        el.className = 'geo-label flex items-center gap-1 select-none';
+        el.style.display = 'none';
+
+        if (item.type === 'continent') {
+          el.innerHTML = `
+            <span class="px-2 py-0.5 rounded bg-slate-950/80 border border-cyan-500/40 text-[10px] sm:text-xs font-mono font-bold tracking-widest text-cyan-300 shadow">
+              ${item.name}
+            </span>
+          `;
+        } else if (item.type === 'ocean') {
+          el.innerHTML = `
+            <span class="text-[10px] sm:text-[11px] font-sans italic font-bold tracking-widest text-sky-300 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+              ${item.name}
+            </span>
+          `;
+        } else if (item.type === 'country' || item.type === 'capital') {
+          el.innerHTML = `
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 border border-black shadow"></span>
+            <span class="px-1.5 py-0.2 rounded bg-slate-950/80 border border-slate-700/80 text-[10px] font-mono font-bold text-white tracking-wider">
+              ${item.name}
+            </span>
+          `;
+        } else {
+          // City
+          el.innerHTML = `
+            <span class="w-1 h-1 rounded-full bg-amber-400 border border-black shadow"></span>
+            <span class="text-[9px] font-mono font-bold text-slate-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+              ${item.name}
+            </span>
+          `;
+        }
+
+        // Click label to fly directly there and inspect
+        el.onclick = (e) => {
+          e.stopPropagation();
+          inspectCoordinatePrecipitation(item.lat, item.lon, item.name);
+        };
+
+        layer.appendChild(el);
+        const v3 = latLonToVector3(item.lat, item.lon, EARTH_RADIUS + 0.015);
+        cachedLabelNodes.push({ el, item, v3 });
+      });
+    }
+
+    function updateGeographicLabels() {
+      if (!isGeoLabelsEnabled || currentProjection !== '3d' || !camera) {
+        cachedLabelNodes.forEach(n => n.el.style.display = 'none');
+        return;
+      }
+
+      const dist = camera.position.length();
+      const camNorm = camera.position.clone().normalize();
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      cachedLabelNodes.forEach(({ el, item, v3 }) => {
+        // LOD Zoom filtering: only display if camera distance is within range
+        if (dist < item.minZoom || dist > item.maxZoom) {
+          el.style.display = 'none';
+          return;
+        }
+
+        // Dot product occlusion culling (hide if on back-facing hemisphere)
+        const labelNorm = v3.clone().normalize();
+        if (labelNorm.dot(camNorm) <= 0.16) {
+          el.style.display = 'none';
+          return;
+        }
+
+        // Project 3D sphere coordinate to 2D screen coordinate
+        const p = v3.clone().project(camera);
+        const screenX = (p.x * 0.5 + 0.5) * w;
+        const screenY = (-p.y * 0.5 + 0.5) * h;
+
+        el.style.left = `${screenX.toFixed(1)}px`;
+        el.style.top = `${screenY.toFixed(1)}px`;
+        el.style.display = 'flex';
+      });
+    }
+
+    function toggleGeographicLabels() {
+      isGeoLabelsEnabled = !isGeoLabelsEnabled;
+      const cb = document.getElementById('toggle-geo-labels');
+      if (cb) cb.checked = isGeoLabelsEnabled;
+    }
+
+    // --- MULTI-BAND DOPPLER RADAR CANVAS TEXTURE GENERATOR ---
+    function initRadarPrecipitationTexture() {
+      radarCanvas = document.createElement('canvas');
+      radarCanvas.width = 1024;
+      radarCanvas.height = 512;
+      radarCtx = radarCanvas.getContext('2d');
+      radarTexture = new THREE.CanvasTexture(radarCanvas);
+      radarTexture.wrapS = THREE.RepeatWrapping;
+      radarTexture.wrapT = THREE.ClampToEdgeWrapping;
+      updateRadarCanvasTexture();
+    }
+
+    function updateRadarCanvasTexture() {
+      if (!radarCtx) return;
+      const w = radarCanvas.width;
+      const h = radarCanvas.height;
+
+      radarCtx.clearRect(0, 0, w, h);
+
+      function toCanvas(lat, lon) {
+        const x = ((lon + 180) / 360) * w;
+        const y = ((90 - lat) / 180) * h;
+        return { x, y };
+      }
+
+      radarAnimPhase += 0.04;
+
+      function drawRadarCell(lat, lon, maxRadius, maxDbz, isSwirl = false) {
+        const pt = toCanvas(lat, lon);
+        const rad = maxRadius * (1 + 0.05 * Math.sin(radarAnimPhase * 2));
+
+        const grad = radarCtx.createRadialGradient(pt.x, pt.y, 1, pt.x, pt.y, rad);
+        if (maxDbz >= 65) {
+          grad.addColorStop(0.0, 'rgba(255, 0, 240, 0.95)');
+          grad.addColorStop(0.2, 'rgba(255, 0, 0, 0.85)');
+          grad.addColorStop(0.45, 'rgba(255, 180, 0, 0.75)');
+          grad.addColorStop(0.7, 'rgba(0, 230, 0, 0.6)');
+          grad.addColorStop(0.9, 'rgba(0, 200, 255, 0.4)');
+          grad.addColorStop(1.0, 'rgba(0, 150, 255, 0.0)');
+        } else if (maxDbz >= 45) {
+          grad.addColorStop(0.0, 'rgba(255, 140, 0, 0.85)');
+          grad.addColorStop(0.35, 'rgba(255, 220, 0, 0.75)');
+          grad.addColorStop(0.65, 'rgba(0, 220, 0, 0.55)');
+          grad.addColorStop(0.9, 'rgba(0, 180, 255, 0.35)');
+          grad.addColorStop(1.0, 'rgba(0, 150, 255, 0.0)');
+        } else {
+          grad.addColorStop(0.0, 'rgba(0, 220, 0, 0.75)');
+          grad.addColorStop(0.5, 'rgba(0, 200, 255, 0.5)');
+          grad.addColorStop(1.0, 'rgba(0, 150, 255, 0.0)');
+        }
+
+        radarCtx.fillStyle = grad;
+        radarCtx.beginPath();
+        radarCtx.arc(pt.x, pt.y, rad, 0, Math.PI * 2);
+        radarCtx.fill();
+
+        if (isSwirl) {
+          radarCtx.save();
+          radarCtx.translate(pt.x, pt.y);
+          radarCtx.rotate(radarAnimPhase * 0.4);
+          for (let b = 0; b < 3; b++) {
+            const rot = (b * Math.PI * 2) / 3;
+            radarCtx.beginPath();
+            radarCtx.arc(0, 0, rad * 1.35, rot, rot + 1.1);
+            radarCtx.strokeStyle = 'rgba(0, 220, 0, 0.55)';
+            radarCtx.lineWidth = 14;
+            radarCtx.stroke();
+
+            radarCtx.beginPath();
+            radarCtx.arc(0, 0, rad * 0.9, rot, rot + 0.9);
+            radarCtx.strokeStyle = 'rgba(255, 160, 0, 0.7)';
+            radarCtx.lineWidth = 10;
+            radarCtx.stroke();
+          }
+          radarCtx.restore();
+        }
+      }
+
+      // Draw live tropical cyclone cells if reported by NOAA NHC / JTWC
+      if (Array.isArray(activeCyclonesData) && activeCyclonesData.length > 0) {
+        activeCyclonesData.forEach(storm => {
+          if (typeof storm.lat === 'number' && typeof storm.lon === 'number') {
+            const dbz = Math.min(75, 45 + Math.round((storm.windSpeedKmh || 100) / 6));
+            drawRadarCell(storm.lat, storm.lon, 44, dbz, true);
+          }
+        });
+      }
+
+      // Tropical ITCZ Monsoon Belts & Regional Radar Echoes
+      drawRadarCell(18.5, 73.8, 22, 42, false); // Western Ghats (Pune)
+      drawRadarCell(12.9, 77.5, 18, 38, false); // South India
+      drawRadarCell(22.5, 88.3, 24, 45, false); // Bay of Bengal / Bengal
+      drawRadarCell(3.1, 101.6, 26, 48, false);  // Southeast Asia (Malaysia)
+      drawRadarCell(-2.5, -60.0, 32, 50, false); // Amazon Rainforest Convection
+      drawRadarCell(38.8, -90.2, 28, 52, false); // US Midwest Squall Line
+      drawRadarCell(48.8, 2.3, 22, 36, false);   // Western Europe Front
+
+      radarTexture.needsUpdate = true;
+    }
+
+    // --- 3D GLOBE ENGINE (FULL-TIME DAYLIGHT ILLUMINATION) ---
+    function init3DGlobe() {
+      const container = document.getElementById('globe-container');
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
+
+      // 1. Scene & Camera
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, w / h, 0.05, 500);
+      camera.position.set(0, 1.2, 5.2);
+
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      // 2. WebGL Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      container.appendChild(renderer.domElement);
+
+      // 3. OrbitControls (Smooth mouse drag, pinch-to-zoom & mobile touch gestures)
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.rotateSpeed = 0.65;
+      controls.zoomSpeed = 0.85;
+      controls.minDistance = 2.35;
+      controls.maxDistance = 18.0;
+      controls.touches = {
+        ONE: THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN
+      };
+
+      // 4. FULL-TIME DAYLIGHT LIGHTING (No dark nighttime shadows anywhere)
+      // Camera Headlight: light moves with camera so user always sees full bright daylight!
+      const headLight = new THREE.DirectionalLight(0xffffff, 0.95);
+      headLight.position.set(0, 0, 1);
+      camera.add(headLight);
+      scene.add(camera);
+
+      // High uniform ambient daylight everywhere
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+      scene.add(ambientLight);
+
+      // Supplementary sun light for realistic atmospheric rim glint
+      const sunLight = new THREE.DirectionalLight(0xffffff, 0.6);
+      sunLight.position.set(6, 4, 6);
+      scene.add(sunLight);
+
+      // 5. Starfield Background
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = [];
+      for (let i = 0; i < 1800; i++) {
+        const r = 80 + Math.random() * 40;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        starPos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+      }
+      starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+      const starMat = new THREE.PointsMaterial({ color: 0x88bbff, size: 0.7, transparent: true, opacity: 0.7 });
+      scene.add(new THREE.Points(starGeo, starMat));
+
+      // 6. Earth Sphere Mesh (NASA Blue Marble in Full Bright Daylight)
+      const textureLoader = new THREE.TextureLoader();
+      const blueMarbleTex = textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg');
+
+      const earthGeo = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+      const earthMat = new THREE.MeshLambertMaterial({
+        map: blueMarbleTex
+      });
+      earthMesh = new THREE.Mesh(earthGeo, earthMat);
+      scene.add(earthMesh);
+
+      // 7. Dynamic Volumetric Cloud Deck
+      const cloudsTex = textureLoader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_clouds_1024.png');
+      const cloudsGeo = new THREE.SphereGeometry(EARTH_RADIUS + 0.025, 64, 64);
+      const cloudsMat = new THREE.MeshLambertMaterial({
+        map: cloudsTex,
+        transparent: true,
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending
+      });
+      cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+      scene.add(cloudsMesh);
+
+      // 8. Rayleigh Atmospheric Scattering Glow Halo
+      const atmoGeo = new THREE.SphereGeometry(EARTH_RADIUS + 0.05, 48, 48);
+      const atmoMat = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vNormal;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormal;
+          void main() {
+            float intensity = pow(0.62 - dot(vNormal, vec3(0, 0, 1.0)), 2.2);
+            gl_FragColor = vec4(0.25, 0.65, 1.0, 1.0) * intensity * 0.9;
+          }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        transparent: true
+      });
+      atmosphereMesh = new THREE.Mesh(atmoGeo, atmoMat);
+      scene.add(atmosphereMesh);
+
+      // 9. Multi-Band Doppler Radar Atmospheric Shell (Draped on sphere)
+      initRadarPrecipitationTexture();
+      const radarGeo = new THREE.SphereGeometry(EARTH_RADIUS + 0.038, 64, 64);
+      const radarMat = new THREE.MeshBasicMaterial({
+        map: radarTexture,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.NormalBlending
+      });
+      radarShellMesh = new THREE.Mesh(radarGeo, radarMat);
+      radarShellMesh.visible = false; // Start hidden for natural view
+      scene.add(radarShellMesh);
+
+      // 10. 3D Storms, Cones, Fire Hotspots & Target Pin Groups
+      cyclonesGroup3D = new THREE.Group();
+      cyclonesGroup3D.visible = false; // Start hidden for natural view
+      forecastConesGroup3D = new THREE.Group();
+      forecastConesGroup3D.visible = false; // Start hidden for natural view
+      fireHotspotsGroup3D = new THREE.Group();
+      clickTargetPinGroup3D = new THREE.Group();
+      scene.add(cyclonesGroup3D);
+      scene.add(forecastConesGroup3D);
+      scene.add(fireHotspotsGroup3D);
+      scene.add(clickTargetPinGroup3D);
+
+      // 11. 3D Spherical Wind Particle Flow Streamlines
+      init3DWindParticles();
+
+      // Window resize
+      window.addEventListener('resize', onWindowResize);
+
+      // Start Render Loop
+      animate3D();
+    }
+
+    // --- 3D SPHERICAL WIND PARTICLE FIELD ---
+    function init3DWindParticles() {
+      const geo = new THREE.BufferGeometry();
+      windPositions = new Float32Array(NUM_WIND_PARTICLES * 3);
+      windVelocities = [];
+      windLifetimes = [];
+
+      for (let i = 0; i < NUM_WIND_PARTICLES; i++) {
+        const lat = (Math.random() - 0.5) * 160;
+        const lon = (Math.random() - 0.5) * 360;
+        const alt = EARTH_RADIUS + 0.018 + Math.random() * 0.02;
+        const v = latLonToVector3(lat, lon, alt);
+
+        windPositions[i * 3] = v.x;
+        windPositions[i * 3 + 1] = v.y;
+        windPositions[i * 3 + 2] = v.z;
+
+        const sign = (lat > -30 && lat < 30) ? -1 : 1;
+        windVelocities.push({
+          lat: lat,
+          lon: lon,
+          alt: alt,
+          speed: (0.15 + Math.random() * 0.25) * sign
+        });
+
+        windLifetimes.push(Math.random() * 100);
+      }
+
+      geo.setAttribute('position', new THREE.BufferAttribute(windPositions, 3));
+      const mat = new THREE.PointsMaterial({
+        color: 0x38bdf8,
+        size: 0.025,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+      });
+      windParticlesMesh = new THREE.Points(geo, mat);
+      scene.add(windParticlesMesh);
+    }
+
+    function update3DWindParticles() {
+      if (!windParticlesMesh) return;
+      const pos = windParticlesMesh.geometry.attributes.position.array;
+
+      for (let i = 0; i < NUM_WIND_PARTICLES; i++) {
+        const w = windVelocities[i];
+        w.lon += w.speed;
+        if (w.lon > 180) w.lon -= 360;
+        if (w.lon < -180) w.lon += 360;
+
+        windLifetimes[i]++;
+        if (windLifetimes[i] > 120) {
+          windLifetimes[i] = 0;
+          w.lat = (Math.random() - 0.5) * 160;
+          w.lon = (Math.random() - 0.5) * 360;
+        }
+
+        const v = latLonToVector3(w.lat, w.lon, w.alt);
+        pos[i * 3] = v.x;
+        pos[i * 3 + 1] = v.y;
+        pos[i * 3 + 2] = v.z;
+      }
+      windParticlesMesh.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // --- 3D ANIMATION LOOP ---
+    let frameCount = 0;
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+
+      if (currentProjection === '3d') {
+        controls.update();
+        frameCount++;
+
+        // Cloud rotation
+        if (cloudsMesh) cloudsMesh.rotation.y += 0.0003;
+
+        // Animate Multi-Band Doppler Radar texture every 2 frames
+        if (frameCount % 2 === 0 && radarCanvas) {
+          updateRadarCanvasTexture();
+        }
+
+        // Update 3D wind streamlines
+        update3DWindParticles();
+
+        // Update Google Earth-style dynamic labels
+        updateGeographicLabels();
+
+        // Pulsing animation for 3D cyclone eye rings & target pins
+        if (cyclonesGroup3D) {
+          cyclonesGroup3D.children.forEach(c => {
+            if (c.userData && c.userData.isRing) {
+              c.scale.multiplyScalar(1.008);
+              c.material.opacity *= 0.985;
+              if (c.scale.x > 2.2) {
+                c.scale.set(1, 1, 1);
+                c.material.opacity = 0.9;
+              }
+            }
+          });
+        }
+
+        if (clickTargetPinGroup3D) {
+          clickTargetPinGroup3D.children.forEach(c => {
+            if (c.userData && c.userData.isTargetRing) {
+              c.scale.multiplyScalar(1.015);
+              c.material.opacity *= 0.97;
+              if (c.scale.x > 3.0) {
+                c.scale.set(1, 1, 1);
+                c.material.opacity = 1.0;
+              }
+            }
+          });
+        }
+
+        renderer.render(scene, camera);
+      }
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById('globe-container');
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+
+       // --- ON-SCREEN TACTICAL D-PAD & ZOOM CONTROLS (DESKTOP & MOBILE TOUCH) ---
+    let zoomInterval = null;
+
+    function performNav(dir) {
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const spherical = new THREE.Spherical().setFromVector3(offset);
+      const step = 0.055;
+      if (dir === 'left') {
+        spherical.theta -= step;
+      } else if (dir === 'right') {
+        spherical.theta += step;
+      } else if (dir === 'up') {
+        spherical.phi = Math.max(0.08, Math.min(Math.PI - 0.08, spherical.phi - step));
+      } else if (dir === 'down') {
+        spherical.phi = Math.max(0.08, Math.min(Math.PI - 0.08, spherical.phi + step));
+      }
+      offset.setFromSpherical(spherical);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    }
+
+    function startNav(dir) {
+      stopNav();
+      performNav(dir);
+      navInterval = setInterval(() => performNav(dir), 35);
+    }
+
+    function stopNav() {
+      if (navInterval) {
+        clearInterval(navInterval);
+        navInterval = null;
+      }
+    }
+
+    function zoomIn() {
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const curDist = offset.length();
+      const newDist = Math.max(controls.minDistance || 2.25, curDist * 0.82);
+      offset.setLength(newDist);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    }
+
+    function zoomOut() {
+      if (!camera || !controls) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const curDist = offset.length();
+      const newDist = Math.min(controls.maxDistance || 18.0, curDist * 1.22);
+      offset.setLength(newDist);
+      camera.position.copy(controls.target).add(offset);
+      controls.update();
+    }
+
+    function startZoom(dir) {
+      stopZoom();
+      if (dir === 'in') zoomIn();
+      else zoomOut();
+      zoomInterval = setInterval(() => {
+        if (dir === 'in') zoomIn();
+        else zoomOut();
+      }, 90);
+    }
+
+    function stopZoom() {
+      if (zoomInterval) {
+        clearInterval(zoomInterval);
+        zoomInterval = null;
+      }
+    }
+
+    function resetCameraHome() {
+      flyToLatLon3D(18.52, 73.85, 4.6); // Fly home to India / Pune
+      fetchStationTelemetry(18.52, 73.85, "Pune, IN");
+    }
+
+    window.zoomIn = zoomIn;
+    window.zoomOut = zoomOut;
+    window.startNav = startNav;
+    window.stopNav = stopNav;
+    window.startZoom = startZoom;
+    window.stopZoom = stopZoom;
+    window.performNav = performNav;
+    window.resetCameraHome = resetCameraHome;
+
+    // --- INTERACTIVE 3D RAYCASTING INSPECTOR ---
+    function setupGlobeClickListener() {
+      const container = document.getElementById('globe-container');
+      let downTime = 0;
+      let startX = 0, startY = 0;
+
+      container.addEventListener('pointerdown', (e) => {
+        downTime = Date.now();
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+
+      container.addEventListener('pointerup', (e) => {
+        if (Date.now() - downTime > 250) return;
+        if (Math.hypot(e.clientX - startX, e.clientY - startY) > 6) return;
+
+        const rect = container.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObject(earthMesh);
+        if (intersects.length > 0) {
+          const hit = intersects[0].point;
+          const { lat, lon } = vector3ToLatLon(hit);
+          inspectCoordinatePrecipitation(lat, lon);
+        }
+      });
+    }
+
+    function inspectCoordinatePrecipitation(lat, lon, customName = null) {
+      while (clickTargetPinGroup3D.children.length > 0) {
+        clickTargetPinGroup3D.remove(clickTargetPinGroup3D.children[0]);
+      }
+
+      const hitPos = latLonToVector3(lat, lon, EARTH_RADIUS + 0.04);
+      const dotGeo = new THREE.SphereGeometry(0.04, 16, 16);
+      const dotMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+      const dotMesh = new THREE.Mesh(dotGeo, dotMat);
+      dotMesh.position.copy(hitPos);
+      clickTargetPinGroup3D.add(dotMesh);
+
+      const ringGeo = new THREE.RingGeometry(0.04, 0.08, 32);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, side: THREE.DoubleSide, transparent: true, opacity: 1.0 });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.position.copy(hitPos);
+      ringMesh.lookAt(new THREE.Vector3(0, 0, 0));
+      ringMesh.userData = { isTargetRing: true };
+      clickTargetPinGroup3D.add(ringMesh);
+
+      let nearDbz = 10;
+      let nearRate = 0.0;
+      let label = customName || `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+
+      activeCyclonesData.forEach(c => {
+        const distDeg = Math.hypot(lat - c.lat, lon - c.lon);
+        if (distDeg < 5.0) {
+          nearDbz = Math.max(nearDbz, Math.round(70 - distDeg * 7));
+          nearRate = Math.max(nearRate, Math.round(55 - distDeg * 8));
+          if (!customName) label = `${c.name} Convective Swirl`;
+        }
+      });
+
+      if (Math.abs(lat) < 25 && nearRate === 0.0) {
+        nearDbz = 35 + Math.round(Math.random() * 15);
+        nearRate = 12 + Math.round(Math.random() * 15);
+      }
+
+      inspectLocation(lat, lon, label, nearDbz, nearRate, Math.round(nearRate * 3.5));
+      fetchStationTelemetry(lat, lon, label);
+    }
+
+    function inspectLocation(lat, lon, name, dbz, rateMm, accum24h) {
+      flyToLatLon3D(lat, lon, 3.4);
+
+      const panel = document.getElementById('precipitation-panel');
+      if (panel) panel.classList.remove('translate-x-[110%]');
+      const rightDrawer = document.getElementById('right-drawer');
+      if (rightDrawer) rightDrawer.classList.add('translate-x-[110%]');
+
+      document.getElementById('precip-loc').innerText = name;
+      document.getElementById('precip-coords').innerText = `${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? 'E' : 'W'}`;
+      document.getElementById('precip-rate-val').innerText = rateMm.toFixed(1);
+      document.getElementById('precip-rate-in').innerText = `(${(rateMm * 0.03937).toFixed(2)} in/h)`;
+      document.getElementById('precip-dbz-val').innerText = `${dbz} dBZ`;
+      document.getElementById('precip-dbz-bar').style.width = `${Math.min(100, (dbz / 75) * 100)}%`;
+      document.getElementById('precip-accum-val').innerText = `${accum24h.toFixed(1)} mm`;
+
+      document.getElementById('accum-3h').innerText = `${Math.round(accum24h * 0.2)}mm`;
+      document.getElementById('accum-6h').innerText = `${Math.round(accum24h * 0.38)}mm`;
+      document.getElementById('accum-12h').innerText = `${Math.round(accum24h * 0.68)}mm`;
+      document.getElementById('accum-24h').innerText = `${Math.round(accum24h)}mm`;
+
+      const typeBadge = document.getElementById('precip-type-badge');
+      if (dbz >= 60) {
+        typeBadge.innerText = 'SEVERE THUNDERSTORM / HAIL';
+        typeBadge.className = 'px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[9px] font-bold';
+      } else if (dbz >= 45) {
+        typeBadge.innerText = 'HEAVY CONVECTIVE RAIN';
+        typeBadge.className = 'px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold';
+      } else if (dbz >= 25) {
+        typeBadge.innerText = 'MODERATE RAIN';
+        typeBadge.className = 'px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold';
+      } else {
+        typeBadge.innerText = 'LIGHT DRIZZLE / CLEAR';
+        typeBadge.className = 'px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px] font-bold';
+      }
+
+      const lightning = Math.round((dbz / 75) * 160);
+      document.getElementById('precip-lightning-count').innerText = `${lightning} strikes`;
+    }
+
+    function togglePrecipitationPanel() {
+      const panel = document.getElementById('precipitation-panel');
+      const rightDrawer = document.getElementById('right-drawer');
+      if (panel) {
+        const isClosed = panel.classList.contains('translate-x-[110%]');
+        if (isClosed) {
+          panel.classList.remove('translate-x-[110%]');
+          if (rightDrawer) rightDrawer.classList.add('translate-x-[110%]');
+        } else {
+          panel.classList.add('translate-x-[110%]');
+        }
+      }
+    }
+
+    // --- LIVE DATA INGESTION & FEEDS ---
+    async function loadWeatherFeeds() {
+      try {
+        let radarData = null;
+        try {
+          const resp = await fetch('/api/weather/radar');
+          if (resp.ok) {
+            const j = await resp.json();
+            radarData = j.data;
+          }
+        } catch(_) {}
+
+        if (!radarData) {
+          const directResp = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+          radarData = await directResp.json();
+        }
+
+        if (radarData && radarData.radar && radarData.radar.past) {
+          radarTimestamps = radarData.radar.past;
+          currentRadarIndex = radarTimestamps.length - 1;
+          renderRadarFrame(currentRadarIndex);
+        }
+      } catch (err) {
+        console.warn('Radar feed fallback:', err);
+      }
+
+      try {
+        let cyclones = [];
+        try {
+          const resp = await fetch('/api/weather/cyclones');
+          if (resp.ok) {
+            const j = await resp.json();
+            cyclones = Array.isArray(j.data) ? j.data : [];
+          }
+        } catch(_) {}
+
+        activeCyclonesData = cyclones;
+        renderCycloneCards(cyclones);
+        renderCyclone3DMarkers(cyclones);
+      } catch (err) {
+        console.warn('Cyclones feed error:', err);
+      }
+
+      try {
+        let fires = [];
+        try {
+          const resp = await fetch('/api/weather/fires');
+          if (resp.ok) {
+            const j = await resp.json();
+            fires = Array.isArray(j.data) ? j.data : [];
+          }
+        } catch(_) {}
+
+        activeFiresData = fires;
+        renderFireCards(fires);
+        renderFire3DMarkers(fires);
+      } catch (err) {
+        console.warn('Fires feed error:', err);
+      }
+    }
+
+    // --- 3D CYCLONES & STORMS RENDERING ---
+    function renderCycloneCards(cyclones) {
+      const container = document.getElementById('cyclone-cards-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!cyclones || !cyclones.length) {
+        container.innerHTML = '<div class="p-4 text-center text-xs text-slate-500 font-mono">No active tropical systems tracked by NOAA NHC / JTWC.</div>';
+        return;
+      }
+
+      cyclones.forEach(storm => {
+        const card = document.createElement('div');
+        card.className = 'p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition space-y-1';
+        card.onclick = () => selectAndFocusStorm(storm);
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white">${storm.name}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono font-bold">
+              Cat ${storm.catNumber}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono-nums">
+            <span>${storm.windSpeedKmh} km/h (${storm.windSpeedKts} kts)</span>
+            <span class="text-cyan-400">${storm.centralPressureHpa} hPa</span>
+          </div>
+          <div class="text-[10px] text-slate-500 truncate font-sans">${storm.landfallWarning}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderCyclone3DMarkers(cyclones) {
+      if (!cyclonesGroup3D) return;
+      while (cyclonesGroup3D.children.length > 0) {
+        cyclonesGroup3D.remove(cyclonesGroup3D.children[0]);
+      }
+
+      cyclones.forEach(storm => {
+        const eyePos = latLonToVector3(storm.lat, storm.lon, EARTH_RADIUS + 0.04);
+
+        const pinGeo = new THREE.SphereGeometry(0.045, 16, 16);
+        const pinMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e });
+        const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+        pinMesh.position.copy(eyePos);
+        pinMesh.userData = { storm: storm };
+        cyclonesGroup3D.add(pinMesh);
+
+        const ringGeo = new THREE.RingGeometry(0.045, 0.075, 32);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: 0xf43f5e,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.position.copy(eyePos);
+        ringMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        ringMesh.userData = { isRing: true };
+        cyclonesGroup3D.add(ringMesh);
+
+        if (storm.history && storm.history.length) {
+          const trackPoints = storm.history.map(p => latLonToVector3(p.lat, p.lon, EARTH_RADIUS + 0.038));
+          trackPoints.push(eyePos);
+          const trackGeo = new THREE.BufferGeometry().setFromPoints(trackPoints);
+          const trackMat = new THREE.LineBasicMaterial({ color: 0xf43f5e, linewidth: 2, transparent: true, opacity: 0.7 });
+          const trackLine = new THREE.Line(trackGeo, trackMat);
+          cyclonesGroup3D.add(trackLine);
+        }
+      });
+    }
+
+    function selectAndFocusStorm(storm) {
+      activeSelectedStorm = storm;
+
+      flyToLatLon3D(storm.lat, storm.lon, 3.4);
+
+      const dossier = document.getElementById('storm-dossier');
+      if (dossier) {
+        document.getElementById('dossier-name').innerText = storm.name;
+        document.getElementById('dossier-cat-badge').innerText = storm.category;
+        document.getElementById('dossier-basin').innerText = storm.basin;
+        document.getElementById('dossier-wind').innerText = `${storm.windSpeedKmh} km/h (${storm.windSpeedKts} kts)`;
+        document.getElementById('dossier-pressure').innerText = `${storm.centralPressureHpa} hPa`;
+        document.getElementById('dossier-movement').innerText = `${storm.movementHeadingDeg}° at ${storm.movementSpeedKmh} km/h`;
+        document.getElementById('dossier-agency').innerText = storm.agency;
+        document.getElementById('dossier-warning').innerText = storm.landfallWarning;
+        dossier.classList.remove('hidden');
+      }
+
+      renderStormForecastCone3D(storm);
+      inspectLocation(storm.lat, storm.lon, `${storm.name} Eye`, 65, 42.0, 160);
+    }
+
+    function renderStormForecastCone3D(storm) {
+      if (!forecastConesGroup3D) return;
+      while (forecastConesGroup3D.children.length > 0) {
+        forecastConesGroup3D.remove(forecastConesGroup3D.children[0]);
+      }
+
+      if (!storm.forecastCone || !storm.forecastCone.length) return;
+
+      const conePoints = [latLonToVector3(storm.lat, storm.lon, EARTH_RADIUS + 0.04)];
+      storm.forecastCone.forEach(pt => {
+        const ptVec = latLonToVector3(pt.lat, pt.lon, EARTH_RADIUS + 0.04);
+        conePoints.push(ptVec);
+
+        const discGeo = new THREE.CircleGeometry(pt.radiusKm * 0.0006, 24);
+        const discMat = new THREE.MeshBasicMaterial({
+          color: 0xf59e0b,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.18
+        });
+        const discMesh = new THREE.Mesh(discGeo, discMat);
+        discMesh.position.copy(ptVec);
+        discMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        forecastConesGroup3D.add(discMesh);
+      });
+
+      const coneGeo = new THREE.BufferGeometry().setFromPoints(conePoints);
+      const coneMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 3 });
+      const coneLine = new THREE.Line(coneGeo, coneMat);
+      forecastConesGroup3D.add(coneLine);
+    }
+
+    function flyToLatLon3D(lat, lon, targetDist = 3.6) {
+      const v = latLonToVector3(lat, lon, targetDist);
+      const startPos = camera.position.clone();
+      const startTime = performance.now();
+      const duration = 1200;
+
+      function step(now) {
+        const progress = Math.min(1, (now - startTime) / duration);
+        const ease = 0.5 - Math.cos(progress * Math.PI) / 2;
+        camera.position.lerpVectors(startPos, v, ease);
+        camera.lookAt(0, 0, 0);
+        controls.update();
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+
+      fetchStationTelemetry(lat, lon, `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`);
+    }
+
+    function centerOnActiveStorm3D() {
+      if (activeSelectedStorm) {
+        flyToLatLon3D(activeSelectedStorm.lat, activeSelectedStorm.lon, 3.2);
+      }
+    }
+
+    function closeStormDossier() {
+      const d = document.getElementById('storm-dossier');
+      if (d) d.classList.add('hidden');
+    }
+
+    function toggleForecastCones() {
+      if (forecastConesGroup3D) {
+        forecastConesGroup3D.visible = !forecastConesGroup3D.visible;
+      }
+    }
+
+    function toggleRadarMesh() {
+      if (radarShellMesh) {
+        radarShellMesh.visible = !radarShellMesh.visible;
+      }
+    }
+
+    // --- NASA FIRMS ACTIVE FIRE HOTSPOTS ---
+    function renderFireCards(fires) {
+      const container = document.getElementById('fire-hotspots-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!fires || !fires.length) {
+        container.innerHTML = '<div class="p-3 text-center text-xs text-slate-500 font-mono">No active thermal anomalies reported.</div>';
+        return;
+      }
+
+      fires.slice(0, 4).forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center p-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-[11px] cursor-pointer transition';
+        item.onclick = () => flyToLatLon3D(f.lat, f.lon, 3.2);
+        item.innerHTML = `
+          <div class="flex items-center gap-1.5 truncate">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="text-slate-300 truncate">${f.region}</span>
+          </div>
+          <span class="text-amber-400 font-mono-nums font-bold">${f.frpMw} MW</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderFire3DMarkers(fires) {
+      if (!fireHotspotsGroup3D) return;
+      while (fireHotspotsGroup3D.children.length > 0) {
+        fireHotspotsGroup3D.remove(fireHotspotsGroup3D.children[0]);
+      }
+
+      fires.forEach(f => {
+        const pos = latLonToVector3(f.lat, f.lon, EARTH_RADIUS + 0.03);
+        const geo = new THREE.SphereGeometry(0.035, 12, 12);
+        const mat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.copy(pos);
+        fireHotspotsGroup3D.add(mesh);
+      });
+    }
+
+    function toggleFireHotspots() {
+      if (fireHotspotsGroup3D) {
+        fireHotspotsGroup3D.visible = !fireHotspotsGroup3D.visible;
+      }
+    }
+
+    // --- RAINVIEWER DOPPLER RADAR FRAME UPDATE ---
+    function renderRadarFrame(index) {
+      if (!radarTimestamps || !radarTimestamps.length) return;
+      if (index < 0) index = 0;
+      if (index >= radarTimestamps.length) index = radarTimestamps.length - 1;
+
+      currentRadarIndex = index;
+      const frame = radarTimestamps[index];
+
+      const date = new Date(frame.time * 1000);
+      const timeStr = date.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+      const tsEl = document.getElementById('scrubber-timestamp');
+      if (tsEl) tsEl.innerText = timeStr;
+
+      const tagEl = document.getElementById('scrubber-status-tag');
+      if (tagEl) {
+        if (index === radarTimestamps.length - 1) {
+          tagEl.innerHTML = '<span class="text-rose-400 font-bold">● LIVE RADAR NOWCAST</span>';
+        } else {
+          tagEl.innerHTML = '<span class="text-slate-400">OBSERVED FRAME (' + (index + 1) + '/' + radarTimestamps.length + ')</span>';
+        }
+      }
+
+      if (currentProjection === '2d' && leafletMap) {
+        renderLeafletRadar(frame);
+      }
+    }
+
+    // --- TEMPORAL SCRUBBER & PLAYBACK ---
+    function togglePlayback() {
+      isPlaying = !isPlaying;
+      const icon = document.getElementById('icon-play-pause');
+      if (isPlaying) {
+        if (icon) icon.className = 'fa-solid fa-pause text-xs';
+        const intervalMs = Math.max(200, 1000 / playbackSpeed);
+        playbackInterval = setInterval(() => {
+          currentRadarIndex = (currentRadarIndex + 1) % radarTimestamps.length;
+          renderRadarFrame(currentRadarIndex);
+        }, intervalMs);
+      } else {
+        if (icon) icon.className = 'fa-solid fa-play text-xs';
+        clearInterval(playbackInterval);
+      }
+    }
+
+    function cyclePlaybackSpeed() {
+      if (playbackSpeed === 1) playbackSpeed = 5;
+      else if (playbackSpeed === 5) playbackSpeed = 20;
+      else playbackSpeed = 1;
+
+      const btn = document.getElementById('btn-speed');
+      if (btn) btn.innerText = playbackSpeed + 'x';
+
+      if (isPlaying) {
+        clearInterval(playbackInterval);
+        togglePlayback();
+        togglePlayback();
+      }
+    }
+
+    function syncToLiveNowcast() {
+      if (radarTimestamps.length) {
+        currentRadarIndex = radarTimestamps.length - 1;
+        renderRadarFrame(currentRadarIndex);
+      }
+    }
+
+    function onTimelineScrub(val) {
+      const num = parseFloat(val);
+      if (num <= 0 && radarTimestamps.length) {
+        const ratio = (num + 12) / 12;
+        const idx = Math.floor(ratio * (radarTimestamps.length - 1));
+        renderRadarFrame(idx);
+      } else {
+        const tsEl = document.getElementById('scrubber-timestamp');
+        const tagEl = document.getElementById('scrubber-status-tag');
+        const forecastDate = new Date(Date.now() + num * 3600 * 1000);
+        if (tsEl) tsEl.innerText = forecastDate.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+        if (tagEl) tagEl.innerHTML = `<span class="text-cyan-400 font-bold">● NWP MODEL FORECAST (+${num.toFixed(1)}h)</span>`;
+      }
+    }
+
+    // --- LAYER MODE & SETTINGS (ALL TOGGLES FIXED) ---
+    function setLayerMode(mode) {
+      currentLayerMode = mode;
+      ['radar', 'precipitation', 'natural', 'infrared', 'wind', 'cyclones'].forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (btn) {
+          if (m === mode) {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition';
+          }
+        }
+      });
+
+      const radarCb = document.getElementById('toggle-radar-layer');
+      const conesCb = document.getElementById('toggle-forecast-cones');
+
+      if (mode === 'natural') {
+        if (radarShellMesh) radarShellMesh.visible = false;
+        if (cloudsMesh) cloudsMesh.visible = true;
+        if (forecastConesGroup3D) forecastConesGroup3D.visible = false;
+        if (cyclonesGroup3D) cyclonesGroup3D.visible = false;
+        if (windParticlesMesh) windParticlesMesh.visible = false;
+        if (radarCb) radarCb.checked = false;
+        if (conesCb) conesCb.checked = false;
+      } else if (mode === 'radar') {
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (cloudsMesh) cloudsMesh.visible = true;
+        if (forecastConesGroup3D) forecastConesGroup3D.visible = false;
+        if (radarCb) radarCb.checked = true;
+      } else if (mode === 'precipitation') {
+        const pPanel = document.getElementById('precipitation-panel');
+        if (pPanel && pPanel.classList.contains('translate-x-[110%]')) {
+          togglePrecipitationPanel();
+        }
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (radarCb) radarCb.checked = true;
+      } else if (mode === 'infrared') {
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (cloudsMesh) cloudsMesh.visible = true;
+      } else if (mode === 'wind') {
+        if (windParticlesMesh) windParticlesMesh.visible = true;
+        if (radarShellMesh) radarShellMesh.visible = false;
+        if (cloudsMesh) cloudsMesh.visible = true;
+      } else if (mode === 'cyclones') {
+        if (forecastConesGroup3D) forecastConesGroup3D.visible = true;
+        if (cyclonesGroup3D) cyclonesGroup3D.visible = true;
+        if (radarShellMesh) radarShellMesh.visible = true;
+        if (conesCb) conesCb.checked = true;
+        if (activeCyclonesData.length) {
+          selectAndFocusStorm(activeCyclonesData[0]);
+        }
+      }
+    }
+
+    function updateLayerOpacities() {
+      const radarOp = parseFloat(document.getElementById('slider-radar-opacity')?.value || '90');
+      document.getElementById('val-radar-opacity').innerText = `${radarOp}%`;
+      if (radarShellMesh) radarShellMesh.material.opacity = (radarOp / 100);
+
+      const cloudsOp = parseFloat(document.getElementById('slider-clouds-opacity')?.value || '65');
+      document.getElementById('val-clouds-opacity').innerText = `${cloudsOp}%`;
+      if (cloudsMesh) cloudsMesh.material.opacity = (cloudsOp / 100) * 0.8;
+
+      const windOp = parseFloat(document.getElementById('slider-wind-opacity')?.value || '80');
+      document.getElementById('val-wind-opacity').innerText = `${windOp}%`;
+      if (windParticlesMesh) windParticlesMesh.material.opacity = windOp / 100;
+    }
+
+    function toggleRightDrawer() {
+      const el = document.getElementById('right-drawer');
+      const panel = document.getElementById('precipitation-panel');
+      if (el) {
+        const isClosed = el.classList.contains('translate-x-[110%]');
+        if (isClosed) {
+          el.classList.remove('translate-x-[110%]');
+          if (panel) panel.classList.add('translate-x-[110%]');
+        } else {
+          el.classList.add('translate-x-[110%]');
+        }
+      }
+    }
+
+    function toggleLeftDrawer() {
+      const el = document.getElementById('left-drawer');
+      if (el) el.classList.toggle('-translate-x-[110%]');
+    }
+
+    function setModelSource(model) {
+      ['ecmwf', 'gfs', 'icon'].forEach(m => {
+        const el = document.getElementById(`model-${m}`);
+        if (el) {
+          if (m === model) {
+            el.className = 'py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold';
+          } else {
+            el.className = 'py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+          }
+        }
+      });
+    }
+
+    // --- VIEWPORT PROJECTION TOGGLE: 3D GLOBE <-> 2D TACTICAL MAP ---
+    function toggleViewportProjection() {
+      const globeEl = document.getElementById('globe-container');
+      const mapEl = document.getElementById('map-container');
+      const label = document.getElementById('label-projection');
+      const icon = document.getElementById('icon-projection');
+      const navPad = document.getElementById('tactical-nav-pad');
+
+      if (currentProjection === '3d') {
+        currentProjection = '2d';
+        if (globeEl) globeEl.classList.add('hidden');
+        if (mapEl) mapEl.classList.remove('hidden');
+        if (label) label.innerText = '3D Globe';
+        if (icon) icon.className = 'fa-solid fa-globe text-xs';
+        if (navPad) navPad.classList.add('hidden');
+        init2DMap();
+      } else {
+        currentProjection = '3d';
+        if (mapEl) mapEl.classList.add('hidden');
+        if (globeEl) globeEl.classList.remove('hidden');
+        if (label) label.innerText = '2D Tactical Map';
+        if (icon) icon.className = 'fa-solid fa-map text-xs';
+        if (navPad) navPad.classList.remove('hidden');
+        onWindowResize();
+      }
+    }
+
+    // --- 2D TACTICAL LEAFLET MAP INITIALIZATION ---
+    function init2DMap() {
+      if (leafletMap) {
+        window.leafletMap = leafletMap;
+      if (typeof window.populateStateDropdowns === 'function') {
+        window.populateStateDropdowns();
+        window.populateDistrictSelector('');
+      } // ensure dropdowns on 2d init
+        return;
+      }
+
+      leafletMap = L.map('map-container', {
+        center: [22.5, 82.0], // All India center by default
+        zoom: 5,
+        zoomControl: false,
+        attributionControl: false,
+        minZoom: 3,
+        maxZoom: 18
+      });
+
+      window.leafletMap = leafletMap;
+
+      L.control.zoom({ position: 'topright' }).addTo(leafletMap);
+
+      leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxNativeZoom: 18,
+        maxZoom: 19,
+        attribution: '&copy; Esri, Maxar'
+      }).addTo(leafletMap);
+
+      if (radarTimestamps.length) {
+        renderLeafletRadar(radarTimestamps[currentRadarIndex]);
+      }
+    }
+    window.init2DMap = init2DMap;
+
+    let currentKisanBasemap = 'satellite';
+    function setBasemapStyle(type) {
+      if (!leafletMap) return;
+      if (type === 'satellite') {
+        if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
+        leafletBasemapLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxNativeZoom: 18,
+        maxZoom: 19,
+        attribution: '&copy; Esri, Maxar'
+      }).addTo(leafletMap);
+      } else {
+        if (leafletBasemapLayer) leafletMap.removeLayer(leafletBasemapLayer);
+        leafletBasemapLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          subdomains: 'abcd',
+          maxNativeZoom: 19,
+          maxZoom: 19,
+          attribution: '&copy; CartoDB &copy; OpenStreetMap'
+        }).addTo(leafletMap);
+      }
+    }
+    window.setBasemapStyle = setBasemapStyle;
+
+    function toggleKisanBasemap() {
+      const btnText = document.getElementById('basemap-text');
+      const btnIcon = document.getElementById('basemap-icon');
+      if (currentKisanBasemap === 'satellite') {
+        currentKisanBasemap = 'street';
+        setBasemapStyle('street');
+        if (btnText) btnText.innerText = 'Street';
+        if (btnIcon) btnIcon.innerText = '🗺️';
+      } else {
+        currentKisanBasemap = 'satellite';
+        setBasemapStyle('satellite');
+        if (btnText) btnText.innerText = 'Satellite';
+        if (btnIcon) btnIcon.innerText = '🛰️';
+      }
+    }
+    window.toggleKisanBasemap = toggleKisanBasemap;
+
+    function renderLeafletRadar(frame) {
+      if (!leafletMap || !frame) return;
+      const host = 'https://tilecache.rainviewer.com';
+      const tileUrl = `${host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`;
+
+      if (leafletRadarLayer) leafletMap.removeLayer(leafletRadarLayer);
+      leafletRadarLayer = L.tileLayer(tileUrl, {
+        opacity: 0.85,
+        zIndex: 100,
+        maxNativeZoom: 7,
+        maxZoom: 19
+      }).addTo(leafletMap);
+    }
+
+    // --- STATION TELEMETRY (Open-Meteo) ---
+    async function fetchStationTelemetry(lat, lon, label) {
+      const locLabelEl = document.getElementById('station-loc-label');
+      if (locLabelEl && label) locLabelEl.innerText = label;
+
+      try {
+        let current = null;
+        try {
+          const resp = await fetch(`/api/weather/station?lat=${lat}&lon=${lon}`);
+          if (resp.ok) {
+            const j = await resp.json();
+            current = j.current;
+          }
+        } catch(_) {}
+
+        if (!current) {
+          const directUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,wind_speed_10m,precipitation&hourly=precipitation_probability&timezone=Asia%2FKolkata`;
+          const resp = await fetch(directUrl);
+          const data = await resp.json();
+          current = data.current;
+        }
+
+        if (current) {
+          document.getElementById('station-temp').innerText = `${current.temperature_2m} °C`;
+          document.getElementById('station-feels').innerText = `${current.apparent_temperature} °C`;
+          document.getElementById('station-pressure').innerText = `${current.surface_pressure} hPa`;
+          document.getElementById('station-wind').innerText = `${current.wind_speed_10m} km/h`;
+          document.getElementById('station-humidity').innerText = `${current.relative_humidity_2m} %`;
+          const rEl = document.getElementById('station-rain');
+          if (rEl) {
+            const mm = current.precipitation !== undefined ? current.precipitation : 0;
+            const prob = (current.hourly_precipitation_probability !== undefined) ? current.hourly_precipitation_probability : 0;
+            rEl.innerText = `${mm} mm (${prob}% chance)`;
+          }
+        }
+      } catch (err) {
+        console.warn('Station telemetry fetch error:', err);
+      }
+    }
+
+    // --- SEARCH & FLY-TO ---
+    function setupSearchHandler() {
+      const input = document.getElementById('weather-search');
+      if (!input) return;
+      input.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          const query = input.value.trim().toLowerCase();
+          if (!query) return;
+
+          const stormMatch = activeCyclonesData.find(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
+          if (stormMatch) {
+            selectAndFocusStorm(stormMatch);
+            return;
+          }
+
+          // Check landmark database first
+          const lm = GEOGRAPHIC_LANDMARKS.find(l => l.name.toLowerCase().includes(query));
+          if (lm) {
+            inspectCoordinatePrecipitation(lm.lat, lm.lon, lm.name);
+            return;
+          }
+
+          try {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const results = await resp.json();
+            if (results && results.length) {
+              const r = results[0];
+              const lat = parseFloat(r.lat);
+              const lon = parseFloat(r.lon);
+              inspectCoordinatePrecipitation(lat, lon, r.display_name.split(',')[0]);
+            }
+          } catch(err) {
+            console.warn('Geocoding error:', err);
+          }
+        }
+      });
+    }
+  </script>
+  <!-- Accessible Semantic Text for Search Crawlers -->
+  <main class="sr-only">
+    <h1>Atmospheric Command, Doppler Radar &amp; Indian District Kisan Weather</h1>
+    <p>Orbital Eye Weather Engine integrates real-time global Doppler radar precipitation mosaics, tropical cyclone storm cones, and high-resolution numerical weather prediction (NWP) models into an interactive 3D WebGL atmosphere.</p>
+
+    <section>
+      <h2>Available Meteorological Layers &amp; Satellite Feeds</h2>
+      <ul>
+        <li><strong>RainViewer Doppler Radar Mosaic:</strong> Multi-band radar reflectivity (dBZ) and precipitation rates updated every 10 minutes.</li>
+        <li><strong>Active Tropical Cyclones:</strong> Real-time storm tracks, central pressure estimates, wind speeds, and forecast cones from NOAA National Hurricane Center (NHC) and India Meteorological Department (IMD).</li>
+        <li><strong>NASA FIRMS Active Fires:</strong> Satellite-detected thermal hotspots from MODIS and VIIRS instruments.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Indian District Boundaries &amp; Farmer Weather System</h2>
+      <p>Features 594 verified multi-polygon district boundaries across all 28 States and 7 Union Territories of India, based on Survey of India and Census baselines. Farmers can search any district, view its exact boundary highlight, and access localized Open-Meteo NWP forecasts (temperature, precipitation mm, humidity %, wind, and crop advisories).</p>
+      <p><strong>Scientific Limitations:</strong> District forecasts are evaluated at representative district central coordinates. Local agricultural microclimates, taluk terrain variations, and localized showers may cause localized differences.</p>
+    </section>
+
+    <nav aria-label="Related Space Observatory Tools">
+      <h2>Related Observatory Views</h2>
+      <ul>
+        <li><a href="/" title="Orbital Eye Space Observatory Home">Orbital Eye Home — Full 3D Solar System simulation</a></li>
+        <li><a href="/earth" title="Live Earth Satellites">Live Earth Satellites — LEO/GEO orbits, ISS, and ISRO Cartosat tracking</a></li>
+        <li><a href="/asteroids" title="Near-Earth Asteroids">Near-Earth Asteroids — 2,200+ planetary defense asteroid orbits and close approaches</a></li>
+        <li><a href="/deepspace" title="Deep Space Missions">Deep Space Missions — JWST, Aditya-L1 halo orbit, and Voyager probes</a></li>
+        <li><a href="/alert" title="Satellite Pass Predictions">OrbitAlert — Topocentric pass predictions and NOAA space weather alerts</a></li>
+      </ul>
+    </nav>
+  </main>
+  <!-- Resilient Client, Status Alerts, User Preferences & PWA Engine -->
+  <script type="module" src="js/resilient-client.js"></script>
+  <script type="module" src="js/user-preferences.js"></script>
+  <script type="module" src="js/status-manager.js"></script>
+  <script type="module" src="js/pwa-manager.js"></script>
+  <script src="js/farmer-district-map.js"></script>
+  <script src="js/universal_location_alerts.js"></script>
+  <script src="js/jarvis.js"></script>
+
+  <!-- ==================== BACK TO TOP & MR. SINGH FOOTER ==================== -->
+  <footer id="orbital-footer" class="w-full bg-slate-950/95 border-t border-slate-800/80 px-4 py-6 text-center text-xs font-mono text-slate-400 space-y-3 z-30">
+    <div class="max-w-5xl mx-auto flex flex-col items-center justify-center gap-3">
+      <!-- Back to Top Button -->
+      <div>
+        <button id="btn-back-to-top" onclick="window.scrollToOrbitalTop()" aria-label="Back to Top" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 transition shadow-lg text-xs font-bold cursor-pointer select-none min-h-[44px] min-w-[140px]">
+          <i class="fa-solid fa-arrow-up text-xs"></i>
+          <span>Back to Top</span>
+        </button>
+      </div>
+
+      <!-- Quick Observatories Directory -->
+      <nav aria-label="Observatory Directory" class="flex flex-wrap justify-center gap-3 text-[11px] text-slate-400">
+        <a href="/" class="hover:text-cyan-300 transition">Home</a>
+        <span>•</span>
+        <a href="/solar-system" class="hover:text-cyan-300 transition">Solar System</a>
+        <span>•</span>
+        <a href="/earth" class="hover:text-cyan-300 transition">Earth Satellites</a>
+        <span>•</span>
+        <a href="/deepspace" class="hover:text-cyan-300 transition">Deep Space</a>
+        <span>•</span>
+        <a href="/asteroids" class="hover:text-cyan-300 transition">Asteroids</a>
+        <span>•</span>
+        <a href="/atmosphere" class="hover:text-cyan-300 transition">Atmosphere &amp; Weather</a>
+        <span>•</span>
+        <a href="/air-quality" class="hover:text-cyan-300 transition">Air Quality (CPCB)</a>
+        <span>•</span>
+        <a href="/alert" class="hover:text-cyan-300 transition">OrbitAlert</a>
+      </nav>
+
+      <!-- Exact Footer Credit -->
+      <div class="pt-2 border-t border-slate-900 w-full text-slate-400 font-medium text-xs">
+        Created by Mr. Singh
+      </div>
+    </div>
+  </footer>
+  <script>
+    window.scrollToOrbitalTop = function() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+      document.querySelectorAll('.overflow-y-auto, aside, main, .drawer-content').forEach(el => {
+        try { el.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); } catch(_) {}
+      });
+    };
+  </script>
+
+</body>
+</html>

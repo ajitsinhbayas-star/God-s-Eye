@@ -456,11 +456,13 @@ async function runLiveServerDiagnostics() {
 
   const publicPages = [
     { name: 'Homepage /', path: '/', expectedKeyword: 'Orbital Eye', canonicalSuffix: '' },
+    { name: 'Solar System', path: '/solar-system', expectedKeyword: 'Solar System', canonicalSuffix: '/solar-system' },
     { name: 'Earth & Satellites', path: '/earth', expectedKeyword: 'Satellite Tracking', canonicalSuffix: '/earth' },
-    { name: 'Atmosphere & Weather', path: '/weather', expectedKeyword: 'Atmosphere', canonicalSuffix: '/weather' },
     { name: 'Deep Space', path: '/deepspace', expectedKeyword: 'Deep Space', canonicalSuffix: '/deepspace' },
     { name: 'Asteroids', path: '/asteroids', expectedKeyword: 'Asteroids', canonicalSuffix: '/asteroids' },
-    { name: 'Orbital Alerts', path: '/orbitalert', expectedKeyword: 'Orbital Alerts', canonicalSuffix: '/orbitalert' }
+    { name: 'Atmosphere & Weather', path: '/atmosphere', expectedKeyword: 'Atmosphere', canonicalSuffix: '/atmosphere' },
+    { name: 'Air Quality Observatory', path: '/air-quality', expectedKeyword: 'Air Quality', canonicalSuffix: '/air-quality' },
+    { name: 'Alert', path: '/alert', expectedKeyword: 'Alert', canonicalSuffix: '/alert' }
   ];
 
   for (const page of publicPages) {
@@ -473,6 +475,26 @@ async function runLiveServerDiagnostics() {
     assert(html.includes('property="og:title"'), `${page.name} contains Open Graph tags`);
     assert(html.includes('name="twitter:card"'), `${page.name} contains Twitter Card tags`);
     assert(html.includes('application/ld+json'), `${page.name} includes JSON-LD structured data`);
+  }
+
+
+  // Backward-compatible 301 Permanent Redirects Verification
+  const legacyRedirects = [
+    { from: '/weather', to: '/atmosphere' },
+    { from: '/weather.html', to: '/atmosphere' },
+    { from: '/orbitalert', to: '/alert' },
+    { from: '/orbitalert.html', to: '/alert' },
+    { from: '/airquality', to: '/air-quality' },
+    { from: '/airquality.html', to: '/air-quality' },
+    { from: '/index.html', to: '/' },
+    { from: '/deepspace.html', to: '/deepspace' },
+    { from: '/solar-system.html', to: '/solar-system' }
+  ];
+
+  for (const r of legacyRedirects) {
+    const res = await testEndpoint(`Legacy 301 Redirect: ${r.from}`, r.from, { redirect: 'manual' });
+    const location = res.headers?.get('location') || '';
+    assert(res.status === 301 && location.endsWith(r.to), `Legacy ${r.from} cleanly redirects 301 to ${r.to}`);
   }
 
   // Sentinel Admin robots exclusion check
@@ -491,7 +513,7 @@ async function runLiveServerDiagnostics() {
   const sitemapRes = await testEndpoint('Dynamic Sitemap.xml', '/sitemap.xml');
   assert(sitemapRes.status === 200, 'sitemap.xml returns HTTP 200 OK');
   const sitemapXml = typeof sitemapRes.body === 'string' ? sitemapRes.body : JSON.stringify(sitemapRes.body);
-  assert(sitemapXml.includes('<urlset') && sitemapXml.includes('/earth') && sitemapXml.includes('/weather') && sitemapXml.includes('/deepspace'), 'sitemap.xml contains valid XML URLset with all public pages');
+  assert(sitemapXml.includes('<urlset') && sitemapXml.includes('/earth') && sitemapXml.includes('/atmosphere') && sitemapXml.includes('/solar-system') && sitemapXml.includes('/air-quality'), 'sitemap.xml contains valid XML URLset with all 8 public pages');
 
   // PHASE 7: AIR QUALITY OBSERVATORY & CPCB NAQI VERIFICATION
   console.log('\n--- Phase 7: Air Quality Observatory & CPCB NAQI Verification ---');

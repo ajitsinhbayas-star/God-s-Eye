@@ -1,0 +1,870 @@
+[
+  {
+    "sourcePage": "Home",
+    "element": "Solar System Explorer card",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Earth & Satellite Tracking card",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Deep Space Explorer card",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Asteroid Tracker card",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Atmosphere & Weather card",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Air Quality Observatory card",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Alert card",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Hero Kisan District Weather & Radar button",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Hero Launch 3D Solar System button",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Home",
+    "element": "Hero CPCB Air Quality Map button",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Home",
+    "expected": "/",
+    "actual": "/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Solar System",
+    "expected": "/solar-system",
+    "actual": "/solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Earth",
+    "expected": "/earth",
+    "actual": "/earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Deep Space",
+    "expected": "/deepspace",
+    "actual": "/deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Asteroids",
+    "expected": "/asteroids",
+    "actual": "/asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Atmosphere",
+    "expected": "/atmosphere",
+    "actual": "/atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Air Quality",
+    "expected": "/air-quality",
+    "actual": "/air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Nav Ribbon -> Alert",
+    "expected": "/alert",
+    "actual": "/alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /",
+    "expected": "200 OK (index.html)",
+    "actual": "200 (index.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /solar-system",
+    "expected": "200 OK (solar-system.html)",
+    "actual": "200 (solar-system.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /earth",
+    "expected": "200 OK (earth.html)",
+    "actual": "200 (earth.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /deepspace",
+    "expected": "200 OK (deep-space.html)",
+    "actual": "200 (deep-space.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /asteroids",
+    "expected": "200 OK (asteroids.html)",
+    "actual": "200 (asteroids.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /atmosphere",
+    "expected": "200 OK (atmosphere.html)",
+    "actual": "200 (atmosphere.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /air-quality",
+    "expected": "200 OK (air-quality.html)",
+    "actual": "200 (air-quality.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Server",
+    "element": "Direct GET /alert",
+    "expected": "200 OK (alert.html)",
+    "actual": "200 (alert.html)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /index.html",
+    "expected": "301 -> /",
+    "actual": "301 -> /",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /weather",
+    "expected": "301 -> /atmosphere",
+    "actual": "301 -> /atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /weather.html",
+    "expected": "301 -> /atmosphere",
+    "actual": "301 -> /atmosphere",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /orbitalert",
+    "expected": "301 -> /alert",
+    "actual": "301 -> /alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /orbitalert.html",
+    "expected": "301 -> /alert",
+    "actual": "301 -> /alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /orbital-alerts",
+    "expected": "301 -> /alert",
+    "actual": "301 -> /alert",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /airquality",
+    "expected": "301 -> /air-quality",
+    "actual": "301 -> /air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /airquality.html",
+    "expected": "301 -> /air-quality",
+    "actual": "301 -> /air-quality",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /deepspace.html",
+    "expected": "301 -> /deepspace",
+    "actual": "301 -> /deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /deep-space",
+    "expected": "301 -> /deepspace",
+    "actual": "301 -> /deepspace",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /solar-system.html",
+    "expected": "301 -> /solar-system",
+    "actual": "301 -> /solar-system",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /earth.html",
+    "expected": "301 -> /earth",
+    "actual": "301 -> /earth",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /asteroids.html",
+    "expected": "301 -> /asteroids",
+    "actual": "301 -> /asteroids",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express 404",
+    "element": "Unknown route GET /non-existent-trajectory-page",
+    "expected": "HTTP 404 with 404.html",
+    "actual": "404 (404.html served)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express 404",
+    "element": "Unknown API route GET /api/non-existent-endpoint",
+    "expected": "HTTP 404 JSON",
+    "actual": "404 (JSON=true)",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Voyager 1 radar button",
+    "expected": "/solar-system#/sc_voyager_1",
+    "actual": "/solar-system#/sc_voyager_1",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "James Webb radar button",
+    "expected": "/solar-system#/jwst",
+    "actual": "/solar-system#/jwst",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Perseverance radar button",
+    "expected": "/solar-system#/perseverance",
+    "actual": "/solar-system#/perseverance",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "ESA JUICE radar button",
+    "expected": "/solar-system#/juice",
+    "actual": "/solar-system#/juice",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Aditya-L1 radar button",
+    "expected": "/solar-system#/aditya_l1",
+    "actual": "/solar-system#/aditya_l1",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Europa Clipper radar button",
+    "expected": "/solar-system#/europa_clipper",
+    "actual": "/solar-system#/europa_clipper",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Bennu asteroid radar button",
+    "expected": "/asteroids#/bennu",
+    "actual": "/asteroids#/bennu",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Apophis asteroid radar button",
+    "expected": "/asteroids#/apophis",
+    "actual": "/asteroids#/apophis",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Alert Page",
+    "element": "Planets table 3D orbit generator",
+    "expected": "/solar-system#/",
+    "actual": "/solar-system#/",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open home\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open solar system\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open Earth\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open satellite tracking\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open deep space\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open asteroids\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open atmosphere\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open air quality\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open alerts\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"FOCUS_ISS navigates to /earth when on Home\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "index.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "solar-system.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "earth.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "deep-space.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "asteroids.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "atmosphere.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "air-quality.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "alert.html",
+    "element": "Universal a[href] remapper",
+    "expected": "Remaps all anchors on file: and web",
+    "actual": "Active",
+    "status": "PASS"
+  }
+]

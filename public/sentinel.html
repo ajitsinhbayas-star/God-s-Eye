@@ -1,818 +1,1195 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
-
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SENTINEL // Primary Orbital Mission Control &amp; Data Ingestion Bridge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <title>Sentinel Operations Console — Orbital Eye Mission Control</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // --- 6. MULTI-PAGE PIPELINE TELEMETRY & SENTINEL BOT SELF-CORRECTION ---
-    function getApiBase() {
-      return window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
-    }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-    async function fetchLivePipelineStatus() {
-      try {
-        const resp = await fetch(getApiBase() + '/api/sentinel/pipeline-status', { credentials: 'include' });
-        if (resp.ok) {
-          const data = await resp.json();
-          logAudit('PIPELINE', 'Pipeline status inspected: all 5 3D viewports certified nominal.');
-          console.log('[Pipeline Status]:', data);
-        }
-      } catch (err) {
-        console.warn('Pipeline status fetch warning (running in standalone/local mode):', err.message);
-        logAudit('PIPELINE', 'Sentinel operational in standalone/offline mode.');
-      }
-    }
-
-    async function executeSentinelBotCorrection() {
-      const btn = document.getElementById('btn-bot-correct');
-      const term = document.getElementById('bot-audit-terminal');
-      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> RUNNING BOT AUDIT...';
-      if (term) {
-        term.innerHTML = '<div class="text-cyan-400">> Initiating comprehensive Sentinel Bot self-correction sweep...</div>';
-      }
-
-      try {
-        const resp = await fetch(getApiBase() + '/api/sentinel/auto-correct', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const resData = await resp.json();
-
-        if (term) {
-          term.innerHTML += '<div class="text-emerald-400">> [SUCCESS] ' + (resData.systemState || 'All systems verified') + '</div>';
-          if (Array.isArray(resData.actions)) {
-            resData.actions.forEach(act => {
-              term.innerHTML += '<div class="text-slate-300">  ✓ ' + act + '</div>';
-            });
-          }
-          term.innerHTML += '<div class="text-cyan-300">> Sentinel Bot certified all viewports: Earth, Atmosphere, Solar, Deep Space, Asteroids.</div>';
-        }
-
-        logAudit('SENTINEL_BOT', 'Executed automatic system health and correction sweep.');
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> AUDIT COMPLETE';
-      } catch (err) {
-        // Fallback for standalone file:// or offline mode
-        if (term) {
-          term.innerHTML += '<div class="text-emerald-400">> [LOCAL FALLBACK] Sentinel Bot local diagnostics active.</div>';
-          term.innerHTML += '<div class="text-slate-300">  ✓ Local cache checked & verified.</div>';
-          term.innerHTML += '<div class="text-slate-300">  ✓ 3D Viewport pipelines certified nominal.</div>';
-          term.innerHTML += '<div class="text-cyan-300">> Standalone self-correction sweep completed successfully.</div>';
-        }
-        logAudit('SENTINEL_BOT', 'Executed local offline self-correction sweep.');
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> AUDIT COMPLETE (LOCAL)';
-      }
-    }
-
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+    
+    :root {
+      color-scheme: dark;
+    }
+
     body {
-      background-color: #02070e;
-      color: #00ff66;
-      font-family: 'JetBrains Mono', monospace;
-      font-variant-numeric: tabular-nums;
+      background-color: #020617;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
     }
-    .hud-card {
-      background: rgba(3, 14, 8, 0.94);
-      border: 1px solid rgba(0, 255, 102, 0.35);
-      border-radius: 12px;
-      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(0, 255, 102, 0.15);
-      backdrop-filter: blur(12px);
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
     }
-    .tab-btn {
-      background: rgba(0, 255, 102, 0.08);
-      border: 1px solid rgba(0, 255, 102, 0.3);
-      border-radius: 8px;
-      color: #7ee7a6;
-      padding: 7px 14px;
-      font-size: 11px;
+
+    .hud-panel {
+      background: rgba(10, 20, 40, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+    }
+
+    .hud-panel:hover {
+      border-color: rgba(14, 165, 233, 0.35);
+    }
+
+    .tab-nav-btn {
+      transition: all 0.2s ease;
+      min-height: 44px;
+    }
+
+    .tab-nav-btn.active {
+      background: rgba(14, 165, 233, 0.15);
+      border-color: rgba(14, 165, 233, 0.6);
+      color: #38bdf8;
       font-weight: 700;
-      transition: all 0.2s;
-      cursor: pointer;
-      white-space: nowrap;
     }
-    .tab-btn:hover, .tab-btn.active {
-      background: rgba(0, 255, 102, 0.25);
-      border-color: #00ff66;
-      color: #00ff66;
-      box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
+
+    .cosmic-radial {
+      background: radial-gradient(circle at 50% 10%, rgba(14, 165, 233, 0.12) 0%, rgba(2, 6, 23, 1) 75%);
     }
-    input, select, textarea {
-      background: rgba(0, 0, 0, 0.7) !important;
-      border: 1px solid rgba(0, 255, 102, 0.4) !important;
-      color: #ffffff !important;
-      font-family: 'JetBrains Mono', monospace !important;
-      font-size: 11px !important;
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #00f0ff !important;
-      box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="cosmic-radial">
 
-  <!-- Top Command Bar -->
-  <header class="bg-black/90 border-b border-emerald-500/40 p-3 sticky top-0 z-50 flex items-center justify-between flex-wrap gap-2">
-    <div class="flex items-center gap-3">
-      <a href="index.html" class="flex items-center gap-2.5 text-left no-underline group" title="Return to Public 3D Explorer">
-        <span class="w-8 h-8 rounded-xl bg-emerald-950/90 border border-emerald-500/50 flex items-center justify-center text-emerald-400 group-hover:border-emerald-300 transition shadow-lg">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        </span>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs sm:text-sm font-bold text-white tracking-widest uppercase">SENTINEL MISSION CONTROL</span>
-            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40 font-bold">ROOT ADMIN</span>
+  <!-- TOP COMMAND BAR -->
+  <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Mission Title -->
+      <div class="flex items-center justify-between w-full sm:w-auto">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-950/80 border border-cyan-500/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            <i class="fa-solid fa-shield-halved text-base"></i>
           </div>
-          <span class="text-[10px] text-emerald-400/80 font-sans block">Primary Telemetry Ingestion, Gateway Supervisor &amp; Injector Deck</span>
+          <div>
+            <div class="font-bold text-sm text-white font-mono flex items-center gap-2">
+              <span>SENTINEL</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40">OPERATIONS CONSOLE</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono">Orbital Eye Central Automation &amp; Provider Registry</div>
+          </div>
         </div>
-      </a>
-    </div>
 
-    <!-- Navigation Views -->
-    <div class="flex items-center gap-1.5 overflow-x-auto text-xs">
-      <button onclick="switchDeckTab('injection')" id="deck-btn-injection" class="tab-btn active">
-        <i class="fa-solid fa-syringe mr-1"></i> 1. INGESTION &amp; INJECTOR
-      </button>
-      <button onclick="switchDeckTab('sources')" id="deck-btn-sources" class="tab-btn">
-        <i class="fa-solid fa-server mr-1"></i> 2. SOURCE API MATRIX (18)
-      </button>
-      <button onclick="switchDeckTab('defcon')" id="deck-btn-defcon" class="tab-btn">
-        <i class="fa-solid fa-triangle-exclamation mr-1"></i> 3. DEFCON &amp; ALERT OVERRIDE
-      </button>
-      <button onclick="switchDeckTab('workers')" id="deck-btn-workers" class="tab-btn">
-        <i class="fa-solid fa-microchip mr-1"></i> 4. DAEMON WORKERS
-      </button>
-      <button onclick="switchDeckTab('audit')" id="deck-btn-audit" class="tab-btn">
-        <i class="fa-solid fa-terminal mr-1"></i> 5. AUDIT LOGS
-      </button>
-      <button onclick="switchDeckTab('pipeline')" id="deck-btn-pipeline" class="tab-btn">
-        <i class="fa-solid fa-network-wired mr-1"></i> 6. PIPELINE &amp; DATA INJECTION STATUS
-      </button>
-    </div>
-
-    <div class="relative flex items-center gap-2 text-xs">
-      <!-- Single Unified Viewports Launcher Button -->
-      <button onclick="togglePublicViewportsMenu(event)" id="btn-viewports-launcher" class="px-3 py-1.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono font-bold transition flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.35)] cursor-pointer">
-        <i class="fa-solid fa-satellite-dish text-cyan-400"></i>
-        <span>PUBLIC VIEWPORTS</span>
-        <span class="text-[9px] text-slate-400">▾</span>
-      </button>
-
-      <!-- Viewports Dropdown Tab / List -->
-      <div id="viewports-dropdown-menu" class="hidden absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[#030917]/95 backdrop-blur-2xl border border-cyan-500/50 p-2.5 shadow-2xl z-[100] space-y-1.5 font-mono text-xs">
-        <div class="text-[10px] text-cyan-400 uppercase tracking-wider font-bold px-2 py-1 border-b border-slate-800 flex justify-between items-center">
-          <span>Active 3D Viewports</span>
-          <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.2 rounded">6 SITES</span>
-        </div>
-        <a href="index.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-amber-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">☀️</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-amber-300">Solar System 3D</div>
-              <div class="text-[9px] text-slate-400">Keplerian orbits & helio physics</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-amber-400 font-bold">OPEN ↗</span>
-        </a>
-        <a href="earth.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-cyan-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">🌍</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-cyan-300">Earth Orbit & Satellites</div>
-              <div class="text-[9px] text-slate-400">SGP4/J2 propagation & ISS tracking</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-cyan-400 font-bold">OPEN ↗</span>
-        </a>
-        <a href="weather.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-cyan-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">🌀</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-cyan-300">Atmosphere Radar</div>
-              <div class="text-[9px] text-slate-400">Doppler precipitation & cyclones</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-cyan-400 font-bold">OPEN ↗</span>
-        </a>
-        <a href="asteroids.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-rose-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">☄️</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-rose-300">Asteroids & Planetary Defense</div>
-              <div class="text-[9px] text-slate-400">Near-Earth objects & Apophis</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-rose-400 font-bold">OPEN ↗</span>
-        </a>
-        <a href="deepspace.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-fuchsia-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">🌌</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-fuchsia-300">Deep Space Probes</div>
-              <div class="text-[9px] text-slate-400">JWST, Voyager 1/2 & cosmic tiers</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-fuchsia-400 font-bold">OPEN ↗</span>
-        </a>
-        <a href="orbitalert.html" target="_blank" class="w-full px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-emerald-400/50 text-left text-white flex items-center justify-between no-underline transition group">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">🔔</span>
-            <div>
-              <div class="font-bold text-slate-100 group-hover:text-emerald-300">OrbitAlert Radar</div>
-              <div class="text-[9px] text-slate-400">Observer pass predictions & DSN</div>
-            </div>
-          </div>
-          <span class="text-[10px] text-emerald-400 font-bold">OPEN ↗</span>
-        </a>
+        <!-- Mobile Menu Toggle Button -->
+        <button onclick="document.getElementById('mobile-tabs-menu').classList.toggle('hidden')" class="sm:hidden p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Toggle Navigation">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
       </div>
 
-      <button onclick="handleAdminLogout()" class="px-2.5 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 font-bold transition ml-1 flex items-center gap-1 cursor-pointer">
-        <span>Logout</span>
-        <span>➔</span>
-      </button>
+      <!-- Live Heartbeat & Action Buttons -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-end text-xs font-mono">
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px]">
+          <span id="system-heartbeat-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span id="system-status-pill" class="text-emerald-300 font-semibold">ALL SYSTEMS NOMINAL</span>
+        </div>
+
+        <button onclick="switchTab('quality'); loadDataQualityMetrics();" id="btn-quick-analysis" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-teal-500/50 text-teal-300 font-bold transition flex items-center gap-1.5 shadow-md min-h-[36px]" title="Run Instant Data Quality & Health Analysis">
+          <i class="fa-solid fa-chart-line text-xs"></i>
+          <span class="hidden sm:inline">Analysis</span>
+        </button>
+        <button onclick="triggerQuickSync('all')" id="btn-sync-all-header" class="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md min-h-[36px]" title="Run Full System Synchronization">
+          <i class="fa-solid fa-rotate text-xs"></i>
+          <span class="hidden md:inline">Sync Now</span>
+        </button>
+
+        <a href="/" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5 min-h-[36px] no-underline" title="Return to Public Platform">
+          <i class="fa-solid fa-house text-xs"></i>
+          <span class="hidden sm:inline">Public Home</span>
+        </a>
+        <button onclick="handleAdminLogout()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500 text-slate-300 hover:text-rose-300 transition flex items-center gap-1 min-h-[36px]" title="Sign Out of Mission Control">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i>
+          <span class="hidden sm:inline">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Tabs Drawer -->
+    <div id="mobile-tabs-menu" class="hidden sm:hidden pt-3 border-t border-slate-800 mt-2 grid grid-cols-2 gap-1 text-xs font-mono">
+      <button onclick="switchTab('overview')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">1. Overview</button>
+      <button onclick="switchTab('providers')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">2. Providers</button>
+      <button onclick="switchTab('workers')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">3. Workers</button>
+      <button onclick="switchTab('sync')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">4. Sync Center</button>
+      <button onclick="switchTab('quality')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">5. Data Quality</button>
+      <button onclick="switchTab('incidents')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">6. Incidents</button>
+      <button onclick="switchTab('activity')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">7. Activity Log</button>
+      <button onclick="switchTab('config')" class="p-2 rounded-lg bg-slate-900 text-left text-slate-200">8. Configuration</button>
     </div>
   </header>
 
-  <!-- Main Mission Control Surface -->
-  <main class="flex-1 p-4 max-w-7xl w-full mx-auto space-y-4">
+  <!-- NAVIGATION TABS (Desktop / Tablet) -->
+  <nav aria-label="Sentinel Subsystem Navigation" class="hidden sm:block max-w-7xl mx-auto w-full px-4 pt-4">
+    <div class="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-2xl border border-slate-800/80 overflow-x-auto no-scrollbar font-mono text-xs">
+      <button onclick="switchTab('overview')" id="tab-btn-overview" class="tab-nav-btn active px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-gauge-high text-xs"></i> <span>1. Overview</span>
+      </button>
+      <button onclick="switchTab('providers')" id="tab-btn-providers" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-server text-xs"></i> <span>2. Providers</span>
+      </button>
+      <button onclick="switchTab('workers')" id="tab-btn-workers" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-robot text-xs"></i> <span>3. Workers</span>
+      </button>
+      <button onclick="switchTab('sync')" id="tab-btn-sync" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-arrows-rotate text-xs"></i> <span>4. Sync Center</span>
+      </button>
+      <button onclick="switchTab('quality')" id="tab-btn-quality" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-circle-check text-xs"></i> <span>5. Data Quality</span>
+      </button>
+      <button onclick="switchTab('incidents')" id="tab-btn-incidents" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-triangle-exclamation text-xs"></i> <span>6. Incidents</span>
+      </button>
+      <button onclick="switchTab('activity')" id="tab-btn-activity" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-clock-rotate-left text-xs"></i> <span>7. Activity</span>
+      </button>
+      <button onclick="switchTab('config')" id="tab-btn-config" class="tab-nav-btn px-3 py-2 rounded-xl border border-transparent text-slate-300 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+        <i class="fa-solid fa-sliders text-xs"></i> <span>8. System Config</span>
+      </button>
+    </div>
+  </nav>
 
-    <!-- ==================== DECK TAB 1: DATA INGESTION & CRAFT INJECTOR ==================== -->
-    <section id="deck-panel-injection" class="space-y-4">
-      <div class="hud-card p-4">
-        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 mb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">LIVE TELEMETRY INJECTOR // BROADCAST TO ALL 3D VIEWERS</h2>
-          </div>
-          <span class="text-[10px] text-emerald-400">Target: index.html • earth.html • asteroids.html</span>
+  <!-- MAIN DASHBOARD CONTAINER -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
+
+    <!-- 1. SYSTEM OVERVIEW SECTION -->
+    <section id="section-overview" class="space-y-6">
+      
+      <!-- Top Metrics Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 font-mono">
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">SERVER UPTIME</div>
+          <div id="stat-uptime" class="text-xl sm:text-2xl font-black text-white">--</div>
+          <div class="text-[9px] text-slate-500 font-sans">Continuous background execution</div>
         </div>
-        <p class="text-[11px] text-slate-300 font-sans leading-relaxed mb-4">
-          Add or override any orbital vehicle, military satellite, or deep-space probe. Any entry saved here immediately injects into the active Three.js instanced engine across all pages without requiring a server reboot.
-        </p>
-
-        <form onsubmit="handleInjectSpacecraft(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Vehicle Name</label>
-            <input id="inj-name" type="text" required placeholder="e.g. CARTOSAT-3B / SHUKRAYAAN-1" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">NORAD Catalog ID</label>
-            <input id="inj-norad" type="number" required placeholder="e.g. 64201" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Target Orbit / Altitude (km)</label>
-            <input id="inj-alt" type="number" required placeholder="e.g. 520" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Inclination (degrees)</label>
-            <input id="inj-inc" type="number" step="0.01" required placeholder="e.g. 97.5" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Operating Agency</label>
-            <select id="inj-agency" class="w-full p-2 rounded-lg">
-              <option value="ISRO">🇮🇳 ISRO (India)</option>
-              <option value="NASA">🇺🇸 NASA (United States)</option>
-              <option value="ESA">🇪🇺 ESA (Europe)</option>
-              <option value="JAXA">🇯🇵 JAXA (Japan)</option>
-              <option value="SpaceX">SpaceX / Starlink</option>
-              <option value="MILITARY">Strategic Defense Fleet</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Orbital Domain</label>
-            <select id="inj-domain" class="w-full p-2 rounded-lg">
-              <option value="earth">Earth Orbit (LEO/GEO)</option>
-              <option value="solar">Heliocentric / Interplanetary</option>
-              <option value="asteroid">Asteroid Belt / NEA</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">HUD Beacon Color</label>
-            <select id="inj-color" class="w-full p-2 rounded-lg">
-              <option value="0x00f0ff">Cyan (#00f0ff)</option>
-              <option value="0xfbbf24">Amber (#fbbf24)</option>
-              <option value="0x10b981">Emerald (#10b981)</option>
-              <option value="0xf43f5e">Rose / Alert (#f43f5e)</option>
-              <option value="0xa855f7">Purple (#a855f7)</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <button type="submit" class="w-full py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20">
-              ⚡ Inject into Fleet
-            </button>
-          </div>
-          <div class="col-span-full">
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Mission Role / Payload Specifications</label>
-            <input id="inj-role" type="text" placeholder="0.25m High-Resolution Sub-Meter Reconnaissance and Dual Synthetic Aperture Radar" class="w-full p-2 rounded-lg">
-          </div>
-        </form>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">MEMORY ALLOCATION</div>
+          <div id="stat-memory" class="text-xl sm:text-2xl font-black text-cyan-300">-- MB</div>
+          <div class="text-[9px] text-slate-500 font-sans">V8 Heap &amp; Resident Set</div>
+        </div>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">RUNNING WORKERS</div>
+          <div id="stat-workers" class="text-xl sm:text-2xl font-black text-emerald-300">8 / 8</div>
+          <div class="text-[9px] text-slate-500 font-sans">Cadence-scheduled daemons</div>
+        </div>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">ACTIVE INCIDENTS</div>
+          <div id="stat-incidents" class="text-xl sm:text-2xl font-black text-slate-300">0</div>
+          <div class="text-[9px] text-slate-500 font-sans">Deduplicated exception logs</div>
+        </div>
       </div>
 
-      <!-- Injected Spacecraft Fleet Table -->
-      <div class="hud-card p-4">
-        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 mb-3">
-          <span class="text-xs font-bold text-white uppercase">CUSTOM INJECTED SPACECRAFT INVENTORY</span>
-          <button onclick="clearCustomFleet()" class="text-[10px] text-rose-400 hover:text-rose-300 underline font-bold">Clear All Injections</button>
+      <!-- Subsystem Pipeline Health Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Space & Astrodynamics -->
+        <div class="hud-panel p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="font-bold text-white text-xs font-mono flex items-center gap-2">
+              <i class="fa-solid fa-satellite text-cyan-400"></i>
+              <span>Space Astrodynamics &amp; SGP4</span>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40">ONLINE</span>
+          </div>
+          <div class="text-xs space-y-1 text-slate-300 font-sans">
+            <div class="flex justify-between"><span>Active Propagations:</span> <span class="font-mono text-cyan-300 font-bold">3,099+ Satellites</span></div>
+            <div class="flex justify-between"><span>ISS Telemetry Lock:</span> <span class="font-mono text-emerald-300">Live 5s Stream</span></div>
+            <div class="flex justify-between"><span>Space Weather:</span> <span class="font-mono text-amber-300">NOAA Kp Grid</span></div>
+          </div>
+          <button onclick="triggerQuickSync('space')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-cyan-300 transition">
+            Sync Space Feeds
+          </button>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead>
-              <tr class="border-b border-emerald-500/30 text-[10px] text-slate-400">
-                <th class="p-2">NAME</th>
-                <th class="p-2">NORAD</th>
-                <th class="p-2">ORBIT</th>
-                <th class="p-2">AGENCY</th>
-                <th class="p-2">ROLE</th>
-                <th class="p-2">ACTION</th>
-              </tr>
-            </thead>
-            <tbody id="injected-fleet-tbody" class="divide-y divide-slate-800"></tbody>
-          </table>
+
+        <!-- Atmospheric & Weather -->
+        <div class="hud-panel p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="font-bold text-white text-xs font-mono flex items-center gap-2">
+              <i class="fa-solid fa-cloud-bolt text-emerald-400"></i>
+              <span>Atmosphere &amp; Kisan District Desk</span>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40">ONLINE</span>
+          </div>
+          <div class="text-xs space-y-1 text-slate-300 font-sans">
+            <div class="flex justify-between"><span>Radar Doppler Feed:</span> <span class="font-mono text-cyan-300 font-bold">RainViewer 3m</span></div>
+            <div class="flex justify-between"><span>District Boundary Grid:</span> <span class="font-mono text-emerald-300">594 Districts</span></div>
+            <div class="flex justify-between"><span>Forecast Resolution:</span> <span class="font-mono text-slate-300">Open-Meteo NWP</span></div>
+          </div>
+          <button onclick="triggerQuickSync('atmosphere')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-emerald-300 transition">
+            Sync Atmosphere Feeds
+          </button>
+        </div>
+
+        <!-- Air Quality & Chemistry -->
+        <div class="hud-panel p-5 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="font-bold text-white text-xs font-mono flex items-center gap-2">
+              <i class="fa-solid fa-wind text-teal-400"></i>
+              <span>Air Quality &amp; CPCB NAQI</span>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40">ONLINE</span>
+          </div>
+          <div class="text-xs space-y-1 text-slate-300 font-sans">
+            <div class="flex justify-between"><span>Monitoring Standard:</span> <span class="font-mono text-cyan-300 font-bold">CPCB National AQI</span></div>
+            <div class="flex justify-between"><span>Continuous Stations:</span> <span class="font-mono text-emerald-300">22 CAAQMS Nodes</span></div>
+            <div class="flex justify-between"><span>Pollutant Channels:</span> <span class="font-mono text-slate-300">PM2.5, PM10, NO2, SO2</span></div>
+          </div>
+          <button onclick="triggerQuickSync('air_quality')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-teal-300 transition">
+            Sync Air Quality Feeds
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. PROVIDER REGISTRY SECTION -->
+    <section id="section-providers" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+            <span>External Provider Registry</span>
+            <span id="provider-count-badge" class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 text-xs">21 Providers</span>
+          </h2>
+          <p class="text-xs text-slate-400 font-sans">Live tracking of scientific space, atmospheric, and regulatory air quality networks.</p>
+        </div>
+        <button onclick="loadProvidersTable()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-slate-300 hover:text-white transition flex items-center gap-1.5 self-start sm:self-auto">
+          <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh Registry</span>
+        </button>
+      </div>
+
+      <div class="hud-panel p-2 overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 text-[11px]">
+              <th class="p-3">PROVIDER</th>
+              <th class="p-3">STATUS</th>
+              <th class="p-3">SUBSYSTEM</th>
+              <th class="p-3">LATENCY</th>
+              <th class="p-3">FRESHNESS</th>
+              <th class="p-3">LICENSING &amp; ATTRIBUTION</th>
+            </tr>
+          </thead>
+          <tbody id="providers-table-body" class="divide-y divide-slate-800/60">
+            <tr><td colspan="6" class="p-4 text-center text-slate-500">Loading live providers...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. WORKER MONITORING SECTION -->
+    <section id="section-workers" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+            <span>Automated Cadence Workers</span>
+            <span id="workers-count-badge" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs">8 Workers</span>
+          </h2>
+          <p class="text-xs text-slate-400 font-sans">Background schedulers with job locking, overlap prevention, and execution metrics.</p>
+        </div>
+        <button onclick="loadWorkersTable()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-slate-300 hover:text-white transition flex items-center gap-1.5 self-start sm:self-auto">
+          <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh Workers</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="workers-cards-grid">
+        <div class="hud-panel p-4 text-center text-slate-500 col-span-2">Loading active workers...</div>
+      </div>
+    </section>
+
+    <!-- 4. SYNCHRONIZATION CENTER SECTION -->
+    <section id="section-sync" class="hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono">Mission Synchronization Center</h2>
+        <p class="text-xs text-slate-400 font-sans">Trigger on-demand manual ingestion across individual subsystems or run a full platform sync.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono">Full Platform Sync</div>
+          <p class="text-xs text-slate-400 font-sans">Synchronizes all 8 background workers and normalizes all ingested space, weather, and air quality telemetry.</p>
+          <button onclick="triggerQuickSync('all')" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono text-xs transition">
+            Sync Entire System
+          </button>
+        </div>
+
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono">Space &amp; Satellites</div>
+          <p class="text-xs text-slate-400 font-sans">Fetches fresh CelesTrak TLE ephemeris, ISS state vector, and NOAA SWPC geomagnetic Kp indexes.</p>
+          <button onclick="triggerQuickSync('space')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-700 font-mono text-xs transition">
+            Sync Space Subsystem
+          </button>
+        </div>
+
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono">Atmosphere &amp; Weather</div>
+          <p class="text-xs text-slate-400 font-sans">Ingests RainViewer Doppler radar frames and evaluates benchmark Indian district NWP forecast points.</p>
+          <button onclick="triggerQuickSync('atmosphere')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 font-mono text-xs transition">
+            Sync Atmosphere
+          </button>
+        </div>
+
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono">Air Quality (CPCB)</div>
+          <p class="text-xs text-slate-400 font-sans">Queries CAAQMS continuous monitoring stations and recalculates CPCB National Air Quality sub-indices.</p>
+          <button onclick="triggerQuickSync('air_quality')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 border border-slate-700 font-mono text-xs transition">
+            Sync Air Quality
+          </button>
+        </div>
+      </div>
+
+      <!-- Sync Activity Log Output -->
+      <div class="hud-panel p-4 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-400 border-b border-slate-800 pb-2">
+          <span>SYNCHRONIZATION CONSOLE LOG</span>
+          <span id="sync-console-status" class="text-cyan-400">READY</span>
+        </div>
+        <div id="sync-terminal-output" class="font-mono text-xs text-slate-300 bg-slate-950/80 p-3 rounded-xl min-h-[120px] max-h-64 overflow-y-auto space-y-1">
+          <div class="text-slate-500">> Awaiting manual or scheduled trigger...</div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== DECK TAB 2: SOURCE API MATRIX (18 GATEWAYS) ==================== -->
-    <section id="deck-panel-sources" class="hidden space-y-4">
-      <div class="hud-card p-4">
-        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 mb-3 flex-wrap gap-2">
-          <div>
-            <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">OFFICIAL PROVIDER INGESTION MATRIX &amp; HEALTH GATEWAYS</h2>
-            <span class="text-[10px] text-slate-400">Centralized Truth-Testing System (Moved from OrbitAlert into Mission Control)</span>
-          </div>
-          <button onclick="pingAllGateways()" id="btn-ping-gateways" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition text-xs font-bold">
-            <i class="fa-solid fa-arrows-rotate mr-1"></i> PING ALL 18 GATEWAYS
-          </button>
+        <!-- 5. DATA QUALITY SECTION -->
+    <section id="section-quality" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-cyan-400"></i>
+            <span>Central Data Quality &amp; Ingestion Analysis</span>
+          </h2>
+          <p class="text-xs text-slate-400 font-sans">Enforces physical coordinate envelopes, orbital altitude bounds, and pollutant sufficiency standards across all 6 observatory data pipelines.</p>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead>
-              <tr class="border-b border-emerald-500/30 text-[10px] text-slate-400">
-                <th class="p-2">PROVIDER SERVICE</th>
-                <th class="p-2">ENDPOINT / PROTOCOL</th>
-                <th class="p-2">STATUS</th>
-                <th class="p-2">LATENCY</th>
-                <th class="p-2">DATA FRESHNESS</th>
-                <th class="p-2">INJECTION REGIME</th>
-              </tr>
-            </thead>
-            <tbody id="sources-gateways-tbody" class="divide-y divide-slate-800 text-[11px]"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== DECK TAB 3: DEFCON & ALERT OVERRIDE ==================== -->
-    <section id="deck-panel-defcon" class="hidden space-y-4">
-      <div class="hud-card p-4 space-y-3">
-        <div class="border-b border-emerald-500/30 pb-2">
-          <h2 class="text-xs sm:text-sm font-bold text-white uppercase">SYSTEM DEFCON STATUS OVERRIDE</h2>
-          <p class="text-[11px] text-slate-300 font-sans mt-0.5">Overrides the glowing DEFCON badge across the entire platform in real-time.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
-          <button onclick="setGlobalDefcon(5)" class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 font-bold text-xs text-left">
-            <div class="text-[10px] text-slate-400">PEACETIME</div>
-            ● DEFCON 5
-            <div class="text-[9px] text-slate-400 font-sans">Nominal spaceflight</div>
+        <div class="flex items-center gap-2">
+          <button onclick="runLiveTelemetryAudit()" id="btn-run-audit" class="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono text-xs transition flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-stethoscope"></i>
+            <span>Run Live Pipeline Audit</span>
           </button>
-          <button onclick="setGlobalDefcon(4)" class="p-3 rounded-xl bg-cyan-950/60 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 font-bold text-xs text-left">
-            <div class="text-[10px] text-slate-400">ENHANCED</div>
-            ● DEFCON 4
-            <div class="text-[9px] text-slate-400 font-sans">Increased surveillance</div>
-          </button>
-          <button onclick="setGlobalDefcon(3)" class="p-3 rounded-xl bg-amber-950/60 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold text-xs text-left">
-            <div class="text-[10px] text-slate-400">ELEVATED</div>
-            ● DEFCON 3
-            <div class="text-[9px] text-slate-400 font-sans">Solar storm / Conjunction</div>
-          </button>
-          <button onclick="setGlobalDefcon(2)" class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/50 hover:border-rose-400 text-rose-300 font-bold text-xs text-left">
-            <div class="text-[10px] text-slate-400">WARNING</div>
-            ● DEFCON 2
-            <div class="text-[9px] text-slate-400 font-sans">Imminent sub-km pass</div>
-          </button>
-          <button onclick="setGlobalDefcon(1)" class="p-3 rounded-xl bg-red-950/80 border border-red-500 hover:border-red-400 text-red-200 font-bold text-xs text-left animate-pulse">
-            <div class="text-[10px] text-red-400">CRITICAL</div>
-            ● DEFCON 1
-            <div class="text-[9px] text-slate-300 font-sans">Active collision screening</div>
+          <button onclick="loadDataQualityMetrics()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-slate-300 hover:text-white transition flex items-center gap-1">
+            <i class="fa-solid fa-arrows-rotate"></i>
           </button>
         </div>
       </div>
 
-      <!-- Conjunction Alert Injector -->
-      <div class="hud-card p-4 space-y-3">
-        <div class="border-b border-emerald-500/30 pb-2">
-          <h2 class="text-xs sm:text-sm font-bold text-white uppercase">INJECT LIVE CONJUNCTION / COLLISION ALERT TICKER</h2>
-          <p class="text-[11px] text-slate-300 font-sans mt-0.5">Pushes a dynamic alert directly to the floating ticker across 3D viewports.</p>
+      <!-- Quality Metrics & Integrity Bar -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono">
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">INTEGRITY SCORE</div>
+          <div id="quality-score" class="text-2xl font-black text-emerald-400">100%</div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 mt-2">
+            <div id="quality-score-bar" class="bg-emerald-400 h-1.5 rounded-full" style="width: 100%"></div>
+          </div>
         </div>
-        <form onsubmit="handleInjectAlert(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Target Satellite A</label>
-            <input id="inj-alert-sat1" type="text" required placeholder="e.g. CARTOSAT-3" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Target Satellite B / Debris</label>
-            <input id="inj-alert-sat2" type="text" required placeholder="e.g. COSMOS-1408 DEBRIS" class="w-full p-2 rounded-lg">
-          </div>
-          <div>
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Miss Distance (km)</label>
-            <input id="inj-alert-dist" type="number" step="0.01" required placeholder="e.g. 0.42" class="w-full p-2 rounded-lg">
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block text-[10px] text-slate-400 font-bold uppercase mb-1">Warning Description</label>
-            <input id="inj-alert-desc" type="text" required placeholder="High Probability Collision Conjunction screening" class="w-full p-2 rounded-lg">
-          </div>
-          <div class="flex items-end">
-            <button type="submit" class="w-full py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider transition">
-              🚨 Broadcast Alert
-            </button>
-          </div>
-        </form>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">RECORDS FETCHED</div>
+          <div id="quality-fetched" class="text-2xl font-black text-white">--</div>
+          <div class="text-[9px] text-slate-500 font-sans">Raw upstream records</div>
+        </div>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">RECORDS ACCEPTED</div>
+          <div id="quality-accepted" class="text-2xl font-black text-emerald-300">--</div>
+          <div class="text-[9px] text-slate-500 font-sans">Validated &amp; normalized</div>
+        </div>
+        <div class="hud-panel p-4 space-y-1">
+          <div class="text-[10px] text-slate-400">RECORDS REJECTED</div>
+          <div id="quality-rejected" class="text-2xl font-black text-rose-300">0</div>
+          <div class="text-[9px] text-slate-500 font-sans">Exceeded physical envelopes</div>
+        </div>
       </div>
-    </section>
 
-    <!-- ==================== DECK TAB 4: DAEMON WORKERS ==================== -->
-    <section id="deck-panel-workers" class="hidden space-y-4">
-      <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-    </section>
-
-    <!-- ==================== DECK TAB 5: AUDIT LOGS ==================== -->
-    <section id="deck-panel-audit" class="hidden space-y-4">
-      <div class="hud-card p-4 space-y-2">
-        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2">
-          <span class="text-xs font-bold text-white uppercase">LIVE MISSION CONTROL AUDIT &amp; INGESTION LOG</span>
-          <button onclick="clearAuditLogs()" class="text-[10px] text-slate-400 hover:text-white underline">Clear Logs</button>
-        </div>
-        <div id="audit-logs-container" class="max-h-96 overflow-y-auto space-y-1 text-[11px] p-2 bg-black/60 rounded-lg"></div>
-      </div>
-    </section>
-      <!-- ==================== DECK TAB 6: MULTI-PAGE PIPELINE & DATA INJECTION STATUS ==================== -->
-    <section id="deck-panel-pipeline" class="hidden space-y-4">
-      <div class="hud-card p-4 space-y-3">
-        <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 flex-wrap gap-2">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-            <div>
-              <h2 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">CROSS-PAGE DATA INGESTION &amp; LIVE PIPELINE MONITOR</h2>
-              <span class="text-[10px] text-slate-400 font-sans">Full inspection &amp; self-correcting telemetry bridge across all viewports</span>
-            </div>
+      <!-- Live Cross-Page Ingestion Pipelines Matrix -->
+      <div class="hud-panel p-5 space-y-3 font-mono">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="font-bold text-white text-sm flex items-center gap-2">
+            <i class="fa-solid fa-network-wired text-cyan-400"></i>
+            <span>Cross-Page Observatory Ingestion Pipelines</span>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="fetchLivePipelineStatus()" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono transition">
-              <i class="fa-solid fa-rotate mr-1"></i> Refresh Status
-            </button>
-            <button onclick="executeSentinelBotCorrection()" id="btn-bot-correct" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/50 text-[11px] font-mono font-bold transition shadow-[0_0_15px_rgba(0,255,102,0.3)]">
-              <i class="fa-solid fa-robot mr-1"></i> Sentinel Bot: Audit &amp; Auto-Correct
-            </button>
-          </div>
+          <span class="text-[10px] text-slate-400 font-sans">Real-time status of 6 specialized astronomical and environmental pipelines</span>
         </div>
 
-        <!-- 5-Viewport Health Matrix Grid -->
-        <div id="pipeline-status-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-          <!-- Card: Earth 3D Orbit -->
-          <div class="p-3 rounded-xl bg-black/60 border border-emerald-500/40 space-y-1.5">
+        <div id="pipelines-matrix-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">🌍 Earth Orbit Viewport</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">NOMINAL</span>
+              <span class="font-bold text-white flex items-center gap-1.5">🌍 Earth Satellites</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/earth.html</span></div>
-            <div class="text-[10px] text-slate-400">Inventory: 3,099+ Satellites (SGP4/J2 Secular Drift)</div>
-            <div class="text-[9px] text-emerald-400 font-mono">Status: Broadcast synced • Headlight active</div>
+            <div class="text-[10px] text-slate-400">SGP4 / J2 Secular Drift Engine • 3,099 Satellites</div>
+            <div class="text-[10px] text-cyan-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~18ms</span>
+              <a href="/earth" target="_blank" class="hover:underline text-slate-300">earth.html ↗</a>
+            </div>
           </div>
 
-          <!-- Card: Atmosphere & Meteorology -->
-          <div class="p-3 rounded-xl bg-black/60 border border-cyan-500/50 space-y-1.5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">🌀 Atmosphere Command</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">ONLINE</span>
+              <span class="font-bold text-white flex items-center gap-1.5">☀️ Solar System</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/weather.html</span></div>
-            <div class="text-[10px] text-slate-400">Stack: RainViewer Radar + Open-Meteo + 132 Cities LOD</div>
-            <div class="text-[9px] text-cyan-400 font-mono">Default View: Natural 3D • D-Pad Enabled</div>
+            <div class="text-[10px] text-slate-400">Keplerian Heliocentric + JPL Ephemeris • 12 Bodies</div>
+            <div class="text-[10px] text-cyan-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~24ms</span>
+              <a href="/solar-system" target="_blank" class="hover:underline text-slate-300">solar-system.html ↗</a>
+            </div>
           </div>
 
-          <!-- Card: Solar System -->
-          <div class="p-3 rounded-xl bg-black/60 border border-amber-500/40 space-y-1.5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">☀️ Solar System 3D</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">NOMINAL</span>
+              <span class="font-bold text-white flex items-center gap-1.5">🌾 Atmosphere &amp; Kisan</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/index.html</span></div>
-            <div class="text-[10px] text-slate-400">Keplerian solver: 12 Planets &amp; Moons • 8 Missions</div>
-            <div class="text-[9px] text-amber-400 font-mono">Heliocentric J2000 Ephemeris verified</div>
+            <div class="text-[10px] text-slate-400">RainViewer v2 Doppler + Open-Meteo • 594 Districts</div>
+            <div class="text-[10px] text-emerald-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~35ms</span>
+              <a href="/atmosphere" target="_blank" class="hover:underline text-slate-300">atmosphere.html ↗</a>
+            </div>
           </div>
 
-          <!-- Card: Deep Space & Cosmic Tiers -->
-          <div class="p-3 rounded-xl bg-black/60 border border-fuchsia-500/40 space-y-1.5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">🌌 Deep Space &amp; Cosmic Web</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 font-bold">NOMINAL</span>
+              <span class="font-bold text-white flex items-center gap-1.5">💨 Air Quality Observatory</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/deepspace.html</span></div>
-            <div class="text-[10px] text-slate-400">DESI DR1/DR2 Filament Web • 7 Macro Tiers</div>
-            <div class="text-[9px] text-fuchsia-400 font-mono">Extragalactic Redshift matrices active</div>
+            <div class="text-[10px] text-slate-400">Central Pollution Control Board (CPCB) NAQI • 22 CAAQMS</div>
+            <div class="text-[10px] text-teal-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~28ms</span>
+              <a href="/air-quality" target="_blank" class="hover:underline text-slate-300">air-quality.html ↗</a>
+            </div>
           </div>
 
-          <!-- Card: Asteroids & Defense -->
-          <div class="p-3 rounded-xl bg-black/60 border border-rose-500/40 space-y-1.5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">☄️ Asteroids &amp; Defense</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">NOMINAL</span>
+              <span class="font-bold text-white flex items-center gap-1.5">🌌 Deep Space</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">File: <span class="font-mono text-cyan-300">public/asteroids.html</span></div>
-            <div class="text-[10px] text-slate-400">NASA JPL CNEOS DE441 Ephemeris • Sentry Monitor</div>
-            <div class="text-[9px] text-rose-400 font-mono">2,200 NEAs screened • DEFCON Synced</div>
+            <div class="text-[10px] text-slate-400">DESI DR1/DR2 Filament Web + NASA NED</div>
+            <div class="text-[10px] text-purple-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~45ms</span>
+              <a href="/deepspace" target="_blank" class="hover:underline text-slate-300">deep-space.html ↗</a>
+            </div>
           </div>
 
-          <!-- Card: Cross-Page Satellite Injector -->
-          <div class="p-3 rounded-xl bg-black/60 border border-emerald-500/40 space-y-1.5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1.5 text-xs">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-xs">📡 Ingestion &amp; Broadcast Deck</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">ACTIVE</span>
+              <span class="font-bold text-white flex items-center gap-1.5">☄️ Asteroids (NEAs)</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">NOMINAL</span>
             </div>
-            <div class="text-[11px] text-slate-300">Channel: <span class="font-mono text-emerald-400">orbital_sync_timestamp</span></div>
-            <div class="text-[10px] text-slate-400">Real-time memory injection across active tabs</div>
-            <div class="text-[9px] text-emerald-400 font-mono">Zero-reboot custom craft broadcasting</div>
-          </div>
-        </div>
-
-        <!-- Terminal Output Area for Bot Self-Correction Audit -->
-        <div class="space-y-1 pt-2">
-          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">SENTINEL BOT AUDIT &amp; EXECUTION LOG</div>
-          <div id="bot-audit-terminal" class="p-3 rounded-xl bg-black/80 border border-slate-800 text-[11px] font-mono text-emerald-400 max-h-48 overflow-y-auto space-y-1">
-            <div class="text-slate-400">> System standing by. Click 'Sentinel Bot: Audit &amp; Auto-Correct' to run automated diagnostic and self-healing.</div>
+            <div class="text-[10px] text-slate-400">NASA JPL CNEOS Close-Approach Data • 2,200 NEAs</div>
+            <div class="text-[10px] text-amber-400 flex items-center justify-between pt-1 border-t border-slate-800/50">
+              <span>Latency: ~38ms</span>
+              <a href="/asteroids" target="_blank" class="hover:underline text-slate-300">asteroids.html ↗</a>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Live Audit Results Box (Hidden by default) -->
+      <div id="telemetry-audit-results" class="hidden hud-panel p-5 space-y-3 font-mono text-xs">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="font-bold text-emerald-400 flex items-center gap-2">
+            <i class="fa-solid fa-check-circle"></i>
+            <span>Live Telemetry Endpoints Audit Result</span>
+          </div>
+          <span id="audit-timestamp" class="text-[10px] text-slate-500"></span>
+        </div>
+        <div id="audit-endpoints-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"></div>
+      </div>
+
+      <!-- Active Scientific Validation Rules -->
+      <div class="hud-panel p-5 space-y-3 font-sans text-xs">
+        <div class="font-bold text-white font-mono text-sm border-b border-slate-800 pb-2">Active Scientific Validation Rules</div>
+        <ul class="space-y-2 text-slate-300">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> <span><strong>WGS84 Envelope:</strong> Strict validation of Latitude [-90°, +90°] and Longitude [-180°, +180°].</span></li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> <span><strong>Orbital Bound:</strong> LEO/GEO satellite altitudes clamped to physically plausible ranges [100 km, 50,000 km].</span></li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> <span><strong>Orbital Velocity:</strong> Earth-orbit velocities verified within celestial mechanics parameters [3.0 km/s, 12.0 km/s].</span></li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> <span><strong>Terrestrial Atmospheric Limits:</strong> Ground temperatures verified within realistic envelope [-60°C, +60°C].</span></li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> <span><strong>CPCB NAQI Sufficiency:</strong> Overall AQI calculation requires minimum presence of at least PM2.5 or PM10.</span></li>
+        </ul>
+      </div>
     </section>
+
+    <!-- 6. INCIDENT CENTER SECTION -->
+    <section id="section-incidents" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+            <span>Incident Management Center</span>
+            <span id="incident-count-badge" class="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 text-xs">0 Incidents</span>
+          </h2>
+          <p class="text-xs text-slate-400 font-sans">SQLite-backed deduplicating exception tracking with automatic token redaction.</p>
+        </div>
+        <button onclick="loadIncidentsList()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-slate-300 hover:text-white transition flex items-center gap-1.5 self-start sm:self-auto">
+          <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh Incidents</span>
+        </button>
+      </div>
+
+      <div class="hud-panel p-4 space-y-3" id="incidents-container">
+        <div class="text-center py-6 text-slate-500 font-mono text-xs">No active operational incidents recorded. All systems nominal.</div>
+      </div>
+    </section>
+
+        <!-- 7. ACTIVITY HISTORY SECTION -->
+    <section id="section-activity" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-cyan-400"></i>
+            <span>Structured Activity History &amp; Audit Trail</span>
+          </h2>
+          <p class="text-xs text-slate-400 font-sans">Real-time audit log of worker cycles, manual triggers, security events, and administrative interventions.</p>
+        </div>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+          <button onclick="exportLogsJson()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-slate-300 hover:text-emerald-300 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> <span>Export Audit JSON</span>
+          </button>
+          <button onclick="loadActivityLogs()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-mono text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search and Severity Filter Bar -->
+      <div class="hud-panel p-3 flex flex-col sm:flex-row gap-2.5 items-center justify-between text-xs font-mono">
+        <div class="w-full sm:w-72 relative">
+          <input id="logs-search-input" type="text" placeholder="Filter logs by keyword..." oninput="filterLogs()"
+            class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-cyan-400" />
+        </div>
+        <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+          <button onclick="setLogLevelFilter('ALL')" id="filter-btn-ALL" class="px-2.5 py-1 rounded-lg bg-cyan-600 text-slate-950 font-bold text-[10px]">ALL</button>
+          <button onclick="setLogLevelFilter('INFO')" id="filter-btn-INFO" class="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-300 border border-slate-700 text-[10px]">INFO</button>
+          <button onclick="setLogLevelFilter('WARN')" id="filter-btn-WARN" class="px-2.5 py-1 rounded-lg bg-slate-900 text-amber-300 border border-slate-700 text-[10px]">WARN</button>
+          <button onclick="setLogLevelFilter('ERROR')" id="filter-btn-ERROR" class="px-2.5 py-1 rounded-lg bg-slate-900 text-rose-300 border border-slate-700 text-[10px]">ERROR</button>
+        </div>
+      </div>
+
+      <div class="hud-panel p-4 font-mono text-xs overflow-x-auto">
+        <div id="activity-logs-container" class="space-y-2">
+          <div class="text-slate-500 text-center py-4">Loading operational activity logs...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. SYSTEM CONFIGURATION SECTION -->
+    <section id="section-config" class="hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-white font-mono">Protected System Controls &amp; Diagnostics</h2>
+        <p class="text-xs text-slate-400 font-sans">Administrative diagnostics, self-correction sweeps, and operational controls.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+            <span>Sentinel Bot Self-Correction Sweep</span>
+          </div>
+          <p class="text-xs text-slate-400 font-sans leading-relaxed">
+            Performs an automated health check, clears stalled worker overrides, flushes expired memory caches, and verifies cross-page broadcast channels.
+          </p>
+          <button onclick="runSentinelBotCorrection()" id="btn-bot-sweep" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold font-mono text-xs transition">
+            Run Self-Correction Sweep
+          </button>
+        </div>
+
+        <div class="hud-panel p-5 space-y-3">
+          <div class="text-sm font-bold text-white font-mono flex items-center gap-2">
+            <i class="fa-solid fa-file-waveform text-amber-400"></i>
+            <span>System Diagnostics &amp; Memory Flush</span>
+          </div>
+          <p class="text-xs text-slate-400 font-sans leading-relaxed">
+            Generates an authenticated operational diagnostics report containing event counts, heap usage, and database connection state.
+          </p>
+          <button onclick="generateDiagnosticsReport()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 font-mono text-xs transition">
+            Generate Diagnostics Report
+          </button>
+        </div>
+      </div>
+
+      <!-- Config Terminal Output -->
+      <div id="config-report-box" class="hidden hud-panel p-4 font-mono text-xs space-y-2">
+        <div class="text-slate-400 font-bold border-b border-slate-800 pb-2">DIAGNOSTICS REPORT OUTPUT</div>
+        <pre id="config-report-json" class="bg-slate-950/80 p-3 rounded-xl text-slate-300 overflow-x-auto"></pre>
+      </div>
+    </section>
+
   </main>
 
+  <!-- ==================== SENTINEL FOOTER ==================== -->
+  <footer class="w-full bg-slate-950/95 border-t border-slate-800/80 px-4 py-6 text-center text-xs font-mono text-slate-400 space-y-2 mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col items-center justify-center gap-2">
+      <div>Orbital Eye Mission Control // Sentinel Operations Subsystem</div>
+      <div class="text-[10px] text-slate-500">Strictly Protected Administrative Terminal • All Actions Logged &amp; Verified</div>
+      <div class="pt-2 border-t border-slate-900 w-full text-slate-400 font-medium text-xs">
+        Created by Mr. Singh
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT LOGIC & API CONTROLLER ==================== -->
   <script>
-    // --- 1. TAB SWITCHER ---
-    function switchDeckTab(tabKey) {
-      ['injection', 'sources', 'defcon', 'workers', 'audit', 'pipeline'].forEach(k => {
-        const p = document.getElementById('deck-panel-' + k);
-        const b = document.getElementById('deck-btn-' + k);
-        if (p) p.classList.toggle('hidden', k !== tabKey);
-        if (b) b.classList.toggle('active', k === tabKey);
+    function getApiBase() {
+      return window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      const sections = ['overview', 'providers', 'workers', 'sync', 'quality', 'incidents', 'activity', 'config'];
+      sections.forEach(s => {
+        const el = document.getElementById('section-' + s);
+        const btn = document.getElementById('tab-btn-' + s);
+        if (el) el.classList.toggle('hidden', s !== tabId);
+        if (btn) btn.classList.toggle('active', s === tabId);
       });
-      if (tabKey === 'sources') renderSourcesTable();
-      if (tabKey === 'workers') renderWorkersDeck();
-      if (tabKey === 'audit') renderAuditLogs();
-      if (tabKey === 'pipeline') fetchLivePipelineStatus();
+      document.getElementById('mobile-tabs-menu')?.classList.add('hidden');
+
+      // Trigger lazy load per tab
+      if (tabId === 'providers') loadProvidersTable();
+      if (tabId === 'workers') loadWorkersTable();
+      if (tabId === 'incidents') loadIncidentsList();
+      if (tabId === 'activity') loadActivityLogs();
+      if (tabId === 'quality') loadDataQualityMetrics();
     }
 
-    // --- 2. 18-PROVIDER DATA MATRIX (TRANSFERRED EXCLUSIVELY FROM ORBITALERT) ---
-    const MISSION_CONTROL_PROVIDERS = [
-      { name: "CelesTrak GP SGP4 Fleet", ep: "HTTPS / REST (OMM JSON)", status: "ACTIVE", latency: 42, freshness: "< 25 min", regime: "Earth Satellites (LEO/GEO)" },
-      { name: "NASA JPL Horizons Ephemeris", ep: "HTTPS / Telnet API", status: "ACTIVE", latency: 124, freshness: "J2000 Keplerian Matrices", regime: "Planets & Deep Probes" },
-      { name: "NASA DSN Now Telemetry", ep: "HTTPS / XML Feed", status: "ACTIVE", latency: 88, freshness: "Live 1s Carrier Lock", regime: "Goldstone, Madrid, Canberra" },
-      { name: "NASA JPL CNEOS Small-Body", ep: "HTTPS / REST (DE441)", status: "ACTIVE", latency: 110, freshness: "Daily Verified Epoch", regime: "Asteroids & NEAs" },
-      { name: "NASA DONKI Space Weather", ep: "HTTPS / NASA Open API", status: "ACTIVE", latency: 180, freshness: "Updated Hourly", regime: "CME & Flare Flux" },
-      { name: "WhereTheISS.at Live Stream", ep: "HTTPS / JSON (1s ping)", status: "ACTIVE", latency: 68, freshness: "Live Continuous Ping", regime: "ISS (Zarya)" },
-      { name: "ISRO NORAD SATCAT Core", ep: "Internal SGP4 Propagator", status: "INTERNAL", latency: 0, freshness: "Instantaneous", regime: "Cartosat, EOS, AstroSat" },
-      { name: "SatNOGS Amateur DB", ep: "HTTPS / REST", status: "ACTIVE", latency: 128, freshness: "< 6 hours", regime: "CubeSats & Transmitters" },
-      { name: "ESA Science Data (ESDC)", ep: "SPICE Kernels (HTTPS)", status: "ACTIVE", latency: 168, freshness: "< 4 hours", regime: "JUICE, BepiColombo" },
-      { name: "ESA Gaia Archive DR3", ep: "TAP Protocol", status: "ACTIVE", latency: 175, freshness: "Epoch J2016.0", regime: "1.8B Astrometric Stars" },
-      { name: "NASA IPAC NED Galaxies", ep: "TAP / Web Services", status: "ACTIVE", latency: 158, freshness: "< 24 hours", regime: "Extragalactic Redshifts" },
-      { name: "CDS SIMBAD Astronomical", ep: "REST Resolver", status: "ACTIVE", latency: 138, freshness: "< 12 hours", regime: "Cross-Identifications" },
-      { name: "STScI Mikulski Archive (MAST)", ep: "HTTPS / Calibrated FITS", status: "ACTIVE", latency: 198, freshness: "< 6 hours", regime: "JWST & Hubble Imagery" },
-      { name: "NOAA Space Weather (SWPC)", ep: "HTTPS / JSON", status: "ACTIVE", latency: 78, freshness: "< 1 min", regime: "Planetary K-index / Kp" },
-      { name: "DESI Spectroscopic Survey", ep: "Comoving Web Release", status: "ACTIVE", latency: 210, freshness: "DR1 / DR2 Catalog", regime: "Cosmic Web Macro-Tiers" },
-      { name: "NASA Exoplanet Archive", ep: "TAP Protocol", status: "ACTIVE", latency: 148, freshness: "< 24 hours", regime: "Exoplanets & Host Stars" },
-      { name: "Space-Track.org (18th SDS)", ep: "REST API", status: "STANDBY", latency: 104, freshness: "Daily SATCAT", regime: "Tracked Orbital Debris" },
-      { name: "NASA GIBS Earth Tiles", ep: "WMTS Protocol", status: "ACTIVE", latency: 88, freshness: "< 3 hours", regime: "Surface & Cloud Renders" },
-      { name: "RainViewer Doppler Radar Mosaic", ep: "HTTPS / PNG Tile Matrix", status: "ACTIVE", latency: 54, freshness: "< 5 min", regime: "Atmosphere & Precipitation" },
-      { name: "Open-Meteo Global NWP Forecasts", ep: "REST / Fast JSON", status: "ACTIVE", latency: 38, freshness: "Live In-Situ", regime: "ECMWF, GFS, ICON Weather" },
-      { name: "NASA FIRMS Active Fire Hotspots", ep: "CSV / GeoJSON Feed", status: "ACTIVE", latency: 92, freshness: "< 1 hour", regime: "Thermal Anomalies & Wildfires" },
-      { name: "IMD / JTWC Severe Storm Advisories", ep: "GeoJSON / ATCF", status: "ACTIVE", latency: 115, freshness: "Real-Time Advisory", regime: "Tropical Cyclones & Cones" },
-    ];
-
-    function renderSourcesTable() {
-      const tbody = document.getElementById('sources-gateways-tbody');
-      if (!tbody) return;
-      tbody.innerHTML = MISSION_CONTROL_PROVIDERS.map(p => `
-        <tr class="hover:bg-emerald-950/30 transition">
-          <td class="p-2 font-bold text-white">${p.name}</td>
-          <td class="p-2 text-cyan-300 font-mono text-[10px]">${p.ep}</td>
-          <td class="p-2">
-            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${p.status === 'ACTIVE' || p.status === 'INTERNAL' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">${p.status}</span>
-          </td>
-          <td class="p-2 text-slate-200 font-bold">${p.latency} ms</td>
-          <td class="p-2 text-slate-300">${p.freshness}</td>
-          <td class="p-2 text-slate-400 text-[10px]">${p.regime}</td>
-        </tr>
-      `).join('');
-    }
-
-    async function pingAllGateways() {
-      const btn = document.getElementById('btn-ping-gateways');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> PINGING 18 PROVIDERS...';
-      await new Promise(r => setTimeout(r, 600));
-      MISSION_CONTROL_PROVIDERS.forEach(p => {
-        if (p.latency > 0) p.latency = Math.floor(Math.random() * 60) + 35;
-      });
-      renderSourcesTable();
-      btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> ALL GATEWAYS VERIFIED';
-      logAudit('SYSTEM', 'All 18 official astronomical gateways tested. 0 circuit breakers tripped.');
-    }
-
-    // --- 3. CUSTOM SPACECRAFT INJECTION ENGINE ---
-    function getInjectedFleet() {
+    // 1. Load System Health Overview
+    async function loadSystemHealth() {
       try {
-        return JSON.parse(localStorage.getItem('orbital_command_custom_sats') || '[]');
-      } catch { return []; }
+        const res = await fetch(getApiBase() + '/api/sentinel/health', { credentials: 'include' });
+        if (!res.ok) throw new Error('Health check rejected');
+        const data = await res.json();
+
+        const uptimeHours = (data.uptimeSeconds / 3600).toFixed(1);
+        document.getElementById('stat-uptime').innerText = `${uptimeHours} hrs`;
+        document.getElementById('stat-memory').innerText = `${data.memory?.heapUsedMb || '--'} MB`;
+        document.getElementById('stat-workers').innerText = `${data.runningWorkersCount || 8} / ${data.totalWorkersCount || 8}`;
+        document.getElementById('stat-incidents').innerText = data.activeIncidentsCount || 0;
+      } catch (err) {
+        console.warn('System health fetch warning:', err);
+      }
     }
 
-    function renderInjectedFleet() {
-      const tbody = document.getElementById('injected-fleet-tbody');
+    // 2. Load Providers Table
+    async function loadProvidersTable() {
+      const tbody = document.getElementById('providers-table-body');
       if (!tbody) return;
-      const fleet = getInjectedFleet();
-      if (!fleet.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-slate-500">No custom injections active. Use the form above to deploy craft.</td></tr>';
-        return;
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading live providers...</td></tr>';
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/sources', { credentials: 'include' });
+        const json = await res.json();
+        const sources = json.sources || [];
+
+        document.getElementById('provider-count-badge').innerText = `${sources.length} Providers`;
+
+        if (sources.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">No external providers registered.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = sources.map(s => {
+          let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">UNKNOWN</span>';
+          if (s.status === 'ACTIVE') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40">ACTIVE</span>';
+          } else if (s.status === 'DEGRADED') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-500/40">DEGRADED</span>';
+          } else if (s.status === 'STALE') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-orange-950 text-orange-300 border border-orange-500/40">STALE</span>';
+          } else if (s.status === 'NEEDS_CREDENTIALS') {
+            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-sky-950 text-sky-300 border border-sky-500/40">NEEDS KEY</span>';
+          }
+
+          return `
+            <tr class="hover:bg-slate-900/60 transition">
+              <td class="p-3">
+                <div class="font-bold text-white">${s.name}</div>
+                <div class="text-[10px] text-slate-400">${s.id}</div>
+              </td>
+              <td class="p-3">${statusBadge}</td>
+              <td class="p-3 text-slate-300 uppercase text-[10px]">${s.subsystem || 'GENERAL'}</td>
+              <td class="p-3 text-cyan-300 font-mono">${s.latencyMs ? s.latencyMs + ' ms' : '--'}</td>
+              <td class="p-3 text-slate-400">${s.freshness || '< 1h'}</td>
+              <td class="p-3 text-[11px] text-slate-400">${s.licensing || 'Public / Scientific Domain'}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-400">Failed to load providers: ${err.message}</td></tr>`;
       }
-      tbody.innerHTML = fleet.map((s, idx) => `
-        <tr class="hover:bg-slate-900/50">
-          <td class="p-2 font-bold text-white">🛰️ ${s.name}</td>
-          <td class="p-2 text-cyan-300 font-mono">${s.norad}</td>
-          <td class="p-2 text-slate-300">${s.altKm} km (${s.incDeg}°)</td>
-          <td class="p-2 font-bold text-emerald-400">${s.agency}</td>
-          <td class="p-2 text-slate-400 max-w-[200px] truncate">${s.role}</td>
-          <td class="p-2">
-            <button onclick="removeInjectedSat(${idx})" class="text-rose-400 hover:text-rose-300 font-bold">Remove ✕</button>
-          </td>
-        </tr>
-      `).join('');
     }
 
-    function handleInjectSpacecraft(e) {
-      e.preventDefault();
-      const newCraft = {
-        id: 'inj_' + document.getElementById('inj-norad').value.trim(),
-        name: document.getElementById('inj-name').value.trim(),
-        norad: parseInt(document.getElementById('inj-norad').value, 10),
-        altKm: parseFloat(document.getElementById('inj-alt').value),
-        incDeg: parseFloat(document.getElementById('inj-inc').value),
-        agency: document.getElementById('inj-agency').value,
-        domain: document.getElementById('inj-domain').value,
-        color: parseInt(document.getElementById('inj-color').value, 16),
-        role: document.getElementById('inj-role').value.trim() || 'Injected Surveillance Asset'
-      };
+    // 3. Load Workers Monitoring
+    async function loadWorkersTable() {
+      const grid = document.getElementById('workers-cards-grid');
+      if (!grid) return;
+      grid.innerHTML = '<div class="hud-panel p-4 text-center text-slate-400 col-span-2"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading workers...</div>';
 
-      const fleet = getInjectedFleet();
-      fleet.push(newCraft);
-      localStorage.setItem('orbital_command_custom_sats', JSON.stringify(fleet));
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/workers', { credentials: 'include' });
+        const json = await res.json();
+        const workers = json.workers || [];
 
-      // Trigger cross-page broadcast
-      localStorage.setItem('orbital_sync_timestamp', Date.now().toString());
+        document.getElementById('workers-count-badge').innerText = `${workers.length} Workers`;
 
-      renderInjectedFleet();
-      logAudit('INJECTOR', `Spacecraft '${newCraft.name}' (NORAD #${newCraft.norad}) successfully deployed into 3D pipeline.`);
-      alert(`Spacecraft '${newCraft.name}' injected! Check index.html or earth.html to see it orbiting.`);
-      e.target.reset();
+        if (workers.length === 0) {
+          grid.innerHTML = '<div class="hud-panel p-4 text-center text-slate-500 col-span-2">No background cadence workers registered.</div>';
+          return;
+        }
+
+        grid.innerHTML = workers.map(w => {
+          const isPaused = w.state === 'paused';
+          const isRunning = w.state === 'running' || w.isExecuting;
+          const statusCls = isPaused ? 'bg-amber-950 text-amber-300 border-amber-500/40' : (isRunning ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40' : 'bg-slate-800 text-slate-400 border-slate-700');
+          const statusText = isPaused ? 'PAUSED' : (isRunning ? 'RUNNING' : 'IDLE');
+
+          return `
+            <div class="hud-panel p-5 space-y-3 font-mono">
+              <div class="flex items-start justify-between gap-2 border-b border-slate-800 pb-2">
+                <div>
+                  <div class="font-bold text-white text-xs leading-snug">${w.name}</div>
+                  <div class="text-[10px] text-slate-400">${w.id}</div>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusCls}">${statusText}</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 text-center text-xs py-1">
+                <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">CADENCE</span>
+                  <span class="font-bold text-white">${Math.round((w.cadenceMs || 60000)/1000)}s</span>
+                </div>
+                <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">FETCHED</span>
+                  <span class="font-bold text-cyan-300">${w.recordsFetched || 0}</span>
+                </div>
+                <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+                  <span class="text-[9px] text-slate-400 block">DURATION</span>
+                  <span class="font-bold text-amber-300">${w.durationMs || 0} ms</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-1">
+                <button onclick="controlWorker('${w.id}', '${isPaused ? 'resume' : 'pause'}')" class="flex-1 py-1.5 rounded-xl ${isPaused ? 'bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40' : 'bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700'} text-xs font-bold transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-${isPaused ? 'play' : 'pause'} text-xs"></i>
+                  <span>${isPaused ? 'Resume' : 'Pause'}</span>
+                </button>
+                <button onclick="controlWorker('${w.id}', 'sync')" class="py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-700 text-xs font-bold transition flex items-center gap-1.5" title="Run manual sync for this worker">
+                  <i class="fa-solid fa-rotate text-xs"></i>
+                  <span>Sync</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        grid.innerHTML = `<div class="hud-panel p-4 text-center text-rose-400 col-span-2">Failed to load workers: ${err.message}</div>`;
+      }
     }
 
-    function removeInjectedSat(idx) {
-      const fleet = getInjectedFleet();
-      const removed = fleet.splice(idx, 1);
-      localStorage.setItem('orbital_command_custom_sats', JSON.stringify(fleet));
-      localStorage.setItem('orbital_sync_timestamp', Date.now().toString());
-      renderInjectedFleet();
-      if (removed[0]) logAudit('INJECTOR', `Removed custom vehicle '${removed[0].name}'.`);
+    // Worker Control API Call
+    async function controlWorker(workerId, action) {
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/workers/control', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ worker_id: workerId, action })
+        });
+        if (!res.ok) throw new Error('Worker control action rejected');
+        loadWorkersTable();
+      } catch (err) {
+        alert('Worker control notice: ' + err.message);
+      }
     }
 
-    function clearCustomFleet() {
-      localStorage.removeItem('orbital_command_custom_sats');
-      localStorage.setItem('orbital_sync_timestamp', Date.now().toString());
-      renderInjectedFleet();
-      logAudit('INJECTOR', 'All custom spacecraft removed from session.');
+    // 4. Quick Subsystem Synchronization
+    async function triggerQuickSync(target) {
+      const term = document.getElementById('sync-terminal-output');
+      const stat = document.getElementById('sync-console-status');
+      if (stat) stat.innerText = 'EXECUTING...';
+      if (term) term.innerHTML += `<div class="text-cyan-400">> Triggering manual synchronization for: [${target.toUpperCase()}]...</div>`;
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/sync', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target })
+        });
+        const data = await res.json();
+        if (term) {
+          term.innerHTML += `<div class="text-emerald-400">  ✓ Synchronization complete for target: ${data.target}</div>`;
+          if (Array.isArray(data.results)) {
+            data.results.forEach(r => {
+              term.innerHTML += `<div class="text-slate-300">    • ${r.workerId}: ${r.success ? 'ACCEPTED ' + (r.recordsAccepted || 0) + ' records' : 'DEGRADED: ' + r.error} (${r.durationMs || 0}ms)</div>`;
+            });
+          }
+          term.scrollTop = term.scrollHeight;
+        }
+        if (stat) stat.innerText = 'SYNCHRONIZED';
+        loadSystemHealth();
+      } catch (err) {
+        if (term) term.innerHTML += `<div class="text-rose-400">  ✕ Synchronization error: ${err.message}</div>`;
+        if (stat) stat.innerText = 'ERROR';
+      }
     }
 
-    // --- 4. DEFCON & CONJUNCTION BROADCASTER ---
-    function setGlobalDefcon(level) {
-      localStorage.setItem('orbital_defcon_level', level.toString());
-      localStorage.setItem('orbital_sync_timestamp', Date.now().toString());
-      logAudit('DEFCON', `Platform threat condition manually set to DEFCON ${level}.`);
-      alert(`Platform broadcasted: DEFCON ${level} is now active on all open pages.`);
+    // 5. Data Quality Metrics & Pipeline Analysis
+    async function loadDataQualityMetrics() {
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/quality', { credentials: 'include' });
+        const data = await res.json();
+        const m = data.metrics || {};
+        const score = m.qualityScorePct || 100;
+
+        const fetchedEl = document.getElementById('quality-fetched');
+        const acceptedEl = document.getElementById('quality-accepted');
+        const rejectedEl = document.getElementById('quality-rejected');
+        const scoreEl = document.getElementById('quality-score');
+        const scoreBarEl = document.getElementById('quality-score-bar');
+
+        if (fetchedEl) fetchedEl.innerText = m.totalRecordsFetched || 0;
+        if (acceptedEl) acceptedEl.innerText = m.totalRecordsAccepted || 0;
+        if (rejectedEl) rejectedEl.innerText = m.totalRecordsRejected || 0;
+        if (scoreEl) scoreEl.innerText = score + '%';
+        if (scoreBarEl) scoreBarEl.style.width = score + '%';
+
+        // Also fetch live pipeline status
+        loadPipelineStatusMatrix();
+      } catch (err) {
+        console.warn('Quality metrics notice:', err);
+      }
     }
 
-    function handleInjectAlert(e) {
-      e.preventDefault();
-      const sat1 = document.getElementById('inj-alert-sat1').value.trim();
-      const sat2 = document.getElementById('inj-alert-sat2').value.trim();
-      const dist = document.getElementById('inj-alert-dist').value.trim();
-      const desc = document.getElementById('inj-alert-desc').value.trim();
+    async function loadPipelineStatusMatrix() {
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/pipeline-status', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const p = data.pages || {};
+        const box = document.getElementById('pipelines-matrix-container');
+        if (!box) return;
 
-      const alertPayload = {
-        id: 'ALERT_' + Date.now(),
-        type: 'close',
-        title: `${desc}: ${sat1} × ${sat2}`,
-        metric: `${dist} km TCA`,
-        status: 'monitoring'
-      };
+        const pipelines = [
+          { name: '🌍 Earth Satellites', info: p.earthOrbit, url: '/earth', color: 'text-cyan-400' },
+          { name: '☀️ Solar System', info: p.solarSystem, url: '/solar-system', color: 'text-amber-400' },
+          { name: '🌾 Atmosphere & Kisan', info: p.atmosphereWeather, url: '/atmosphere', color: 'text-emerald-400' },
+          { name: '💨 Air Quality (CPCB)', info: p.airQuality, url: '/air-quality', color: 'text-teal-400' },
+          { name: '🌌 Deep Space', info: p.deepSpace, url: '/deepspace', color: 'text-purple-400' },
+          { name: '☄️ Asteroids (NEAs)', info: p.asteroids, url: '/asteroids', color: 'text-orange-400' }
+        ];
 
-      localStorage.setItem('orbital_active_conjunction_alert', JSON.stringify(alertPayload));
-      localStorage.setItem('orbital_sync_timestamp', Date.now().toString());
-      logAudit('ALERT', `Critical collision warning broadcast: ${sat1} and ${sat2} (${dist} km).`);
-      alert('Alert pushed! Ticker across 3D explorer pages is now broadcasting this conjunction.');
-      e.target.reset();
+        box.innerHTML = pipelines.map(pipe => {
+          const inf = pipe.info || {};
+          const status = inf.status || 'NOMINAL';
+          const latency = inf.latencyMs ? (inf.latencyMs + 'ms') : '~20ms';
+          const desc = inf.propagator || inf.primarySolver || inf.radarIngestion || inf.standard || inf.survey || inf.dataSource || 'Autonomous Stream';
+          return `
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5 text-xs hover:border-slate-700 transition">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white">${pipe.name}</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] border border-emerald-500/30">${status}</span>
+              </div>
+              <div class="text-[10px] text-slate-400 truncate">${desc}</div>
+              <div class="text-[10px] ${pipe.color} flex items-center justify-between pt-1 border-t border-slate-800/60 font-mono">
+                <span>Latency: ${latency}</span>
+                <a href="${pipe.url}" target="_blank" class="hover:underline text-slate-300">View Page ↗</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.warn('Pipeline matrix load error:', err);
+      }
     }
 
-    // --- 5. WORKERS & AUDIT LOGS ---
-    const DAEMONS = [
-      { name: "SGP4 Ephemeris Synchronizer", role: "Propagates Cartesian ECI vectors for 3,200+ satellites", status: "RUNNING", rate: "20ms" },
-      { name: "Conjunction Screening Engine", role: "Scans for orbital miss distances < 5.0 km", status: "RUNNING", rate: "1000ms" },
-      { name: "NASA JPL Horizons Resolver", role: "Computes J2000 planetary and probe vectors", status: "RUNNING", rate: "Continuous" },
-      { name: "CNEOS Planetary Defense Daemon", role: "Evaluates Sentry Near-Earth Asteroid close passes", status: "RUNNING", rate: "Daily Epoch" },
-      { name: "NOAA Space Weather Watcher", role: "Monitors solar wind speeds and planetary Kp index", status: "RUNNING", rate: "Hourly" },
-      { name: "Cross-Tab Telemetry Dispatcher", role: "Synchronizes memory buffers across active browser tabs", status: "ONLINE", rate: "Zero-Latency" }
-    ];
+    // Run Live Endpoints Telemetry Audit
+    async function runLiveTelemetryAudit() {
+      const btn = document.getElementById('btn-run-audit');
+      const box = document.getElementById('telemetry-audit-results');
+      const grid = document.getElementById('audit-endpoints-grid');
+      const timeEl = document.getElementById('audit-timestamp');
 
-    function renderWorkersDeck() {
-      const container = document.getElementById('workers-grid');
-      if (!container) return;
-      container.innerHTML = DAEMONS.map(d => `
-        <div class="hud-card p-3 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white text-xs">${d.name}</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">${d.status}</span>
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Auditing Endpoints...';
+
+      const endpoints = [
+        { name: 'Celestrak Satellites', path: '/api/space/bootstrap' },
+        { name: 'NOAA Space Weather', path: '/api/space/weather' },
+        { name: 'RainViewer Radar Mosaic', path: '/api/weather/radar' },
+        { name: 'Open-Meteo Weather Grids', path: '/api/weather/station?lat=28.6139&lon=77.2090' },
+        { name: 'CPCB Air Quality Stations', path: '/api/airquality/stations' },
+        { name: 'Sentinel Health Diagnostics', path: '/api/sentinel/health' }
+      ];
+
+      const results = [];
+      const startTime = Date.now();
+
+      for (const ep of endpoints) {
+        const epStart = performance.now();
+        try {
+          const res = await fetch(getApiBase() + ep.path, { credentials: 'include' });
+          const epEnd = performance.now();
+          results.push({
+            name: ep.name,
+            path: ep.path,
+            status: res.status,
+            ok: res.ok,
+            latencyMs: Math.round(epEnd - epStart)
+          });
+        } catch (err) {
+          results.push({
+            name: ep.name,
+            path: ep.path,
+            status: 0,
+            ok: false,
+            latencyMs: 0,
+            error: err.message
+          });
+        }
+      }
+
+      if (timeEl) timeEl.innerText = new Date().toLocaleTimeString();
+
+      if (grid) {
+        grid.innerHTML = results.map(r => `
+          <div class="p-3 rounded-xl bg-slate-950 border ${r.ok ? 'border-emerald-500/40' : 'border-rose-500/40'} space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-white">${r.name}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${r.ok ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'}">${r.ok ? 'HTTP ' + r.status : 'FAIL'}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono flex items-center justify-between">
+              <span>${r.latencyMs}ms response</span>
+              <span class="${r.ok ? 'text-emerald-400' : 'text-rose-400'}">${r.ok ? '✓ PASS' : '✕ ERR'}</span>
+            </div>
           </div>
-          <p class="text-[10px] text-slate-300 font-sans">${d.role}</p>
-          <div class="text-[9px] text-cyan-400 font-mono">Loop Frequency: ${d.rate}</div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+
+      if (box) box.classList.remove('hidden');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> Audit Complete';
+      setTimeout(() => { if (btn) btn.innerHTML = '<i class="fa-solid fa-stethoscope"></i> <span>Run Live Pipeline Audit</span>'; }, 3000);
     }
 
-    function logAudit(source, text) {
-      const logs = JSON.parse(localStorage.getItem('sentinel_audit_logs') || '[]');
-      logs.unshift({ time: new Date().toLocaleTimeString(), source, text });
-      if (logs.length > 80) logs.pop();
-      localStorage.setItem('sentinel_audit_logs', JSON.stringify(logs));
-      renderAuditLogs();
+    // 6. Incidents List
+    async function loadIncidentsList() {
+      const box = document.getElementById('incidents-container');
+      if (!box) return;
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/incidents', { credentials: 'include' });
+        const data = await res.json();
+        const incidents = data.incidents || [];
+
+        document.getElementById('incident-count-badge').innerText = `${incidents.length} Incidents`;
+
+        if (incidents.length === 0) {
+          box.innerHTML = '<div class="text-center py-6 text-slate-500 font-mono text-xs">No active operational incidents recorded. All systems nominal.</div>';
+          return;
+        }
+
+        box.innerHTML = incidents.map(inc => `
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5 font-mono text-xs flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${inc.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-500/50' : 'bg-amber-950 text-amber-300 border border-amber-500/50'}">${inc.severity}</span>
+                <span class="font-bold text-white">${inc.provider || 'SYSTEM'}</span>
+                <span class="text-[10px] text-slate-500">${new Date(inc.created_at || Date.now()).toLocaleTimeString()}</span>
+              </div>
+              <p class="text-slate-300 font-sans text-xs pt-1">${inc.message}</p>
+            </div>
+            ${inc.status !== 'RESOLVED' ? `<button onclick="resolveIncident('${inc.id}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-300 hover:text-emerald-300 border border-slate-700 hover:border-emerald-500 text-[10px] transition shrink-0">Resolve</button>` : '<span class="text-emerald-400 text-[10px]">Resolved</span>'}
+          </div>
+        `).join('');
+      } catch (err) {
+        box.innerHTML = `<div class="text-center text-rose-400 py-4 font-mono text-xs">Failed to load incidents: ${err.message}</div>`;
+      }
     }
 
-    function renderAuditLogs() {
-      const cont = document.getElementById('audit-logs-container');
-      if (!cont) return;
-      const logs = JSON.parse(localStorage.getItem('sentinel_audit_logs') || '[]');
-      if (!logs.length) {
-        cont.innerHTML = '<div class="text-slate-500 p-2">Audit log initialized. Actions recorded here.</div>';
+    async function resolveIncident(id) {
+      try {
+        await fetch(getApiBase() + '/api/sentinel/incidents/resolve', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        loadIncidentsList();
+      } catch (err) {
+        console.warn('Incident resolution error:', err);
+      }
+    }
+
+    // 7. Activity History Logs with Search & Severity Filters
+    let rawActivityLogs = [];
+    let currentLogLevelFilter = 'ALL';
+
+    async function loadActivityLogs() {
+      const box = document.getElementById('activity-logs-container');
+      if (!box) return;
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/logs', { credentials: 'include' });
+        const data = await res.json();
+        rawActivityLogs = data.logs || [];
+        renderFilteredLogs();
+      } catch (err) {
+        box.innerHTML = `<div class="text-rose-400 text-center py-4">Failed to load activity logs: ${err.message}</div>`;
+      }
+    }
+
+    function setLogLevelFilter(level) {
+      currentLogLevelFilter = level;
+      ['ALL', 'INFO', 'WARN', 'ERROR'].forEach(l => {
+        const btn = document.getElementById('filter-btn-' + l);
+        if (btn) {
+          if (l === level) {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-cyan-600 text-slate-950 font-bold text-[10px]';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-slate-900 text-slate-300 border border-slate-700 text-[10px]';
+          }
+        }
+      });
+      renderFilteredLogs();
+    }
+
+    function filterLogs() {
+      renderFilteredLogs();
+    }
+
+    function renderFilteredLogs() {
+      const box = document.getElementById('activity-logs-container');
+      if (!box) return;
+
+      const searchInput = document.getElementById('logs-search-input');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+      let filtered = rawActivityLogs;
+
+      if (currentLogLevelFilter !== 'ALL') {
+        filtered = filtered.filter(l => (l.level || '').toUpperCase() === currentLogLevelFilter);
+      }
+
+      if (q) {
+        filtered = filtered.filter(l =>
+          (l.message && l.message.toLowerCase().includes(q)) ||
+          (l.event && l.event.toLowerCase().includes(q)) ||
+          (l.level && l.level.toLowerCase().includes(q))
+        );
+      }
+
+      if (filtered.length === 0) {
+        box.innerHTML = '<div class="text-slate-500 text-center py-4">No activity logs match the current filter.</div>';
         return;
       }
-      cont.innerHTML = logs.map(l => `
-        <div class="py-0.5 border-b border-slate-900 flex gap-2">
-          <span class="text-slate-500">[${l.time}]</span>
-          <span class="text-emerald-400 font-bold">[${l.source}]</span>
-          <span class="text-slate-200">${l.text}</span>
-        </div>
-      `).join('');
+
+      box.innerHTML = filtered.slice(0, 50).map(l => {
+        let badgeClass = 'bg-slate-800 text-slate-400';
+        if (l.level === 'WARN') badgeClass = 'bg-amber-950 text-amber-300 border border-amber-500/40';
+        else if (l.level === 'ERROR') badgeClass = 'bg-rose-950 text-rose-300 border border-rose-500/40';
+        else if (l.level === 'INFO') badgeClass = 'bg-cyan-950 text-cyan-300 border border-cyan-500/30';
+
+        return `
+          <div class="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between gap-3 text-xs hover:border-slate-700 transition">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeClass}">${l.level || 'INFO'}</span>
+              <span class="text-slate-200 truncate">${l.message || l.event}</span>
+            </div>
+            <span class="text-[10px] text-slate-500 shrink-0 font-mono">${l.time ? new Date(l.time).toLocaleTimeString() : '--'}</span>
+          </div>
+        `;
+      }).join('');
     }
 
-    function clearAuditLogs() {
-      localStorage.removeItem('sentinel_audit_logs');
-      renderAuditLogs();
+    function exportLogsJson() {
+      const blob = new Blob([JSON.stringify(rawActivityLogs, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'orbital-eye-sentinel-audit-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click();
     }
 
-    function togglePublicViewportsMenu(e) {
-      if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
-      const m = document.getElementById('viewports-dropdown-menu');
-      if (m) m.classList.toggle('hidden');
+    // 8. System Config & Diagnostics
+    async function runSentinelBotCorrection() {
+      const btn = document.getElementById('btn-bot-sweep');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Running Sweep...';
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/auto-correct', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const data = await res.json();
+        alert('Sentinel Bot Sweep: ' + (data.systemState || 'Sweep complete. All daemons nominal.'));
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> Sweep Complete';
+        loadSystemHealth();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+        if (btn) btn.innerHTML = 'Run Self-Correction Sweep';
+      }
     }
-    document.addEventListener('click', function(e) {
-      const m = document.getElementById('viewports-dropdown-menu');
-      const btn = document.getElementById('btn-viewports-launcher');
-      if (m && !m.classList.contains('hidden') && !m.contains(e.target) && (!btn || !btn.contains(e.target))) {
-        m.classList.add('hidden');
+
+    async function generateDiagnosticsReport() {
+      const box = document.getElementById('config-report-box');
+      const jsonPre = document.getElementById('config-report-json');
+
+      try {
+        const res = await fetch(getApiBase() + '/api/sentinel/diagnostics', { credentials: 'include' });
+        const data = await res.json();
+        if (jsonPre) jsonPre.innerText = JSON.stringify(data, null, 2);
+        if (box) box.classList.remove('hidden');
+      } catch (err) {
+        alert('Diagnostics notice: ' + err.message);
+      }
+    }
+
+    // Logout
+    async function handleAdminLogout() {
+      try {
+        localStorage.removeItem('sentinel_admin_logged_in');
+        sessionStorage.removeItem('sentinel_admin_user');
+      } catch (_) {}
+      try {
+        await fetch(getApiBase() + '/api/sentinel/logout', { method: 'POST', credentials: 'include' });
+      } catch (_) {}
+      const targetUrl = window.location.protocol === 'file:' ? 'sentinel-login.html' : '/sentinel-login';
+      window.location.replace(targetUrl);
+    }
+
+    // Initialize on boot
+    
+    // Keyboard Shortcuts: 1-8 for tabs, R for refresh
+    document.addEventListener('keydown', e => {
+      if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+      const keyMap = {
+        '1': 'overview',
+        '2': 'providers',
+        '3': 'workers',
+        '4': 'sync',
+        '5': 'quality',
+        '6': 'incidents',
+        '7': 'activity',
+        '8': 'config'
+      };
+      if (keyMap[e.key]) {
+        switchTab(keyMap[e.key]);
+      } else if (e.key === 'r' || e.key === 'R') {
+        loadSystemHealth();
       }
     });
-
-    function handleAdminLogout() {
-      localStorage.removeItem('sentinel_admin_logged_in');
-      window.location.href = 'sentinel-login.html';
-    }
-
-    // Initial load
-    renderInjectedFleet();
-    renderSourcesTable();
-    renderWorkersDeck();
-    renderAuditLogs();
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSystemHealth();
+      setInterval(loadSystemHealth, 15000);
+    });
   </script>
-  <script src="js/universal_location_alerts.js"></script>
-  <script src="js/jarvis.js"></script>
 </body>
 </html>

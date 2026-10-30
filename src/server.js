@@ -8,6 +8,7 @@ import { getSpaceStore, flushSpaceStore } from './db/space-store.js';
 import { initWebSocketServer, closeWebSocketServer } from './realtime/ws-server.js';
 import * as sentinelAuth from './supervisor/admin-auth.js';
 import { sentinelDiagnostics } from './supervisor/diagnostics.js';
+import { workerManager } from './supervisor/worker-manager.js';
 
 import {
   spaceRouter,
@@ -58,11 +59,30 @@ app.use((req, res, next) => {
   next();
 });
 
-// Security Headers
+// Enhanced Production Security Headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), payment=(), geolocation=(self)');
+
+  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+
+  // Content-Security-Policy compatible with WebGL Three.js, Leaflet, and Map Tile networks
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com",
+    "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com",
+    "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https: *.rainviewer.com *.arcgisonline.com *.cartocdn.com *.openstreetmap.org",
+    "connect-src 'self' ws: wss: https: http://localhost:3000 https://api.open-meteo.com https://nominatim.openstreetmap.org https://tilecache.rainviewer.com https://server.arcgisonline.com *.cartocdn.com",
+    "worker-src 'self' blob:",
+    "frame-ancestors 'self'"
+  ].join('; ');
+
+  res.setHeader('Content-Security-Policy', csp);
   next();
 });
 
@@ -236,34 +256,73 @@ app.all('/api/*', (req, res) => {
   res.status(404).json({ ok: false, error: `API route '${req.path}' not found` });
 });
 
-// ==================== HTML PAGE ROUTES ====================
+// ==================== BACKWARD-COMPATIBLE 301 PERMANENT REDIRECTS ====================
+// Defined BEFORE static middleware & canonical routes so legacy and alternate URLs cleanly redirect
 
-app.get(['/', '/index', '/index.html'], (req, res) => {
+app.get(['/index.html', '/home', '/home.html'], (req, res) => {
+  res.redirect(301, '/');
+});
+
+app.get(['/solar-system.html'], (req, res) => {
+  res.redirect(301, '/solar-system');
+});
+
+app.get(['/earth.html'], (req, res) => {
+  res.redirect(301, '/earth');
+});
+
+app.get(['/deepspace.html', '/deep-space', '/deep-space.html'], (req, res) => {
+  res.redirect(301, '/deepspace');
+});
+
+app.get(['/asteroids.html'], (req, res) => {
+  res.redirect(301, '/asteroids');
+});
+
+app.get(['/weather', '/weather/', '/weather.html', '/atmosphere.html'], (req, res) => {
+  res.redirect(301, '/atmosphere');
+});
+
+app.get(['/airquality', '/airquality/', '/airquality.html', '/aqi', '/aqi/', '/aqi.html', '/air-quality.html'], (req, res) => {
+  res.redirect(301, '/air-quality');
+});
+
+app.get(['/orbitalert', '/orbitalert/', '/orbitalert.html', '/orbital-alerts', '/orbital-alerts.html', '/alert.html'], (req, res) => {
+  res.redirect(301, '/alert');
+});
+
+// ==================== CANONICAL HTML PAGE ROUTES ====================
+
+app.get(['/', '/index'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 
-app.get(['/airquality', '/airquality/', '/airquality.html', '/aqi', '/aqi.html'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'airquality.html'));
+app.get(['/solar-system', '/solar-system/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'solar-system.html'));
 });
 
-app.get(['/weather', '/weather/', '/weather.html'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'weather.html'));
-});
-
-app.get(['/earth', '/earth/', '/earth.html'], (req, res) => {
+app.get(['/earth', '/earth/'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'earth.html'));
 });
 
-app.get(['/deepspace', '/deepspace/', '/deepspace.html'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'deepspace.html'));
+app.get(['/deepspace', '/deepspace/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'deep-space.html'));
 });
 
-app.get(['/asteroids', '/asteroids/', '/asteroids.html'], (req, res) => {
+app.get(['/asteroids', '/asteroids/'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'asteroids.html'));
 });
 
-app.get(['/orbitalert', '/orbitalert/', '/orbitalert.html'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'orbitalert.html'));
+app.get(['/atmosphere', '/atmosphere/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'atmosphere.html'));
+});
+
+app.get(['/air-quality', '/air-quality/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'air-quality.html'));
+});
+
+app.get(['/alert', '/alert/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'alert.html'));
 });
 
 app.get(['/offline', '/offline/', '/offline.html'], (req, res) => {
@@ -303,11 +362,13 @@ app.get('/sitemap.xml', (req, res) => {
   const now = new Date().toISOString().split('T')[0];
   const pages = [
     { path: '', priority: '1.0', freq: 'hourly' },
+    { path: 'solar-system', priority: '0.95', freq: 'daily' },
     { path: 'earth', priority: '0.95', freq: 'hourly' },
-    { path: 'weather', priority: '0.95', freq: 'hourly' },
-    { path: 'orbitalert', priority: '0.90', freq: 'hourly' },
+    { path: 'deepspace', priority: '0.85', freq: 'weekly' },
     { path: 'asteroids', priority: '0.90', freq: 'daily' },
-    { path: 'deepspace', priority: '0.85', freq: 'weekly' }
+    { path: 'atmosphere', priority: '0.95', freq: 'hourly' },
+    { path: 'air-quality', priority: '0.95', freq: 'hourly' },
+    { path: 'alert', priority: '0.90', freq: 'hourly' }
   ];
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -329,11 +390,13 @@ app.get('/robots.txt', (req, res) => {
   const baseUrl = getCanonicalBaseUrl(req);
   const robotsTxt = `User-agent: *
 Allow: /
+Allow: /solar-system
 Allow: /earth
-Allow: /weather
-Allow: /orbitalert
-Allow: /asteroids
 Allow: /deepspace
+Allow: /asteroids
+Allow: /atmosphere
+Allow: /air-quality
+Allow: /alert
 Disallow: /sentinel
 Disallow: /sentinel/
 Disallow: /sentinel.html
@@ -375,9 +438,16 @@ app.use(express.static(PUBLIC_DIR, {
   }
 }));
 
-// SPA Fallback for browser client routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+// 404 Handler for genuinely unknown routes — NEVER silently fall through to homepage index.html
+app.use((req, res) => {
+  res.status(404);
+  if (req.accepts('html')) {
+    res.sendFile(path.join(PUBLIC_DIR, '404.html'));
+  } else if (req.accepts('json')) {
+    res.json({ ok: false, error: 'Resource not found', path: req.originalUrl });
+  } else {
+    res.type('txt').send('404 Not Found');
+  }
 });
 
 // ==================== SYSTEM INITIALIZATION & LIFECYCLE ====================
@@ -394,6 +464,8 @@ startNewsDaemon();
 startKeepAliveDaemon();
 startWeatherDaemon();
 startAirQualityDaemon();
+
+workerManager.startAll();
 
 sentinelDiagnostics.logEvent('STARTUP', 'INFO', `God's Eye Orbital Engine initialized on port ${PORT}`, {
   nodeVersion: process.version,

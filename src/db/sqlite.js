@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import sqlite3Pkg from 'sqlite3';
 import { SQLITE_DB_FILE, DATA_DIR } from '../config/constants.js';
@@ -79,28 +79,33 @@ function initSchema(db) {
       updated_at DATETIME
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS system_incidents (
+      id TEXT PRIMARY KEY,
+      provider_id TEXT,
+      worker_id TEXT,
+      severity TEXT,
+      first_seen DATETIME,
+      last_seen DATETIME,
+      occurrence_count INTEGER DEFAULT 1,
+      description TEXT,
+      details TEXT,
+      status TEXT DEFAULT 'active'
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS dataset_snapshots (
+      dataset_key TEXT PRIMARY KEY,
+      payload TEXT,
+      version INTEGER DEFAULT 1,
+      updated_at DATETIME
+    )`);
+
+    // Sync provider definitions without fabricating test counts
     providerRegistry.getAllProviders().forEach((p) => {
       db.run(
-        `INSERT OR REPLACE INTO source_health 
+        `INSERT OR IGNORE INTO source_health 
         (source_id, name, status, data_class, last_success, last_error, latency_ms, attribution)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [p.id, p.name, p.status, p.category, new Date().toISOString(), null, 120, p.attribution]
-      );
-    });
-
-    const initialWorkers = [
-      ['worker_tle_sync', 'CelesTrak OMM/GP Ingestion Worker', 'running', new Date().toISOString(), new Date(Date.now() + 10000).toISOString(), 310, 142, 0],
-      ['worker_live_iss', 'Real-Time ISS Downlink Worker', 'running', new Date().toISOString(), new Date(Date.now() + 3000).toISOString(), 85, 310, 0],
-      ['worker_horizons', 'NASA/JPL Horizons Ephemeris Daemon', 'running', new Date().toISOString(), new Date(Date.now() + 15000).toISOString(), 420, 89, 0],
-      ['worker_space_weather', 'NOAA SWPC Geomagnetic Monitor', 'running', new Date().toISOString(), new Date(Date.now() + 20000).toISOString(), 140, 240, 0],
-      ['worker_conjunction', 'LEO Proximity Screening Daemon', 'running', new Date().toISOString(), new Date(Date.now() + 8000).toISOString(), 95, 620, 0]
-    ];
-
-    initialWorkers.forEach((w) => {
-      db.run(
-        `INSERT OR REPLACE INTO worker_states (worker_id, name, state, last_run, next_run, duration_ms, success_count, failure_count)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        w
+        [p.id, p.name, p.status, p.category, null, null, 0, p.attribution]
       );
     });
   });

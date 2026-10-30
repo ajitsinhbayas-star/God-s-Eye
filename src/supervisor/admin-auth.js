@@ -41,7 +41,44 @@ const activeSessions = new Map();
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
-const SESSION_LIFETIME_MS = 8 * 60 * 60 * 1000;
+const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // 30-day persistent session
+
+// File-backed persistent session store
+const SESSIONS_FILE = path.resolve(process.cwd(), 'data/sentinel-sessions.json');
+
+function loadPersistedSessions() {
+  try {
+    if (fs.existsSync(SESSIONS_FILE)) {
+      const raw = fs.readFileSync(SESSIONS_FILE, 'utf8');
+      const list = JSON.parse(raw);
+      const now = Date.now();
+      if (Array.isArray(list)) {
+        for (const s of list) {
+          if (s && s.sessionId && s.expiresAt && s.expiresAt > now) {
+            activeSessions.set(s.sessionId, s);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[Sentinel Auth] Notice reading persisted sessions:', err.message);
+  }
+}
+
+function savePersistedSessions() {
+  try {
+    const dir = path.dirname(SESSIONS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const now = Date.now();
+    const valid = Array.from(activeSessions.values()).filter(s => s && s.expiresAt > now);
+    fs.writeFileSync(SESSIONS_FILE, JSON.stringify(valid, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('[Sentinel Auth] Notice saving persisted sessions:', err.message);
+  }
+}
+
+// Initial session load
+loadPersistedSessions();
 
 let ephemeralCredentials = null;
 
@@ -144,22 +181,31 @@ export function createSession(username) {
   const now = Date.now();
   const session = { sessionId, username, createdAt: now, expiresAt: now + SESSION_LIFETIME_MS };
   activeSessions.set(sessionId, session);
+  savePersistedSessions();
   return session;
 }
 
 export function getSession(id) {
   if (!id) return null;
-  const s = activeSessions.get(id);
+  let s = activeSessions.get(id);
+  if (!s) {
+    loadPersistedSessions();
+    s = activeSessions.get(id);
+  }
   if (!s) return null;
   if (Date.now() > s.expiresAt) {
     activeSessions.delete(id);
+    savePersistedSessions();
     return null;
   }
   return s;
 }
 
 export function destroySession(id) {
-  if (id) activeSessions.delete(id);
+  if (id) {
+    activeSessions.delete(id);
+    savePersistedSessions();
+  }
 }
 
 export function requireAdminAuth(req, res, next) {

@@ -2,44 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://orbitaleye.in/</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://orbitaleye.in/earth</loc>
-    <lastmod>2026-10-29</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://orbitaleye.in/weather</loc>
-    <lastmod>2026-10-29</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://orbitaleye.in/orbitalert</loc>
-    <lastmod>2026-10-29</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://orbitaleye.in/asteroids</loc>
-    <lastmod>2026-10-29</lastmod>
+    <loc>https://orbitaleye.in/solar-system</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.90</priority>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://orbitaleye.in/earth</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://orbitaleye.in/deepspace</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://orbitaleye.in/airquality</loc>
+    <loc>https://orbitaleye.in/asteroids</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://orbitaleye.in/atmosphere</loc>
     <lastmod>2026-10-30</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://orbitaleye.in/air-quality</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://orbitaleye.in/alert</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
   </url>
 </urlset>

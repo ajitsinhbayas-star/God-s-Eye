@@ -693,8 +693,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <h2>Related Observatory Views</h2>
       <ul>
         <li><a href="/" title="Interactive 3D Solar System">Orbital Eye Home — Full-scale 3D Solar System exploration</a></li>
-        <li><a href="/orbitalert" title="Satellite Pass Predictions">OrbitAlert — Calculate visible overhead passes, AOS/TCA/LOS look angles, and twilight visibility</a></li>
-        <li><a href="/weather" title="Atmospheric Radar and Weather">Atmosphere &amp; Weather — Live Doppler radar mosaics and Indian district kisan forecasts</a></li>
+        <li><a href="/alert" title="Satellite Pass Predictions">OrbitAlert — Calculate visible overhead passes, AOS/TCA/LOS look angles, and twilight visibility</a></li>
+        <li><a href="/atmosphere" title="Atmospheric Radar and Weather">Atmosphere &amp; Weather — Live Doppler radar mosaics and Indian district kisan forecasts</a></li>
         <li><a href="/asteroids" title="Near-Earth Asteroid Tracker">Near-Earth Asteroids — 2,200+ planetary defense asteroid orbits and close approaches</a></li>
         <li><a href="/deepspace" title="Deep Space Missions">Deep Space Missions — JWST, Aditya-L1 halo orbit, and Voyager interstellar probes</a></li>
       </ul>
@@ -710,7 +710,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <header class="header-safe absolute z-50 flex flex-wrap items-center justify-between gap-2 p-2 sm:px-3.5 rounded-2xl hud-glass pointer-events-auto">
     <!-- Left: Brand Identity, Simulation Clock & Data Freshness Status -->
     <div class="flex items-center gap-2.5 min-w-0">
-      <a href="index.html" id="hud-logo-badge" class="relative flex items-center gap-2.5 text-left group focus:outline-none no-underline cursor-pointer" title="Return to Orbital Command Home">
+      <a href="/" id="hud-logo-badge" class="relative flex items-center gap-2.5 text-left group focus:outline-none no-underline cursor-pointer" title="Return to Orbital Command Home">
         <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-cyan-950/90 border border-cyan-500/40 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] shrink-0 transition">
           <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
         </span>
@@ -733,23 +733,82 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
 
     <!-- Centre: Explicit 3-Mode View Switcher (Earth Orbit / Solar System / Deep Sky) -->
-    <nav id="nasa-target-bar" aria-label="View Mode Switcher" class="flex items-center gap-1 bg-slate-950/85 border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono">
-      <a href="index.html" id="viewmode-btn-solar" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
-        ☀️ Solar
-      </a>
-      <a href="earth.html" id="viewmode-btn-earth" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold transition whitespace-nowrap">
-        🌍 Earth Orbit
-      </a>
-      <a href="weather.html" id="viewmode-btn-weather" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap" title="Zoom Earth Real-Time Weather & Atmosphere Command">
-        🌀 Atmosphere
-      </a>
-      <a href="asteroids.html" id="viewmode-btn-asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
-        ☄️ Asteroids
-      </a>
-      <a href="deepspace.html" id="viewmode-btn-deepsky" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap">
-        🌌 Deep Space
-      </a>
+    <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
+      <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
+      <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
+      <a href="/earth" data-nav="earth" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold whitespace-nowrap text-xs" aria-current="page">Earth</a>
+      <a href="/deepspace" data-nav="deepspace" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Deep Space</a>
+      <a href="/asteroids" data-nav="asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Asteroids</a>
+      <a href="/atmosphere" data-nav="atmosphere" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Atmosphere</a>
+      <a href="/air-quality" data-nav="air-quality" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Air Quality</a>
+      <a href="/alert" data-nav="alert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Alert</a>
     </nav>
+    
+  <script>
+    (function(){
+      function normalizeLinks() {
+        const isFile = window.location.protocol === 'file:';
+        const fileMap = {
+          '/': 'index.html',
+          '/solar-system': 'solar-system.html',
+          '/earth': 'earth.html',
+          '/deepspace': 'deep-space.html',
+          '/asteroids': 'asteroids.html',
+          '/atmosphere': 'atmosphere.html',
+          '/air-quality': 'air-quality.html',
+          '/alert': 'alert.html',
+          '/sentinel': 'sentinel.html',
+          '/sentinel-login': 'sentinel-login.html'
+        };
+        const webMap = {
+          'index.html': '/',
+          'solar-system.html': '/solar-system',
+          'earth.html': '/earth',
+          'deep-space.html': '/deepspace',
+          'deepspace.html': '/deepspace',
+          'asteroids.html': '/asteroids',
+          'atmosphere.html': '/atmosphere',
+          'weather.html': '/atmosphere',
+          '/weather': '/atmosphere',
+          'air-quality.html': '/air-quality',
+          'airquality.html': '/air-quality',
+          '/airquality': '/air-quality',
+          'alert.html': '/alert',
+          'orbitalert.html': '/alert',
+          '/orbitalert': '/alert',
+          'sentinel.html': '/sentinel',
+          'sentinel-login.html': '/sentinel-login'
+        };
+
+        document.querySelectorAll('a[href]').forEach(function(a) {
+          let h = a.getAttribute('href');
+          if (!h || h.startsWith('http') || h.startsWith('javascript:') || h.startsWith('mailto:')) return;
+
+          let [pathPart, hashPart] = h.split('#');
+          let [cleanPath, queryPart] = pathPart.split('?');
+          const hashSuffix = hashPart !== undefined ? '#' + hashPart : '';
+          const querySuffix = queryPart !== undefined ? '?' + queryPart : '';
+
+          if (isFile) {
+            if (fileMap[cleanPath]) {
+              a.setAttribute('href', fileMap[cleanPath] + querySuffix + hashSuffix);
+            }
+          } else {
+            if (webMap[cleanPath]) {
+              a.setAttribute('href', webMap[cleanPath] + querySuffix + hashSuffix);
+            }
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', normalizeLinks);
+      } else {
+        normalizeLinks();
+      }
+    })();
+  </script>
+
 
     <!-- Right: Global Actions (Search, OrbitAlert, Layers, Fullscreen, More Menu) -->
     <div class="flex items-center gap-1.5 font-mono text-xs relative">
@@ -758,7 +817,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <span class="hidden md:inline">Explore</span>
       </button>
 
-      <a href="orbitalert.html" id="header-orbitalert-link" title="Open OrbitAlert Event & Monitoring Centre" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold transition flex items-center gap-1 whitespace-nowrap">
+      <a href="/alert" id="header-orbitalert-link" title="Open OrbitAlert Event & Monitoring Centre" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold transition flex items-center gap-1 whitespace-nowrap">
         <span>🔔</span>
         <span class="hidden sm:inline">OrbitAlert</span>
         <span id="header-orbitalert-count" class="hidden px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/50 text-[9px]"></span>
@@ -833,7 +892,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           </button>
           <!-- FIXED -->
 
-<a href="sentinel-login.html" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between" title="Administrator Access Required">
+<a href="/sentinel-login" class="w-full px-3 py-2 rounded-xl hover:bg-slate-800/80 text-left text-cyan-300 flex items-center justify-between" title="Administrator Access Required">
   <span>🛡️ Sentinel Bot (Admin)</span>
   <span class="text-[9px] text-amber-400 font-bold border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded">LOGIN 🔒</span>
 </a>
@@ -921,7 +980,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <span id="sat-count-badge" class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded font-mono" title="Loaded active satellite inventory">Loading…</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <a id="explorer-health-warn" href="orbitalert.html#health" title="One or more telemetry sources degraded — view Data Health" class="hidden px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-mono font-bold">⚠️ Source</a>
+        <a id="explorer-health-warn" href="/alert#health" title="One or more telemetry sources degraded — view Data Health" class="hidden px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-mono font-bold">⚠️ Source</a>
         <button onclick="minimizeCatalog()" title="Collapse Object Explorer" class="p-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition font-mono">
           <span>Collapse ◀</span>
         </button>
@@ -976,7 +1035,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <div id="subpanel-telemetry-bots" class="domain-subpanel hidden space-y-2">
           <div class="flex items-center justify-between px-1">
             <span class="text-[10px] font-bold text-cyan-300 uppercase tracking-wider">Active Supervisor Daemons</span>
-            <a href="sentinel-login.html" class="text-[9px] text-amber-300 hover:underline font-bold">Admin Console 🔒</a>
+            <a href="/sentinel-login" class="text-[9px] text-amber-300 hover:underline font-bold">Admin Console 🔒</a>
           </div>
           <div id="bot-cards-container" class="space-y-1.5"></div>
           <div class="p-2 rounded-xl bot-terminal max-h-40 overflow-y-auto text-[10px] space-y-1" id="bot-terminal-logs"></div>
@@ -1315,7 +1374,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <button onclick="FocusTargetFromHub('SOLAR_BODY', 'mars')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
             Focus Inner Solar System in 3D
           </button>
-          <a href="orbitalert.html?tab=nea" class="text-[10px] text-amber-300 hover:underline font-bold">Close Approaches ↗</a>
+          <a href="/alert?tab=nea" class="text-[10px] text-amber-300 hover:underline font-bold">Close Approaches ↗</a>
         </div>
       </div>
 
@@ -1339,7 +1398,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <span class="text-[10px] font-bold text-slate-200 block">Source & Ephemeris Diagnostics</span>
           <span class="text-[10px] text-slate-400 font-sans">Monitor CelesTrak, JPL Horizons & DONKI feed status.</span>
         </div>
-        <a href="orbitalert.html?tab=health" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-[10px] font-bold shrink-0">
+        <a href="/alert?tab=health" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-[10px] font-bold shrink-0">
           Data Health ↗
         </a>
       </div>
@@ -6160,7 +6219,7 @@ function animate() {
       <span id="ticker-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
       <span id="ticker-badge" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase shrink-0">ALERT</span>
       <button id="ticker-msg" class="truncate max-w-[200px] sm:max-w-[380px] text-left hover:text-cyan-300 transition font-bold">Synchronizing SpaceDB...</button>
-      <a href="orbitalert.html" class="px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold shrink-0">Centre ↗</a>
+      <a href="/alert" class="px-2 py-0.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold shrink-0">Centre ↗</a>
       <button onclick="document.getElementById('hud-live-alert-ticker').style.display='none'" class="text-slate-400 hover:text-white px-1">✕</button>
     `;
     document.body.appendChild(tickerEl);
@@ -6320,7 +6379,7 @@ function animate() {
         }
           tickerEl.style.display = 'flex';
 
-          document.querySelectorAll('a[href="orbitalert.html"]').forEach(link => {
+          document.querySelectorAll('a[href="/alert"]').forEach(link => {
             if (link.innerText.includes('OrbitAlert')) {
               link.innerHTML = `🔔 OrbitAlert <span class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/50 text-[9px]">${liveEvents.length}</span>`;
             }
@@ -7757,6 +7816,53 @@ function animate() {
   <!-- Universal Station Calibration & J.A.R.V.I.S. Tactical AI Assistant -->
   <script src="js/universal_location_alerts.js"></script>
   <script src="js/jarvis.js"></script>
+
+  <!-- ==================== BACK TO TOP & MR. SINGH FOOTER ==================== -->
+  <footer id="orbital-footer" class="w-full bg-slate-950/95 border-t border-slate-800/80 px-4 py-6 text-center text-xs font-mono text-slate-400 space-y-3 z-30">
+    <div class="max-w-5xl mx-auto flex flex-col items-center justify-center gap-3">
+      <!-- Back to Top Button -->
+      <div>
+        <button id="btn-back-to-top" onclick="window.scrollToOrbitalTop()" aria-label="Back to Top" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 transition shadow-lg text-xs font-bold cursor-pointer select-none min-h-[44px] min-w-[140px]">
+          <i class="fa-solid fa-arrow-up text-xs"></i>
+          <span>Back to Top</span>
+        </button>
+      </div>
+
+      <!-- Quick Observatories Directory -->
+      <nav aria-label="Observatory Directory" class="flex flex-wrap justify-center gap-3 text-[11px] text-slate-400">
+        <a href="/" class="hover:text-cyan-300 transition">Home</a>
+        <span>•</span>
+        <a href="/solar-system" class="hover:text-cyan-300 transition">Solar System</a>
+        <span>•</span>
+        <a href="/earth" class="hover:text-cyan-300 transition">Earth Satellites</a>
+        <span>•</span>
+        <a href="/deepspace" class="hover:text-cyan-300 transition">Deep Space</a>
+        <span>•</span>
+        <a href="/asteroids" class="hover:text-cyan-300 transition">Asteroids</a>
+        <span>•</span>
+        <a href="/atmosphere" class="hover:text-cyan-300 transition">Atmosphere &amp; Weather</a>
+        <span>•</span>
+        <a href="/air-quality" class="hover:text-cyan-300 transition">Air Quality (CPCB)</a>
+        <span>•</span>
+        <a href="/alert" class="hover:text-cyan-300 transition">OrbitAlert</a>
+      </nav>
+
+      <!-- Exact Footer Credit -->
+      <div class="pt-2 border-t border-slate-900 w-full text-slate-400 font-medium text-xs">
+        Created by Mr. Singh
+      </div>
+    </div>
+  </footer>
+  <script>
+    window.scrollToOrbitalTop = function() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+      document.querySelectorAll('.overflow-y-auto, aside, main, .drawer-content').forEach(el => {
+        try { el.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); } catch(_) {}
+      });
+    };
+  </script>
+
 </body>
 </html>
 

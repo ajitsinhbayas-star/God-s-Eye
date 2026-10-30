@@ -151,6 +151,8 @@
   }
 
   // Populate States
+  window.populateAqiStateDropdown = populateAqiStateDropdown;
+  window.populateAqiDistrictDropdown = populateAqiDistrictDropdown;
   function populateAqiStateDropdown() {
     if (!districtIndexData || !Array.isArray(districtIndexData.districts)) return;
     const states = Array.from(new Set(districtIndexData.districts.map(d => d.state))).sort();
@@ -269,7 +271,7 @@
 
     if (type === 'satellite') {
       leafletBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxNativeZoom: 16,
+        maxNativeZoom: 18,
         maxZoom: 19,
         attribution: '&copy; Esri, Maxar'
       }).addTo(leafletMap);

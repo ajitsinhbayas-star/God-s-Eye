@@ -218,6 +218,8 @@
   }
 
   // Populate State Selectors
+  window.populateStateDropdowns = populateStateDropdowns;
+  window.populateDistrictSelector = populateDistrictSelector;
   function populateStateDropdowns() {
     if (!districtIndexData || !Array.isArray(districtIndexData.districts)) return;
     const states = Array.from(new Set(districtIndexData.districts.map(d => d.state))).sort();
@@ -954,9 +956,11 @@
 
     // Calculate maximum precipitation probability in next 6 hours
     let rainProb = 0;
+    const dailyForecast = Array.isArray(data.forecast7d) ? data.forecast7d : [];
+    const dailyRainMax = dailyForecast.length > 0 ? (dailyForecast[0].precipitationProbability || 0) : 0;
     if (hourly.length > 0) {
-      const next6 = hourly.slice(0, 6);
-      rainProb = Math.max(...next6.map(h => h.precipitationProbability || 0));
+      const next12 = hourly.slice(0, 12);
+      rainProb = Math.max(dailyRainMax, ...next12.map(h => h.precipitationProbability || 0));
     } else if (typeof c.precipitation === 'number' && c.precipitation > 0) {
       rainProb = 85;
     }

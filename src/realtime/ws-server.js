@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { providerRegistry } from '../supervisor/registry.js';
 import { sentinelDiagnostics } from '../supervisor/diagnostics.js';
+import { dataDistributionService, CHANNELS, EVENT_TYPES } from './data-distribution.js';
 
 let wss = null;
 
@@ -12,6 +13,19 @@ export function initWebSocketServer(server) {
 
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
+
+    // Parse channel subscriptions from request URL e.g. /?channels=earth,alert
+    let requestedChannels = [];
+    try {
+      const url = new URL(req.url, 'http://localhost');
+      const chParam = url.searchParams.get('channels') || url.searchParams.get('channel');
+      if (chParam) {
+        requestedChannels = chParam.split(',').map(c => c.trim().toLowerCase());
+      }
+    } catch (_) {}
+
+    // Register with data distribution service
+    dataDistributionService.registerWsClient(ws, requestedChannels);
 
     ws.send(JSON.stringify({
       type: 'SENTINEL_INIT',

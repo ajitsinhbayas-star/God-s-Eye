@@ -389,8 +389,46 @@
         }
       } catch (_) {}
 
+      // Explicit Page Navigation Commands
+      let directNavAction = null;
+      if (/\b(OPEN|GO TO|NAVIGATE TO|LAUNCH|VIEW)\s+(HOME|MAIN|LANDING)\b/i.test(query) || q === 'HOME' || q === 'OPEN HOME') {
+        actions.push({ label: '🏠 Open Home', type: 'NAV_HOME' });
+        directNavAction = 'NAV_HOME';
+        answer = 'Directing you to the Orbital Eye Home landing platform, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW|EXPLORE)\s+(SOLAR SYSTEM|SOLAR|PLANETS)\b/i.test(query) || q === 'SOLAR SYSTEM' || q === 'OPEN SOLAR SYSTEM') {
+        actions.push({ label: '☀️ Open Solar System 3D', type: 'NAV_SOLAR' });
+        directNavAction = 'NAV_SOLAR';
+        answer = 'Opening the interactive 3D Solar System Keplerian simulation, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW|TRACK)\s+(EARTH|SATELLITES|SATELLITE TRACKING|LEO)\b/i.test(query) || q === 'EARTH' || q === 'OPEN EARTH' || q === 'OPEN SATELLITE TRACKING') {
+        actions.push({ label: '🌍 Open Earth & Satellites', type: 'NAV_EARTH' });
+        directNavAction = 'NAV_EARTH';
+        answer = 'Accessing real-time Earth LEO satellite constellation tracking, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(DEEP SPACE|DEEPSPACE|COSMOS)\b/i.test(query) || q === 'DEEP SPACE' || q === 'OPEN DEEP SPACE') {
+        actions.push({ label: '🌌 Open Deep Space', type: 'NAV_DEEPSPACE' });
+        directNavAction = 'NAV_DEEPSPACE';
+        answer = 'Launching the Deep Space extragalactic observatory, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(ASTEROIDS|ASTEROID|NEO|CNEOS)\b/i.test(query) || q === 'ASTEROIDS' || q === 'OPEN ASTEROIDS') {
+        actions.push({ label: '☄️ Open Asteroids', type: 'NAV_ASTEROIDS' });
+        directNavAction = 'NAV_ASTEROIDS';
+        answer = 'Deploying NASA CNEOS Near-Earth Asteroid defense radar, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(ATMOSPHERE|WEATHER|RADAR|KISAN)\b/i.test(query) || q === 'ATMOSPHERE' || q === 'OPEN ATMOSPHERE' || q === 'OPEN WEATHER') {
+        actions.push({ label: '🌀 Open Atmosphere & Weather', type: 'NAV_ATMOSPHERE' });
+        directNavAction = 'NAV_ATMOSPHERE';
+        answer = 'Connecting to live Doppler rain radar and Indian district kisan map, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(AIR QUALITY|AIRQUALITY|AQI|CPCB)\b/i.test(query) || q === 'AIR QUALITY' || q === 'OPEN AIR QUALITY' || q === 'AQI') {
+        actions.push({ label: '💨 Open Air Quality Observatory', type: 'NAV_AIRQUALITY' });
+        directNavAction = 'NAV_AIRQUALITY';
+        answer = 'Opening the CPCB National Air Quality Index (NAQI) observatory, Sir.';
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(ALERT|ALERTS|ORBITALERT|PREDICTIONS)\b/i.test(query) || q === 'ALERT' || q === 'ALERTS' || q === 'OPEN ALERTS') {
+        actions.push({ label: '🔔 Open OrbitAlert', type: 'NAV_ALERT' });
+        directNavAction = 'NAV_ALERT';
+        answer = 'Opening OrbitAlert overhead pass predictions and space weather alerts, Sir.';
+      }
+
       // Contextual Action Pills & Telemetry Mapping
-      if (q.includes('ISS') || q.includes('SPACE STATION') || q.includes('ZARYA') || q.includes('TIANGONG')) {
+      if (directNavAction) {
+        // Direct navigation handled
+      } else if (q.includes('ISS') || q.includes('SPACE STATION') || q.includes('ZARYA') || q.includes('TIANGONG')) {
         session.lastTrackedObject = 'ISS';
         actions.push({ label: '🛰️ Lock ISS in Earth Orbit', type: 'FOCUS_ISS' });
         actions.push({ label: '🔔 Check Local ISS Passes', type: 'NAV_ALERT', hash: 'passes' });
@@ -510,32 +548,45 @@
       }
 
       switch (action) {
-        case 'NAV_SOLAR':
-          if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+        case 'NAV_HOME':
+          if (window.location.pathname !== '/' && !window.location.pathname.endsWith('index.html')) {
             navigateTo('index.html', '/');
+          }
+          break;
+
+        case 'NAV_SOLAR':
+          if (!window.location.pathname.includes('solar-system')) {
+            navigateTo('solar-system.html', '/solar-system');
           } else if (hash) {
             window.location.hash = `#/${hash}`;
           }
           break;
 
         case 'NAV_EARTH':
-          if (!window.location.pathname.includes('earth.html')) {
+          if (!window.location.pathname.includes('earth')) {
             navigateTo('earth.html', '/earth');
           } else if (hash) {
             window.location.hash = `#/${hash}`;
           }
           break;
 
+        case 'NAV_ATMOSPHERE':
         case 'NAV_WEATHER':
-          if (!window.location.pathname.includes('weather.html')) {
-            navigateTo('weather.html', '/weather');
+          if (!window.location.pathname.includes('atmosphere')) {
+            navigateTo('atmosphere.html', '/atmosphere');
           } else if (hash && typeof window.setLayerMode === 'function') {
             window.setLayerMode(hash);
           }
           break;
 
+        case 'NAV_AIRQUALITY':
+          if (!window.location.pathname.includes('air-quality')) {
+            navigateTo('air-quality.html', '/air-quality');
+          }
+          break;
+
         case 'NAV_ASTEROIDS':
-          if (!window.location.pathname.includes('asteroids.html')) {
+          if (!window.location.pathname.includes('asteroids')) {
             navigateTo('asteroids.html', '/asteroids');
           } else if (hash && typeof window.selectAsteroid === 'function') {
             window.selectAsteroid(hash);
@@ -543,16 +594,16 @@
           break;
 
         case 'NAV_DEEPSPACE':
-          if (!window.location.pathname.includes('deepspace.html')) {
-            navigateTo('deepspace.html', '/deepspace');
+          if (!window.location.pathname.includes('deep-space') && !window.location.pathname.includes('deepspace')) {
+            navigateTo('deep-space.html', '/deepspace');
           } else if (hash) {
             window.location.hash = `#/${hash}`;
           }
           break;
 
         case 'NAV_ALERT':
-          if (!window.location.pathname.includes('orbitalert.html')) {
-            navigateTo('orbitalert.html', '/orbitalert');
+          if (!window.location.pathname.includes('alert')) {
+            navigateTo('alert.html', '/alert');
           } else if (hash && typeof window.switchMainTab === 'function') {
             window.switchMainTab(hash);
           }
@@ -571,7 +622,7 @@
           break;
 
         case 'FOCUS_ISS':
-          if (!window.location.pathname.includes('earth.html') && !window.location.pathname.endsWith('index.html')) {
+          if (!window.location.pathname.includes('earth')) {
             navigateTo('earth.html', '/earth');
           } else {
             const issBtn = document.querySelector('[data-target="iss"]') ||

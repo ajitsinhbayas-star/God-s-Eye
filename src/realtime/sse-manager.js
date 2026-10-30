@@ -1,20 +1,18 @@
-﻿const sseClients = new Set();
+import { dataDistributionService, CHANNELS } from './data-distribution.js';
 
 export function registerSseClient(req, res, initialData = {}) {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders?.();
+  let requestedChannels = [];
+  try {
+    const url = new URL(req.url, 'http://localhost');
+    const chParam = url.searchParams.get('channels') || url.searchParams.get('channel');
+    if (chParam) {
+      requestedChannels = chParam.split(',').map(c => c.trim().toLowerCase());
+    }
+  } catch (_) {}
 
-  res.write(`data: ${JSON.stringify({ type: 'CONNECTED', ...initialData })}\n\n`);
-  sseClients.add(res);
-
-  req.on('close', () => { sseClients.delete(res); });
+  dataDistributionService.registerSseClient(req, res, requestedChannels);
 }
 
 export function broadcastSse(payload) {
-  const msg = `data: ${JSON.stringify(payload)}\n\n`;
-  for (const client of sseClients) {
-    try { client.write(msg); } catch { sseClients.delete(client); }
-  }
+  dataDistributionService.broadcast(Object.values(CHANNELS), payload.type || 'SYSTEM_EVENT', payload);
 }

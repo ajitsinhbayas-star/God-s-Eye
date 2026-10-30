@@ -223,11 +223,12 @@ export async function fetchAirQualityCoordinates(lat, lon, stationName = 'Locati
   }
 }
 
-export async function pollCpcbStations() {
+export async function pollCpcbStations({ signal } = {}) {
   const t0 = Date.now();
   let successCount = 0;
 
   for (const st of CAAQMS_STATIONS) {
+    if (signal?.aborted) break;
     try {
       const data = await fetchAirQualityCoordinates(st.lat, st.lon, st.name, st.state);
       airQualityStationCache.set(st.id, {
@@ -249,6 +250,11 @@ export async function pollCpcbStations() {
   const durationMs = Date.now() - t0;
   sentinelDiagnostics.recordWorkerRun('worker_airquality_cpcb', durationMs, successCount > 0, successCount);
   console.log(`[Air Quality Worker] Polled ${successCount}/${CAAQMS_STATIONS.length} CAAQMS stations in ${durationMs}ms`);
+  return {
+    recordsFetched: CAAQMS_STATIONS.length,
+    recordsAccepted: successCount,
+    recordsRejected: CAAQMS_STATIONS.length - successCount
+  };
 }
 
 export function getAllStationReadings() {
