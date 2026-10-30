@@ -93,18 +93,81 @@
 
   <!-- Schema.org Structured Data -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Orbital Eye",
-    "url": "https://orbitaleye.in/",
-    "description": "Multi-domain space observatory and environmental intelligence platform featuring real-time satellite tracking, 3D solar system astrodynamics, near-Earth asteroid surveillance, live Doppler weather radar, and Indian district air quality.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://orbitaleye.in/earth?search={search_term_string}",
-      "query-input": "required name=search_term_string"
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://orbitaleye.in/#organization",
+      "name": "Orbital Eye Space Observatory",
+      "url": "https://orbitaleye.in/",
+      "logo": "https://orbitaleye.in/icons/icon-512.png",
+      "description": "Multi-domain space observatory and environmental intelligence suite uniting orbital mechanics, meteorological radar, and atmospheric telemetry."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://orbitaleye.in/#website",
+      "name": "Orbital Eye",
+      "url": "https://orbitaleye.in/",
+      "description": "Explore real-time satellite tracking, 3D heliocentric Solar System astrodynamics, near-Earth asteroids, live Doppler weather radar mosaics, and Indian district air quality.",
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://orbitaleye.in/earth?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://orbitaleye.in/#webpage",
+      "url": "https://orbitaleye.in/",
+      "name": "Orbital Eye — Explore Earth. Discover Space. Understand Our Environment.",
+      "description": "Explore real-time satellite tracking, 3D heliocentric Solar System astrodynamics, near-Earth asteroids, live Doppler weather radar mosaics, and Indian district air quality.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://orbitaleye.in/#website",
+        "name": "Orbital Eye",
+        "url": "https://orbitaleye.in/"
+      },
+      "breadcrumb": {
+        "@id": "https://orbitaleye.in/#breadcrumb"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orbitaleye.in/#webapp",
+      "name": "Orbital Eye Home",
+      "url": "https://orbitaleye.in/",
+      "description": "Explore real-time satellite tracking, 3D heliocentric Solar System astrodynamics, near-Earth asteroids, live Doppler weather radar mosaics, and Indian district air quality.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers (WebGL 2.0)",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://orbitaleye.in/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://orbitaleye.in/"
+        }
+      ]
     }
-  }
+  ]
+}
   </script>
 </head>
 <body class="min-h-screen flex flex-col cosmic-radial">

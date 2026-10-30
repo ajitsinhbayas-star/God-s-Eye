@@ -3,32 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Air Quality Observatory — India CPCB NAQI & CAAQMS Real-Time Stations | Orbital Eye</title>
-  <meta name="description" content="Orbital Eye Air Quality Observatory: Real-time India CPCB National Air Quality Index (NAQI), 594 district boundary maps, live CAAQMS continuous monitoring stations, 6-pollutant concentration grids (PM2.5, PM10, NO2, SO2, CO, O3), and official health advisories." />
+  <title>Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye</title>
+  <meta name="description" content="Real-time India Air Quality Observatory: Central Pollution Control Board (CPCB) NAQI calculation, 594 district boundary maps, and continuous CAAQMS monitoring stations." />
   <link rel="canonical" href="https://orbitaleye.in/air-quality" />
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye" />
-  <meta property="og:description" content="Explore India's Air Quality across 594 administrative districts and continuous CAAQMS stations. Official CPCB NAQI calculation, 6-pollutant grid, and health recommendations." />
-  <meta property="og:url" content="https://orbital-eye.onrender.com/airquality" />
-  <meta property="og:image" content="https://orbital-eye.onrender.com/icons/icon-512.png" />
+  <meta property="og:description" content="Real-time India Air Quality Observatory: Central Pollution Control Board (CPCB) NAQI calculation, 594 district boundary maps, and continuous CAAQMS monitoring stations." />
+  <meta property="og:url" content="https://orbitaleye.in/air-quality" />
+  <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://orbitaleye.in/air-quality" />
   <meta name="twitter:title" content="Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye" />
-  <meta name="twitter:description" content="Explore India's Air Quality across 594 administrative districts and continuous CAAQMS stations. Official CPCB NAQI calculation, 6-pollutant grid, and health recommendations." />
+  <meta name="twitter:description" content="Explore India Air Quality across 594 districts and CAAQMS stations. CPCB NAQI formula calculation, 6-pollutant concentration grid, and health recommendations." />
   <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Orbital Eye Air Quality Observatory",
-    "url": "https://orbitaleye.in/air-quality",
-    "description": "Real-time India CPCB National Air Quality Index (NAQI) telemetry, 594 district boundary maps, live CAAQMS continuous monitoring stations, and health advisories."
-  }
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://orbitaleye.in/#organization",
+      "name": "Orbital Eye Space Observatory",
+      "url": "https://orbitaleye.in/",
+      "logo": "https://orbitaleye.in/icons/icon-512.png",
+      "description": "Multi-domain space observatory and environmental intelligence suite uniting orbital mechanics, meteorological radar, and atmospheric telemetry."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://orbitaleye.in/air-quality#webpage",
+      "url": "https://orbitaleye.in/air-quality",
+      "name": "Air Quality Observatory — India CPCB NAQI & CAAQMS Stations | Orbital Eye",
+      "description": "Real-time India Air Quality Observatory: Central Pollution Control Board (CPCB) NAQI calculation, 594 district boundary maps, and continuous CAAQMS monitoring stations.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://orbitaleye.in/#website",
+        "name": "Orbital Eye",
+        "url": "https://orbitaleye.in/"
+      },
+      "breadcrumb": {
+        "@id": "https://orbitaleye.in/air-quality#breadcrumb"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orbitaleye.in/air-quality#webapp",
+      "name": "Orbital Eye Air Quality",
+      "url": "https://orbitaleye.in/air-quality",
+      "description": "Real-time India Air Quality Observatory: Central Pollution Control Board (CPCB) NAQI calculation, 594 district boundary maps, and continuous CAAQMS monitoring stations.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers (WebGL 2.0)",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://orbitaleye.in/air-quality#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://orbitaleye.in/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Air Quality",
+          "item": "https://orbitaleye.in/air-quality"
+        }
+      ]
+    }
+  ]
+}
   </script>
 
   <!-- PWA & Favicon -->
@@ -99,10 +159,10 @@
             <i class="fa-solid fa-wind text-sm"></i>
           </div>
           <div>
-            <div class="font-black text-sm tracking-wider text-white font-mono flex items-center gap-2">
+            <h1 class="font-black text-sm tracking-wider text-white font-mono flex items-center gap-2 m-0 p-0">
               <span>ORBITAL EYE</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono">CPCB NAQI</span>
-            </div>
+            </h1>
             <div class="text-[9px] text-slate-400 font-mono">Air Quality Observatory • India</div>
           </div>
         </a>

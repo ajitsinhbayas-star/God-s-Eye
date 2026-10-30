@@ -163,9 +163,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Primary Meta Tags -->
-  <title>Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye</title>
+  <title>Live Satellite Tracking & 3D Earth Orbit Visualization | Orbital Eye</title>
   <meta name="title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
-  <meta name="description" content="Track real-time satellite positions, the International Space Station (ISS), ISRO Cartosat fleet, and Starlink constellations in 3D using validated SGP4 orbital propagation." />
+  <meta name="description" content="Track real-time satellite positions, ISS passes, Cartosat, and Starlink constellations in 3D WebGL using validated SGP4 mathematical orbital propagation." />
   <meta name="keywords" content="satellite tracking, live satellite positions, ISS tracker, ISRO satellites, Earth orbit visualization, SGP4 orbital propagation, Starlink orbits" />
   <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow" />
@@ -176,67 +176,85 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Orbital Eye Space Observatory" />
   <meta property="og:url" content="https://orbitaleye.in/earth" />
-  <meta property="og:title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
-  <meta property="og:description" content="Real-time 3D Earth orbit visualization and satellite tracking with SGP4 propagation." />
+  <meta property="og:title" content="Live Satellite Tracking & 3D Earth Orbit Visualization | Orbital Eye" />
+  <meta property="og:description" content="Track real-time satellite positions, ISS passes, Cartosat, and Starlink constellations in 3D WebGL using validated SGP4 mathematical orbital propagation." />
   <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://orbitaleye.in/earth" />
-  <meta name="twitter:title" content="Live Satellite Tracking &amp; Earth Orbit Visualization | Orbital Eye" />
-  <meta name="twitter:description" content="Track real-time satellite positions, the ISS, and orbital trajectories in 3D WebGL." />
+  <meta name="twitter:title" content="Live Satellite Tracking & 3D Earth Orbit Visualization | Orbital Eye" />
+  <meta name="twitter:description" content="Track real-time satellite positions, ISS passes, Cartosat, and Starlink constellations in 3D WebGL using validated SGP4 mathematical orbital propagation." />
   <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD Structured Data -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": "https://orbitaleye.in/earth#webapp",
-        "name": "Orbital Eye Satellite Tracker",
-        "url": "https://orbitaleye.in/earth",
-        "description": "Real-time 3D Earth satellite tracking engine utilizing SGP4 mathematical propagation for ISS, Tiangong, ISRO, and commercial fleets.",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All modern browsers (WebGL 2.0)",
-        "inLanguage": "en"
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://orbitaleye.in/#organization",
+      "name": "Orbital Eye Space Observatory",
+      "url": "https://orbitaleye.in/",
+      "logo": "https://orbitaleye.in/icons/icon-512.png",
+      "description": "Multi-domain space observatory and environmental intelligence suite uniting orbital mechanics, meteorological radar, and atmospheric telemetry."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://orbitaleye.in/earth#webpage",
+      "url": "https://orbitaleye.in/earth",
+      "name": "Live Satellite Tracking & 3D Earth Orbit Visualization | Orbital Eye",
+      "description": "Track real-time satellite positions, ISS passes, Cartosat, and Starlink constellations in 3D WebGL using validated SGP4 mathematical orbital propagation.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://orbitaleye.in/#website",
+        "name": "Orbital Eye",
+        "url": "https://orbitaleye.in/"
       },
-      {
-        "@type": "Dataset",
-        "@id": "https://orbitaleye.in/earth#dataset",
-        "name": "Orbital Eye Earth Satellite Ephemeris Catalog",
-        "description": "Authoritative two-line element sets (TLEs) and Cartesian state vectors for Earth-orbiting satellites.",
-        "creator": {
-          "@type": "Organization",
-          "name": "Orbital Eye Space Observatory"
-        },
-        "license": "https://creativecommons.org/licenses/by/4.0/",
-        "distribution": {
-          "@type": "DataDownload",
-          "encodingFormat": "application/json",
-          "contentUrl": "https://orbitaleye.in/api/space/bootstrap"
-        }
+      "breadcrumb": {
+        "@id": "https://orbitaleye.in/earth#breadcrumb"
       },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://orbitaleye.in/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Live Satellite Tracking",
-            "item": "https://orbitaleye.in/earth"
-          }
-        ]
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orbitaleye.in/earth#webapp",
+      "name": "Orbital Eye Earth",
+      "url": "https://orbitaleye.in/earth",
+      "description": "Track real-time satellite positions, ISS passes, Cartosat, and Starlink constellations in 3D WebGL using validated SGP4 mathematical orbital propagation.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers (WebGL 2.0)",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
       }
-    ]
-  }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://orbitaleye.in/earth#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://orbitaleye.in/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Earth",
+          "item": "https://orbitaleye.in/earth"
+        }
+      ]
+    }
+  ]
+}
   </script>
 
   <!-- Suppress Tailwind runtime CDN production warning -->
@@ -608,30 +626,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <link rel="dns-prefetch" href="https://en.wikipedia.org">
   <link rel="dns-prefetch" href="https://api.wheretheiss.at">
 
-  <!-- Primary Metadata -->
-  <meta name="description" content="Explore a real-time, interactive 3D WebGL visualization of the Solar System, Earth satellites, and the 9-tier Cosmic Address hierarchy using NASA Keplerian ephemeris physics and JWST imagery.">
-  <meta name="keywords" content="Solar System 3D, Three.js astronomical visualization, NASA ephemeris, real time satellite tracking, ISRO satellites, Keplerian orbits, Laniakea supercluster, JWST galaxies, cosmic address">
-  <meta name="author" content="Orbital Command">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="theme-color" content="#000208">
-  <link rel="canonical" href="https://your-domain.com/">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://your-domain.com/">
-  <meta property="og:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta property="og:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers. Powered by NASA Keplerian physics and Three.js WebGL.">
-  <meta property="og:image" content="https://your-domain.com/og-preview.jpg">
-  <meta property="og:site_name" content="Orbital Command">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta name="twitter:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers.">
-  <meta name="twitter:image" content="https://your-domain.com/og-preview.jpg">
-
-  <!-- Schema.org Structured Data -->
-  
   <meta name="google-site-verification" content="pUD93vWhaPBMab_inqL7UsKFGDEfSe-7WuSyI-N_5uw" />
 </head>
   <body class="bg-[#000208] text-slate-100 font-sans h-screen h-[100dvh] w-screen overflow-hidden select-none">
@@ -716,7 +710,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </span>
         <span class="min-w-0">
           <span class="flex items-center gap-1.5">
-            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap">Orbital Command</span>
+            <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap inline-flex items-center gap-1.5">Orbital Eye <span class="text-cyan-400 font-mono text-[10px] hidden md:inline">• Satellite Tracking</span></h1>
             <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider flex items-center gap-1"><i class="fa-solid fa-house text-[8px]"></i> HOME</span>
             <span id="hud-defcon-pill" class="hidden md:inline-block text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap">DEFCON 5</span>
           </span>

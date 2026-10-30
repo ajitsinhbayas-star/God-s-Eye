@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-  <ShortName>God's Eye</ShortName>
+  <ShortName>Orbital Eye</ShortName>
   <Description>Search real-time satellite trajectories and orbital passes</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://god-s-eye-ah3d.onrender.com/favicon.ico</Image>
-  <Url type="text/html" template="https://god-s-eye-ah3d.onrender.com/?search={searchTerms}"/>
-  <Url type="application/json" template="https://god-s-eye-ah3d.onrender.com/api/space/missions?q={searchTerms}"/>
+  <Image width="16" height="16" type="image/x-icon">https://orbitaleye.in/favicon.ico</Image>
+  <Url type="text/html" template="https://orbitaleye.in/?search={searchTerms}"/>
+  <Url type="application/json" template="https://orbitaleye.in/api/space/missions?q={searchTerms}"/>
 </OpenSearchDescription>

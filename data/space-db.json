@@ -2,12 +2,12 @@
   "lastUpdated": "2026-10-24T16:55:36.984Z",
   "syncCycles": 0,
   "liveISS": {
-    "latitude": -49.8053,
-    "longitude": 80.1103,
-    "altitude": 432.87,
-    "velocity": 27553,
-    "visibility": "daylight",
-    "timestamp": 1793357550667
+    "latitude": -11.6847,
+    "longitude": 111.8099,
+    "altitude": 417.74,
+    "velocity": 27589,
+    "visibility": "eclipsed",
+    "timestamp": 1793364076903
   },
   "externalIntel": {
     "spaceWeather": {
@@ -15,8 +15,8 @@
       "stormLevel": "G0 (Quiet / Nominal)",
       "gScaleCode": "G0",
       "severity": "nominal",
-      "observationTimeUTC": "2026-10-30T10:45:22.213Z",
-      "updatedAt": "2026-10-30T10:45:22.213Z",
+      "observationTimeUTC": "2026-10-30T12:38:30.548Z",
+      "updatedAt": "2026-10-30T12:38:30.548Z",
       "quality": "fresh",
       "provider": "NOAA Space Weather Prediction Center (SWPC)"
     },
@@ -36,19 +36,19 @@
     ],
     "missionNews": [
       {
+        "id": 40656,
+        "title": "Ground Qualification Testing Begins for Callisto Reusable Rocket Demonstrator",
+        "newsSite": "European Spaceflight"
+      },
+      {
+        "id": 40655,
+        "title": "November’s Night Sky Notes: Light-Day Away",
+        "newsSite": "NASA"
+      },
+      {
         "id": 40654,
         "title": "Earth from Space: Champi’s eerie eye",
         "newsSite": "ESA"
-      },
-      {
-        "id": 40651,
-        "title": "APOD: 2026 October 30 – Haunting the Cepheus Flare",
-        "newsSite": "NASA"
-      },
-      {
-        "id": 40652,
-        "title": "Vega Island Frozen in Fright",
-        "newsSite": "NASA"
       }
     ]
   },
@@ -68,7 +68,7 @@
       "detail": "Active satellite TLE vectors",
       "status": "ok",
       "label": "Active SGP4 Pipeline (15 Live TLEs, 17 Cached)",
-      "lastFetch": "2026-10-30T10:40:43.358Z",
+      "lastFetch": "2026-10-30T12:38:34.897Z",
       "latencyMs": 210,
       "quality": "fresh"
     },

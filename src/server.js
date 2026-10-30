@@ -86,6 +86,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Canonical Domain Enforcement: 301 Permanent Redirect for www.orbitaleye.in to preferred root
+app.use((req, res, next) => {
+  const host = req.get('host');
+  if (host) {
+    const hostname = host.split(':')[0].toLowerCase();
+    if (hostname === 'www.orbitaleye.in') {
+      return res.redirect(301, `https://orbitaleye.in${req.originalUrl || req.url}`);
+    }
+  }
+  next();
+});
+
 // Protect .env and hidden config files (Explicit 404)
 app.use((req, res, next) => {
   if (req.path === '/.env' || req.path.startsWith('/.') || req.path.endsWith('.env')) {
@@ -342,23 +354,26 @@ app.get('/manifest.json', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'manifest.json'));
 });
 
-// Dynamic SEO Sitemap & Robots with environment-aware canonical host
+// Dynamic SEO Sitemap & Robots with strict canonical host validation
 function getCanonicalBaseUrl(req) {
-  if (process.env.CANONICAL_HOST) {
-    return process.env.CANONICAL_HOST.replace(/\/+$/, '');
+  const PREFERRED_CANONICAL = 'https://orbitaleye.in';
+  const raw = (process.env.CANONICAL_HOST || '').trim();
+  if (raw) {
+    try {
+      const parsed = new URL(raw);
+      // Strictly accept only the exact HTTPS protocol and exact orbitaleye.in hostname
+      if (parsed.protocol === 'https:' && parsed.hostname.toLowerCase() === 'orbitaleye.in') {
+        return PREFERRED_CANONICAL;
+      }
+    } catch {
+      // Invalid URL format - fall back to preferred canonical
+    }
   }
-  if (process.env.RENDER_EXTERNAL_URL) {
-    return process.env.RENDER_EXTERNAL_URL.replace(/\/+$/, '');
-  }
-  const host = req.get('host');
-  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
-    return `${req.protocol}://${host}`;
-  }
-  return 'https://orbitaleye.in';
+  return PREFERRED_CANONICAL;
 }
 
 app.get('/sitemap.xml', (req, res) => {
-  const baseUrl = getCanonicalBaseUrl(req);
+  const baseUrl = getCanonicalBaseUrl(req).replace(/\/+$/, '');
   const now = new Date().toISOString().split('T')[0];
   const pages = [
     { path: '', priority: '1.0', freq: 'hourly' },
@@ -374,7 +389,7 @@ app.get('/sitemap.xml', (req, res) => {
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map(p => `  <url>
-    <loc>${baseUrl}/${p.path}</loc>
+    <loc>${baseUrl}${p.path ? `/${p.path}` : '/'}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>${p.freq}</changefreq>
     <priority>${p.priority}</priority>
@@ -387,7 +402,7 @@ ${pages.map(p => `  <url>
 });
 
 app.get('/robots.txt', (req, res) => {
-  const baseUrl = getCanonicalBaseUrl(req);
+  const baseUrl = getCanonicalBaseUrl(req).replace(/\/+$/, '');
   const robotsTxt = `User-agent: *
 Allow: /
 Allow: /solar-system
@@ -397,13 +412,16 @@ Allow: /asteroids
 Allow: /atmosphere
 Allow: /air-quality
 Allow: /alert
+Allow: /icons/
+Allow: /images/
+Allow: /js/
+Allow: /data/
 Disallow: /sentinel
 Disallow: /sentinel/
 Disallow: /sentinel.html
 Disallow: /sentinel-login
 Disallow: /api/
 Disallow: /.env
-Disallow: /data/
 
 Sitemap: ${baseUrl}/sitemap.xml
 `;

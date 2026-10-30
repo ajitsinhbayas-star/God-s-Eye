@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Primary SEO Meta Tags -->
-  <title>Near-Earth Asteroids &amp; Planetary Defense Tracker | Orbital Eye</title>
+  <title>Near-Earth Asteroids & Planetary Defense Tracker | Orbital Eye</title>
   <meta name="title" content="Near-Earth Asteroids &amp; Planetary Defense Tracker | Orbital Eye" />
-  <meta name="description" content="Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Main Belt objects in 3D with NASA JPL CNEOS close approach telemetry." />
+  <meta name="description" content="Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Sentry close approach screening powered by NASA JPL CNEOS data." />
   <meta name="keywords" content="Near-Earth Asteroids, planetary defense tracker, NASA CNEOS, asteroid close approaches, Sentry impact risk, Bennu, Apophis, orbital mechanics 3D" />
   <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -19,61 +19,85 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Orbital Eye Planetary Defense" />
   <meta property="og:url" content="https://orbitaleye.in/asteroids" />
-  <meta property="og:title" content="Near-Earth Asteroids &amp; Planetary Defense Tracker | Orbital Eye" />
-  <meta property="og:description" content="Explore real-time 3D orbits of Near-Earth Asteroids, Main Belt objects, and Sentry close approach screening powered by NASA JPL CNEOS data." />
+  <meta property="og:title" content="Near-Earth Asteroids & Planetary Defense Tracker | Orbital Eye" />
+  <meta property="og:description" content="Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Sentry close approach screening powered by NASA JPL CNEOS data." />
   <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://orbitaleye.in/asteroids" />
-  <meta name="twitter:title" content="Near-Earth Asteroids &amp; Planetary Defense Tracker | Orbital Eye" />
-  <meta name="twitter:description" content="Real-time 3D Keplerian orbits of Near-Earth Asteroids and planetary defense monitoring." />
+  <meta name="twitter:title" content="Near-Earth Asteroids & Planetary Defense Tracker | Orbital Eye" />
+  <meta name="twitter:description" content="Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Sentry close approach screening powered by NASA JPL CNEOS data." />
   <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- JSON-LD Structured Data Schema -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": "https://orbitaleye.in/asteroids#webapp",
-        "name": "Orbital Eye Asteroids & Planetary Defense Tracker",
-        "url": "https://orbitaleye.in/asteroids",
-        "description": "3D WebGL small-body visualization engine mapping Near-Earth Asteroid trajectories and close approaches from NASA JPL CNEOS.",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All modern browsers (WebGL 2.0)",
-        "inLanguage": "en"
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://orbitaleye.in/#organization",
+      "name": "Orbital Eye Space Observatory",
+      "url": "https://orbitaleye.in/",
+      "logo": "https://orbitaleye.in/icons/icon-512.png",
+      "description": "Multi-domain space observatory and environmental intelligence suite uniting orbital mechanics, meteorological radar, and atmospheric telemetry."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://orbitaleye.in/asteroids#webpage",
+      "url": "https://orbitaleye.in/asteroids",
+      "name": "Near-Earth Asteroids & Planetary Defense Tracker | Orbital Eye",
+      "description": "Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Sentry close approach screening powered by NASA JPL CNEOS data.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://orbitaleye.in/#website",
+        "name": "Orbital Eye",
+        "url": "https://orbitaleye.in/"
       },
-      {
-        "@type": "Dataset",
-        "@id": "https://orbitaleye.in/asteroids#dataset",
-        "name": "Near-Earth Asteroid Orbital Ephemerides",
-        "description": "Keplerian orbital elements and close-approach encounter tables for Near-Earth Asteroids and Potentially Hazardous Asteroids.",
-        "creator": {
-          "@type": "Organization",
-          "name": "Orbital Eye Space Observatory"
-        }
+      "breadcrumb": {
+        "@id": "https://orbitaleye.in/asteroids#breadcrumb"
       },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://orbitaleye.in/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Near-Earth Asteroids",
-            "item": "https://orbitaleye.in/asteroids"
-          }
-        ]
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orbitaleye.in/asteroids#webapp",
+      "name": "Orbital Eye Asteroids",
+      "url": "https://orbitaleye.in/asteroids",
+      "description": "Track 2,200+ Near-Earth Asteroids (NEAs), Potentially Hazardous Asteroids (PHAs), and Sentry close approach screening powered by NASA JPL CNEOS data.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers (WebGL 2.0)",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
       }
-    ]
-  }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://orbitaleye.in/asteroids#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://orbitaleye.in/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Asteroids",
+          "item": "https://orbitaleye.in/asteroids"
+        }
+      ]
+    }
+  ]
+}
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -160,7 +184,7 @@
         </span>
         <span class="min-w-0">
           <span class="flex items-center gap-1.5">
-            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap">Orbital Command</span>
+            <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap inline-flex items-center gap-1.5">Orbital Eye <span class="text-cyan-400 font-mono text-[10px] hidden md:inline">• Asteroids</span></h1>
             <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider flex items-center gap-1"><i class="fa-solid fa-house text-[8px]"></i> HOME</span>
             <span id="hud-defcon-pill" class="hidden md:inline-block text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap">DEFCON 5</span>
           </span>

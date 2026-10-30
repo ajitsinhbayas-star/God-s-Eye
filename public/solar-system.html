@@ -154,9 +154,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Primary Meta Tags -->
-  <title>Orbital Eye — 3D Solar System & Planetary Astrodynamics</title>
+  <title>3D Solar System & Planetary Astrodynamics Simulator | Orbital Eye</title>
   <meta name="title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
-  <meta name="description" content="Explore Orbital Eye, an interactive 3D WebGL space observatory. Real-time Solar System simulation, live satellite tracking, space probes, and near-Earth asteroid monitoring." />
+  <meta name="description" content="Interactive 3D WebGL Solar System simulation. Explore Keplerian orbits, inner and outer planets, celestial mechanics, and heliocentric spacecraft trajectories." />
   <meta name="keywords" content="Orbital Eye, 3D space observatory, interactive solar system, satellite tracker, ISS live tracker, ISRO satellites, asteroid tracker, space situational awareness" />
   <meta name="author" content="Ajitsinh Bayas" />
   <meta name="robots" content="index, follow" />
@@ -166,56 +166,86 @@
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Orbital Eye Space Observatory" />
-  <meta property="og:url" content="https://orbitaleye.in/" />
-  <meta property="og:title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
-  <meta property="og:description" content="Interactive 3D space observatory featuring Keplerian planetary orbits, live Earth satellite tracking, and deep-space exploration." />
+  <meta property="og:url" content="https://orbitaleye.in/solar-system" />
+  <meta property="og:title" content="3D Solar System & Planetary Astrodynamics Simulator | Orbital Eye" />
+  <meta property="og:description" content="Interactive 3D WebGL Solar System simulation. Explore Keplerian orbits, inner and outer planets, celestial mechanics, and heliocentric spacecraft trajectories." />
   <meta property="og:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://orbitaleye.in/" />
-  <meta name="twitter:title" content="Orbital Eye — 3D Space Observatory & Interactive Solar System" />
-  <meta name="twitter:description" content="Explore an interactive 3D WebGL space observatory with real-time Solar System simulation and satellite tracking." />
+  <meta name="twitter:url" content="https://orbitaleye.in/solar-system" />
+  <meta name="twitter:title" content="3D Solar System & Planetary Astrodynamics Simulator | Orbital Eye" />
+  <meta name="twitter:description" content="Interactive 3D WebGL Solar System simulation. Explore Keplerian orbits, inner and outer planets, celestial mechanics, and heliocentric spacecraft trajectories." />
   <meta name="twitter:image" content="https://orbitaleye.in/icons/icon-512.png" />
 
   <!-- Schema.org JSON-LD Structured Data -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": "https://orbitaleye.in/#webapp",
-        "name": "Orbital Eye Space Observatory",
-        "url": "https://orbitaleye.in/",
-        "description": "Interactive 3D WebGL space observatory inspired by NASA Eyes, providing real-time Keplerian orbital simulation, Earth satellite tracking, planetary science, and near-Earth object screening.",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All modern web browsers (WebGL 2.0)",
-        "inLanguage": "en",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Orbital Eye Project",
-          "url": "https://orbitaleye.in/"
-        }
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://orbitaleye.in/#organization",
+      "name": "Orbital Eye Space Observatory",
+      "url": "https://orbitaleye.in/",
+      "logo": "https://orbitaleye.in/icons/icon-512.png",
+      "description": "Multi-domain space observatory and environmental intelligence suite uniting orbital mechanics, meteorological radar, and atmospheric telemetry."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://orbitaleye.in/solar-system#webpage",
+      "url": "https://orbitaleye.in/solar-system",
+      "name": "3D Solar System & Planetary Astrodynamics Simulator | Orbital Eye",
+      "description": "Interactive 3D WebGL Solar System simulation. Explore Keplerian orbits, inner and outer planets, celestial mechanics, and heliocentric spacecraft trajectories.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://orbitaleye.in/#website",
+        "name": "Orbital Eye",
+        "url": "https://orbitaleye.in/"
       },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Orbital Eye Home",
-            "item": "https://orbitaleye.in/"
-          }
-        ]
+      "breadcrumb": {
+        "@id": "https://orbitaleye.in/solar-system#breadcrumb"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orbitaleye.in/solar-system#webapp",
+      "name": "Orbital Eye Solar System",
+      "url": "https://orbitaleye.in/solar-system",
+      "description": "Interactive 3D WebGL Solar System simulation. Explore Keplerian orbits, inner and outer planets, celestial mechanics, and heliocentric spacecraft trajectories.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers (WebGL 2.0)",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@id": "https://orbitaleye.in/#organization"
       }
-    ]
-  }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://orbitaleye.in/solar-system#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://orbitaleye.in/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Solar System",
+          "item": "https://orbitaleye.in/solar-system"
+        }
+      ]
+    }
+  ]
+}
   </script>
 
   <!-- Suppress Tailwind runtime CDN production warning -->
@@ -587,30 +617,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <link rel="dns-prefetch" href="https://en.wikipedia.org">
   <link rel="dns-prefetch" href="https://api.wheretheiss.at">
 
-  <!-- Primary Metadata -->
-  <meta name="description" content="Explore a real-time, interactive 3D WebGL visualization of the Solar System, Earth satellites, and the 9-tier Cosmic Address hierarchy using NASA Keplerian ephemeris physics and JWST imagery.">
-  <meta name="keywords" content="Solar System 3D, Three.js astronomical visualization, NASA ephemeris, real time satellite tracking, ISRO satellites, Keplerian orbits, Laniakea supercluster, JWST galaxies, cosmic address">
-  <meta name="author" content="Orbital Command">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="theme-color" content="#000208">
-  <link rel="canonical" href="https://your-domain.com/">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://your-domain.com/">
-  <meta property="og:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta property="og:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers. Powered by NASA Keplerian physics and Three.js WebGL.">
-  <meta property="og:image" content="https://your-domain.com/og-preview.jpg">
-  <meta property="og:site_name" content="Orbital Command">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Interactive 3D Solar System & Deep Universe Simulation">
-  <meta name="twitter:description" content="Real-time 3D heliocentric orbits, multi-agency spacecraft telemetry, and deep-sky JWST galaxy dossiers.">
-  <meta name="twitter:image" content="https://your-domain.com/og-preview.jpg">
-
-  <!-- Schema.org Structured Data -->
-  
   <meta name="google-site-verification" content="pUD93vWhaPBMab_inqL7UsKFGDEfSe-7WuSyI-N_5uw" />
 </head>
 <body class="bg-[#000208] text-slate-100 font-sans h-screen h-[100dvh] w-screen overflow-hidden select-none">
@@ -681,7 +687,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </span>
         <span class="min-w-0">
           <span class="flex items-center gap-1.5">
-            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap">Orbital Command</span>
+            <h1 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white group-hover:text-cyan-300 transition whitespace-nowrap inline-flex items-center gap-1.5">Orbital Eye <span class="text-cyan-400 font-mono text-[10px] hidden md:inline">• Solar System</span></h1>
             <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40 font-mono font-bold tracking-wider flex items-center gap-1"><i class="fa-solid fa-house text-[8px]"></i> HOME</span>
             <span id="hud-defcon-pill" class="hidden md:inline-block text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono whitespace-nowrap">DEFCON 5</span>
           </span>

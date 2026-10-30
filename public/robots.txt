@@ -1,16 +1,21 @@
 User-agent: *
 Allow: /
+Allow: /solar-system
 Allow: /earth
-Allow: /weather
-Allow: /orbitalert
-Allow: /asteroids
 Allow: /deepspace
+Allow: /asteroids
+Allow: /atmosphere
+Allow: /air-quality
+Allow: /alert
+Allow: /icons/
+Allow: /images/
+Allow: /js/
+Allow: /data/
 Disallow: /sentinel
 Disallow: /sentinel/
 Disallow: /sentinel.html
 Disallow: /sentinel-login
 Disallow: /api/
 Disallow: /.env
-Disallow: /data/
 
 Sitemap: https://orbitaleye.in/sitemap.xml
