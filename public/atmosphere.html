@@ -438,30 +438,39 @@
       </div>
 
       <!-- Quick Action Buttons: 4-button row on mobile, inline on desktop -->
-      <div class="grid grid-cols-4 sm:flex items-center gap-1.5 shrink-0">
-        <!-- GPS Button -->
-        <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 shadow-sm whitespace-nowrap min-h-[36px]" title="Detect Location via Device GPS">
-          <span>📍</span>
-          <span class="hidden md:inline">GPS</span>
-        </button>
+      <div class="flex items-center justify-between sm:justify-start gap-1.5 shrink-0">
+        <!-- Multilingual Language Switcher (EN / हिन्दी / मराठी) -->
+        <div id="farmer-lang-group" class="inline-flex items-center p-0.5 rounded-xl bg-slate-900 border border-slate-700 text-[11px] font-mono shrink-0">
+          <button id="btn-lang-en" onclick="setFarmerLanguage('en')" class="px-2 py-1 rounded-lg bg-emerald-500/30 text-emerald-300 font-bold transition" title="English">EN</button>
+          <button id="btn-lang-hi" onclick="setFarmerLanguage('hi')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition" title="हिन्दी (Hindi)">हिन्दी</button>
+          <button id="btn-lang-mr" onclick="setFarmerLanguage('mr')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white transition" title="मराठी (Marathi)">मराठी</button>
+        </div>
 
-        <!-- Zoom All India -->
-        <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap min-h-[36px]" title="Zoom to All India">
-          <span>🇮🇳</span>
-          <span class="hidden md:inline">India</span>
-        </button>
+        <div class="flex items-center gap-1.5">
+          <!-- GPS Button -->
+          <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 shadow-sm whitespace-nowrap min-h-[36px]" title="Detect Location via Device GPS">
+            <span>📍</span>
+            <span class="hidden md:inline">GPS</span>
+          </button>
 
-        <!-- Weather Desk Toggle -->
-        <button id="btn-farmer-desk-shortcut" onclick="toggleFarmerPanel()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Weather Desk Panel">
-          <span>🌾</span>
-          <span class="hidden md:inline">Desk</span>
-        </button>
+          <!-- Zoom All India -->
+          <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap min-h-[36px]" title="Zoom to All India">
+            <span>🇮🇳</span>
+            <span class="hidden md:inline">India</span>
+          </button>
 
-        <!-- Basemap Toggle: Satellite vs Street -->
-        <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Satellite Imagery / Street Map">
-          <span id="basemap-icon">🛰️</span>
-          <span id="basemap-text" class="hidden md:inline">Sat</span>
-        </button>
+          <!-- Weather Desk Toggle -->
+          <button id="btn-farmer-desk-shortcut" onclick="toggleFarmerPanel()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Weather Desk Panel">
+            <span>🌾</span>
+            <span class="hidden md:inline">Desk</span>
+          </button>
+
+          <!-- Basemap Toggle: Satellite vs Street -->
+          <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Satellite Imagery / Street Map">
+            <span id="basemap-icon">🛰️</span>
+            <span id="basemap-text" class="hidden md:inline">Sat</span>
+          </button>
+        </div>
       </div>
 
       <!-- Severe Weather & Layer Controls Drawer launchers for Desktop / Test accessibility -->
@@ -584,7 +593,7 @@
   </div>
 
   <!-- SELECTED DISTRICT WEATHER PANEL (Desktop Right Floating Card / Mobile Bottom Sheet) -->
-  <aside id="selected-district-panel" class="hidden md:block fixed z-30 transition-all duration-300 md:top-[7.75rem] md:left-auto md:right-4 md:bottom-auto md:w-96 md:max-h-[calc(100vh-9rem)] md:rounded-2xl md:border md:border-emerald-500/50 md:shadow-2xl md:bg-slate-950/95 md:backdrop-blur-xl md:p-4 md:overflow-y-auto bottom-0 left-0 right-0 max-h-[58vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
+  <aside id="selected-district-panel" class="hidden md:block fixed z-30 transition-all duration-300 md:top-[7.75rem] md:left-auto md:right-4 md:bottom-auto md:w-96 md:max-h-[calc(100vh-9rem)] md:rounded-2xl md:border md:border-emerald-500/50 md:shadow-2xl md:bg-slate-950/95 md:backdrop-blur-xl md:p-4 md:overflow-y-auto bottom-0 pb-24 md:pb-4 left-0 right-0 max-h-[62vh] rounded-t-3xl border-t border-emerald-500/60 bg-slate-950/98 backdrop-blur-2xl p-4 overflow-y-auto shadow-2xl">
     <!-- Panel Header & Drag Handle -->
     <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/30">
       <div class="flex items-center gap-2">

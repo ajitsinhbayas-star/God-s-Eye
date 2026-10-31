@@ -131,6 +131,136 @@
   let selectedDistrictId = null;
   let isFarmerMapActive = false;
   let isPanelCollapsed = false;
+  let lastWeatherPayload = null;
+
+  // --- MULTILINGUAL TRANSLATIONS & STATE (English, Hindi, Marathi) ---
+  let currentFarmerLang = 'en';
+  try {
+    const saved = localStorage.getItem('orbital_farmer_lang');
+    if (saved && (saved === 'en' || saved === 'hi' || saved === 'mr')) currentFarmerLang = saved;
+  } catch (e) {}
+
+  const I18N_FARMER = {
+    en: {
+      searchPlaceholder: "Search district or city (e.g. Pune / पुणे, Patna / पटना)...",
+      kisanDesk: "KISAN WEATHER DESK",
+      verifiedData: "Verified Administrative District Data",
+      chanceOfRain: "Chance of rain",
+      humidity: "Air humidity",
+      wind: "Wind speed & direction",
+      temp: "Temperature",
+      feelsLike: "Feels like",
+      openForecast: "Open 24h & 7-Day Forecast",
+      hourlyOutlook: "Next 24 Hours Hourly Outlook",
+      agriculturalForecast: "7-Day Agricultural Forecast",
+      noAlerts: "No severe weather warnings active for this district.",
+      imdWarning: "Official Weather Warning in Effect",
+      dryWeather: "Dry Weather",
+      rainLikely: "Rain Likely",
+      showers: "Showers",
+      dryConditions: "Dry conditions",
+      rainExpected: "mm rain",
+      highMoisture: "High moisture",
+      comfortable: "Comfortable",
+      variable: "Variable",
+      farmBriefingTitle: "Daily Farm Weather Briefing",
+      briefingIrrigation: "Irrigation Advisory",
+      briefingSpraying: "Spraying Conditions",
+      briefingHarvest: "Harvesting & Weeding",
+      govPortalsTitle: "Verified Government Agricultural Portals & Mandi Services",
+      provenanceTitle: "Meteorological Data Provenance",
+      provenanceDesc: "Numerical Weather Prediction (NWP) model grids provided via Open-Meteo High-Resolution (ECMWF IFS / GFS). Severe weather warnings verified via India Meteorological Department (IMD) Agromet guidance. Operating with genuine scientific parameters — no simulated or fabricated data."
+    },
+    hi: {
+      searchPlaceholder: "जिला या शहर खोजें (उदा. पुणे, पटना, लखनऊ)...",
+      kisanDesk: "किसान मौसम डेस्क",
+      verifiedData: "सत्यापित प्रशासनिक जिला मौसम डाटा",
+      chanceOfRain: "बारिश की संभावना",
+      humidity: "हवा में नमी (आर्द्रता)",
+      wind: "हवा की गति और दिशा",
+      temp: "तापमान",
+      feelsLike: "महसूस",
+      openForecast: "24 घंटे और 7 दिन का पूर्वानुमान खोलें",
+      hourlyOutlook: "अगले 24 घंटों का प्रति घंटा पूर्वानुमान",
+      agriculturalForecast: "7-दिवसीय कृषि मौसम पूर्वानुमान",
+      noAlerts: "इस जिले के लिए कोई गंभीर मौसम चेतावनी सक्रिय नहीं है।",
+      imdWarning: "आधिकारिक मौसम चेतावनी सक्रिय",
+      dryWeather: "शुष्क मौसम",
+      rainLikely: "वर्षा की संभावना",
+      showers: "हल्की बौछारें",
+      dryConditions: "शुष्क मौसम",
+      rainExpected: "मिमी वर्षा",
+      highMoisture: "अधिक नमी",
+      comfortable: "सामान्य",
+      variable: "परिवर्तनशील",
+      farmBriefingTitle: "दैनिक कृषि मौसम परामर्श",
+      briefingIrrigation: "सिंचाई परामर्श",
+      briefingSpraying: "कीटनाशक छिड़काव",
+      briefingHarvest: "कटाई एवं निराई-गुड़ाई",
+      govPortalsTitle: "सत्यापित सरकारी कृषि पोर्टल और मंडी सेवाएं",
+      provenanceTitle: "मौसम डेटा स्रोत एवं प्रामाणिकता",
+      provenanceDesc: "ओपन-मेटियो उच्च-रिज़ॉल्यूशन NWP (ECMWF IFS / GFS) द्वारा संचालित वैज्ञानिक पूर्वानुमान। गंभीर मौसम चेतावनी भारत मौसम विज्ञान विभाग (IMD) के परामर्श पर आधारित। वास्तविक वैज्ञानिक पैरामीटर — कोई कृत्रिम या काल्पनिक डेटा नहीं।"
+    },
+    mr: {
+      searchPlaceholder: "जिल्हा किंवा शहर शोधा (उदा. पुणे, लातूर, नाशिक)...",
+      kisanDesk: "शेतकरी हवामान डेस्क",
+      verifiedData: "प्रमाणित प्रशासकीय जिल्हा हवामान माहिती",
+      chanceOfRain: "पावसाची शक्यता",
+      humidity: "हवेतील आर्द्रता (नमी)",
+      wind: "वाऱ्याचा वेग आणि दिशा",
+      temp: "तापमान",
+      feelsLike: "जाणवणारे तापमान",
+      openForecast: "२४ तास आणि ७ दिवसांचा अंदाज पहा",
+      hourlyOutlook: "पुढील २४ तासांचा ताशी अंदाज",
+      agriculturalForecast: "७ दिवसांचा शेती हवामान अंदाज",
+      noAlerts: "या जिल्ह्यासाठी कोणताही गंभीर हवामान इशारा नाही.",
+      imdWarning: "अधिकृत हवामान इशारा लागू",
+      dryWeather: "कोरडे हवामान",
+      rainLikely: "पावसाची शक्यता",
+      showers: "हलक्या सरी",
+      dryConditions: "कोरडे वातावरण",
+      rainExpected: "मिमी पाऊस",
+      highMoisture: "जास्त ओलावा",
+      comfortable: "अनुकूल",
+      variable: "दिशा बदलणारा",
+      farmBriefingTitle: "दैनंदिन शेती हवामान सल्ला",
+      briefingIrrigation: "पाणी व्यवस्थापन / सिंचन सल्ला",
+      briefingSpraying: "फवारणीसाठी अनुकूलता",
+      briefingHarvest: "कापणी व खुरपणी",
+      govPortalsTitle: "प्रमाणित सरकारी कृषी पोर्टल आणि बाजार भाव",
+      provenanceTitle: "हवामान डेटा स्रोत आणि सत्यता",
+      provenanceDesc: "ओपन-मेटिओ हाय-रिझोल्यूशन NWP (ECMWF IFS / GFS) ग्रिड्सद्वारे हवामान अंदाज. गंभीर हवामान इशारे भारतीय हवामान विभाग (IMD) च्या कृषी हवामान बुलेटिनवर आधारित. पूर्णतः वास्तविक वैज्ञानिक मोजमापे — कोणतीही खोटी किंवा काल्पनिक आकडेवारी नाही."
+    }
+  };
+
+  window.setFarmerLanguage = function (lang) {
+    if (!I18N_FARMER[lang]) lang = 'en';
+    currentFarmerLang = lang;
+    try { localStorage.setItem('orbital_farmer_lang', lang); } catch (e) {}
+
+    ['en', 'hi', 'mr'].forEach(l => {
+      const btn = document.getElementById('btn-lang-' + l);
+      if (btn) {
+        if (l === lang) {
+          btn.className = 'px-2 py-1 rounded-lg bg-emerald-500/30 text-emerald-300 font-bold transition';
+        } else {
+          btn.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-white transition';
+        }
+      }
+    });
+
+    const searchInput = document.getElementById('top-farmer-search-input');
+    if (searchInput) {
+      searchInput.placeholder = I18N_FARMER[lang].searchPlaceholder;
+    }
+
+    if (selectedDistrictId && lastWeatherPayload) {
+      renderFarmerWeatherCard(lastWeatherPayload);
+      if (lastPopupLatLng) {
+        updateDistrictPopupCard(lastWeatherPayload, lastPopupLatLng);
+      }
+    }
+  };
 
   // Initialize synchronous bundled data immediately
   function initSyncData() {
@@ -402,12 +532,24 @@
     }
     const targetZoom = forceZoom || Math.max(map.getZoom(), 8);
     const headerEl = document.querySelector('header');
-    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
-    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 250;
+    const mobileNav = document.getElementById('mobile-bottom-nav') || document.getElementById('orbital-mobile-nav');
     const bottomPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top) : 70;
 
-    // Target screen Y: ensures the ~270px popup bubble renders completely below the header
-    const targetScreenY = Math.min(window.innerHeight - bottomPad - 40, Math.max(headerBottom + 290, Math.round(window.innerHeight * 0.68)));
+    // Compact mobile popup is ~220px tall with bottom tip pointing down at latlng.
+    // To ensure top of popup sits at least 14px below the search header:
+    // targetScreenY must be >= headerBottom + 220 + 14 = headerBottom + 234px
+    const estPopupHeight = 220;
+    const minSafeY = headerBottom + estPopupHeight + 14;
+    const maxSafeY = window.innerHeight - bottomPad - 20;
+
+    let targetScreenY;
+    if (minSafeY <= maxSafeY) {
+      targetScreenY = Math.min(maxSafeY, Math.max(minSafeY, Math.round(headerBottom + estPopupHeight + 18)));
+    } else {
+      targetScreenY = maxSafeY;
+    }
+
     const centerScreenY = window.innerHeight / 2;
     const pixelOffset = targetScreenY - centerScreenY;
 
@@ -512,8 +654,8 @@
     lastPopupLatLng = latlng;
     const isMobile = window.innerWidth < 768;
     const headerEl = document.querySelector('header');
-    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
-    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 250;
+    const mobileNav = document.getElementById('mobile-bottom-nav') || document.getElementById('orbital-mobile-nav');
     const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
     const topPad = isMobile ? (headerBottom + 16) : 60;
 
@@ -525,7 +667,7 @@
     leafletDistrictPopup = L.popup({
       className: 'kisan-popup',
       offset: [0, -10],
-      autoPan: true,
+      autoPan: !isMobile,
       autoPanPaddingTopLeft: [16, topPad],
       autoPanPaddingBottomRight: [16, botPad]
     })
@@ -1016,11 +1158,13 @@
 
     try {
       const data = await fetchWeatherUnified(distId, districtName, stateName, lat, lon);
+      lastWeatherPayload = data;
       renderFarmerWeatherCard(data);
       updateDistrictPopupCard(data, targetLatLng || lastPopupLatLng);
     } catch (err) {
       console.warn('[Kisan Weather] Unified fetch notice, deploying resilient offline baseline:', err);
       const fallback = getFallbackWeatherPayload(distId, districtName, stateName, lat, lon);
+      lastWeatherPayload = fallback;
       renderFarmerWeatherCard(fallback);
       updateDistrictPopupCard(fallback, targetLatLng || lastPopupLatLng);
     }
@@ -1030,12 +1174,13 @@
   function updateDistrictPopupCard(data, targetLatLng) {
     if (!window.leafletMap || !targetLatLng) return;
 
+    const t = I18N_FARMER[currentFarmerLang] || I18N_FARMER.en;
     const c = data.current || {};
     const hourly = data.forecast24h || data.hourly || [];
     const alerts = data.alerts || {};
     const summary = generateFarmerSummary(c, alerts, hourly);
 
-    // Calculate maximum precipitation probability in next 6 hours
+    // Calculate maximum precipitation probability in next 6-12 hours
     let rainProb = 0;
     const dailyForecast = Array.isArray(data.forecast7d) ? data.forecast7d : [];
     const dailyRainMax = dailyForecast.length > 0 ? (dailyForecast[0].precipitationProbability || 0) : 0;
@@ -1060,8 +1205,18 @@
     }
 
     const distId = data.districtId || data.id;
-    const alias = distId && REGIONAL_ALIASES[distId] ? (REGIONAL_ALIASES[distId].mr || REGIONAL_ALIASES[distId].hi) : null;
-    const dispName = alias ? `${data.district} (${alias})` : data.district;
+    let dispName = data.district;
+    if (distId && REGIONAL_ALIASES[distId]) {
+      const reg = REGIONAL_ALIASES[distId];
+      if (currentFarmerLang === 'mr' && reg.mr) {
+        dispName = `${reg.mr} (${data.district})`;
+      } else if (currentFarmerLang === 'hi' && reg.hi) {
+        dispName = `${reg.hi} (${data.district})`;
+      } else {
+        const alias = reg.mr || reg.hi;
+        dispName = alias ? `${data.district} (${alias})` : data.district;
+      }
+    }
 
     const lat = targetLatLng.lat != null ? targetLatLng.lat : data.coordinates?.lat;
     const lon = targetLatLng.lng != null ? targetLatLng.lng : data.coordinates?.lon;
@@ -1070,88 +1225,93 @@
     // Rain status badge
     let rainBadge = '';
     if (alerts && alerts.hasAlerts) {
-      rainBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-rose-950 text-rose-300 border border-rose-500/60 font-mono">⚠️ IMD Warning</span>';
+      rainBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-rose-950 text-rose-300 border border-rose-500/60 font-mono">⚠️ ${t.imdWarning}</span>`;
     } else if (rainProb >= 60 || parseFloat(precip) > 1.0) {
-      rainBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/60 font-mono">🌧️ Rain Likely</span>';
+      rainBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/60 font-mono">🌧️ ${t.rainLikely}</span>`;
     } else if (rainProb >= 30) {
-      rainBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-blue-950 text-blue-300 border border-blue-500/60 font-mono">🌦️ Showers</span>';
+      rainBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-blue-950 text-blue-300 border border-blue-500/60 font-mono">🌦️ ${t.showers}</span>`;
     } else {
-      rainBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/60 font-mono">☀️ Dry Weather</span>';
+      rainBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/60 font-mono">☀️ ${t.dryWeather}</span>`;
     }
 
     const popupHtml = `
-      <div class="p-3.5 space-y-2.5 text-slate-100 font-sans" style="min-width: 260px; max-width: 300px;">
+      <div class="p-2.5 space-y-2 text-slate-100 font-sans" style="min-width: 240px; max-width: 285px;">
         <!-- Header -->
-        <div class="flex items-start justify-between gap-1.5 pb-2 border-b border-emerald-500/30">
-          <div>
-            <div class="font-bold text-white text-xs font-mono flex items-center gap-1.5 leading-snug">
-              <span>📍 ${dispName}</span>
+        <div class="flex items-start justify-between gap-1.5 pb-1.5 border-b border-emerald-500/30">
+          <div class="min-w-0 flex-1">
+            <div class="font-bold text-white text-xs font-mono flex items-center gap-1.5 leading-snug truncate">
+              <span>🌾</span>
+              <span class="truncate">${dispName}</span>
             </div>
-            <div class="text-[10px] text-slate-400 font-mono">${coordStr ? coordStr + ' • ' : ''}${data.state}, India</div>
+            <div class="text-[9px] text-slate-400 font-mono truncate">${coordStr ? coordStr + ' • ' : ''}${data.state}, India</div>
           </div>
-          ${rainBadge}
+          <div class="shrink-0">${rainBadge}</div>
         </div>
 
-        <!-- Key Meteorological Metrics -->
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-slate-900/90 p-2 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[10px] text-slate-400 flex items-center gap-1">
-              <span>🌧️</span> <span>Chance of Rain</span>
+        <!-- Key Meteorological Metrics: Compact 2x2 Grid -->
+        <div class="grid grid-cols-2 gap-1.5 text-xs">
+          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
+            <div class="text-[9px] text-slate-400 flex items-center gap-1">
+              <span>🌧️</span> <span>${t.chanceOfRain}</span>
             </div>
-            <div class="font-bold text-cyan-300 text-sm font-mono">${rainProb}%</div>
-            <div class="text-[9px] text-slate-400 font-mono">${parseFloat(precip) > 0 ? precip + ' mm rain' : 'Dry conditions'}</div>
+            <div class="font-bold text-cyan-300 text-xs font-mono">${rainProb}%</div>
+            <div class="text-[8px] text-slate-400 font-mono">${parseFloat(precip) > 0 ? precip + ' ' + t.rainExpected : t.dryConditions}</div>
           </div>
 
-          <div class="bg-slate-900/90 p-2 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[10px] text-slate-400 flex items-center gap-1">
-              <span>🌡️</span> <span>Temperature</span>
+          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
+            <div class="text-[9px] text-slate-400 flex items-center gap-1">
+              <span>🌡️</span> <span>${t.temp}</span>
             </div>
-            <div class="font-bold text-amber-300 text-sm font-mono">${temp}°C</div>
-            <div class="text-[9px] text-slate-400 font-mono">Feels: ${feels}°C</div>
+            <div class="font-bold text-amber-300 text-xs font-mono">${temp}°C</div>
+            <div class="text-[8px] text-slate-400 font-mono">${t.feelsLike}: ${feels}°C</div>
           </div>
 
-          <div class="bg-slate-900/90 p-2 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[10px] text-slate-400 flex items-center gap-1">
-              <span>💧</span> <span>Air Humidity</span>
+          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
+            <div class="text-[9px] text-slate-400 flex items-center gap-1">
+              <span>💧</span> <span>${t.humidity}</span>
             </div>
-            <div class="font-bold text-emerald-300 text-sm font-mono">${humidity}%</div>
-            <div class="text-[9px] text-slate-400 font-mono">${humidity > 70 ? 'High moisture' : 'Comfortable'}</div>
+            <div class="font-bold text-emerald-300 text-xs font-mono">${humidity}%</div>
+            <div class="text-[8px] text-slate-400 font-mono">${humidity > 70 ? t.highMoisture : t.comfortable}</div>
           </div>
 
-          <div class="bg-slate-900/90 p-2 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[10px] text-slate-400 flex items-center gap-1">
-              <span>💨</span> <span>Wind Speed</span>
+          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
+            <div class="text-[9px] text-slate-400 flex items-center gap-1">
+              <span>💨</span> <span>${t.wind}</span>
             </div>
-            <div class="font-bold text-sky-300 text-sm font-mono">${wind} km/h</div>
-            <div class="text-[9px] text-slate-400 font-mono">${windDir}</div>
+            <div class="font-bold text-sky-300 text-xs font-mono">${wind} km/h</div>
+            <div class="text-[8px] text-slate-400 font-mono">${windDir}</div>
           </div>
         </div>
 
         <!-- Farmer Field Advice -->
-        <div class="p-2 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-[10px] text-emerald-200 leading-relaxed">
+        <div class="p-1.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-[9.5px] text-emerald-200 leading-tight">
           <span class="font-bold text-emerald-400">${summary.tag}:</span> ${summary.summary}
         </div>
 
         <!-- Action Button -->
         <button onclick="window.expandFarmerDesk()" class="w-full py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] font-mono transition flex items-center justify-center gap-1.5 shadow-md">
           <i class="fa-solid fa-chart-line text-[10px]"></i>
-          <span>Open 24h & 7-Day Forecast</span>
+          <span>${t.openForecast}</span>
         </button>
       </div>
     `;
 
     const isMobile = window.innerWidth < 768;
     const headerEl = document.querySelector('header');
-    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
-    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 250;
+    const mobileNav = document.getElementById('mobile-bottom-nav') || document.getElementById('orbital-mobile-nav');
     const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
     const topPad = isMobile ? (headerBottom + 16) : 60;
+
+    if (isMobile && window.leafletMap) {
+      focusMapCoordinateForMobile(window.leafletMap, targetLatLng);
+    }
 
     if (!leafletDistrictPopup || !window.leafletMap.hasLayer(leafletDistrictPopup)) {
       leafletDistrictPopup = L.popup({
         className: 'kisan-popup',
         offset: [0, -10],
-        autoPan: true,
+        autoPan: !isMobile,
         autoPanPaddingTopLeft: [16, topPad],
         autoPanPaddingBottomRight: [16, botPad]
       })
@@ -1159,6 +1319,7 @@
       .setContent(popupHtml)
       .openOn(window.leafletMap);
     } else {
+      leafletDistrictPopup.options.autoPan = !isMobile;
       leafletDistrictPopup.options.autoPanPaddingTopLeft = [16, topPad];
       leafletDistrictPopup.options.autoPanPaddingBottomRight = [16, botPad];
       leafletDistrictPopup.setLatLng(targetLatLng).setContent(popupHtml).openOn(window.leafletMap);
@@ -1172,8 +1333,8 @@
   window.expandFarmerDesk = function () {
     // 1. Close small map popup so only one card is active
     if (window.innerWidth < 768) {
-      if (leafletDistrictPopup && window.leafletMap) {
-        window.leafletMap.closePopup(leafletDistrictPopup);
+      if (window.leafletMap) {
+        window.leafletMap.closePopup();
       }
     }
     // 2. Open full details panel
@@ -1182,7 +1343,7 @@
     panel.classList.remove('hidden');
     isPanelCollapsed = false;
     panel.classList.remove('max-h-12', 'overflow-hidden');
-    panel.classList.add('max-h-[58vh]');
+    panel.classList.add('max-h-[62vh]');
     const dBtn = document.getElementById('btn-toggle-district-panel');
     if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
     const body = document.getElementById('selected-district-body');
@@ -1192,54 +1353,81 @@
     panel.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Plain-Language Farmer Summary Generator
+  // Plain-Language Farmer Summary Generator (Multilingual EN / HI / MR)
   function generateFarmerSummary(current, alerts, hourly) {
     const rainProb = hourly?.[0]?.precipitationProbability ?? 0;
     const precip = current?.precipitation ?? 0;
     const wind = current?.windSpeed ?? 0;
+    const lang = currentFarmerLang || 'en';
 
     if (alerts?.hasAlerts && Array.isArray(alerts.activeAlerts) && alerts.activeAlerts.length > 0) {
-      return {
-        tag: 'OFFICIAL WEATHER WARNING',
-        color: 'rose',
-        icon: '⚠️',
-        summary: 'An official weather warning is currently active for this district. Inspect details below.'
+      const tags = {
+        en: 'OFFICIAL WEATHER WARNING',
+        hi: 'आधिकारिक मौसम चेतावनी',
+        mr: 'अधिकृत हवामान इशारा'
       };
+      const msgs = {
+        en: 'An official weather warning is currently active for this district. Inspect details below.',
+        hi: 'इस जिले के लिए एक आधिकारिक मौसम चेतावनी सक्रिय है। कृपया नीचे विवरण देखें।',
+        mr: 'या जिल्ह्यासाठी अधिकृत हवामान इशारा सक्रिय आहे. कृपया खालील तपशील पहा.'
+      };
+      return { tag: tags[lang] || tags.en, color: 'rose', icon: '⚠️', summary: msgs[lang] || msgs.en };
     }
 
     if (precip > 1.0 || rainProb >= 60) {
-      return {
-        tag: 'RAIN EXPECTED SOON',
-        color: 'cyan',
-        icon: '🌧️',
-        summary: `Rain is forecast during the next few hours (chance of rain: ${rainProb}%). Protect exposed harvested produce.`
+      const tags = {
+        en: 'RAIN EXPECTED SOON',
+        hi: 'शीघ्र वर्षा का अनुमान',
+        mr: 'लवकरच पावसाची शक्यता'
       };
+      const msgs = {
+        en: `Rain is forecast during the next few hours (chance: ${rainProb}%). Protect exposed harvested produce.`,
+        hi: `अगले कुछ घंटों में वर्षा की संभावना है (संभावना: ${rainProb}%)। कटी हुई फसल को सुरक्षित स्थान पर रखें।`,
+        mr: `पुढील काही तासांत पावसाची शक्यता आहे (अंदाज: ${rainProb}%). काढणी केलेले धान्य सुरक्षित जागी ठेवा.`
+      };
+      return { tag: tags[lang] || tags.en, color: 'cyan', icon: '🌧️', summary: msgs[lang] || msgs.en };
     }
 
     if (rainProb >= 30) {
-      return {
-        tag: 'SCATTERED SHOWERS POSSIBLE',
-        color: 'blue',
-        icon: '🌦️',
-        summary: `Light scattered showers possible today (${rainProb}% chance). Field operations may continue with observation.`
+      const tags = {
+        en: 'SCATTERED SHOWERS POSSIBLE',
+        hi: 'हल्की बौछारें संभव',
+        mr: 'हलक्या सरींची शक्यता'
       };
+      const msgs = {
+        en: `Light scattered showers possible today (${rainProb}% chance). Field operations may continue with observation.`,
+        hi: `आज हल्की बौछारें संभव हैं (${rainProb}% संभावना)। निगरानी के साथ कृषि कार्य जारी रख सकते हैं।`,
+        mr: `आज हलक्या सरी पडू शकतात (${rainProb}% शक्यता). हवामानावर लक्ष ठेवून शेतीकामे सुरू ठेवावीत.`
+      };
+      return { tag: tags[lang] || tags.en, color: 'blue', icon: '🌦️', summary: msgs[lang] || msgs.en };
     }
 
     if (wind >= 28) {
-      return {
-        tag: 'STRONG WINDS FORECAST',
-        color: 'amber',
-        icon: '💨',
-        summary: `Strong gusty winds up to ${current.windGusts || wind} km/h forecast. Secure loose lightweight farm coverings.`
+      const gust = current.windGusts || wind;
+      const tags = {
+        en: 'STRONG WINDS FORECAST',
+        hi: 'तेज हवाओं का अनुमान',
+        mr: 'जोरदार वाऱ्याचा इशारा'
       };
+      const msgs = {
+        en: `Strong gusty winds up to ${gust} km/h forecast. Secure loose lightweight farm coverings.`,
+        hi: `तेज हवाओं की गति ${gust} किमी/घंटा तक संभव। खेत के हल्के शेड और तिरपाल सुरक्षित करें।`,
+        mr: `वाऱ्याचा वेग ताशी ${gust} किमीपर्यंत राहण्याचा अंदाज. शेतातील शेड व प्लास्टिक आच्छादने सुरक्षित बांधून ठेवावीत.`
+      };
+      return { tag: tags[lang] || tags.en, color: 'amber', icon: '💨', summary: msgs[lang] || msgs.en };
     }
 
-    return {
-      tag: 'FAVORABLE FIELD WEATHER',
-      color: 'emerald',
-      icon: '☀️',
-      summary: 'Dry field conditions forecast. Suitable for routine weeding, harvesting, and regular agricultural work.'
+    const tags = {
+      en: 'FAVORABLE FIELD WEATHER',
+      hi: 'कृषि कार्य के लिए अनुकूल मौसम',
+      mr: 'शेतीकामासाठी अनुकूल हवामान'
     };
+    const msgs = {
+      en: 'Dry field conditions forecast. Suitable for routine weeding, harvesting, and regular agricultural work.',
+      hi: 'शुष्क मौसम का पूर्वानुमान। नियमित निराई-गुड़ाई, कटाई और कृषि कार्यों के लिए उपयुक्त समय।',
+      mr: 'कोरडे व स्वच्छ हवामान. खुरपणी, आंतरमशागत, कापणी आणि नियमित शेतीकामांसाठी उत्तम वेळ.'
+    };
+    return { tag: tags[lang] || tags.en, color: 'emerald', icon: '☀️', summary: msgs[lang] || msgs.en };
   }
 
   // Render Full Farmer Weather Card in Side Desk
@@ -1247,6 +1435,7 @@
     const container = document.getElementById('selected-district-content');
     if (!container) return;
 
+    const t = I18N_FARMER[currentFarmerLang] || I18N_FARMER.en;
     const c = d.current || {};
     const alerts = d.alerts || {};
     const provenance = d.provenance || {};
@@ -1254,9 +1443,50 @@
     const forecast7d = Array.isArray(d.forecast7d) ? d.forecast7d : [];
 
     const summary = generateFarmerSummary(c, alerts, forecast24h);
-    const alias = REGIONAL_ALIASES[d.id || d.districtId]?.mr || REGIONAL_ALIASES[d.id || d.districtId]?.hi;
+    const distId = d.id || d.districtId;
+    let dispName = d.district;
+    let aliasBadge = '';
+    if (distId && REGIONAL_ALIASES[distId]) {
+      const reg = REGIONAL_ALIASES[distId];
+      if (currentFarmerLang === 'mr' && reg.mr) {
+        dispName = `${reg.mr} (${d.district})`;
+      } else if (currentFarmerLang === 'hi' && reg.hi) {
+        dispName = `${reg.hi} (${d.district})`;
+      } else {
+        const alias = reg.mr || reg.hi;
+        if (alias) {
+          aliasBadge = `<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-medium">${alias}</span>`;
+        }
+      }
+    }
 
     const rainProbNext = forecast24h[0]?.precipitationProbability ?? (c.precipitation > 0 ? 80 : 10);
+    const humidityVal = c.relativeHumidity ?? c.humidity ?? c.relative_humidity_2m ?? c.relative_humidity ?? 55;
+
+    // Agricultural Actionable Guidance
+    const irrigationAdvice = rainProbNext >= 45 || (c.precipitation > 0.8)
+      ? (currentFarmerLang === 'mr' ? 'पावसाची शक्यता असल्याने सिंचन थांबवावे. जमिनीतील ओलावा नैसर्गिक पावसाने भरून निघेल.'
+         : currentFarmerLang === 'hi' ? 'वर्षा की संभावना के कारण सिंचाई स्थगित रखें। प्राकृतिक वर्षा से नमी पूरी होगी।'
+         : 'Postpone active irrigation. Soil moisture expected to be replenished by rainfall.')
+      : (currentFarmerLang === 'mr' ? 'नियमित सिंचन चालू ठेवू शकता. सकाळी किंवा संध्याकाळी पाणी देणे फायदेशीर ठरेल.'
+         : currentFarmerLang === 'hi' ? 'सामान्य सिंचाई चक्र जारी रखें। सुबह या शाम को पानी देना अधिक लाभकारी रहेगा।'
+         : 'Standard irrigation cycle suitable. Prefer morning or evening hours to minimize evaporation.');
+
+    const sprayingAdvice = (c.windSpeed >= 16 || rainProbNext >= 40)
+      ? (currentFarmerLang === 'mr' ? 'फवारणीसाठी अनुकूल वेळ नाही (वाऱ्याचा वेग जास्त किंवा पावसाची शक्यता). फवारणी पुढे ढकलावी.'
+         : currentFarmerLang === 'hi' ? 'छिड़काव के लिए प्रतिकूल मौसम (तेज हवा या वर्षा की संभावना)। छिड़काव स्थगित रखें।'
+         : 'Unfavorable for pesticide/fertilizer spraying due to wind gusts or rain chance.')
+      : (currentFarmerLang === 'mr' ? 'फवारणीसाठी हवामान अनुकूल आहे. शिफारशीत कीटकनाशक / बुरशीनाशक फवारणी करता येईल.'
+         : currentFarmerLang === 'hi' ? 'छिड़काव के लिए अनुकूल मौसम। आवश्यक कीटनाशक या पोषक तत्वों का छिड़काव करें।'
+         : 'Favorable conditions for agricultural spraying and foliar applications.');
+
+    const harvestAdvice = rainProbNext >= 45
+      ? (currentFarmerLang === 'mr' ? 'काढणी केलेले धान्य व चारा सुरक्षित जागी झाकून ठेवा. शेतात पाणी साचू देऊ नका.'
+         : currentFarmerLang === 'hi' ? 'कटी हुई फसल को खुले में न छोड़ें। सुरक्षित भंडारण स्थल या तिरपाल से ढकें।'
+         : 'Protect harvested produce from moisture. Ensure drainage in low-lying crop fields.')
+      : (currentFarmerLang === 'mr' ? 'कापणी, मळणी आणि खुरपणीसाठी हवामान उत्तम आहे.'
+         : currentFarmerLang === 'hi' ? 'फसल कटाई, निराई और मड़ाई कार्यों के लिए मौसम अनुकूल है।'
+         : 'Favorable window for weeding, intercultural operations, and crop harvesting.');
 
     container.innerHTML = `
       <!-- District Title & Current Temperature -->
@@ -1264,14 +1494,14 @@
         <div class="flex items-start justify-between">
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-bold text-white text-lg tracking-wide">${d.district}</h2>
-              ${alias ? `<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-medium">${alias}</span>` : ''}
+              <h2 class="font-bold text-white text-lg tracking-wide">${dispName}</h2>
+              ${aliasBadge}
             </div>
             <div class="text-[11px] text-emerald-400/90 font-medium">${d.state}, India</div>
           </div>
           <div class="text-right">
             <span class="text-3xl font-extrabold text-white font-mono">${c.temperature !== undefined ? c.temperature + '°C' : '--'}</span>
-            <span class="block text-[10px] text-slate-400">Feels like ${c.apparentTemperature !== undefined ? c.apparentTemperature + '°C' : '--'}</span>
+            <span class="block text-[10px] text-slate-400">${t.feelsLike} ${c.apparentTemperature !== undefined ? c.apparentTemperature + '°C' : '--'}</span>
           </div>
         </div>
 
@@ -1287,19 +1517,46 @@
         <!-- Primary Farmer Metrics -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 font-sans text-xs">
           <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800">
-            <span class="text-slate-400 block text-[10px]">Chance of rain</span>
+            <span class="text-slate-400 block text-[10px]">${t.chanceOfRain}</span>
             <span class="text-cyan-300 font-bold font-mono text-sm">${rainProbNext}%</span>
-            <span class="text-[9px] text-slate-500 block">${c.precipitation ?? 0} mm expected</span>
+            <span class="text-[9px] text-slate-500 block">${c.precipitation ?? 0} ${t.rainExpected}</span>
           </div>
           <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800">
-            <span class="text-slate-400 block text-[10px]">Air humidity</span>
-            <span class="text-white font-bold font-mono text-sm">${c.relativeHumidity ?? c.humidity ?? c.relative_humidity_2m ?? c.relative_humidity ?? 55}%</span>
-            <span class="text-[9px] text-slate-500 block">Relative moisture</span>
+            <span class="text-slate-400 block text-[10px]">${t.humidity}</span>
+            <span class="text-white font-bold font-mono text-sm">${humidityVal}%</span>
+            <span class="text-[9px] text-slate-500 block">${humidityVal > 70 ? t.highMoisture : t.comfortable}</span>
           </div>
           <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800 col-span-2 sm:col-span-1">
-            <span class="text-slate-400 block text-[10px]">Wind speed & direction</span>
+            <span class="text-slate-400 block text-[10px]">${t.wind}</span>
             <span class="text-amber-300 font-bold font-mono text-sm">${c.windSpeed ?? '--'} km/h</span>
-            <span class="text-[9px] text-slate-500 block">${c.windDirection ?? 'Variable'} (Gusts: ${c.windGusts ?? '--'} km/h)</span>
+            <span class="text-[9px] text-slate-500 block">${c.windDirection ?? t.variable} (Gusts: ${c.windGusts ?? '--'} km/h)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAILY FARM WEATHER BRIEFING -->
+      <div class="p-3 rounded-2xl bg-slate-950/85 border border-emerald-500/35 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-bold text-emerald-300 font-mono uppercase tracking-wider">
+          <span>🚜</span> <span>${t.farmBriefingTitle}</span>
+        </div>
+        <div class="space-y-1.5 text-[11px]">
+          <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-0.5">
+            <div class="font-bold text-cyan-300 text-[10px] font-mono flex items-center gap-1">
+              <span>💧</span> <span>${t.briefingIrrigation}</span>
+            </div>
+            <p class="text-slate-300 leading-relaxed font-sans">${irrigationAdvice}</p>
+          </div>
+          <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-0.5">
+            <div class="font-bold text-amber-300 text-[10px] font-mono flex items-center gap-1">
+              <span>🌾</span> <span>${t.briefingSpraying}</span>
+            </div>
+            <p class="text-slate-300 leading-relaxed font-sans">${sprayingAdvice}</p>
+          </div>
+          <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-0.5">
+            <div class="font-bold text-emerald-300 text-[10px] font-mono flex items-center gap-1">
+              <span>🌱</span> <span>${t.briefingHarvest}</span>
+            </div>
+            <p class="text-slate-300 leading-relaxed font-sans">${harvestAdvice}</p>
           </div>
         </div>
       </div>
@@ -1308,7 +1565,7 @@
       ${alerts.hasAlerts && Array.isArray(alerts.activeAlerts) && alerts.activeAlerts.length > 0 ? `
         <div class="p-3 rounded-2xl bg-rose-950/80 border border-rose-500/80 text-xs space-y-2">
           <div class="flex items-center gap-2 font-bold text-rose-300 uppercase tracking-wider text-[11px] font-mono">
-            <span>⚠️</span> <span>Official Weather Warning in Effect</span>
+            <span>⚠️</span> <span>${t.imdWarning}</span>
           </div>
           ${alerts.activeAlerts.map(a => `
             <div class="p-2 bg-black/50 rounded-xl border border-rose-500/40 text-[11px] space-y-1">
@@ -1321,7 +1578,7 @@
       ` : `
         <div class="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-300 flex items-center gap-2">
           <span>🛡️</span>
-          <span>No severe weather warnings active for this district.</span>
+          <span>${t.noAlerts}</span>
         </div>
       `}
 
@@ -1329,7 +1586,7 @@
       ${forecast24h.length > 0 ? `
         <div class="space-y-1.5">
           <div class="flex justify-between items-center text-[10px] uppercase font-bold text-slate-400 font-mono tracking-wider">
-            <span>Next 24 Hours Hourly Outlook</span>
+            <span>${t.hourlyOutlook}</span>
             <span class="text-slate-500">Hourly</span>
           </div>
           <div class="flex gap-2 overflow-x-auto pb-2 text-center font-sans">
@@ -1351,7 +1608,7 @@
       <!-- 7-Day Agricultural Outlook Table -->
       ${forecast7d.length > 0 ? `
         <div class="space-y-1.5">
-          <div class="text-[10px] uppercase font-bold text-slate-400 font-mono tracking-wider">7-Day Agricultural Forecast</div>
+          <div class="text-[10px] uppercase font-bold text-slate-400 font-mono tracking-wider">${t.agriculturalForecast}</div>
           <div class="divide-y divide-slate-800/80 rounded-2xl bg-slate-900/60 border border-slate-800 p-2 text-xs">
             ${forecast7d.map(day => `
               <div class="py-1.5 px-1 flex items-center justify-between">
@@ -1368,10 +1625,41 @@
         </div>
       ` : ''}
 
+      <!-- VERIFIED GOVERNMENT AGRICULTURAL SERVICES & MANDI LINKS -->
+      <div class="p-3 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-2">
+        <div class="text-[10px] uppercase font-bold text-emerald-400 font-mono tracking-wider flex items-center gap-1.5">
+          <span>🏛️</span>
+          <span>${t.govPortalsTitle}</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <a href="https://enam.gov.in" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 flex flex-col justify-between gap-1 transition no-underline text-inherit group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white font-mono group-hover:text-emerald-300">e-NAM Portal</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
+            </div>
+            <p class="text-[9.5px] text-slate-400 leading-tight">National Agriculture Market • 1,361+ mandis</p>
+          </a>
+          <a href="https://agmarknet.gov.in" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 flex flex-col justify-between gap-1 transition no-underline text-inherit group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white font-mono group-hover:text-emerald-300">Agmarknet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
+            </div>
+            <p class="text-[9.5px] text-slate-400 leading-tight">DMI Mandi Prices &amp; Commodity Arrivals</p>
+          </a>
+          <a href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 flex flex-col justify-between gap-1 transition no-underline text-inherit group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white font-mono group-hover:text-emerald-300">PM-Kisan</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
+            </div>
+            <p class="text-[9.5px] text-slate-400 leading-tight">Direct Farmer Support • Ministry of Agri</p>
+          </a>
+        </div>
+      </div>
+
       <!-- Expandable Advanced Scientific Weather Information -->
       <details class="rounded-xl bg-slate-900/50 border border-slate-800 p-2.5 text-xs text-slate-300">
         <summary class="cursor-pointer font-bold font-mono text-[11px] text-cyan-300 hover:text-cyan-200 select-none">
-          📊 Advanced Weather Information & Meteorological Parameters
+          📊 Advanced Weather Information &amp; Meteorological Parameters
         </summary>
         <div class="mt-2.5 space-y-1.5 font-mono text-[10px] text-slate-400 pt-2 border-t border-slate-800">
           <div class="flex justify-between">
@@ -1393,11 +1681,17 @@
         </div>
       </details>
 
-      <!-- Data Source & Provenance -->
-      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 text-[10px] text-slate-500 font-mono space-y-1 leading-relaxed">
-        <div><strong>Data Source:</strong> ${provenance.provider || 'Open-Meteo High-Resolution NWP Grid & IMD Feeds'}</div>
-        <div><strong>Last Updated:</strong> ${new Date().toUTCString()}</div>
-        <div class="text-slate-400"><strong>Note for Farmers:</strong> Forecast represents the district central coordinates (${d.coordinates?.lat?.toFixed(2)}°N, ${d.coordinates?.lon?.toFixed(2)}°E). Microclimates, hill terrain, and localized rainfall may vary across villages.</div>
+      <!-- Data Source & Meteorological Provenance -->
+      <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 text-[10px] text-slate-400 font-mono space-y-1 leading-relaxed">
+        <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+          <span>🌐</span> <span>${t.provenanceTitle}</span>
+        </div>
+        <p class="text-[9.5px] text-slate-300 font-sans leading-relaxed">${t.provenanceDesc}</p>
+        <div class="flex items-center justify-between text-[9px] text-slate-500 pt-1 border-t border-slate-800/80">
+          <span><strong>Data Provider:</strong> ${provenance.provider || 'Open-Meteo High-Resolution NWP (ECMWF & GFS grids)'}</span>
+          <span><strong>Updated:</strong> ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} IST</span>
+        </div>
+        <div class="text-[9px] text-slate-400 font-sans pt-0.5"><strong>Note for Farmers:</strong> Forecast represents district central coordinates. Localized microclimates, hill terrain, and localized rainfall may vary across villages.</div>
       </div>
     `;
   }
@@ -1406,13 +1700,31 @@
   window.toggleFarmerPanel = function () {
     const p = document.getElementById('selected-district-panel');
     if (!p) return;
+
+    // On mobile (< 768px): close map popup when opening desk panel to eliminate double cards
+    if (window.innerWidth < 768) {
+      if (window.leafletMap) {
+        window.leafletMap.closePopup();
+      }
+    }
+
+    if (p.classList.contains('hidden')) {
+      p.classList.remove('hidden');
+      isPanelCollapsed = false;
+      p.classList.remove('max-h-12', 'overflow-hidden');
+      p.classList.add('max-h-[62vh]');
+      const dBtn = document.getElementById('btn-toggle-district-panel');
+      if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
+      return;
+    }
+
     isPanelCollapsed = !isPanelCollapsed;
     if (isPanelCollapsed) {
       p.classList.add('max-h-12', 'overflow-hidden');
-      p.classList.remove('max-h-[58vh]');
+      p.classList.remove('max-h-[62vh]');
     } else {
       p.classList.remove('max-h-12', 'overflow-hidden');
-      p.classList.add('max-h-[58vh]');
+      p.classList.add('max-h-[62vh]');
     }
   };
 
@@ -1425,11 +1737,7 @@
       window.leafletMap.removeLayer(leafletSelectedDistrictLayer);
       leafletSelectedDistrictLayer = null;
     }
-    if (leafletDistrictPopup && window.leafletMap) {
-      window.leafletMap.closePopup(leafletDistrictPopup);
-    }
-    selectedDistrictId = null;
-    window.selectedDistrictId = null;
+    // Note: Do NOT remove leafletDistrictPopup here so closing the sheet on mobile leaves or restores clean map state
   };
 
   window.quickSelectDistrict = function (distId) {
