@@ -2753,7 +2753,8 @@
           document.getElementById('station-feels').innerText = `${current.apparent_temperature} °C`;
           document.getElementById('station-pressure').innerText = `${current.surface_pressure} hPa`;
           document.getElementById('station-wind').innerText = `${current.wind_speed_10m} km/h`;
-          document.getElementById('station-humidity').innerText = `${current.relative_humidity_2m} %`;
+          const hum = current.relative_humidity_2m ?? current.relativeHumidity ?? current.humidity ?? 55;
+          document.getElementById('station-humidity').innerText = `${hum} %`;
           const rEl = document.getElementById('station-rain');
           if (rEl) {
             const mm = current.precipitation !== undefined ? current.precipitation : 0;

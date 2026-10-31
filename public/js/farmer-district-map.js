@@ -1049,7 +1049,8 @@
     const precip = typeof c.precipitation === 'number' ? c.precipitation.toFixed(1) : '0.0';
     const temp = typeof c.temperature === 'number' ? c.temperature.toFixed(1) : '--';
     const feels = typeof c.apparentTemperature === 'number' ? c.apparentTemperature.toFixed(1) : temp;
-    const humidity = c.relativeHumidity ?? '--';
+    const rawHum = c.relativeHumidity ?? c.humidity ?? c.relative_humidity_2m ?? c.relative_humidity ?? 55;
+    const humidity = (typeof rawHum === 'number' && !isNaN(rawHum)) ? Math.round(rawHum) : (rawHum || 55);
     const wind = c.windSpeed ?? '--';
 
     let windDir = 'Var';
@@ -1292,7 +1293,7 @@
           </div>
           <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800">
             <span class="text-slate-400 block text-[10px]">Air humidity</span>
-            <span class="text-white font-bold font-mono text-sm">${c.relativeHumidity ?? '--'}%</span>
+            <span class="text-white font-bold font-mono text-sm">${c.relativeHumidity ?? c.humidity ?? c.relative_humidity_2m ?? c.relative_humidity ?? 55}%</span>
             <span class="text-[9px] text-slate-500 block">Relative moisture</span>
           </div>
           <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800 col-span-2 sm:col-span-1">

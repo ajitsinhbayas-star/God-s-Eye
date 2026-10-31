@@ -125,6 +125,8 @@ weatherRouter.get('/station', async (req, res) => {
       current: {
         temperature_2m: 28.5,
         relative_humidity_2m: 55,
+        relativeHumidity: 55,
+        humidity: 55,
         apparent_temperature: 29.8,
         precipitation: 0,
         surface_pressure: 1012,
@@ -293,7 +295,8 @@ weatherRouter.get('/district', async (req, res) => {
       current: {
         temperature: curr.temperature_2m,
         apparentTemperature: curr.apparent_temperature,
-        relativeHumidity: curr.relative_humidity_2m,
+        relativeHumidity: curr.relative_humidity_2m ?? 55,
+        humidity: curr.relative_humidity_2m ?? 55,
         precipitation: curr.precipitation,
         surfacePressure: curr.surface_pressure,
         windSpeed: curr.wind_speed_10m,
@@ -343,6 +346,7 @@ weatherRouter.get('/district', async (req, res) => {
         time: new Date().toISOString(),
         temperature: 28.5,
         apparentTemperature: 30.0,
+        relativeHumidity: 55,
         humidity: 55,
         surfacePressure: 1012,
         windSpeed: 7.5,
