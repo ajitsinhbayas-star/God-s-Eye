@@ -391,10 +391,40 @@
     leafletLabelLayerGroup.addTo(window.leafletMap);
   }
 
+  // Smart Mobile Viewport Positioning: Places coordinates safely in lower viewport
+  // so the Leaflet popup bubble (which renders ABOVE the coordinate) sits cleanly below the search header.
+  function focusMapCoordinateForMobile(map, latlng, forceZoom) {
+    if (!map || !latlng) return;
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) {
+      if (forceZoom) map.setView(latlng, forceZoom, { animate: true });
+      return;
+    }
+    const targetZoom = forceZoom || Math.max(map.getZoom(), 8);
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const bottomPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top) : 70;
+
+    // Target screen Y: ensures the ~270px popup bubble renders completely below the header
+    const targetScreenY = Math.min(window.innerHeight - bottomPad - 40, Math.max(headerBottom + 290, Math.round(window.innerHeight * 0.68)));
+    const centerScreenY = window.innerHeight / 2;
+    const pixelOffset = targetScreenY - centerScreenY;
+
+    const projectedPt = map.project(latlng, targetZoom).subtract([0, pixelOffset]);
+    const newCenter = map.unproject(projectedPt, targetZoom);
+    map.setView(newCenter, targetZoom, { animate: false });
+  }
+
   // Handle map coordinate click (resolves closest city/district, coordinates, highlights boundary, and opens card)
   function handleMapCoordinateClick(latlng, feature, layer) {
     if (!latlng) return;
     initSyncData();
+
+    // On mobile (< 768px): Close big details panel so ONLY small preview card is open on touch (no double cards)
+    if (window.innerWidth < 768 && typeof window.closeFarmerPanel === 'function') {
+      window.closeFarmerPanel();
+    }
 
     const lat = latlng.lat;
     const lon = latlng.lng;
@@ -481,18 +511,15 @@
 
     lastPopupLatLng = latlng;
     const isMobile = window.innerWidth < 768;
-    const topPad = isMobile ? 225 : 60;
-    const botPad = isMobile ? 80 : 40;
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
+    const topPad = isMobile ? (headerBottom + 16) : 60;
 
-    // On mobile, if coordinate is in top half of screen, pan down so popup never hides under top header
+    // On mobile: position coordinate cleanly in lower safe zone so popup fits below header
     if (isMobile && window.leafletMap) {
-      try {
-        const pt = window.leafletMap.latLngToContainerPoint(latlng);
-        if (pt.y < 380) {
-          const diff = 440 - pt.y;
-          window.leafletMap.panBy([0, -diff], { animate: true });
-        }
-      } catch (err) {}
+      focusMapCoordinateForMobile(window.leafletMap, latlng);
     }
 
     leafletDistrictPopup = L.popup({
@@ -518,6 +545,11 @@
     const d = districtIndexData.districts.find(item => item.id === distId);
     if (!d) return;
 
+    // On mobile (< 768px): Close big details panel so ONLY small preview card is open
+    if (window.innerWidth < 768 && typeof window.closeFarmerPanel === 'function') {
+      window.closeFarmerPanel();
+    }
+
     selectedDistrictId = distId;
     window.selectedDistrictId = distId;
 
@@ -532,20 +564,19 @@
     // Zoom map smoothly to district bounds with mobile header offset
     if (window.leafletMap) {
       const isMobile = window.innerWidth < 768;
-      if (feat && feat.properties?.bbox) {
-        const b = feat.properties.bbox;
-        window.leafletMap.fitBounds([[b[1], b[0]], [b[3], b[2]]], {
-          paddingTopLeft: [20, isMobile ? 230 : 50],
-          paddingBottomRight: [20, isMobile ? 80 : 40],
-          maxZoom: 10,
-          animate: true
-        });
+      if (isMobile) {
+        focusMapCoordinateForMobile(window.leafletMap, targetCoord, 8);
       } else {
-        const targetZoom = Math.max(window.leafletMap.getZoom(), 8);
-        if (isMobile) {
-          const pt = window.leafletMap.project(targetCoord, targetZoom).subtract([0, 120]);
-          window.leafletMap.setView(window.leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+        if (feat && feat.properties?.bbox) {
+          const b = feat.properties.bbox;
+          window.leafletMap.fitBounds([[b[1], b[0]], [b[3], b[2]]], {
+            paddingTopLeft: [20, 50],
+            paddingBottomRight: [20, 40],
+            maxZoom: 10,
+            animate: true
+          });
         } else {
+          const targetZoom = Math.max(window.leafletMap.getZoom(), 8);
           window.leafletMap.setView(targetCoord, targetZoom, { animate: true });
         }
       }
@@ -776,7 +807,6 @@
       endpointsToTry.push(`http://localhost:3000/api/weather/district?${q}`);
     } else {
       endpointsToTry.push(`/api/weather/district?${q}`);
-      endpointsToTry.push(`http://localhost:3000/api/weather/district?${q}`);
     }
 
     // 1. Try local server
@@ -1110,8 +1140,11 @@
     `;
 
     const isMobile = window.innerWidth < 768;
-    const topPad = isMobile ? 225 : 60;
-    const botPad = isMobile ? 80 : 40;
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
+    const topPad = isMobile ? (headerBottom + 16) : 60;
 
     if (!leafletDistrictPopup || !window.leafletMap.hasLayer(leafletDistrictPopup)) {
       leafletDistrictPopup = L.popup({
@@ -1127,7 +1160,7 @@
     } else {
       leafletDistrictPopup.options.autoPanPaddingTopLeft = [16, topPad];
       leafletDistrictPopup.options.autoPanPaddingBottomRight = [16, botPad];
-      leafletDistrictPopup.setLatLng(targetLatLng).setContent(popupHtml);
+      leafletDistrictPopup.setLatLng(targetLatLng).setContent(popupHtml).openOn(window.leafletMap);
       if (typeof leafletDistrictPopup.update === 'function') {
         leafletDistrictPopup.update();
       }

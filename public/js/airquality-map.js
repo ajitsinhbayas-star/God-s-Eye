@@ -640,10 +640,40 @@
     fetchAndDisplayAqi(null, st.name, st.state, st.lat, st.lon, coord, true);
   }
 
+  // Smart Mobile Viewport Positioning: Places coordinates safely in lower viewport
+  // so the Leaflet popup bubble (which renders ABOVE the coordinate) sits cleanly below the search header.
+  function focusMapCoordinateForMobile(map, latlng, forceZoom) {
+    if (!map || !latlng) return;
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) {
+      if (forceZoom) map.setView(latlng, forceZoom, { animate: true });
+      return;
+    }
+    const targetZoom = forceZoom || Math.max(map.getZoom(), 8);
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const bottomPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top) : 70;
+
+    // Target screen Y: ensures the ~270px popup bubble renders completely below the header
+    const targetScreenY = Math.min(window.innerHeight - bottomPad - 40, Math.max(headerBottom + 290, Math.round(window.innerHeight * 0.68)));
+    const centerScreenY = window.innerHeight / 2;
+    const pixelOffset = targetScreenY - centerScreenY;
+
+    const projectedPt = map.project(latlng, targetZoom).subtract([0, pixelOffset]);
+    const newCenter = map.unproject(projectedPt, targetZoom);
+    map.setView(newCenter, targetZoom, { animate: false });
+  }
+
   // Handle Map Click
   function handleCoordinateClick(latlng, feature, layer) {
     if (!latlng) return;
     initAqiSync();
+
+    // On mobile (< 768px): Close big details panel so ONLY small preview card is open on touch (no double cards)
+    if (window.innerWidth < 768 && typeof window.closeDeskPanel === 'function') {
+      window.closeDeskPanel();
+    }
 
     const lat = latlng.lat;
     const lon = latlng.lng;
@@ -730,18 +760,15 @@
     if (leafletAqiPopup) leafletMap.closePopup(leafletAqiPopup);
     lastPopupLatLng = latlng;
     const isMobile = window.innerWidth < 768;
-    const topPad = isMobile ? 225 : 60;
-    const botPad = isMobile ? 80 : 40;
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
+    const topPad = isMobile ? (headerBottom + 16) : 60;
 
-    // On mobile, if coordinate is in top half of screen, pan down so popup never hides under top header
+    // On mobile: position coordinate cleanly in lower safe zone so popup fits below header
     if (isMobile && leafletMap) {
-      try {
-        const pt = leafletMap.latLngToContainerPoint(latlng);
-        if (pt.y < 380) {
-          const diff = 440 - pt.y;
-          leafletMap.panBy([0, -diff], { animate: true });
-        }
-      } catch (err) {}
+      focusMapCoordinateForMobile(leafletMap, latlng);
     }
 
     leafletAqiPopup = L.popup({
@@ -759,10 +786,12 @@
   // Unified AQI Fetcher
   async function fetchAirQualityUnified(lat, lon, name, state) {
     // 1. Try local server API
-    const endpoints = [
-      `/api/airquality/station?lat=${lat}&lon=${lon}`,
-      `http://localhost:3000/api/airquality/station?lat=${lat}&lon=${lon}`
-    ];
+    const endpoints = [];
+    if (window.location.protocol === 'file:') {
+      endpoints.push(`http://localhost:3000/api/airquality/station?lat=${lat}&lon=${lon}`);
+    } else {
+      endpoints.push(`/api/airquality/station?lat=${lat}&lon=${lon}`);
+    }
 
     for (const ep of endpoints) {
       try {
@@ -1036,8 +1065,11 @@
     if (leafletAqiPopup && leafletMap) leafletMap.closePopup(leafletAqiPopup);
 
     const isMobile = window.innerWidth < 768;
-    const topPad = isMobile ? 225 : 60;
-    const botPad = isMobile ? 80 : 40;
+    const headerEl = document.querySelector('header');
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
+    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
+    const topPad = isMobile ? (headerBottom + 16) : 60;
 
     leafletAqiPopup = L.popup({
       className: 'aqi-popup',
@@ -1245,17 +1277,20 @@
     const d = districtIndexData.districts.find(item => item.id === distId);
     if (!d) return;
 
+    // On mobile (< 768px): Close big details panel so ONLY small preview card is open
+    if (window.innerWidth < 768 && typeof window.closeDeskPanel === 'function') {
+      window.closeDeskPanel();
+    }
+
     window.selectedDistrictId = distId;
     const targetCoord = L.latLng(d.lat, d.lon);
 
     if (leafletMap) {
       const isMobile = window.innerWidth < 768;
-      const targetZoom = 8;
       if (isMobile) {
-        const pt = leafletMap.project(targetCoord, targetZoom).subtract([0, 120]);
-        leafletMap.setView(leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+        focusMapCoordinateForMobile(leafletMap, targetCoord, 8);
       } else {
-        leafletMap.setView(targetCoord, targetZoom, { animate: true });
+        leafletMap.setView(targetCoord, 8, { animate: true });
       }
     }
 

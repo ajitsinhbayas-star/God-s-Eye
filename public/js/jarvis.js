@@ -514,28 +514,6 @@
       stream.scrollTop = stream.scrollHeight;
     }
 
-      // Render Bot Bubble with Interactive Action Buttons
-      botBubble.style.fontStyle = 'normal';
-      botBubble.style.color = '#cbd5e1';
-      botBubble.innerHTML = `<div>${answer}</div>`;
-
-      if (actions.length > 0) {
-        const actCont = document.createElement('div');
-        actCont.style.cssText = 'margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;';
-        actions.forEach(act => {
-          const btn = document.createElement('button');
-          btn.className = 'jarvis-action-pill';
-          btn.innerHTML = act.label;
-          btn.onclick = () => dispatchAction(act.type, act.hash);
-          actCont.appendChild(btn);
-        });
-        botBubble.appendChild(actCont);
-      }
-
-      speak(answer);
-      stream.scrollTop = stream.scrollHeight;
-    }
-
     // --- 6. Tactical Action Dispatcher & Cross-Page Teleporter ---
     function dispatchAction(action, hash = '') {
       console.log('[J.A.R.V.I.S. ACTION DISPATCH]:', action, hash);
