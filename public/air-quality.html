@@ -147,11 +147,16 @@
     }
 
     .hidden { display: none !important; }
-    #orbital-footer.sr-only, footer#orbital-footer { display: none !important; position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; }
-    @media (max-width: 1023px) {
-      .lg\:flex, #desktop-nav-container { display: none !important; }
-      .lg\:hidden { display: flex !important; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    #orbital-nav-ribbon {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    #orbital-nav-ribbon::-webkit-scrollbar {
+      display: none;
+    }
+    #orbital-footer.sr-only, footer#orbital-footer { display: none !important; position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; }
 
   </style>
 </head>
@@ -180,7 +185,7 @@
       </div>
 
       <!-- Navigation Pill Links -->
-      <div id="desktop-nav-container" class="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-2 overflow-hidden">
+      <div id="desktop-nav-container" class="flex-1 flex items-center justify-center min-w-0 mx-1 sm:mx-2 overflow-hidden">
         <nav id="orbital-nav-ribbon" aria-label="Orbital Eye Main Navigation" class="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 rounded-xl p-1 text-[11px] font-mono overflow-x-auto no-scrollbar max-w-full">
       <a href="/" data-nav="home" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Home</a>
       <a href="/solar-system" data-nav="solar-system" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Solar System</a>
@@ -267,9 +272,6 @@
         <a href="/sentinel-login" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Operations Console">
           <i class="fa-solid fa-shield-halved"></i>
         </a>
-        <button onclick="window.toggleMobileNavMenu()" id="btn-toggle-mobile-nav" aria-expanded="false" aria-controls="mobile-nav-drawer" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
-          <i class="fa-solid fa-bars"></i>
-        </button>
       </div>
     </div>
 
@@ -336,31 +338,7 @@
       </div>
     </div>
   </header>
-  <!-- Mobile Navigation Backdrop Overlay -->
-  <div id="mobile-nav-backdrop" style="display: none;" onclick="window.toggleMobileNavMenu(false)" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm lg:hidden transition-opacity" aria-hidden="true"></div>
 
-  <!-- Mobile Navigation Drawer -->
-  <div id="mobile-nav-drawer" style="display: none;" class="hidden fixed inset-x-0 top-16 z-50 p-4 bg-slate-950/98 border-b border-cyan-500/40 backdrop-blur-2xl shadow-2xl lg:hidden font-mono max-h-[calc(100vh-5rem)] overflow-y-auto">
-    <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-        <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Observatory Destinations</span>
-      </div>
-      <button type="button" onclick="window.toggleMobileNavMenu(false)" class="w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" aria-label="Close Navigation Menu">
-        ✕
-      </button>
-    </div>
-    <div class="grid grid-cols-2 gap-2 text-xs">
-      <a href="/" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Home</a>
-      <a href="/solar-system" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Solar System</a>
-      <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Earth Satellites</a>
-      <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Deep Space</a>
-      <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Asteroids</a>
-      <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Atmosphere</a>
-      <a href="/air-quality" class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-center transition" aria-current="page">Air Quality</a>
-      <a href="/alert" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-center transition">Alert</a>
-    </div>
-  </div>
 
   <!-- SIDE DESK PANEL (Collapsible on mobile and desktop) -->
   <aside id="selected-aqi-panel" class="hidden md:flex fixed z-40 transition-all duration-300
@@ -509,54 +487,9 @@
       }
     };
 
-    window.toggleMobileNavMenu = function(forceState) {
-      const drawer = document.getElementById('mobile-nav-drawer');
-      const backdrop = document.getElementById('mobile-nav-backdrop');
-      const btn = document.getElementById('btn-toggle-mobile-nav');
-      if (!drawer) return;
+    window.toggleMobileNavMenu = function() {};
 
-      const isCurrentlyOpen = !drawer.classList.contains('hidden') && drawer.style.display !== 'none';
-      const willOpen = typeof forceState === 'boolean' ? forceState : !isCurrentlyOpen;
-
-      if (willOpen) {
-        // Auto-close mobile more sheet if active
-        if (typeof window.toggleMobileMoreSheet === 'function') {
-          window.toggleMobileMoreSheet(false);
-        }
-        drawer.classList.remove('hidden');
-        drawer.style.display = 'block';
-        if (backdrop) {
-          backdrop.classList.remove('hidden');
-          backdrop.style.display = 'block';
-        }
-        if (btn) {
-          btn.setAttribute('aria-expanded', 'true');
-          const icon = btn.querySelector('i');
-          if (icon) icon.className = 'fa-solid fa-xmark';
-        }
-      } else {
-        drawer.classList.add('hidden');
-        drawer.style.display = 'none';
-        if (backdrop) {
-          backdrop.classList.add('hidden');
-          backdrop.style.display = 'none';
-        }
-        if (btn) {
-          btn.setAttribute('aria-expanded', 'false');
-          const icon = btn.querySelector('i');
-          if (icon) icon.className = 'fa-solid fa-bars';
-        }
-      }
-    };
-
-    // Close mobile nav drawer when resizing to desktop
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 1024) {
-        window.toggleMobileNavMenu(false);
-      }
-    });
-
-    // Sync initial ARIA state and outside/link dismiss listeners
+    // Sync initial ARIA state and auto-scroll ribbon
     document.addEventListener('DOMContentLoaded', () => {
       const p = document.getElementById('selected-aqi-panel');
       const btn = document.getElementById('btn-toggle-desk-panel');
@@ -565,27 +498,15 @@
         btn.setAttribute('aria-expanded', isClosed ? 'false' : 'true');
       }
 
-      // Auto-close mobile nav drawer when clicking any nav link
-      document.querySelectorAll('#mobile-nav-drawer a').forEach(a => {
-        a.addEventListener('click', () => {
-          window.toggleMobileNavMenu(false);
-        });
-      });
-
-      // Close when tapping map container
-      const mapEl = document.getElementById('map-container');
-      if (mapEl) {
-        mapEl.addEventListener('click', () => {
-          window.toggleMobileNavMenu(false);
-        });
+      // Auto-scroll active nav link into view in ribbon on mobile
+      const activeNav = document.querySelector('#orbital-nav-ribbon a[aria-current="page"]');
+      if (activeNav) {
+        setTimeout(() => {
+          try {
+            activeNav.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+          } catch (_) {}
+        }, 150);
       }
-
-      // Close on Escape key
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          window.toggleMobileNavMenu(false);
-        }
-      });
     });
   </script>
   <script src="js/mobile-nav.js"></script>
