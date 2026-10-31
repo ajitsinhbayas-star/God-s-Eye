@@ -790,6 +790,9 @@
       const panel = document.getElementById('catalog-panel');
       const expandBtn = document.getElementById('btn-expand-catalog');
       if (panel) {
+        if (panel.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
         panel.classList.add('is-minimized');
         panel.setAttribute('aria-hidden', 'true');
       }
@@ -837,6 +840,9 @@
     function closeIntelCard() {
       const card = document.getElementById('intel-card');
       if (card) {
+        if (card.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
         card.classList.add('is-hidden');
         card.setAttribute('aria-hidden', 'true');
       }

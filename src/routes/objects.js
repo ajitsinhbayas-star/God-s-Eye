@@ -103,6 +103,44 @@ objectsRouter.get('/objects', (req, res) => {
   res.json({ ok: true, meta: { total: MASTER_TRACKABLE_CATALOG.length, count: data.length }, data });
 });
 
+// GET /api/v1/catalog - Returns master trackable catalogue & curated NASA Eyes featured story tours
+objectsRouter.get('/v1/catalog', (req, res) => {
+  res.json({
+    ok: true,
+    total: MASTER_TRACKABLE_CATALOG.length,
+    catalog: MASTER_TRACKABLE_CATALOG,
+    featured_stories: [
+      {
+        id: 'artemis_ii',
+        title: 'Artemis II Mission',
+        subtitle: 'Lunar Free-Return Trajectory',
+        slides: [
+          { title: 'Earth Departure', desc: 'Orion spacecraft translunar injection.', target: 'earth', dist: 4.8 },
+          { title: 'Lunar Flyby', desc: 'Passage around the lunar farside before returning to Earth.', target: 'moon', dist: 2.2 }
+        ]
+      },
+      {
+        id: 'voyager_grand_tour',
+        title: 'Voyager Grand Tour',
+        subtitle: 'Outer Planets Exploration',
+        slides: [
+          { title: 'Jupiter Encounter', desc: 'Gravitational slingshot past Jupiter in 1979.', target: 'jupiter', dist: 6.5 },
+          { title: 'Saturn Flyby', desc: 'Close examination of the rings and Titan.', target: 'saturn', dist: 5.8 }
+        ]
+      },
+      {
+        id: 'chandrayaan3_landing',
+        title: 'Chandrayaan-3 Lunar Landing',
+        subtitle: 'Historic South Pole Landing',
+        slides: [
+          { title: 'Earth-Bound Phase', desc: 'Orbit raising maneuvers around Earth.', target: 'earth', dist: 5.0 },
+          { title: 'Lunar Landing', desc: 'Soft landing near lunar south polar terrain.', target: 'moon', dist: 1.8 }
+        ]
+      }
+    ]
+  });
+});
+
 objectsRouter.get('/objects/:id', (req, res) => {
   const item = MASTER_TRACKABLE_CATALOG.find(m => m.id.toLowerCase() === req.params.id.toLowerCase());
   if (!item) return res.status(404).json({ ok: false, error: 'Object not found' });

@@ -2172,14 +2172,14 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     textureLoader.crossOrigin = 'anonymous';
 
     const NASA_TEXTURE_MAPS = {
-      mercury: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mercury.jpg',
-      venus:   'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/venus_atmosphere.jpg',
-      moon:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg',
-      mars:    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/mars_1k_color.jpg',
-      jupiter: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/jupiter.jpg',
-      saturn:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/saturn.jpg',
-      uranus:  'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/uranus.jpg',
-      neptune: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/neptune.jpg',
+      mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
+      venus:   'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
+      moon:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/moonmap1k.jpg',
+      mars:    'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
+      jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
+      saturn:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
+      uranus:  'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
+      neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg',
       pluto:   'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg'
     };
 
@@ -2205,7 +2205,7 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
         tex.encoding = THREE.sRGBEncoding;
         material.map = tex;
         material.needsUpdate = true;
-      });
+      }, undefined, () => {});
     }
 
     const fallbackDayCanvas = document.createElement('canvas');
@@ -3064,6 +3064,9 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
     function closeIntelCard() {
       const card = document.getElementById('intel-card');
       if (card) {
+        if (card.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
         card.classList.add('is-hidden');
         card.setAttribute('aria-hidden', 'true');
       }
@@ -3157,6 +3160,9 @@ window.FocusTargetFromHub = function(category, targetName) {
       const cat = document.getElementById('catalog-panel');
       const btn = document.getElementById('btn-expand-catalog');
       if (cat) {
+        if (cat.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
         cat.classList.add('is-minimized');
         cat.setAttribute('aria-hidden', 'true');
       }
