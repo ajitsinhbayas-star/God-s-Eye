@@ -2,12 +2,12 @@
   "lastUpdated": "2026-10-24T16:55:36.984Z",
   "syncCycles": 0,
   "liveISS": {
-    "latitude": -31.9159,
-    "longitude": 170.3272,
-    "altitude": 424.35,
-    "velocity": 27573,
-    "visibility": "daylight",
-    "timestamp": 1793430541029
+    "latitude": 48.5619,
+    "longitude": -128.3347,
+    "altitude": 425.57,
+    "velocity": 27582,
+    "visibility": "eclipsed",
+    "timestamp": 1793437887584
   },
   "externalIntel": {
     "spaceWeather": {
@@ -15,8 +15,8 @@
       "stormLevel": "G0 (Quiet / Nominal)",
       "gScaleCode": "G0",
       "severity": "nominal",
-      "observationTimeUTC": "2026-10-31T07:08:23.927Z",
-      "updatedAt": "2026-10-31T07:08:23.927Z",
+      "observationTimeUTC": "2026-10-31T09:04:52.260Z",
+      "updatedAt": "2026-10-31T09:04:52.260Z",
       "quality": "fresh",
       "provider": "NOAA Space Weather Prediction Center (SWPC)"
     },
@@ -68,7 +68,7 @@
       "detail": "Active satellite TLE vectors",
       "status": "ok",
       "label": "Active SGP4 Pipeline (15 Live TLEs, 17 Cached)",
-      "lastFetch": "2026-10-31T07:08:24.556Z",
+      "lastFetch": "2026-10-31T08:59:31.562Z",
       "latencyMs": 210,
       "quality": "fresh"
     },
