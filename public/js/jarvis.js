@@ -411,10 +411,11 @@
         actions.push({ label: '☄️ Open Asteroids', type: 'NAV_ASTEROIDS' });
         directNavAction = 'NAV_ASTEROIDS';
         answer = 'Deploying NASA CNEOS Near-Earth Asteroid defense radar, Sir.';
-      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(ATMOSPHERE|WEATHER|RADAR|KISAN)\b/i.test(query) || q === 'ATMOSPHERE' || q === 'OPEN ATMOSPHERE' || q === 'OPEN WEATHER') {
+      } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(KISANMITRA|KISAN\s*MITRA|ATMOSPHERE|WEATHER|RADAR|KISAN)\b/i.test(query) || q === 'KISANMITRA' || q === 'ATMOSPHERE' || q === 'OPEN KISANMITRA' || q === 'OPEN ATMOSPHERE' || q === 'OPEN WEATHER') {
+        actions.push({ label: '🌾 Open KisanMitra & Weather', type: 'NAV_KISANMITRA' });
         actions.push({ label: '🌀 Open Atmosphere & Weather', type: 'NAV_ATMOSPHERE' });
-        directNavAction = 'NAV_ATMOSPHERE';
-        answer = 'Connecting to live Doppler rain radar and Indian district kisan map, Sir.';
+        directNavAction = 'NAV_KISANMITRA';
+        answer = 'Connecting to KisanMitra live Doppler rain radar and Indian district weather map, Sir.';
       } else if (/\b(OPEN|GO TO|LAUNCH|VIEW)\s+(AIR QUALITY|AIRQUALITY|AQI|CPCB)\b/i.test(query) || q === 'AIR QUALITY' || q === 'OPEN AIR QUALITY' || q === 'AQI') {
         actions.push({ label: '💨 Open Air Quality Observatory', type: 'NAV_AIRQUALITY' });
         directNavAction = 'NAV_AIRQUALITY';
@@ -548,10 +549,11 @@
           }
           break;
 
+        case 'NAV_KISANMITRA':
         case 'NAV_ATMOSPHERE':
         case 'NAV_WEATHER':
-          if (!window.location.pathname.includes('atmosphere')) {
-            navigateTo('atmosphere.html', '/atmosphere');
+          if (!window.location.pathname.includes('kisanmitra') && !window.location.pathname.includes('atmosphere')) {
+            navigateTo('kisanmitra.html', '/kisanmitra');
           } else if (hash && typeof window.setLayerMode === 'function') {
             window.setLayerMode(hash);
           }

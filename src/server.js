@@ -305,8 +305,8 @@ app.get(['/asteroids.html'], (req, res) => {
   res.redirect(301, '/asteroids');
 });
 
-app.get(['/weather', '/weather/', '/weather.html', '/atmosphere.html'], (req, res) => {
-  res.redirect(301, '/atmosphere');
+app.get(['/weather', '/weather/', '/weather.html', '/atmosphere', '/atmosphere/', '/atmosphere.html', '/kisanmitra.html'], (req, res) => {
+  res.redirect(301, '/kisanmitra');
 });
 
 app.get(['/airquality', '/airquality/', '/airquality.html', '/aqi', '/aqi/', '/aqi.html', '/air-quality.html'], (req, res) => {
@@ -339,8 +339,8 @@ app.get(['/asteroids', '/asteroids/'], (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'asteroids.html'));
 });
 
-app.get(['/atmosphere', '/atmosphere/'], (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'atmosphere.html'));
+app.get(['/kisanmitra', '/kisanmitra/'], (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'kisanmitra.html'));
 });
 
 app.get(['/air-quality', '/air-quality/'], (req, res) => {
@@ -395,7 +395,7 @@ app.get('/sitemap.xml', (req, res) => {
     { path: 'earth', priority: '0.95', freq: 'hourly' },
     { path: 'deepspace', priority: '0.85', freq: 'weekly' },
     { path: 'asteroids', priority: '0.90', freq: 'daily' },
-    { path: 'atmosphere', priority: '0.95', freq: 'hourly' },
+    { path: 'kisanmitra', priority: '0.95', freq: 'hourly' },
     { path: 'air-quality', priority: '0.95', freq: 'hourly' },
     { path: 'alert', priority: '0.90', freq: 'hourly' }
   ];
@@ -423,7 +423,7 @@ Allow: /solar-system
 Allow: /earth
 Allow: /deepspace
 Allow: /asteroids
-Allow: /atmosphere
+Allow: /kisanmitra
 Allow: /air-quality
 Allow: /alert
 Allow: /icons/

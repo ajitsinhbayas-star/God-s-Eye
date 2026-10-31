@@ -684,7 +684,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <h2>Explore Space Observatory Viewports</h2>
       <ul>
         <li><a href="/earth" title="Track Live Earth Orbiting Satellites">Live Earth Orbit &amp; Satellite Tracking — Real-time SGP4 positions for ISS, Cartosat, and Starlink</a></li>
-        <li><a href="/atmosphere" title="Global Atmospheric Radar & Indian District Weather">Atmosphere, Doppler Radar &amp; Indian District Kisan Weather — RainViewer Doppler mosaics and 594 Indian district boundaries</a></li>
+        <li><a href="/kisanmitra" title="Global Atmospheric Radar & Indian District Weather">KisanMitra &amp; Indian District Weather — RainViewer Doppler mosaics and 594 Indian district boundaries</a></li>
         <li><a href="/asteroids" title="Track Near-Earth Asteroids & Planetary Defense">Near-Earth Asteroid Tracking &amp; Planetary Defense — 2,200+ NEAs, close approaches, and Sentry risk data</a></li>
         <li><a href="/deepspace" title="Explore Deep Space Probes and Telescopes">Deep Space Probes &amp; Telescopes — JWST, Aditya-L1, Voyager, and 9-tier cosmic hierarchy</a></li>
         <li><a href="/alert" title="Satellite Pass Predictions & Space Weather Alerts">Satellite Pass Predictions &amp; Space Weather Alerts — Topocentric pass look angles and NOAA Kp geomagnetic storm warnings</a></li>
@@ -731,7 +731,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <a href="/earth" data-nav="earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Earth</a>
       <a href="/deepspace" data-nav="deepspace" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Deep Space</a>
       <a href="/asteroids" data-nav="asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Asteroids</a>
-      <a href="/atmosphere" data-nav="atmosphere" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Atmosphere</a>
+      <a href="/kisanmitra" data-nav="kisanmitra" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">KisanMitra</a>
       <a href="/air-quality" data-nav="air-quality" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Air Quality</a>
       <a href="/alert" data-nav="alert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Alert</a>
       </nav>
@@ -747,7 +747,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           '/earth': 'earth.html',
           '/deepspace': 'deep-space.html',
           '/asteroids': 'asteroids.html',
-          '/atmosphere': 'atmosphere.html',
+          '/kisanmitra': 'kisanmitra.html',
+          '/atmosphere': 'kisanmitra.html',
           '/air-quality': 'air-quality.html',
           '/alert': 'alert.html',
           '/sentinel': 'sentinel.html',
@@ -760,9 +761,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           'deep-space.html': '/deepspace',
           'deepspace.html': '/deepspace',
           'asteroids.html': '/asteroids',
-          'atmosphere.html': '/atmosphere',
-          'weather.html': '/atmosphere',
-          '/weather': '/atmosphere',
+          'kisanmitra.html': '/kisanmitra',
+          'atmosphere.html': '/kisanmitra',
+          'weather.html': '/kisanmitra',
+          '/atmosphere': '/kisanmitra',
+          '/weather': '/kisanmitra',
           'air-quality.html': '/air-quality',
           'airquality.html': '/air-quality',
           '/airquality': '/air-quality',
@@ -8410,7 +8413,7 @@ function animate() {
         <span>•</span>
         <a href="/asteroids" class="hover:text-cyan-300 transition">Asteroids</a>
         <span>•</span>
-        <a href="/atmosphere" class="hover:text-cyan-300 transition">Atmosphere &amp; Weather</a>
+        <a href="/kisanmitra" class="hover:text-cyan-300 transition">KisanMitra &amp; Weather</a>
         <span>•</span>
         <a href="/air-quality" class="hover:text-cyan-300 transition">Air Quality (CPCB)</a>
         <span>•</span>

@@ -29,9 +29,9 @@
   },
   {
     "sourcePage": "Home",
-    "element": "Atmosphere & Weather card",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "KisanMitra & Weather card",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -51,8 +51,8 @@
   {
     "sourcePage": "Home",
     "element": "Hero Kisan District Weather & Radar button",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -106,9 +106,9 @@
   },
   {
     "sourcePage": "index.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -162,9 +162,9 @@
   },
   {
     "sourcePage": "solar-system.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -218,9 +218,9 @@
   },
   {
     "sourcePage": "earth.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -274,9 +274,9 @@
   },
   {
     "sourcePage": "deep-space.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -330,9 +330,9 @@
   },
   {
     "sourcePage": "asteroids.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -350,56 +350,56 @@
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Home",
     "expected": "/",
     "actual": "/",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Solar System",
     "expected": "/solar-system",
     "actual": "/solar-system",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Earth",
     "expected": "/earth",
     "actual": "/earth",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Deep Space",
     "expected": "/deepspace",
     "actual": "/deepspace",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Asteroids",
     "expected": "/asteroids",
     "actual": "/asteroids",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "sourcePage": "kisanmitra.html",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Air Quality",
     "expected": "/air-quality",
     "actual": "/air-quality",
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Nav Ribbon -> Alert",
     "expected": "/alert",
     "actual": "/alert",
@@ -442,9 +442,9 @@
   },
   {
     "sourcePage": "air-quality.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -498,9 +498,9 @@
   },
   {
     "sourcePage": "alert.html",
-    "element": "Nav Ribbon -> Atmosphere",
-    "expected": "/atmosphere",
-    "actual": "/atmosphere",
+    "element": "Nav Ribbon -> KisanMitra",
+    "expected": "/kisanmitra",
+    "actual": "/kisanmitra",
     "status": "PASS"
   },
   {
@@ -554,9 +554,9 @@
   },
   {
     "sourcePage": "Express Server",
-    "element": "Direct GET /atmosphere",
-    "expected": "200 OK (atmosphere.html)",
-    "actual": "200 (atmosphere.html)",
+    "element": "Direct GET /kisanmitra",
+    "expected": "200 OK (kisanmitra.html)",
+    "actual": "200 (kisanmitra.html)",
     "status": "PASS"
   },
   {
@@ -582,16 +582,44 @@
   },
   {
     "sourcePage": "Express Redirects",
+    "element": "Redirect /atmosphere",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /atmosphere/",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /atmosphere.html",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
     "element": "Redirect /weather",
-    "expected": "301 -> /atmosphere",
-    "actual": "301 -> /atmosphere",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
     "status": "PASS"
   },
   {
     "sourcePage": "Express Redirects",
     "element": "Redirect /weather.html",
-    "expected": "301 -> /atmosphere",
-    "actual": "301 -> /atmosphere",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "Express Redirects",
+    "element": "Redirect /kisanmitra.html",
+    "expected": "301 -> /kisanmitra",
+    "actual": "301 -> /kisanmitra",
     "status": "PASS"
   },
   {
@@ -785,6 +813,13 @@
   },
   {
     "sourcePage": "J.A.R.V.I.S.",
+    "element": "Command \"Open kisanmitra\"",
+    "expected": "Valid Handler & Target",
+    "actual": "PASS",
+    "status": "PASS"
+  },
+  {
+    "sourcePage": "J.A.R.V.I.S.",
     "element": "Command \"Open atmosphere\"",
     "expected": "Valid Handler & Target",
     "actual": "PASS",
@@ -847,7 +882,7 @@
     "status": "PASS"
   },
   {
-    "sourcePage": "atmosphere.html",
+    "sourcePage": "kisanmitra.html",
     "element": "Universal a[href] remapper",
     "expected": "Remaps all anchors on file: and web",
     "actual": "Active",

@@ -112,7 +112,7 @@ async function run() {
     'https://orbitaleye.in/earth',
     'https://orbitaleye.in/deepspace',
     'https://orbitaleye.in/asteroids',
-    'https://orbitaleye.in/atmosphere',
+    'https://orbitaleye.in/kisanmitra',
     'https://orbitaleye.in/air-quality',
     'https://orbitaleye.in/alert'
   ];
@@ -140,7 +140,7 @@ async function run() {
     { name: 'Earth', path: 'earth' },
     { name: 'Deep Space', path: 'deepspace' },
     { name: 'Asteroids', path: 'asteroids' },
-    { name: 'Atmosphere', path: 'atmosphere' },
+    { name: 'KisanMitra', path: 'kisanmitra' },
     { name: 'Air Quality', path: 'air-quality' },
     { name: 'Alert', path: 'alert' }
   ];

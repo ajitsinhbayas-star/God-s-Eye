@@ -12,7 +12,7 @@ const canonicalPages = [
   { file: 'public/earth.html', route: '/earth', canonical: 'https://orbitaleye.in/earth' },
   { file: 'public/deep-space.html', route: '/deepspace', canonical: 'https://orbitaleye.in/deepspace' },
   { file: 'public/asteroids.html', route: '/asteroids', canonical: 'https://orbitaleye.in/asteroids' },
-  { file: 'public/atmosphere.html', route: '/atmosphere', canonical: 'https://orbitaleye.in/atmosphere' },
+  { file: 'public/kisanmitra.html', route: '/kisanmitra', canonical: 'https://orbitaleye.in/kisanmitra' },
   { file: 'public/air-quality.html', route: '/air-quality', canonical: 'https://orbitaleye.in/air-quality' },
   { file: 'public/alert.html', route: '/alert', canonical: 'https://orbitaleye.in/alert' }
 ];
@@ -121,7 +121,7 @@ check('public/robots.txt allows all canonical viewports',
   staticRobots.includes('Allow: /earth') && 
   staticRobots.includes('Allow: /deepspace') && 
   staticRobots.includes('Allow: /asteroids') && 
-  staticRobots.includes('Allow: /atmosphere') && 
+  staticRobots.includes('Allow: /kisanmitra') && 
   staticRobots.includes('Allow: /air-quality') && 
   staticRobots.includes('Allow: /alert')
 );

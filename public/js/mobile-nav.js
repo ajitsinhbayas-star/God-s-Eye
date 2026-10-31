@@ -19,7 +19,7 @@
     else if (pathname.includes('earth') || href.includes('earth')) activeKey = 'earth';
     else if (pathname.includes('deepspace') || href.includes('deepspace') || pathname.includes('deep-space') || href.includes('deep-space')) activeKey = 'deepspace';
     else if (pathname.includes('asteroid') || href.includes('asteroid')) activeKey = 'asteroids';
-    else if (pathname.includes('atmosphere') || href.includes('atmosphere') || pathname.includes('weather') || href.includes('weather')) activeKey = 'atmosphere';
+    else if (pathname.includes('kisanmitra') || href.includes('kisanmitra') || pathname.includes('atmosphere') || href.includes('atmosphere') || pathname.includes('weather') || href.includes('weather')) activeKey = 'kisanmitra';
     else if (pathname.includes('air-quality') || href.includes('air-quality') || pathname.includes('airquality') || href.includes('airquality')) activeKey = 'airquality';
     else if (pathname.includes('alert') || href.includes('alert') || pathname.includes('orbitalert') || href.includes('orbitalert')) activeKey = 'alert';
     else if (pathname.includes('sentinel') || href.includes('sentinel')) activeKey = 'sentinel';
@@ -108,10 +108,10 @@
             </div>
           </a>
 
-          <a href="${link('/atmosphere', 'atmosphere.html')}" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border ${activeKey === 'atmosphere' ? 'border-cyan-400 text-cyan-300' : 'border-slate-800 text-slate-200'} flex items-center gap-2.5 transition">
-            <span class="text-lg">🌦️</span>
+          <a href="${link('/kisanmitra', 'kisanmitra.html')}" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border ${activeKey === 'kisanmitra' ? 'border-cyan-400 text-cyan-300' : 'border-slate-800 text-slate-200'} flex items-center gap-2.5 transition">
+            <span class="text-lg">🌾</span>
             <div>
-              <div class="font-bold">Atmosphere</div>
+              <div class="font-bold">KisanMitra</div>
               <div class="text-[9px] text-slate-400 font-sans">Kisan Weather & Radar</div>
             </div>
           </a>

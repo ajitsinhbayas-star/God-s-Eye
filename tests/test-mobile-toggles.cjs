@@ -58,7 +58,7 @@ try {
   recordTest('Home', 'Mobile Nav Menu', 'Toggle function manages open/close and ARIA states', hasToggleFn && handlesAria, 'toggleMobileNavMenu()');
 
   // 1.4 Feature navigation rows exist
-  const featurePages = ['solar-system', 'earth', 'deepspace', 'asteroids', 'atmosphere', 'air-quality', 'alert'];
+  const featurePages = ['solar-system', 'earth', 'deepspace', 'asteroids', 'kisanmitra', 'air-quality', 'alert'];
   const allFeaturesPresent = featurePages.every(p => html.includes(`href="/${p}"`));
   recordTest('Home', 'Feature Navigation Rows', 'All 7 public destination feature cards linked & visible', allFeaturesPresent, featurePages.join(', '));
 } catch (err) {
@@ -107,10 +107,10 @@ threeDPages.forEach(p => {
 });
 
 // -------------------------------------------------------------
-// 3. ATMOSPHERE (public/atmosphere.html & public/js/farmer-district-map.js)
+// 3. KISANMITRA (public/kisanmitra.html & public/js/farmer-district-map.js)
 // -------------------------------------------------------------
 try {
-  const atmosHtml = fs.readFileSync(path.join(rootDir, 'public', 'atmosphere.html'), 'utf8');
+  const atmosHtml = fs.readFileSync(path.join(rootDir, 'public', 'kisanmitra.html'), 'utf8');
   const farmerJs = fs.readFileSync(path.join(rootDir, 'public', 'js', 'farmer-district-map.js'), 'utf8');
 
   // 3.1 District Weather Panel starts hidden on mobile

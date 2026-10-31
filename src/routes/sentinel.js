@@ -246,7 +246,7 @@ router.get('/pipeline-status', auth.requireAdminAuth, (req, res) => {
         latencyMs: 24
       },
       atmosphereWeather: {
-        page: 'atmosphere.html',
+        page: 'kisanmitra.html',
         defaultMode: 'Kisan District Map & Natural 3D Viewport',
         radarIngestion: 'RainViewer API v2 Doppler Mosaic (3m cadence)',
         forecastGrids: 'Open-Meteo High-Resolution NWP Grid',

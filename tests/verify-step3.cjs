@@ -16,7 +16,7 @@ const REQUIRED_PAGES = [
   'earth.html',
   'deep-space.html',
   'asteroids.html',
-  'atmosphere.html',
+  'kisanmitra.html',
   'air-quality.html',
   'alert.html'
 ];
@@ -101,7 +101,7 @@ async function runStep3Checks() {
     assert(html.includes('data-nav="earth"'), `${pageName} nav ribbon includes Earth`);
     assert(html.includes('data-nav="deepspace"'), `${pageName} nav ribbon includes Deep Space`);
     assert(html.includes('data-nav="asteroids"'), `${pageName} nav ribbon includes Asteroids`);
-    assert(html.includes('data-nav="atmosphere"'), `${pageName} nav ribbon includes Atmosphere`);
+    assert(html.includes('data-nav="kisanmitra"'), `${pageName} nav ribbon includes KisanMitra`);
     assert(html.includes('data-nav="air-quality"'), `${pageName} nav ribbon includes Air Quality`);
     assert(html.includes('data-nav="alert"'), `${pageName} nav ribbon includes Alert`);
 

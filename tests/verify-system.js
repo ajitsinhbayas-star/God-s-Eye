@@ -101,8 +101,8 @@ async function runLiveServerDiagnostics() {
   const home = await testEndpoint('Landing Page', '/');
   assert(home.ok && home.status === 200, 'GET / returned 200 OK');
 
-  const weatherPage = await testEndpoint('Atmosphere Page', '/weather');
-  assert(weatherPage.ok && weatherPage.status === 200, 'GET /weather returned 200 OK');
+  const weatherPage = await testEndpoint('KisanMitra Page', '/kisanmitra');
+  assert(weatherPage.ok && weatherPage.status === 200, 'GET /kisanmitra returned 200 OK');
 
   // 2. Real Orbital Passes Endpoint
   const passesRes = await testEndpoint('Real Pass Predictions', '/api/passes?lat=18.5204&lon=73.8567&hours=48');
@@ -460,7 +460,7 @@ async function runLiveServerDiagnostics() {
     { name: 'Earth & Satellites', path: '/earth', expectedKeyword: 'Satellite Tracking', canonicalSuffix: '/earth' },
     { name: 'Deep Space', path: '/deepspace', expectedKeyword: 'Deep Space', canonicalSuffix: '/deepspace' },
     { name: 'Asteroids', path: '/asteroids', expectedKeyword: 'Asteroids', canonicalSuffix: '/asteroids' },
-    { name: 'Atmosphere & Weather', path: '/atmosphere', expectedKeyword: 'Atmosphere', canonicalSuffix: '/atmosphere' },
+    { name: 'KisanMitra & Weather', path: '/kisanmitra', expectedKeyword: 'KisanMitra', canonicalSuffix: '/kisanmitra' },
     { name: 'Air Quality Observatory', path: '/air-quality', expectedKeyword: 'Air Quality', canonicalSuffix: '/air-quality' },
     { name: 'Alert', path: '/alert', expectedKeyword: 'Alert', canonicalSuffix: '/alert' }
   ];
@@ -480,8 +480,9 @@ async function runLiveServerDiagnostics() {
 
   // Backward-compatible 301 Permanent Redirects Verification
   const legacyRedirects = [
-    { from: '/weather', to: '/atmosphere' },
-    { from: '/weather.html', to: '/atmosphere' },
+    { from: '/atmosphere', to: '/kisanmitra' },
+    { from: '/weather', to: '/kisanmitra' },
+    { from: '/weather.html', to: '/kisanmitra' },
     { from: '/orbitalert', to: '/alert' },
     { from: '/orbitalert.html', to: '/alert' },
     { from: '/airquality', to: '/air-quality' },
@@ -513,7 +514,7 @@ async function runLiveServerDiagnostics() {
   const sitemapRes = await testEndpoint('Dynamic Sitemap.xml', '/sitemap.xml');
   assert(sitemapRes.status === 200, 'sitemap.xml returns HTTP 200 OK');
   const sitemapXml = typeof sitemapRes.body === 'string' ? sitemapRes.body : JSON.stringify(sitemapRes.body);
-  assert(sitemapXml.includes('<urlset') && sitemapXml.includes('/earth') && sitemapXml.includes('/atmosphere') && sitemapXml.includes('/solar-system') && sitemapXml.includes('/air-quality'), 'sitemap.xml contains valid XML URLset with all 8 public pages');
+  assert(sitemapXml.includes('<urlset') && sitemapXml.includes('/earth') && sitemapXml.includes('/kisanmitra') && sitemapXml.includes('/solar-system') && sitemapXml.includes('/air-quality'), 'sitemap.xml contains valid XML URLset with all 8 public pages');
 
   // PHASE 7: AIR QUALITY OBSERVATORY & CPCB NAQI VERIFICATION
   console.log('\n--- Phase 7: Air Quality Observatory & CPCB NAQI Verification ---');

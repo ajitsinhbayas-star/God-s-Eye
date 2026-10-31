@@ -4,7 +4,7 @@ Allow: /solar-system
 Allow: /earth
 Allow: /deepspace
 Allow: /asteroids
-Allow: /atmosphere
+Allow: /kisanmitra
 Allow: /air-quality
 Allow: /alert
 Allow: /icons/

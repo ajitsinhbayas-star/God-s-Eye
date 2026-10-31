@@ -39,7 +39,7 @@
         <a href="/earth" data-nav="earth" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Earth</a>
         <a href="/deepspace" data-nav="deepspace" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Deep Space</a>
         <a href="/asteroids" data-nav="asteroids" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Asteroids</a>
-        <a href="/atmosphere" data-nav="atmosphere" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Atmosphere</a>
+        <a href="/kisanmitra" data-nav="kisanmitra" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">KisanMitra</a>
         <a href="/air-quality" data-nav="air-quality" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Air Quality</a>
         <a href="/alert" data-nav="alert" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition whitespace-nowrap text-xs">Alert</a>
       </nav>
@@ -69,7 +69,7 @@
           <a href="/earth" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-700 transition">🌍 Earth LEO</a>
           <a href="/deepspace" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">🌌 Deep Space</a>
           <a href="/asteroids" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-rose-300 border border-slate-700 transition">☄️ Asteroids</a>
-          <a href="/atmosphere" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">🌀 Atmosphere</a>
+          <a href="/kisanmitra" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">🌾 KisanMitra</a>
           <a href="/air-quality" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 border border-slate-700 transition">💨 Air Quality</a>
           <a href="/alert" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-sky-300 border border-slate-700 transition">🔔 OrbitAlert</a>
         </div>
@@ -95,7 +95,7 @@
   <script>
     (function(){
       if(window.location.protocol==='file:'){
-        var m={'/':'index.html','/solar-system':'solar-system.html','/earth':'earth.html','/deepspace':'deep-space.html','/asteroids':'asteroids.html','/atmosphere':'atmosphere.html','/air-quality':'air-quality.html','/alert':'alert.html'};
+        var m={'/':'index.html','/solar-system':'solar-system.html','/earth':'earth.html','/deepspace':'deep-space.html','/asteroids':'asteroids.html','/kisanmitra':'kisanmitra.html','/atmosphere':'kisanmitra.html','/air-quality':'air-quality.html','/alert':'alert.html'};
         document.querySelectorAll('a[href]').forEach(function(a){
           var h=a.getAttribute('href');if(m[h])a.setAttribute('href',m[h]);
         });

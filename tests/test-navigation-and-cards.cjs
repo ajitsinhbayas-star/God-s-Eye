@@ -58,7 +58,7 @@ async function runTestSuite() {
     { name: 'Earth & Satellite Tracking card', expected: '/earth', pattern: /<a\s+[^>]*?href=["'](\/earth)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Earth &amp; Satellite Tracking/ },
     { name: 'Deep Space Explorer card', expected: '/deepspace', pattern: /<a\s+[^>]*?href=["'](\/deepspace)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Deep Space Explorer/ },
     { name: 'Asteroid Tracker card', expected: '/asteroids', pattern: /<a\s+[^>]*?href=["'](\/asteroids)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Asteroid Tracker/ },
-    { name: 'Atmosphere & Weather card', expected: '/atmosphere', pattern: /<a\s+[^>]*?href=["'](\/atmosphere)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Atmosphere &amp; Weather/ },
+    { name: 'KisanMitra & Weather card', expected: '/kisanmitra', pattern: /<a\s+[^>]*?href=["'](\/kisanmitra)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?KisanMitra &amp; Weather/ },
     { name: 'Air Quality Observatory card', expected: '/air-quality', pattern: /<a\s+[^>]*?href=["'](\/air-quality)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Air Quality Observatory/ },
     { name: 'Alert card', expected: '/alert', pattern: /<a\s+[^>]*?href=["'](\/alert)["'][^>]*?class=["'][^"']*card-glass[^"']*["'][\s\S]*?Alert/ }
   ];
@@ -71,7 +71,7 @@ async function runTestSuite() {
 
   // Hero Action Buttons
   const heroButtons = [
-    { name: 'Hero Kisan District Weather & Radar button', expected: '/atmosphere', match: indexHtml.includes('href="/atmosphere" class="px-5 py-2.5 rounded-xl bg-cyan-500') },
+    { name: 'Hero Kisan District Weather & Radar button', expected: '/kisanmitra', match: indexHtml.includes('href="/kisanmitra" class="px-5 py-2.5 rounded-xl bg-cyan-500') },
     { name: 'Hero Launch 3D Solar System button', expected: '/solar-system', match: indexHtml.includes('href="/solar-system" class="px-5 py-2.5 rounded-xl bg-slate-900') },
     { name: 'Hero CPCB Air Quality Map button', expected: '/air-quality', match: indexHtml.includes('href="/air-quality" class="px-5 py-2.5 rounded-xl bg-slate-900') }
   ];
@@ -83,7 +83,7 @@ async function runTestSuite() {
   console.log('\n--- 2. Global Navigation Ribbon Destinations ---');
   const allPages = [
     'index.html', 'solar-system.html', 'earth.html', 'deep-space.html',
-    'asteroids.html', 'atmosphere.html', 'air-quality.html', 'alert.html'
+    'asteroids.html', 'kisanmitra.html', 'air-quality.html', 'alert.html'
   ];
 
   const requiredNavItems = [
@@ -92,7 +92,7 @@ async function runTestSuite() {
     { label: 'Earth', path: '/earth' },
     { label: 'Deep Space', path: '/deepspace' },
     { label: 'Asteroids', path: '/asteroids' },
-    { label: 'Atmosphere', path: '/atmosphere' },
+    { label: 'KisanMitra', path: '/kisanmitra' },
     { label: 'Air Quality', path: '/air-quality' },
     { label: 'Alert', path: '/alert' }
   ];
@@ -113,7 +113,7 @@ async function runTestSuite() {
     { url: '/earth', fileKeyword: 'SGP4', expectedFile: 'earth.html' },
     { url: '/deepspace', fileKeyword: 'Cosmic Microwave Background', expectedFile: 'deep-space.html' },
     { url: '/asteroids', fileKeyword: 'Planetary Defense', expectedFile: 'asteroids.html' },
-    { url: '/atmosphere', fileKeyword: 'Kisan District Map', expectedFile: 'atmosphere.html' },
+    { url: '/kisanmitra', fileKeyword: 'Kisan District Map', expectedFile: 'kisanmitra.html' },
     { url: '/air-quality', fileKeyword: 'CPCB NAQI', expectedFile: 'air-quality.html' },
     { url: '/alert', fileKeyword: 'TOPOCENTRIC RADAR', expectedFile: 'alert.html' }
   ];
@@ -133,8 +133,12 @@ async function runTestSuite() {
   console.log('\n--- 4. Backward-Compatible 301 Redirects ---');
   const redirectsToTest = [
     { url: '/index.html', expected: '/' },
-    { url: '/weather', expected: '/atmosphere' },
-    { url: '/weather.html', expected: '/atmosphere' },
+    { url: '/atmosphere', expected: '/kisanmitra' },
+    { url: '/atmosphere/', expected: '/kisanmitra' },
+    { url: '/atmosphere.html', expected: '/kisanmitra' },
+    { url: '/weather', expected: '/kisanmitra' },
+    { url: '/weather.html', expected: '/kisanmitra' },
+    { url: '/kisanmitra.html', expected: '/kisanmitra' },
     { url: '/orbitalert', expected: '/alert' },
     { url: '/orbitalert.html', expected: '/alert' },
     { url: '/orbital-alerts', expected: '/alert' },
@@ -204,6 +208,7 @@ async function runTestSuite() {
     { cmd: 'Open satellite tracking', matches: jarvisCode.includes("NAV_EARTH") },
     { cmd: 'Open deep space', matches: jarvisCode.includes("NAV_DEEPSPACE") },
     { cmd: 'Open asteroids', matches: jarvisCode.includes("NAV_ASTEROIDS") },
+    { cmd: 'Open kisanmitra', matches: jarvisCode.includes("NAV_KISANMITRA") },
     { cmd: 'Open atmosphere', matches: jarvisCode.includes("NAV_ATMOSPHERE") },
     { cmd: 'Open air quality', matches: jarvisCode.includes("NAV_AIRQUALITY") },
     { cmd: 'Open alerts', matches: jarvisCode.includes("NAV_ALERT") },
