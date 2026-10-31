@@ -6964,21 +6964,48 @@ function animate() {
           return;
         }
 
+        const fallbackStories = [
+          {
+            id: 'artemis_ii',
+            title: 'Artemis II Mission',
+            subtitle: 'Lunar Free-Return Trajectory',
+            slides: [
+              { title: 'Earth Departure', desc: 'Orion spacecraft orbital insertion.', target: 'earth', dist: 4.8 },
+              { title: 'Lunar Flyby', desc: 'Passage around the lunar farside before returning to Earth.', target: 'moon', dist: 2.2 }
+            ]
+          },
+          {
+            id: 'voyager_grand_tour',
+            title: 'Voyager Grand Tour',
+            subtitle: 'Outer Planets Exploration',
+            slides: [
+              { title: 'Jupiter Encounter', desc: 'Gravitational slingshot past Jupiter in 1979.', target: 'jupiter', dist: 6.5 },
+              { title: 'Saturn Flyby', desc: 'Close examination of the rings and Titan.', target: 'saturn', dist: 5.8 }
+            ]
+          }
+        ];
+
         try {
           const res = await fetch('/api/v1/catalog');
-          if (!res.ok) return;
-          const data = await res.json();
-          storiesList = data.featured_stories || [];
-          const grid = document.getElementById('stories-cards-grid');
-          if (!grid) return;
-          grid.innerHTML = storiesList.map(st => `
-            <div onclick="window.NASAEyesApp.startStoryTour('${st.id}')" class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-amber-400 cursor-pointer transition space-y-1">
-              <div class="text-xs font-bold text-white">${st.title}</div>
-              <div class="text-[10px] text-amber-300">${st.subtitle}</div>
-              <div class="text-[10px] text-cyan-400 pt-1 font-bold">Launch Interactive Tour →</div>
-            </div>
-          `).join('');
-        } catch {}
+          if (res.ok) {
+            const data = await res.json();
+            storiesList = (data.featured_stories && data.featured_stories.length > 0) ? data.featured_stories : fallbackStories;
+          } else {
+            storiesList = fallbackStories;
+          }
+        } catch {
+          storiesList = fallbackStories;
+        }
+
+        const grid = document.getElementById('stories-cards-grid');
+        if (!grid) return;
+        grid.innerHTML = storiesList.map(st => `
+          <div onclick="window.NASAEyesApp.startStoryTour('${st.id}')" class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-amber-400 cursor-pointer transition space-y-1">
+            <div class="text-xs font-bold text-white">${st.title}</div>
+            <div class="text-[10px] text-amber-300">${st.subtitle}</div>
+            <div class="text-[10px] text-cyan-400 pt-1 font-bold">Launch Interactive Tour →</div>
+          </div>
+        `).join('');
       }
 
       function startStoryTour(storyId) {
