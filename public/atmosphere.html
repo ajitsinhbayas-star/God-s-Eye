@@ -214,6 +214,16 @@
       color: #ffffff !important;
     }
 
+    @media (max-width: 767px) {
+      .kisan-popup {
+        margin-bottom: 6px !important;
+      }
+      .kisan-popup .leaflet-popup-content-wrapper {
+        max-height: calc(100vh - 310px) !important;
+        overflow-y: auto !important;
+      }
+    }
+
     /* Dynamic Kisan Map District Labels */
     .farmer-district-map-label {
       display: flex !important;

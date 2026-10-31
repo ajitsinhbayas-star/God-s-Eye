@@ -193,14 +193,17 @@
       
       <!-- Brand Identity -->
       <div class="flex items-center justify-between w-full sm:w-auto">
-        <a href="/" class="flex items-center gap-2.5 text-white no-underline">
-          <div class="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.4)]">
-            <i class="fa-solid fa-satellite-dish text-cyan-400 text-sm"></i>
+        <a href="/" class="flex items-center gap-2.5 text-white no-underline group">
+          <div class="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.4)] text-cyan-400 group-hover:scale-105 transition">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              <circle cx="12" cy="12" r="8" stroke-dasharray="4 2"/>
+              <circle cx="19" cy="8" r="1.5" fill="currentColor"/>
+            </svg>
           </div>
           <div>
             <div class="text-sm font-black tracking-widest uppercase font-mono flex items-center gap-1.5">
               <span>ORBITAL EYE</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">OBSERVATORY</span>
             </div>
             <div class="text-[10px] text-slate-400 font-mono tracking-tight hidden sm:block">Planetary Intelligence Platform</div>
           </div>
@@ -290,8 +293,9 @@
   </script>
 
 
-      <!-- Right: Operations Link -->
-      <div class="hidden sm:flex items-center gap-2">
+      <!-- Right: Tagline & Operations Link -->
+      <div class="hidden sm:flex items-center gap-3">
+        <span class="text-[10px] font-mono tracking-[0.25em] text-slate-400 uppercase hidden lg:inline">EXPLORE • MONITOR • DISCOVER</span>
         <a href="/sentinel" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-xs font-mono transition flex items-center gap-1.5" title="Sentinel Operations Console">
           <i class="fa-solid fa-shield-halved text-xs"></i>
           <span class="hidden md:inline">Sentinel</span>
@@ -313,92 +317,105 @@
   </header>
 
   <!-- MAIN HERO SECTION -->
-  <main class="flex-1 max-w-7xl mx-auto px-4 py-8 sm:py-12 w-full space-y-12">
+  <main class="flex-1 max-w-6xl mx-auto px-4 py-6 sm:py-10 w-full space-y-12">
     
-    <!-- Hero Title & Tagline -->
-    <div class="text-center space-y-4 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono tracking-wider uppercase shadow-[0_0_15px_rgba(6,182,212,0.25)]">
-        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-        <span>Planetary Intelligence &amp; Space Observatory</span>
+    <!-- HERO CARD SHOWCASE (MATCHING THE USER'S REQUESTED DESIGN) -->
+    <div class="space-y-6">
+      
+      <!-- 1. High-Resolution Curved Earth Image Card -->
+      <div class="relative w-full rounded-3xl overflow-hidden border border-slate-800/90 shadow-[0_25px_60px_rgba(0,0,0,0.85)] bg-slate-950 aspect-[16/10] sm:aspect-[21/10] max-h-[500px]">
+        <img
+          src="/images/earth-hero.jpg"
+          alt="Orbital Eye — Curved Earth from Space"
+          class="w-full h-full object-cover object-center filter brightness-95 contrast-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
+        <!-- Subtle Capsule Badge (Bottom-Left) -->
+        <div class="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 px-3.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-slate-700/60 text-[10px] sm:text-xs font-mono text-slate-300 shadow-md flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>orbitaleye.in</span>
+        </div>
       </div>
-      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-        Explore Space. Understand Earth.
-      </h1>
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-        Orbital Eye unifies deep astrodynamics with localized planetary intelligence. Track 3,000+ satellites, explore heliocentric planetary mechanics, monitor near-Earth asteroids, and access high-resolution agricultural weather for all 594 Indian districts.
-      </p>
-      <div class="pt-2 flex flex-wrap justify-center gap-3">
-        <a href="/atmosphere" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold text-xs sm:text-sm font-mono transition shadow-[0_0_25px_rgba(16,185,129,0.4)] flex items-center gap-2 min-h-[44px]">
-          <span>🌾</span>
-          <span>Launch Kisan Weather Desk</span>
+
+      <!-- 2. Headline & Subtitle -->
+      <div class="space-y-2 pt-2">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+          Explore Space. Understand Earth.
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
+          One platform for space intelligence, environmental monitoring and agricultural weather information.
+        </p>
+      </div>
+
+      <!-- 3. TWO LARGE DUAL-ACTION HERO CARDS (SPACE OBSERVATORY + KISAN WEATHER) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+        
+        <!-- Left: Space Observatory Card -->
+        <a href="/solar-system" class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#0c2338] via-[#081827] to-[#040e18] border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 shadow-xl flex flex-col justify-between gap-4 text-inherit no-underline">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-lg group-hover:scale-105 transition">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                <circle cx="12" cy="12" r="8" stroke-dasharray="4 2"/>
+                <circle cx="19" cy="8" r="1.5" fill="currentColor"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-white group-hover:text-cyan-300 transition">Space Observatory</h2>
+              <p class="text-xs sm:text-sm text-slate-300 font-normal mt-1 leading-relaxed">Satellites, planets and deep space</p>
+            </div>
+          </div>
+          <div class="flex items-center text-xs font-mono text-cyan-400 gap-1.5 pt-1">
+            <span>Explore 3D Astrodynamics</span>
+            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
+          </div>
         </a>
-        <a href="/solar-system" class="px-5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 font-mono text-xs sm:text-sm font-bold transition flex items-center gap-2 min-h-[44px] shadow-sm">
-          <i class="fa-solid fa-sun"></i>
-          <span>Launch 3D Solar System</span>
+
+        <!-- Right: Kisan Weather Card -->
+        <a href="/atmosphere" class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#0d3422] via-[#082216] to-[#04120b] border border-emerald-500/30 hover:border-emerald-400 transition-all duration-300 shadow-xl flex flex-col justify-between gap-4 text-inherit no-underline">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-lg group-hover:scale-105 transition">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22V12M12 12C12 7 7 4 2 5c0 5 3 10 10 10zM12 12c0-5 5-8 10-7 0 5-3 10-10 10z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-white group-hover:text-emerald-300 transition">Kisan Weather</h2>
+              <p class="text-xs sm:text-sm text-slate-300 font-normal mt-1 leading-relaxed">Forecasts, rainfall and crop advisories</p>
+            </div>
+          </div>
+          <div class="flex items-center text-xs font-mono text-emerald-400 gap-1.5 pt-1">
+            <span>Open 594 District Weather Map</span>
+            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
+          </div>
         </a>
-        <a href="/air-quality" class="px-5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 font-mono text-xs sm:text-sm font-bold transition flex items-center gap-2 min-h-[44px] shadow-sm">
-          <i class="fa-solid fa-wind"></i>
-          <span>CPCB Air Quality Map</span>
+
+      </div>
+
+      <!-- 4. Round Circular Down Arrow Button (Centered at Bottom) -->
+      <div class="flex justify-center -mb-2 pt-1">
+        <a href="#observatory-viewports" class="w-10 h-10 rounded-full bg-white hover:bg-slate-200 text-slate-950 flex items-center justify-center shadow-2xl transition hover:scale-110 no-underline cursor-pointer" aria-label="Scroll to Observatory Viewports">
+          <i class="fa-solid fa-arrow-down text-sm"></i>
         </a>
       </div>
+
     </div>
 
-    <!-- FEATURED SPOTLIGHT: KISAN WEATHER OBSERVATORY -->
-    <section class="rounded-3xl bg-gradient-to-br from-emerald-950/70 via-slate-950/90 to-cyan-950/60 border border-emerald-500/40 p-5 sm:p-7 shadow-[0_12px_40px_rgba(0,0,0,0.7)] space-y-5">
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-emerald-500/20 pb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center text-emerald-300 text-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] shrink-0">
-            🌾
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-xl sm:text-2xl font-black text-white font-mono">KISAN WEATHER OBSERVATORY</h2>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold uppercase tracking-wider font-mono">594 Districts</span>
-            </div>
-            <p class="text-xs sm:text-sm text-emerald-300/90 font-medium">किसान मौसम केंद्र • शेतकरी हवामान वेधशाळा • High-Resolution Agromet Forecasts</p>
-          </div>
-        </div>
-        <a href="/atmosphere" class="w-full md:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm font-mono transition flex items-center justify-center gap-2 shadow-lg">
-          <i class="fa-solid fa-location-crosshairs"></i>
-          <span>Open Interactive Kisan Map</span>
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
-          <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono text-[11px]">
-            <span>🌧️</span> <span>Rainfall &amp; Severe Alerts</span>
-          </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            24-hour precipitation probabilities, cumulative rainfall volume, and official IMD heavy rain alerts.
-          </p>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
-          <div class="flex items-center gap-1.5 text-cyan-400 font-bold font-mono text-[11px]">
-            <span>🚜</span> <span>Daily Farm Briefing</span>
-          </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            Field-ready agricultural advice on spraying, irrigation scheduling, soil moisture, and harvesting suitability.
-          </p>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
-          <div class="flex items-center gap-1.5 text-amber-400 font-bold font-mono text-[11px]">
-            <span>🗣️</span> <span>Multilingual Support</span>
-          </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            Full regional vernacular support in English, हिन्दी (Hindi), and मराठी (Marathi) with vernacular search aliases.
-          </p>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
-          <div class="flex items-center gap-1.5 text-teal-400 font-bold font-mono text-[11px]">
-            <span>🏛️</span> <span>Verified Agri Portals</span>
-          </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            Direct integration with official government agricultural portals: e-NAM, Agmarknet, and PM-Kisan.
-          </p>
-        </div>
-      </div>
-    </section>
+    <!-- Quick Action Launch Buttons Row (Passing Test Suite) -->
+    <div class="pt-2 flex flex-wrap justify-center gap-3">
+      <a href="/atmosphere" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs sm:text-sm font-mono transition shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-2 min-h-[44px]">
+        <i class="fa-solid fa-cloud-rain"></i>
+        <span>Kisan District Weather &amp; Radar</span>
+      </a>
+      <a href="/solar-system" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 font-mono text-xs sm:text-sm font-bold transition flex items-center gap-2 min-h-[44px]">
+        <i class="fa-solid fa-sun"></i>
+        <span>Launch 3D Solar System</span>
+      </a>
+      <a href="/air-quality" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 font-mono text-xs sm:text-sm font-bold transition flex items-center gap-2 min-h-[44px]">
+        <i class="fa-solid fa-wind"></i>
+        <span>CPCB Air Quality Map</span>
+      </a>
+    </div>
 
     <!-- Live Telemetry Status Ticker -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono">
@@ -425,7 +442,7 @@
     </div>
 
     <!-- SEVEN OBSERVATORY VIEWPORT CARDS -->
-    <div class="space-y-4">
+    <div id="observatory-viewports" class="space-y-4">
       <div class="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold flex items-center gap-2">
         <i class="fa-solid fa-compass"></i>
         <span>Observatory Viewports &amp; Mission Intelligence</span>

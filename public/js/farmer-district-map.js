@@ -532,23 +532,16 @@
     }
     const targetZoom = forceZoom || Math.max(map.getZoom(), 8);
     const headerEl = document.querySelector('header');
-    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 250;
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
     const mobileNav = document.getElementById('mobile-bottom-nav') || document.getElementById('orbital-mobile-nav');
-    const bottomPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top) : 70;
+    const bottomNavTop = mobileNav ? Math.floor(mobileNav.getBoundingClientRect().top) : (window.innerHeight - 70);
 
-    // Compact mobile popup is ~220px tall with bottom tip pointing down at latlng.
-    // To ensure top of popup sits at least 14px below the search header:
-    // targetScreenY must be >= headerBottom + 220 + 14 = headerBottom + 234px
-    const estPopupHeight = 220;
-    const minSafeY = headerBottom + estPopupHeight + 14;
-    const maxSafeY = window.innerHeight - bottomPad - 20;
+    // Available vertical safe window between the floating search header and bottom ribbon
+    const availableHeight = Math.max(200, bottomNavTop - headerBottom);
 
-    let targetScreenY;
-    if (minSafeY <= maxSafeY) {
-      targetScreenY = Math.min(maxSafeY, Math.max(minSafeY, Math.round(headerBottom + estPopupHeight + 18)));
-    } else {
-      targetScreenY = maxSafeY;
-    }
+    // Anchor the coordinate in the lower 72% of the available safe window so the popup bubble
+    // (which renders ABOVE the coordinate) sits completely within the clear space below headerBottom.
+    const targetScreenY = Math.round(headerBottom + (availableHeight * 0.72));
 
     const centerScreenY = window.innerHeight / 2;
     const pixelOffset = targetScreenY - centerScreenY;
@@ -667,7 +660,7 @@
     leafletDistrictPopup = L.popup({
       className: 'kisan-popup',
       offset: [0, -10],
-      autoPan: !isMobile,
+      autoPan: false,
       autoPanPaddingTopLeft: [16, topPad],
       autoPanPaddingBottomRight: [16, botPad]
     })
@@ -1235,57 +1228,43 @@
     }
 
     const popupHtml = `
-      <div class="p-2.5 space-y-2 text-slate-100 font-sans" style="min-width: 240px; max-width: 285px;">
+      <div class="p-2 space-y-1.5 text-slate-100 font-sans" style="min-width: 220px; max-width: 280px;">
         <!-- Header -->
-        <div class="flex items-start justify-between gap-1.5 pb-1.5 border-b border-emerald-500/30">
+        <div class="flex items-center justify-between gap-1.5 pb-1 border-b border-emerald-500/30">
           <div class="min-w-0 flex-1">
-            <div class="font-bold text-white text-xs font-mono flex items-center gap-1.5 leading-snug truncate">
+            <div class="font-bold text-white text-xs font-mono flex items-center gap-1 leading-tight truncate">
               <span>🌾</span>
               <span class="truncate">${dispName}</span>
             </div>
-            <div class="text-[9px] text-slate-400 font-mono truncate">${coordStr ? coordStr + ' • ' : ''}${data.state}, India</div>
+            <div class="text-[9px] text-slate-400 font-mono truncate">${data.state}, India</div>
           </div>
           <div class="shrink-0">${rainBadge}</div>
         </div>
 
-        <!-- Key Meteorological Metrics: Compact 2x2 Grid -->
-        <div class="grid grid-cols-2 gap-1.5 text-xs">
-          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[9px] text-slate-400 flex items-center gap-1">
-              <span>🌧️</span> <span>${t.chanceOfRain}</span>
-            </div>
-            <div class="font-bold text-cyan-300 text-xs font-mono">${rainProb}%</div>
-            <div class="text-[8px] text-slate-400 font-mono">${parseFloat(precip) > 0 ? precip + ' ' + t.rainExpected : t.dryConditions}</div>
+        <!-- Key Meteorological Metrics: Compact 4-Column Row -->
+        <div class="grid grid-cols-4 gap-1 text-center py-0.5">
+          <div class="bg-slate-900/90 px-1 py-1 rounded-lg border border-slate-800">
+            <div class="text-[8px] text-slate-400">🌧️ ${t.chanceOfRain}</div>
+            <div class="font-bold text-cyan-300 text-[11px] font-mono leading-none mt-0.5">${rainProb}%</div>
           </div>
-
-          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[9px] text-slate-400 flex items-center gap-1">
-              <span>🌡️</span> <span>${t.temp}</span>
-            </div>
-            <div class="font-bold text-amber-300 text-xs font-mono">${temp}°C</div>
-            <div class="text-[8px] text-slate-400 font-mono">${t.feelsLike}: ${feels}°C</div>
+          <div class="bg-slate-900/90 px-1 py-1 rounded-lg border border-slate-800">
+            <div class="text-[8px] text-slate-400">🌡️ ${t.temp}</div>
+            <div class="font-bold text-amber-300 text-[11px] font-mono leading-none mt-0.5">${temp}°C</div>
           </div>
-
-          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[9px] text-slate-400 flex items-center gap-1">
-              <span>💧</span> <span>${t.humidity}</span>
-            </div>
-            <div class="font-bold text-emerald-300 text-xs font-mono">${humidity}%</div>
-            <div class="text-[8px] text-slate-400 font-mono">${humidity > 70 ? t.highMoisture : t.comfortable}</div>
+          <div class="bg-slate-900/90 px-1 py-1 rounded-lg border border-slate-800">
+            <div class="text-[8px] text-slate-400">💧 ${t.humidity}</div>
+            <div class="font-bold text-emerald-300 text-[11px] font-mono leading-none mt-0.5">${humidity}%</div>
           </div>
-
-          <div class="bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 space-y-0.5">
-            <div class="text-[9px] text-slate-400 flex items-center gap-1">
-              <span>💨</span> <span>${t.wind}</span>
-            </div>
-            <div class="font-bold text-sky-300 text-xs font-mono">${wind} km/h</div>
-            <div class="text-[8px] text-slate-400 font-mono">${windDir}</div>
+          <div class="bg-slate-900/90 px-1 py-1 rounded-lg border border-slate-800">
+            <div class="text-[8px] text-slate-400">💨 ${t.wind}</div>
+            <div class="font-bold text-sky-300 text-[11px] font-mono leading-none mt-0.5">${wind}</div>
           </div>
         </div>
 
-        <!-- Farmer Field Advice -->
-        <div class="p-1.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-[9.5px] text-emerald-200 leading-tight">
-          <span class="font-bold text-emerald-400">${summary.tag}:</span> ${summary.summary}
+        <!-- Farmer Field Advice: Single-Line Concise Pill -->
+        <div class="px-2 py-1 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-[9px] text-emerald-200 leading-snug flex items-center gap-1.5 truncate">
+          <span class="font-bold text-emerald-400 shrink-0">${summary.tag}:</span>
+          <span class="truncate">${summary.summary}</span>
         </div>
 
         <!-- Action Button -->
@@ -1298,7 +1277,7 @@
 
     const isMobile = window.innerWidth < 768;
     const headerEl = document.querySelector('header');
-    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 250;
+    const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
     const mobileNav = document.getElementById('mobile-bottom-nav') || document.getElementById('orbital-mobile-nav');
     const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
     const topPad = isMobile ? (headerBottom + 16) : 60;
@@ -1311,7 +1290,7 @@
       leafletDistrictPopup = L.popup({
         className: 'kisan-popup',
         offset: [0, -10],
-        autoPan: !isMobile,
+        autoPan: false,
         autoPanPaddingTopLeft: [16, topPad],
         autoPanPaddingBottomRight: [16, botPad]
       })
@@ -1319,7 +1298,7 @@
       .setContent(popupHtml)
       .openOn(window.leafletMap);
     } else {
-      leafletDistrictPopup.options.autoPan = !isMobile;
+      leafletDistrictPopup.options.autoPan = false;
       leafletDistrictPopup.options.autoPanPaddingTopLeft = [16, topPad];
       leafletDistrictPopup.options.autoPanPaddingBottomRight = [16, botPad];
       leafletDistrictPopup.setLatLng(targetLatLng).setContent(popupHtml).openOn(window.leafletMap);

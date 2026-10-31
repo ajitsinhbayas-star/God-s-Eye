@@ -652,11 +652,13 @@
     const targetZoom = forceZoom || Math.max(map.getZoom(), 8);
     const headerEl = document.querySelector('header');
     const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
-    const mobileNav = document.getElementById('orbital-mobile-nav');
-    const bottomPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top) : 70;
+    const mobileNav = document.getElementById('orbital-mobile-nav') || document.getElementById('mobile-bottom-nav');
+    const bottomNavTop = mobileNav ? Math.floor(mobileNav.getBoundingClientRect().top) : (window.innerHeight - 70);
 
-    // Target screen Y: ensures the ~270px popup bubble renders completely below the header
-    const targetScreenY = Math.min(window.innerHeight - bottomPad - 40, Math.max(headerBottom + 290, Math.round(window.innerHeight * 0.68)));
+    // Available vertical safe window between the floating search header and bottom ribbon
+    const availableHeight = Math.max(200, bottomNavTop - headerBottom);
+    const targetScreenY = Math.round(headerBottom + (availableHeight * 0.72));
+
     const centerScreenY = window.innerHeight / 2;
     const pixelOffset = targetScreenY - centerScreenY;
 
@@ -1067,14 +1069,18 @@
     const isMobile = window.innerWidth < 768;
     const headerEl = document.querySelector('header');
     const headerBottom = headerEl ? Math.ceil(headerEl.getBoundingClientRect().bottom) : 260;
-    const mobileNav = document.getElementById('orbital-mobile-nav');
+    const mobileNav = document.getElementById('orbital-mobile-nav') || document.getElementById('mobile-bottom-nav');
     const botPad = mobileNav ? Math.ceil(window.innerHeight - mobileNav.getBoundingClientRect().top + 16) : (isMobile ? 80 : 40);
     const topPad = isMobile ? (headerBottom + 16) : 60;
+
+    if (isMobile && leafletMap) {
+      focusMapCoordinateForMobile(leafletMap, latlng);
+    }
 
     leafletAqiPopup = L.popup({
       className: 'aqi-popup',
       offset: [0, -10],
-      autoPan: true,
+      autoPan: false,
       autoPanPaddingTopLeft: [16, topPad],
       autoPanPaddingBottomRight: [16, botPad]
     })
