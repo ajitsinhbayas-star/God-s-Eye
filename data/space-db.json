@@ -2,12 +2,12 @@
   "lastUpdated": "2026-10-24T16:55:36.984Z",
   "syncCycles": 0,
   "liveISS": {
-    "latitude": 2.8502,
-    "longitude": -168.0264,
-    "altitude": 423.98,
-    "velocity": 27562,
-    "visibility": "daylight",
-    "timestamp": 1793389332212
+    "latitude": -3.9299,
+    "longitude": -118.6352,
+    "altitude": 416.29,
+    "velocity": 27593,
+    "visibility": "eclipsed",
+    "timestamp": 1793419969628
   },
   "externalIntel": {
     "spaceWeather": {
@@ -15,16 +15,12 @@
       "stormLevel": "G0 (Quiet / Nominal)",
       "gScaleCode": "G0",
       "severity": "nominal",
-      "observationTimeUTC": "2026-10-30T19:36:08.473Z",
-      "updatedAt": "2026-10-30T19:36:08.473Z",
+      "observationTimeUTC": "2026-10-31T04:12:00.576Z",
+      "updatedAt": "2026-10-31T04:12:00.576Z",
       "quality": "fresh",
       "provider": "NOAA Space Weather Prediction Center (SWPC)"
     },
     "neoApproaches": [
-      {
-        "des": "2026 UD",
-        "distKm": 4458856
-      },
       {
         "des": "2025 UK9",
         "distKm": 314648
@@ -32,23 +28,27 @@
       {
         "des": "524522",
         "distKm": 6018477
+      },
+      {
+        "des": "2021 VC4",
+        "distKm": 2291695
       }
     ],
     "missionNews": [
       {
-        "id": 40664,
-        "title": "ESI supplying solar array components to missile defense programs",
-        "newsSite": "SpaceNews"
+        "id": 40667,
+        "title": "Live coverage: SpaceX to close out October with Halloween eve Falcon 9 launch",
+        "newsSite": "Spaceflight Now"
       },
       {
-        "id": 40663,
-        "title": "Government Spending on Civil Space Topped $42 Billion in FY2026",
-        "newsSite": "SpacePolicyOnline.com"
+        "id": 40666,
+        "title": "SpaceX Completes Three Static Fires in Three Days for Flight 15",
+        "newsSite": "NASASpaceflight"
       },
       {
-        "id": 40662,
-        "title": "Analysts find looming launch crisis is \"more severe\" than anticipated",
-        "newsSite": "Arstechnica"
+        "id": 40665,
+        "title": "NASA Releases MAX POWER Key Events for Media, Participants",
+        "newsSite": "NASA"
       }
     ]
   },
@@ -67,10 +67,10 @@
       "name": "CelesTrak / NORAD GP Elements",
       "detail": "Active satellite TLE vectors",
       "status": "ok",
-      "label": "Active SGP4 Pipeline (0 Live TLEs, 17 Cached)",
-      "lastFetch": "2026-10-30T19:41:12.947Z",
+      "label": "Active SGP4 Pipeline (15 Live TLEs, 17 Cached)",
+      "lastFetch": "2026-10-31T04:06:59.100Z",
       "latencyMs": 210,
-      "quality": "baseline"
+      "quality": "fresh"
     },
     {
       "id": "SRC-NOAA-SWPC",

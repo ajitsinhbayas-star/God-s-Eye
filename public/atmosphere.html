@@ -233,6 +233,18 @@
       box-shadow: 0 0 14px rgba(16, 185, 129, 0.85);
       z-index: 9999 !important;
     }
+    @media (max-width: 767px) {
+      #globe-container,
+      #globe-labels-layer,
+      #natural3d-top-controls,
+      #btn-mode-natural3d,
+      #tactical-nav-pad {
+        display: none !important;
+      }
+      #map-container {
+        display: block !important;
+      }
+    }
   </style>
 </head>
 <body class="relative w-full h-full bg-[#010409]">
@@ -247,9 +259,9 @@
   <div id="map-container" class="absolute inset-0 z-0 hidden"></div>
 
   <!-- TOP COMMAND BAR -->
-  <header class="absolute top-2 left-2 right-2 z-30 flex flex-col gap-2 p-2 sm:px-3 rounded-2xl hud-glass pointer-events-auto transition-all">
+  <header class="absolute top-0 left-0 right-0 z-40 p-2 sm:p-3 pointer-events-none flex flex-col gap-2">
     <!-- Row 1: Brand, Mode Switcher Pills & Action Controls -->
-    <div class="flex items-center justify-between gap-2 w-full flex-nowrap">
+    <div class="pointer-events-auto flex items-center justify-between bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl px-3 sm:px-4 py-2.5 shadow-2xl gap-2 w-full flex-nowrap">
       <!-- Brand & Mode Indicator -->
       <div class="flex items-center gap-2 shrink-0">
         <a href="/" class="flex items-center gap-2 text-white no-underline">
@@ -264,8 +276,8 @@
           </div>
         </a>
 
-        <!-- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP <-> NATURAL 3D GLOBE -->
-        <div class="inline-flex items-center p-0.5 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono">
+        <!-- TWO CLEAR EXPERIENCES: KISAN DISTRICT MAP <-> NATURAL 3D GLOBE (DESKTOP ONLY) -->
+        <div class="hidden md:inline-flex items-center p-0.5 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono">
           <button id="btn-mode-farmer" onclick="setAtmosphereExperience('farmer')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold transition flex items-center gap-1 shadow-sm">
             <span>🌾</span>
             <span class="whitespace-nowrap">Kisan District Map</span>
@@ -359,90 +371,95 @@
 
       <!-- Right Action Controls -->
       <div class="flex items-center gap-1.5 font-mono shrink-0">
+        <!-- District Weather Desk Toggle Button -->
+        <button id="btn-toggle-district-panel" onclick="toggleFarmerPanel()" aria-expanded="false" aria-controls="selected-district-panel" class="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-400 text-xs font-mono text-emerald-300 transition flex items-center gap-1.5 shadow-sm" title="Toggle District Weather Panel">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span class="text-xs">Desk</span>
+        </button>
+
         <!-- Advanced Tools Dropdown Toggle -->
-        <button onclick="toggleAdvancedToolsMenu()" id="btn-adv-tools" class="px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition flex items-center gap-1" title="Advanced Weather & Radar Tools">
+        <button onclick="toggleAdvancedToolsMenu()" id="btn-adv-tools" class="hidden md:flex px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition items-center gap-1" title="Advanced Weather & Radar Tools">
           <i class="fa-solid fa-sliders text-cyan-400"></i>
-          <span class="hidden md:inline text-[11px]">Advanced Tools</span>
+          <span class="text-[11px]">Advanced Tools</span>
         </button>
 
         <!-- Sentinel Admin Link -->
         <a href="/sentinel-login" class="p-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 text-xs transition no-underline flex items-center justify-center" title="Sentinel Operations Console">
           <i class="fa-solid fa-shield-halved"></i>
         </a>
-
-        <!-- Mobile Navigation Hamburger -->
-        <button onclick="toggleMobileNavMenu()" class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs transition lg:hidden" title="Toggle Navigation Menu">
-          <i class="fa-solid fa-bars"></i>
-        </button>
       </div>
     </div>
 
-    <!-- Row 2: Dynamic Mode Controls -->
-    <!-- Mode B: Kisan District Map Controls (Active by Default) -->
-    <div id="farmer-top-controls" class="flex items-center gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono overflow-x-auto no-scrollbar">
-      <!-- Search District with Autocomplete -->
-      <div id="farmer-search-wrapper" class="relative flex-1 min-w-[170px] max-w-xs sm:max-w-sm">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
-        <input id="top-farmer-search-input" type="text" autocomplete="off"
-          placeholder="Search your district or city (e.g. Pune / पुणे, Patna / पटना)..."
-          oninput="onFarmerDistrictSearchInput()"
-          class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950/90 border border-emerald-500/50 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition" />
+    <!-- Row 2: Kisan District Map Controls (Active by Default) -->
+    <div id="farmer-top-controls" class="pointer-events-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl">
+      <!-- Multilingual Search Input with Autocomplete -->
+      <div id="farmer-search-wrapper" class="relative flex-1 min-w-0">
+        <div class="relative flex items-center">
+          <span class="absolute left-3 text-slate-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input
+            id="top-farmer-search-input"
+            type="text"
+            autocomplete="off"
+            oninput="onFarmerDistrictSearchInput()"
+            placeholder="Search district or city (e.g. Pune / पुणे, Patna / पटना)..."
+            class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 min-h-[36px]"
+          />
+        </div>
         <div id="farmer-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto bg-slate-950/98 border border-emerald-500/60 rounded-xl shadow-2xl z-50 divide-y divide-slate-800/80"></div>
       </div>
 
-      <!-- State Filter Selector -->
-      <div class="w-36 sm:w-44 shrink-0">
-        <select id="top-farmer-state-select" onchange="onFarmerStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
-          <option value="">All States & UTs (35)</option>
-        </select>
+      <!-- State & District Selectors Row on mobile, inline on desktop -->
+      <div class="flex items-center gap-1.5 flex-1 min-w-0">
+        <!-- State Selector -->
+        <div class="flex-1 sm:min-w-[130px]">
+          <select id="top-farmer-state-select" onchange="onFarmerStateChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-emerald-400 min-h-[36px]">
+            <option value="">All States & UTs (35)</option>
+          </select>
+        </div>
+
+        <!-- District Selector -->
+        <div class="flex-1 sm:min-w-[130px]">
+          <select id="top-farmer-district-select" onchange="onFarmerDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-emerald-400 min-h-[36px]">
+            <option value="">Select District...</option>
+          </select>
+        </div>
       </div>
 
-      <!-- District Selector -->
-      <div class="w-36 sm:w-44 shrink-0">
-        <select id="top-farmer-district-select" onchange="onFarmerDistrictSelectChange()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-400">
-          <option value="">Select District...</option>
-        </select>
+      <!-- Quick Action Buttons: 4-button row on mobile, inline on desktop -->
+      <div class="grid grid-cols-4 sm:flex items-center gap-1.5 shrink-0">
+        <!-- GPS Button -->
+        <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 shadow-sm whitespace-nowrap min-h-[36px]" title="Detect Location via Device GPS">
+          <span>📍</span>
+          <span class="hidden md:inline">GPS</span>
+        </button>
+
+        <!-- Zoom All India -->
+        <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap min-h-[36px]" title="Zoom to All India">
+          <span>🇮🇳</span>
+          <span class="hidden md:inline">India</span>
+        </button>
+
+        <!-- Weather Desk Toggle -->
+        <button id="btn-farmer-desk-shortcut" onclick="toggleFarmerPanel()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Weather Desk Panel">
+          <span>🌾</span>
+          <span class="hidden md:inline">Desk</span>
+        </button>
+
+        <!-- Basemap Toggle: Satellite vs Street -->
+        <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center justify-center gap-1 whitespace-nowrap shadow-sm min-h-[36px]" title="Toggle Satellite Imagery / Street Map">
+          <span id="basemap-icon">🛰️</span>
+          <span id="basemap-text" class="hidden md:inline">Sat</span>
+        </button>
       </div>
 
-      <!-- GPS Button -->
-      <button id="btn-farmer-gps" onclick="detectFarmerLocationGPS()" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 shadow-sm whitespace-nowrap shrink-0" title="Detect Location via Device GPS">
-        <span>📍</span>
-        <span>My Location</span>
-      </button>
-
-      <!-- Zoom All India Button -->
-      <button onclick="zoomToAllIndia()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap shrink-0" title="Zoom to All India">
-        <span>🇮🇳</span>
-        <span>All India</span>
-      </button>
-
-      <!-- Basemap Toggle: Satellite vs Street -->
-      <!-- District Weather Desk Toggle Button -->
-      <button id="btn-toggle-district-panel" onclick="toggleFarmerPanel()" aria-expanded="false" aria-controls="selected-district-panel" class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle District Weather Panel">
-        <span>🌾</span>
-        <span>Weather Desk</span>
-      </button>
-
-      <!-- Severe Storms Drawer Toggle Button -->
-      <button id="btn-toggle-left-drawer" onclick="toggleLeftDrawer()" aria-expanded="false" aria-controls="left-drawer" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-rose-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Severe Weather Drawer">
-        <i class="fa-solid fa-bolt text-rose-400"></i>
-        <span>Severe Weather</span>
-      </button>
-
-      <!-- Layer Controls Drawer Toggle Button -->
-      <button id="btn-toggle-right-drawer" onclick="toggleRightDrawer()" aria-expanded="false" aria-controls="right-drawer" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Layer Controls Drawer">
-        <i class="fa-solid fa-sliders text-cyan-400"></i>
-        <span>Layers &amp; Controls</span>
-      </button>
-
-      <button id="btn-toggle-basemap" onclick="toggleKisanBasemap()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-300 text-xs transition flex items-center gap-1 whitespace-nowrap shadow-sm shrink-0" title="Toggle Satellite Imagery / Street Map">
-        <span id="basemap-icon">🛰️</span>
-        <span id="basemap-text">Satellite</span>
-      </button>
+      <!-- Severe Weather & Layer Controls Drawer launchers for Desktop / Test accessibility -->
+      <div class="hidden">
+        <button id="btn-toggle-left-drawer" onclick="toggleLeftDrawer()" aria-expanded="false" aria-controls="left-drawer">Severe Weather</button>
+        <button id="btn-toggle-right-drawer" onclick="toggleRightDrawer()" aria-expanded="false" aria-controls="right-drawer">Layers</button>
+      </div>
     </div>
-
     <!-- Mode A: Natural 3D Globe Controls (Visible in 3D Mode) -->
-    <div id="natural3d-top-controls" class="hidden flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
+    <div id="natural3d-top-controls" class="hidden md:flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs font-mono">
       <!-- Layer Selector -->
       <div class="flex items-center gap-1 overflow-x-auto pb-0.5">
         <button id="mode-radar" onclick="setLayerMode('radar')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition whitespace-nowrap">
@@ -1227,6 +1244,7 @@
     let currentAtmosphereMode = 'farmer'; // 'farmer' (Kisan District Map) | 'natural3d' (Natural 3D Globe)
 
     function setAtmosphereExperience(mode) {
+      if (window.innerWidth < 768) { mode = 'farmer'; }
       currentAtmosphereMode = mode;
       const btnFarmer = document.getElementById('btn-mode-farmer');
       const btnNatural = document.getElementById('btn-mode-natural3d');
@@ -1348,7 +1366,8 @@
       // Initialize in Farmer Mode by default
       const urlParams = new URLSearchParams(window.location.search);
       const distQueryParam = urlParams.get('district');
-      const is3DHash = window.location.hash.toLowerCase().includes('3d') || urlParams.get('mode') === '3d';
+      const isMobile = window.innerWidth < 768;
+      const is3DHash = !isMobile && (window.location.hash.toLowerCase().includes('3d') || urlParams.get('mode') === '3d');
       setAtmosphereExperience(is3DHash ? 'natural3d' : 'farmer');
 
       if (distQueryParam) {
@@ -1374,6 +1393,7 @@
       }
 
       function handleWeatherHash() {
+        if (window.innerWidth < 768) { setAtmosphereExperience('farmer'); return; }
         const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
         if (!hash) return;
         if (hash === 'farmer' || hash === 'kisan') {
