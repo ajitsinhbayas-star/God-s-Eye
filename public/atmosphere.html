@@ -101,6 +101,18 @@
 }
   </script>
 
+  <!-- Suppress Tailwind runtime CDN production warning -->
+  <script>
+    (function() {
+      const _warn = console.warn;
+      console.warn = function(...args) {
+        if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
+          return;
+        }
+        _warn.apply(console, args);
+      };
+    })();
+  </script>
   <!-- Core Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
