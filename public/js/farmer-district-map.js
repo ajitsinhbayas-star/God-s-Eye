@@ -320,6 +320,7 @@
             },
             click: e => {
               if (e.originalEvent) e.originalEvent.stopPropagation();
+              if (layer && typeof layer.closeTooltip === 'function') layer.closeTooltip();
               handleMapCoordinateClick(e.latlng, feature, layer);
             }
           });
@@ -479,12 +480,27 @@
     }
 
     lastPopupLatLng = latlng;
+    const isMobile = window.innerWidth < 768;
+    const topPad = isMobile ? 225 : 60;
+    const botPad = isMobile ? 80 : 40;
+
+    // On mobile, if coordinate is in top half of screen, pan down so popup never hides under top header
+    if (isMobile && window.leafletMap) {
+      try {
+        const pt = window.leafletMap.latLngToContainerPoint(latlng);
+        if (pt.y < 380) {
+          const diff = 440 - pt.y;
+          window.leafletMap.panBy([0, -diff], { animate: true });
+        }
+      } catch (err) {}
+    }
 
     leafletDistrictPopup = L.popup({
       className: 'kisan-popup',
       offset: [0, -10],
       autoPan: true,
-      autoPanPadding: [40, 40]
+      autoPanPaddingTopLeft: [16, topPad],
+      autoPanPaddingBottomRight: [16, botPad]
     })
     .setLatLng(latlng)
     .setContent(loadingHtml)
@@ -513,13 +529,25 @@
     const targetCoord = latlng || L.latLng(d.lat, d.lon);
     lastPopupLatLng = targetCoord;
 
-    // Zoom map smoothly to district bounds if not already centered
+    // Zoom map smoothly to district bounds with mobile header offset
     if (window.leafletMap) {
+      const isMobile = window.innerWidth < 768;
       if (feat && feat.properties?.bbox) {
         const b = feat.properties.bbox;
-        window.leafletMap.fitBounds([[b[1], b[0]], [b[3], b[2]]], { padding: [40, 40], maxZoom: 10 });
+        window.leafletMap.fitBounds([[b[1], b[0]], [b[3], b[2]]], {
+          paddingTopLeft: [20, isMobile ? 230 : 50],
+          paddingBottomRight: [20, isMobile ? 80 : 40],
+          maxZoom: 10,
+          animate: true
+        });
       } else {
-        window.leafletMap.setView([d.lat, d.lon], Math.max(window.leafletMap.getZoom(), 8));
+        const targetZoom = Math.max(window.leafletMap.getZoom(), 8);
+        if (isMobile) {
+          const pt = window.leafletMap.project(targetCoord, targetZoom).subtract([0, 120]);
+          window.leafletMap.setView(window.leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+        } else {
+          window.leafletMap.setView(targetCoord, targetZoom, { animate: true });
+        }
       }
     }
 
@@ -1081,18 +1109,28 @@
       </div>
     `;
 
+    const isMobile = window.innerWidth < 768;
+    const topPad = isMobile ? 225 : 60;
+    const botPad = isMobile ? 80 : 40;
+
     if (!leafletDistrictPopup || !window.leafletMap.hasLayer(leafletDistrictPopup)) {
       leafletDistrictPopup = L.popup({
         className: 'kisan-popup',
         offset: [0, -10],
         autoPan: true,
-        autoPanPadding: [40, 40]
+        autoPanPaddingTopLeft: [16, topPad],
+        autoPanPaddingBottomRight: [16, botPad]
       })
       .setLatLng(targetLatLng)
       .setContent(popupHtml)
       .openOn(window.leafletMap);
     } else {
+      leafletDistrictPopup.options.autoPanPaddingTopLeft = [16, topPad];
+      leafletDistrictPopup.options.autoPanPaddingBottomRight = [16, botPad];
       leafletDistrictPopup.setLatLng(targetLatLng).setContent(popupHtml);
+      if (typeof leafletDistrictPopup.update === 'function') {
+        leafletDistrictPopup.update();
+      }
     }
   }
 

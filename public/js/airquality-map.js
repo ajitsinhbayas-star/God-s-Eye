@@ -628,6 +628,14 @@
   // Select Station
   async function selectStation(st, latlng) {
     const coord = latlng || L.latLng(st.lat, st.lon);
+    if (leafletMap) {
+      const isMobile = window.innerWidth < 768;
+      const targetZoom = Math.max(leafletMap.getZoom(), 8);
+      if (isMobile) {
+        const pt = leafletMap.project(coord, targetZoom).subtract([0, 120]);
+        leafletMap.setView(leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+      }
+    }
     openAqiLoadingPopup(st.name, `${st.city}, ${st.state}`, coord);
     fetchAndDisplayAqi(null, st.name, st.state, st.lat, st.lon, coord, true);
   }
@@ -721,11 +729,27 @@
 
     if (leafletAqiPopup) leafletMap.closePopup(leafletAqiPopup);
     lastPopupLatLng = latlng;
+    const isMobile = window.innerWidth < 768;
+    const topPad = isMobile ? 225 : 60;
+    const botPad = isMobile ? 80 : 40;
+
+    // On mobile, if coordinate is in top half of screen, pan down so popup never hides under top header
+    if (isMobile && leafletMap) {
+      try {
+        const pt = leafletMap.latLngToContainerPoint(latlng);
+        if (pt.y < 380) {
+          const diff = 440 - pt.y;
+          leafletMap.panBy([0, -diff], { animate: true });
+        }
+      } catch (err) {}
+    }
 
     leafletAqiPopup = L.popup({
       className: 'aqi-popup',
       offset: [0, -10],
-      autoPan: true
+      autoPan: true,
+      autoPanPaddingTopLeft: [16, topPad],
+      autoPanPaddingBottomRight: [16, botPad]
     })
     .setLatLng(latlng)
     .setContent(html)
@@ -1011,14 +1035,23 @@
 
     if (leafletAqiPopup && leafletMap) leafletMap.closePopup(leafletAqiPopup);
 
+    const isMobile = window.innerWidth < 768;
+    const topPad = isMobile ? 225 : 60;
+    const botPad = isMobile ? 80 : 40;
+
     leafletAqiPopup = L.popup({
       className: 'aqi-popup',
       offset: [0, -10],
-      autoPan: true
+      autoPan: true,
+      autoPanPaddingTopLeft: [16, topPad],
+      autoPanPaddingBottomRight: [16, botPad]
     })
     .setLatLng(latlng)
     .setContent(html)
     .openOn(leafletMap);
+    if (typeof leafletAqiPopup.update === 'function') {
+      leafletAqiPopup.update();
+    }
     window.leafletAqiPopup = leafletAqiPopup;
   }
 
@@ -1216,7 +1249,14 @@
     const targetCoord = L.latLng(d.lat, d.lon);
 
     if (leafletMap) {
-      leafletMap.flyTo(targetCoord, 8, { duration: 1.2 });
+      const isMobile = window.innerWidth < 768;
+      const targetZoom = 8;
+      if (isMobile) {
+        const pt = leafletMap.project(targetCoord, targetZoom).subtract([0, 120]);
+        leafletMap.setView(leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+      } else {
+        leafletMap.setView(targetCoord, targetZoom, { animate: true });
+      }
     }
 
     handleCoordinateClick(targetCoord);
@@ -1301,7 +1341,14 @@
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
       if (leafletMap) {
-        leafletMap.flyTo([lat, lon], 9, { duration: 1.2 });
+        const isMobile = window.innerWidth < 768;
+        const targetZoom = 9;
+        if (isMobile) {
+          const pt = leafletMap.project([lat, lon], targetZoom).subtract([0, 120]);
+          leafletMap.setView(leafletMap.unproject(pt, targetZoom), targetZoom, { animate: true });
+        } else {
+          leafletMap.setView([lat, lon], targetZoom, { animate: true });
+        }
       }
       handleCoordinateClick(L.latLng(lat, lon));
     }, err => {
