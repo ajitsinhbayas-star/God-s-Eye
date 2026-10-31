@@ -480,21 +480,15 @@
 
     lastPopupLatLng = latlng;
 
-    if (window.innerWidth >= 768) {
-      leafletDistrictPopup = L.popup({
-        className: 'kisan-popup',
-        offset: [0, -10],
-        autoPan: true,
-        autoPanPadding: [40, 40]
-      })
-      .setLatLng(latlng)
-      .setContent(loadingHtml)
-      .openOn(window.leafletMap);
-    } else {
-      if (leafletDistrictPopup && window.leafletMap) {
-        window.leafletMap.closePopup(leafletDistrictPopup);
-      }
-    }
+    leafletDistrictPopup = L.popup({
+      className: 'kisan-popup',
+      offset: [0, -10],
+      autoPan: true,
+      autoPanPadding: [40, 40]
+    })
+    .setLatLng(latlng)
+    .setContent(loadingHtml)
+    .openOn(window.leafletMap);
 
     // Fetch and render weather for this coordinate
     fetchAndRenderDistrictWeather(distId, distName, stateName, lat, lon, latlng);
@@ -929,14 +923,19 @@
     const container = document.getElementById('selected-district-content');
     const panel = document.getElementById('selected-district-panel');
     if (panel) {
-      panel.classList.remove('hidden');
-      isPanelCollapsed = false;
-      panel.classList.remove('max-h-12', 'overflow-hidden');
-      panel.classList.add('max-h-[58vh]');
-      const dBtn = document.getElementById('btn-toggle-district-panel');
-      if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
-      // On mobile, close any open drawers to avoid screen clutter
-      if (window.innerWidth < 768) {
+      // Desktop: Open desk panel alongside small card
+      // Mobile (< 768px): Keep desk panel closed on touch so ONLY small card opens (no double cards)
+      if (window.innerWidth >= 768) {
+        panel.classList.remove('hidden');
+        isPanelCollapsed = false;
+        panel.classList.remove('max-h-12', 'overflow-hidden');
+        panel.classList.add('max-h-[58vh]');
+        const dBtn = document.getElementById('btn-toggle-district-panel');
+        if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        panel.classList.add('hidden');
+        const dBtn = document.getElementById('btn-toggle-district-panel');
+        if (dBtn) dBtn.setAttribute('aria-expanded', 'false');
         const left = document.getElementById('left-drawer');
         const lBtn = document.getElementById('btn-toggle-left-drawer');
         if (left) left.classList.add('-translate-x-[110%]');
@@ -972,12 +971,6 @@
   // Update Leaflet Popup Card on Map
   function updateDistrictPopupCard(data, targetLatLng) {
     if (!window.leafletMap || !targetLatLng) return;
-    if (window.innerWidth < 768) {
-      if (leafletDistrictPopup && window.leafletMap) {
-        window.leafletMap.closePopup(leafletDistrictPopup);
-      }
-      return;
-    }
 
     const c = data.current || {};
     const hourly = data.forecast24h || data.hourly || [];
@@ -1088,14 +1081,6 @@
       </div>
     `;
 
-    // On mobile (< 768px), suppress on-map popup so only the clean Kisan Weather Desk bottom sheet is used
-    if (window.innerWidth < 768) {
-      if (leafletDistrictPopup && window.leafletMap) {
-        window.leafletMap.closePopup(leafletDistrictPopup);
-      }
-      return;
-    }
-
     if (!leafletDistrictPopup || !window.leafletMap.hasLayer(leafletDistrictPopup)) {
       leafletDistrictPopup = L.popup({
         className: 'kisan-popup',
@@ -1111,16 +1096,27 @@
     }
   }
 
-  // Expand Full Farmer Desk Panel
+  // Expand Full Farmer Desk Panel (Invoked when user taps Open 24h & 7-Day Forecast)
   window.expandFarmerDesk = function () {
+    // 1. Close small map popup so only one card is active
+    if (window.innerWidth < 768) {
+      if (leafletDistrictPopup && window.leafletMap) {
+        window.leafletMap.closePopup(leafletDistrictPopup);
+      }
+    }
+    // 2. Open full details panel
     const panel = document.getElementById('selected-district-panel');
     if (!panel) return;
     panel.classList.remove('hidden');
     isPanelCollapsed = false;
+    panel.classList.remove('max-h-12', 'overflow-hidden');
+    panel.classList.add('max-h-[58vh]');
+    const dBtn = document.getElementById('btn-toggle-district-panel');
+    if (dBtn) dBtn.setAttribute('aria-expanded', 'true');
     const body = document.getElementById('selected-district-body');
     const toggleBtn = document.getElementById('btn-toggle-district-sheet');
     if (body) body.classList.remove('hidden');
-    if (toggleBtn) toggleBtn.innerHTML = '<span>▲ Sheet</span>';
+    if (toggleBtn) toggleBtn.innerHTML = '<span>↕ Sheet</span>';
     panel.scrollIntoView({ behavior: 'smooth' });
   };
 

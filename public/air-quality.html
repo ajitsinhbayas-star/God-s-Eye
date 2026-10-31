@@ -440,6 +440,9 @@
 
 <script>
     window.openDeskPanel = function() {
+      if (window.innerWidth < 768 && window.leafletAqiPopup && window.leafletMap) {
+        window.leafletMap.closePopup(window.leafletAqiPopup);
+      }
       const p = document.getElementById('selected-aqi-panel');
       const btn = document.getElementById('btn-toggle-desk-panel');
       if (p) {

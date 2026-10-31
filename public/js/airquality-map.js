@@ -1001,31 +1001,36 @@
           <span class="font-bold text-cyan-300">Advisory:</span> ${norm.healthRecommendations?.general || 'Standard precautions apply.'}
         </div>
 
-        <button onclick="document.getElementById('selected-aqi-panel').classList.remove('hidden')" class="w-full py-1 text-center text-[10px] font-mono text-cyan-400 hover:text-cyan-300 transition">
-          View 8-Pollutant Breakdown & Trend &rarr;
+        <!-- Action Button -->
+        <button onclick="window.expandAqiDesk()" class="w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition flex items-center justify-center gap-1.5 shadow-md">
+          <i class="fa-solid fa-chart-simple text-xs"></i>
+          <span>Open 24h & Full Telemetry Desk</span>
         </button>
       </div>
     `;
 
-    if (leafletAqiPopup) leafletMap.closePopup(leafletAqiPopup);
+    if (leafletAqiPopup && leafletMap) leafletMap.closePopup(leafletAqiPopup);
 
-    // On mobile (< 768px), suppress duplicate popup card since bottom sheet is open
-    if (window.innerWidth >= 768) {
-      leafletAqiPopup = L.popup({
-        className: 'aqi-popup',
-        offset: [0, -10],
-        autoPan: true
-      })
-      .setLatLng(latlng)
-      .setContent(html)
-      .openOn(leafletMap);
-    }
+    leafletAqiPopup = L.popup({
+      className: 'aqi-popup',
+      offset: [0, -10],
+      autoPan: true
+    })
+    .setLatLng(latlng)
+    .setContent(html)
+    .openOn(leafletMap);
+    window.leafletAqiPopup = leafletAqiPopup;
   }
 
-  // Render Desk Panel (Full 8 CPCB Pollutants + Supplementary VOC)
-  function renderAqiDeskPanel(rawData) {
-    const container = document.getElementById('selected-aqi-content');
-    if (!container) return;
+  // Expand Full AQI Desk Panel (Invoked from small card button)
+  window.expandAqiDesk = function() {
+    // 1. Close small map popup so only one card is active
+    if (window.innerWidth < 768) {
+      if (leafletAqiPopup && leafletMap) {
+        leafletMap.closePopup(leafletAqiPopup);
+      }
+    }
+    // 2. Open full desk panel
     if (typeof window.openDeskPanel === 'function') {
       window.openDeskPanel();
     } else {
@@ -1033,6 +1038,25 @@
       if (panel) {
         panel.classList.remove('hidden');
         panel.classList.add('flex');
+      }
+    }
+  };
+
+  // Render Desk Panel (Full 8 CPCB Pollutants + Supplementary VOC)
+  function renderAqiDeskPanel(rawData) {
+    const container = document.getElementById('selected-aqi-content');
+    if (!container) return;
+    // On desktop (>= 768px): Auto open desk panel
+    // On mobile (< 768px): Keep desk panel closed so ONLY small popup card opens on touch
+    if (window.innerWidth >= 768) {
+      if (typeof window.openDeskPanel === 'function') {
+        window.openDeskPanel();
+      } else {
+        const panel = document.getElementById('selected-aqi-panel');
+        if (panel) {
+          panel.classList.remove('hidden');
+          panel.classList.add('flex');
+        }
       }
     }
 
